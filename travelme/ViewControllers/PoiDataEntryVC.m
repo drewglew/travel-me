@@ -27,24 +27,54 @@
             self.TextFieldTitle.text = self.PointOfInterest.name;
         }
     } else {
-        self.MapView.delegate = self;
-        MKPointAnnotation *anno = [[MKPointAnnotation alloc] init];
-        anno.title = self.PointOfInterest.name;
-        anno.subtitle = [NSString stringWithFormat:@"%@", self.PointOfInterest.administrativearea];
-        
-        CLLocationCoordinate2D coord = CLLocationCoordinate2DMake([self.PointOfInterest.lat doubleValue], [self.PointOfInterest.lon doubleValue]);
-        
-        anno.coordinate = coord;
-        
-        [self.MapView addAnnotation:anno];
-        [self.MapView selectAnnotation:anno animated:YES];
-        [self.MapView setCenterCoordinate:coord animated:YES];
-        
+        [self LoadExistingData];
     }
     self.CollectionViewPoiImages.dataSource = self;
     self.CollectionViewPoiImages.delegate = self;
     // Do any additional setup after loading the view.
+
+    UIFont *font = [UIFont fontWithName:@".SFUIText-Medium" size:10];
+    NSDictionary *attributes = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
+    [self.SegmentTypeOfPoi setTitleTextAttributes:attributes forState:UIControlStateNormal];
 }
+
+
+/*
+ created date:      28/04/2018
+ last modified:     28/04/2018
+ remarks:
+ */
+-(void) LoadExistingData {
+    
+    /* set map */
+    self.MapView.delegate = self;
+    MKPointAnnotation *anno = [[MKPointAnnotation alloc] init];
+    anno.title = self.PointOfInterest.name;
+    anno.subtitle = [NSString stringWithFormat:@"%@", self.PointOfInterest.administrativearea];
+    
+    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake([self.PointOfInterest.lat doubleValue], [self.PointOfInterest.lon doubleValue]);
+    
+    anno.coordinate = coord;
+    
+    [self.MapView addAnnotation:anno];
+    [self.MapView selectAnnotation:anno animated:YES];
+    [self.MapView setCenterCoordinate:coord animated:YES];
+    
+    /* load images from file - TODO make sure we locate them all */
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *imagesDirectory = [paths objectAtIndex:0];
+    for (PoiImageNSO *imageitem in self.PointOfInterest.Images) {
+        NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",imageitem.ImageFileReference]];
+        NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
+        imageitem.Image = [UIImage imageWithData:pngData];
+    }
+
+    /* Text fields and Segment */
+    self.TextViewNotes.text = self.PointOfInterest.privatenotes;
+    self.SegmentTypeOfPoi.selectedSegmentIndex = [self.PointOfInterest.categoryid longValue];
+    self.LabelPoiName.text = [NSString stringWithFormat:@"Point Of Interest: %@",self.PointOfInterest.name];
+}
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -77,6 +107,8 @@
     }
     return cell;
 }
+
+
 /*
  created date:      28/04/2018
  last modified:     28/04/2018
@@ -85,11 +117,22 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     /* add the insert method if found to be last cell */
     NSInteger NumberOfItems = self.PointOfInterest.Images.count + 1;
+    
     if (indexPath.row == NumberOfItems -1) {
         /* insert item */
         [self InsertPoiImage];
         
     } else {
+        
+        if (!self.newitem) {
+            // preview item - TODO, does not work yet.
+            // PoiImageCell *cell=[collectionView dequeueReusableCellWithReuseIdentifier:@"PoiImageId" forIndexPath:indexPath];
+            PoiImageNSO *item = [self.PointOfInterest.Images objectAtIndex:indexPath.row];
+            
+            [self.ImagePicture setImage:item.Image];
+            
+        }
+        
         /* we show the image in main view */
         //PoiImageCell *cell=[collectionView dequeueReusableCellWithReuseIdentifier:@"PoiImageId" forIndexPath:indexPath];
         
@@ -136,7 +179,7 @@
                                                                    picker.delegate = self;
                                                                    picker.allowsEditing = YES;
                                                                    picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-                                                                   picker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+                                                                   picker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
                                                                    
                                                                    [self presentViewController:picker animated:YES completion:NULL];
                                                                    
@@ -245,7 +288,6 @@
         [[NSFileManager defaultManager] createDirectoryAtPath:dataPath withIntermediateDirectories:YES attributes:nil error:nil];
 
         int counter = 1;
-    
         for (PoiImageNSO *imageitem in self.PointOfInterest.Images) {
             if (counter==1) {
                 imageitem.KeyImage = 1;
@@ -256,11 +298,9 @@
             NSString *filename = [NSString stringWithFormat:@"image_%03d.png",counter];
             NSString *filepathname = [dataPath stringByAppendingPathComponent:filename];
             [imageData writeToFile:filepathname atomically:YES];
-            
+            imageitem.NewImage = true;
             imageitem.ImageFileReference = [NSString stringWithFormat:@"%@/%@",self.PointOfInterest.key,filename];
             counter++;
-            
-            
         }
     }
     
@@ -272,6 +312,94 @@
     [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
+
+/*
+ created date:      28/04/2018
+ last modified:     28/04/2018
+ remarks:  Not Working
+ */
+- (IBAction)UpdatePoiItemPressed:(id)sender {
+
+    self.PointOfInterest.privatenotes = self.TextViewNotes.text;
+    self.PointOfInterest.categoryid = [NSNumber numberWithLong:self.SegmentTypeOfPoi.selectedSegmentIndex];
+
+    if (self.PointOfInterest.Images.count>0) {
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *imagesDirectory = [paths objectAtIndex:0];
+    
+        NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",self.PointOfInterest.key]];
+        
+        [[NSFileManager defaultManager] createDirectoryAtPath:dataPath withIntermediateDirectories:YES attributes:nil error:nil];
+    
+        int counter = 1;
+        for (PoiImageNSO *imageitem in self.PointOfInterest.Images) {
+
+            if ([imageitem.ImageFileReference isEqualToString:@""] || imageitem.ImageFileReference==nil) {
+                if (counter==1) {
+                    imageitem.KeyImage = 1;
+                } else {
+                    imageitem.KeyImage = 0;
+                }
+                imageitem.NewImage = true;
+                
+                NSData *imageData =  UIImagePNGRepresentation(imageitem.Image);
+                NSString *filename = [NSString stringWithFormat:@"image_%03d.png",counter];
+                NSString *filepathname = [dataPath stringByAppendingPathComponent:filename];
+                [imageData writeToFile:filepathname atomically:YES];
+                imageitem.ImageFileReference = [NSString stringWithFormat:@"%@/%@",self.PointOfInterest.key,filename];
+                NSLog(@"new image");
+            }
+            counter++;
+        }
+    }
+    [self.db UpdatePoiItem :self.PointOfInterest];
+
+    [self dismissViewControllerAnimated:YES completion:Nil];
+}
+
+/*
+ created date:      28/04/2018
+ last modified:     28/04/2018
+ remarks:
+ */
+-(IBAction)SegmentOptionChanged:(id)sender {
+    
+    UISegmentedControl *segment = sender;
+    if (segment.selectedSegmentIndex==0) {
+        self.MapView.hidden=true;
+        
+        self.CollectionViewPoiImages.hidden=true;
+        self.ImagePicture.hidden=true;
+        
+        self.LabelPrivateNotes.hidden=false;
+        self.TextViewNotes.hidden=false;
+        self.SegmentTypeOfPoi.hidden=false;
+        self.LabelPoiName.hidden=false;
+        
+    } else if (segment.selectedSegmentIndex==1) {
+        self.MapView.hidden=false;
+        
+        self.CollectionViewPoiImages.hidden=true;
+        self.ImagePicture.hidden=true;
+        
+        self.LabelPrivateNotes.hidden=true;
+        self.TextViewNotes.hidden=true;
+        self.SegmentTypeOfPoi.hidden=true;
+        self.LabelPoiName.hidden=true;
+        
+    } else {
+        self.MapView.hidden=true;
+        
+        self.CollectionViewPoiImages.hidden=false;
+        self.ImagePicture.hidden=false;
+        
+        self.LabelPrivateNotes.hidden=true;
+        self.TextViewNotes.hidden=true;
+        self.SegmentTypeOfPoi.hidden=true;
+        self.LabelPoiName.hidden=true;
+    }
+
+}
 
 
 @end

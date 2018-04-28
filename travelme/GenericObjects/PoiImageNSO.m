@@ -10,4 +10,9 @@
 
 @implementation PoiImageNSO
 
+@synthesize Image;
+@synthesize ImageFileReference;
+@synthesize KeyImage;
+@synthesize NewImage;
+
 @end

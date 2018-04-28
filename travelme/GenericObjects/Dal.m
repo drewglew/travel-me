@@ -16,9 +16,18 @@
  remarks:           Delete the database file cleanly
  */
 -(void) Delete {
+
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *imagesDirectory = [paths objectAtIndex:0];
     
-    if([[NSFileManager defaultManager] fileExistsAtPath:_databasePath]){
-        [[NSFileManager defaultManager] removeItemAtPath:_databasePath error:nil];
+    NSFileManager *fm = [NSFileManager defaultManager];
+    
+    NSError *error = nil;
+    for (NSString *file in [fm contentsOfDirectoryAtPath:imagesDirectory error:&error]) {
+        BOOL success = [fm removeItemAtPath:[NSString stringWithFormat:@"%@/%@", imagesDirectory, file] error:&error];
+        if (!success || error) {
+            NSLog(@"something failed in deleting unwanted data");
+        }
     }
 }
 
@@ -40,7 +49,6 @@
     if([filemgr fileExistsAtPath:_databasePath] ==  NO) {
         return false;
     }
-    
     return true;
 }
 
@@ -167,15 +175,71 @@
  last modified:     28/04/2018
  remarks:
  */
+-(bool) UpdatePoiItem :(PoiNSO*) Poi {
+  
+    sqlite3_stmt *statement;
+    const char *dbpath = [_databasePath UTF8String];
+        
+    if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
+        
+        NSString *updateSQL = [NSString stringWithFormat:@"UPDATE poi SET categoryid = %@, privatenotes = '%@' WHERE key='%@'", Poi.categoryid, Poi.privatenotes, Poi.key];
+        
+        const char *update_statement = [updateSQL UTF8String];
+        sqlite3_prepare_v2(_DB, update_statement, -1, &statement, NULL);
+        if (sqlite3_step(statement) != SQLITE_DONE) {
+            NSLog(@"Failed to update record(s) inside poi table");
+        }
+        [self InsertImages :Poi];
+        
+        sqlite3_finalize(statement);
+        sqlite3_close(_DB);
+    }
+    return true;
+}
+
+/*
+ created date:      28/04/2018
+ last modified:     28/04/2018
+ remarks:
+ */
+-(bool)InsertImages :(PoiNSO*) Poi {
+    /* Images table */
+    for (PoiImageNSO *imageitem in Poi.Images) {
+        if (imageitem.NewImage) {
+            
+            NSString *insertSQL = [NSString stringWithFormat:@"INSERT INTO imageitem (filename, poikey, keyimage, description) VALUES ('%@','%@',%d ,'%@')", imageitem.ImageFileReference, Poi.key, imageitem.KeyImage, @"test"];
+            sqlite3_stmt *statement;
+            const char *insert_statement = [insertSQL UTF8String];
+            sqlite3_prepare_v2(_DB, insert_statement, -1, &statement, NULL);
+            if (sqlite3_step(statement) != SQLITE_DONE) {
+                NSLog(@"Failed to insert new record inside imageitem table");
+                return false;
+            } else {
+                NSLog(@"Inserted new imageitem record inside table!");
+            }
+            sqlite3_finalize(statement);
+        }
+        
+    }
+    return true;
+}
+
+
+
+/*
+ created date:      28/04/2018
+ last modified:     28/04/2018
+ remarks:
+ */
 -(bool)InsertPoiItem :(PoiNSO*)Poi {
 
     const char *dbpath = [_databasePath UTF8String];
     
     if(sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
         /* POI table */
-        NSString *key = [[NSUUID UUID] UUIDString];
+        Poi.key = [[NSUUID UUID] UUIDString];
     
-        NSString *insertSQL = [NSString stringWithFormat:@"INSERT INTO poi (key, name, administrativearea, categoryid, privatenotes, lat, lon) VALUES ('%@','%@','%@',%@,'%@', %@, %@)", key, Poi.name, Poi.administrativearea, Poi.categoryid, Poi.privatenotes, Poi.lat, Poi.lon];
+        NSString *insertSQL = [NSString stringWithFormat:@"INSERT INTO poi (key, name, administrativearea, categoryid, privatenotes, lat, lon) VALUES ('%@','%@','%@',%@,'%@', %@, %@)", Poi.key, Poi.name, Poi.administrativearea, Poi.categoryid, Poi.privatenotes, Poi.lat, Poi.lon];
     
         sqlite3_stmt *statement;
         const char *insert_statement = [insertSQL UTF8String];
@@ -187,28 +251,20 @@
             NSLog(@"inserted new poi record inside table!");
         }
         sqlite3_finalize(statement);
-        
-        /* Images table */
-        for (PoiImageNSO *imageitem in Poi.Images) {
-            insertSQL = [NSString stringWithFormat:@"INSERT INTO imageitem (filename, poikey, keyimage, description) VALUES ('%@','%@',%d ,'%@')", imageitem.ImageFileReference, key, imageitem.KeyImage, @"test"];
-            sqlite3_stmt *statement;
-            const char *insert_statement = [insertSQL UTF8String];
-            sqlite3_prepare_v2(_DB, insert_statement, -1, &statement, NULL);
-            if (sqlite3_step(statement) != SQLITE_DONE) {
-                NSLog(@"Failed to insert new record inside imageitem table");
-                return false;
-            } else {
-                NSLog(@"Inserted new imageitem record inside table!");
-            }
-            sqlite3_finalize(statement);
-         
-        }
-    
+        [self InsertImages :Poi];
     }
     sqlite3_close(_DB);
     return true;
 }
 
+
+
+
+/*
+ created date:      28/04/2018
+ last modified:     28/04/2018
+ remarks:
+ */
 -(NSMutableArray*) GetPoiContent :(NSString*) RequiredKey {
     NSMutableArray *poidata  = [[NSMutableArray alloc] init];
    
@@ -227,8 +283,6 @@
             }
         }
 
-        
-        
         NSString *selectSQL = [NSString stringWithFormat:@"SELECT key,name,administrativearea,categoryid,privatenotes,lat,lon FROM poi %@ ORDER BY name", whereClause];
         
         const char *select_statement = [selectSQL UTF8String];
@@ -278,7 +332,7 @@
                 PoiImageNSO *imgitem = [[PoiImageNSO alloc] init];
                 imgitem.ImageFileReference = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 0)];
                 imgitem.KeyImage = sqlite3_column_int(statement, 1);
-                
+                imgitem.NewImage = false;
                 [ImagesDataSet addObject:imgitem];
             }
         }

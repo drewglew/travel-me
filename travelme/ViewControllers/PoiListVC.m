@@ -16,33 +16,61 @@
 
 @synthesize delegate;
 
+/*
+ created date:      27/04/2018
+ last modified:     28/04/2018
+ remarks:
+ */
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self LoadPoiData];
     self.tableView.delegate = self;
     self.tableView.rowHeight = 100;
     // Do any additional setup after loading the view.
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+/*
+ created date:      28/04/2018
+ last modified:     28/04/2018
+ remarks:
+ */
+-(void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self LoadPoiData];
 }
 
-
+/*
+ created date:      28/04/2018
+ last modified:     28/04/2018
+ remarks:
+ */
 -(void) LoadPoiData {
     self.poiitems = [self.db GetPoiContent :nil];
+    [self.tableView reloadData];
 }
 
-
+/*
+ created date:      27/04/2018
+ last modified:     27/04/2018
+ remarks:
+ */
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
 
+/*
+ created date:      27/04/2018
+ last modified:     27/04/2018
+ remarks:
+ */
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.poiitems.count;
 }
 
+/*
+ created date:      27/04/2018
+ last modified:     27/04/2018
+ remarks:
+ */
 - (PoiListCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"PoiCell";
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);

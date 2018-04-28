@@ -20,7 +20,8 @@
 -(bool) Init :(NSString*) databaseName;
 -(bool) Create;
 -(void) Delete;
--(bool)InsertPoiItem :(PoiNSO*) Poi;
+-(bool) InsertPoiItem :(PoiNSO*) Poi;
+-(bool) UpdatePoiItem :(PoiNSO*) Poi;
 -(NSMutableArray*) GetPoiContent :(NSString*) RequiredKey;
 
 @end

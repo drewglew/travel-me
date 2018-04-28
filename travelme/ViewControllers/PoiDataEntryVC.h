@@ -29,6 +29,9 @@
 @property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentTypeOfPoi;
 // only used on preview controller
 @property (weak, nonatomic) IBOutlet MKMapView *MapView;
-
+@property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentDetailOption;
+@property (weak, nonatomic) IBOutlet UIImageView *ImagePicture;
+@property (weak, nonatomic) IBOutlet UILabel *LabelPrivateNotes;
+@property (weak, nonatomic) IBOutlet UILabel *LabelPoiName;
 
 @end
