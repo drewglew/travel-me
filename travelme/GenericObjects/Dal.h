@@ -21,5 +21,6 @@
 -(bool) Create;
 -(void) Delete;
 -(bool)InsertPoiItem :(PoiNSO*) Poi;
+-(NSMutableArray*) GetPoiContent :(NSString*) RequiredKey;
 
 @end

@@ -20,7 +20,7 @@
 		3A374F062093737700E5A652 /* PoiListVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F052093737700E5A652 /* PoiListVC.m */; };
 		3A374F0A2093754200E5A652 /* Dal.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F092093754200E5A652 /* Dal.m */; };
 		3A374F0F2093764C00E5A652 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A374F0E2093764B00E5A652 /* libsqlite3.tbd */; };
-		3A374F12209386F700E5A652 /* PoiTVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F11209386F700E5A652 /* PoiTVC.m */; };
+		3A374F12209386F700E5A652 /* PoiListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F11209386F700E5A652 /* PoiListCell.m */; };
 		3A374F152093877F00E5A652 /* PoiNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F142093877F00E5A652 /* PoiNSO.m */; };
 		3A374F1E2093939400E5A652 /* LocatorVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F1D2093939400E5A652 /* LocatorVC.m */; };
 		3A374F212093D55500E5A652 /* PoiDataEntryVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F202093D55500E5A652 /* PoiDataEntryVC.m */; };
@@ -51,8 +51,8 @@
 		3A374F092093754200E5A652 /* Dal.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Dal.m; sourceTree = "<group>"; };
 		3A374F0C2093762F00E5A652 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
 		3A374F0E2093764B00E5A652 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
-		3A374F10209386F700E5A652 /* PoiTVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PoiTVC.h; sourceTree = "<group>"; };
-		3A374F11209386F700E5A652 /* PoiTVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PoiTVC.m; sourceTree = "<group>"; };
+		3A374F10209386F700E5A652 /* PoiListCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PoiListCell.h; sourceTree = "<group>"; };
+		3A374F11209386F700E5A652 /* PoiListCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PoiListCell.m; sourceTree = "<group>"; };
 		3A374F132093877F00E5A652 /* PoiNSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PoiNSO.h; sourceTree = "<group>"; };
 		3A374F142093877F00E5A652 /* PoiNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PoiNSO.m; sourceTree = "<group>"; };
 		3A374F1C2093939400E5A652 /* LocatorVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LocatorVC.h; sourceTree = "<group>"; };
@@ -128,8 +128,8 @@
 			children = (
 				3A374F082093754200E5A652 /* Dal.h */,
 				3A374F092093754200E5A652 /* Dal.m */,
-				3A374F10209386F700E5A652 /* PoiTVC.h */,
-				3A374F11209386F700E5A652 /* PoiTVC.m */,
+				3A374F10209386F700E5A652 /* PoiListCell.h */,
+				3A374F11209386F700E5A652 /* PoiListCell.m */,
 				3A374F132093877F00E5A652 /* PoiNSO.h */,
 				3A374F142093877F00E5A652 /* PoiNSO.m */,
 				3A224CA42094338D00075457 /* PoiImageCell.h */,
@@ -230,7 +230,7 @@
 				3A224CAC2094736200075457 /* SearchResultListCell.m in Sources */,
 				3A374F1E2093939400E5A652 /* LocatorVC.m in Sources */,
 				3A224CA62094338D00075457 /* PoiImageCell.m in Sources */,
-				3A374F12209386F700E5A652 /* PoiTVC.m in Sources */,
+				3A374F12209386F700E5A652 /* PoiListCell.m in Sources */,
 				3A224CAF2094946800075457 /* PoiImageNSO.m in Sources */,
 				3A374F212093D55500E5A652 /* PoiDataEntryVC.m in Sources */,
 				3A374EE620936A9300E5A652 /* AppDelegate.m in Sources */,

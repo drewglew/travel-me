@@ -8,7 +8,7 @@
 
 #import "PoiListVC.h"
 
-@interface PoiListVC () <PoiListDelegate, LocatorDelegate>
+@interface PoiListVC () <PoiListDelegate, LocatorDelegate, PoiDataEntryDelegate>
 
 @end
 
@@ -18,6 +18,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self LoadPoiData];
+    self.tableView.delegate = self;
+    self.tableView.rowHeight = 100;
     // Do any additional setup after loading the view.
 }
 
@@ -27,42 +30,43 @@
 }
 
 
+-(void) LoadPoiData {
+    self.poiitems = [self.db GetPoiContent :nil];
+}
+
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 0;
+    return self.poiitems.count;
 }
 
-- (PoiTVC *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (PoiListCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"PoiCell";
-    
-    PoiTVC *cell = [self.tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    
-    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *imagesDirectory = [paths objectAtIndex:0];
+
+    PoiListCell *cell = [self.tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+
     if (cell == nil) {
-        cell = [[PoiTVC alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
+        cell = [[PoiListCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
+
+    cell.poi = [self.poiitems objectAtIndex:indexPath.row];
+    cell.Name.text = cell.poi.name;
+    cell.AdministrativeArea.text = cell.poi.administrativearea;
     
-    PoiNSO *poi;
-    poi = [self.poiitems objectAtIndex:indexPath.row];
-    /*
-    cell.descr.text = l.descr;
-    cell.vesselfullname.text = l.full_name_vessel;
-    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-    [dateFormat setDateFormat:@"dd-MMM-yyyy HH:mm"];
-    NSString *dateLastModified=[dateFormat stringFromDate:l.lastmodified];
-    cell.lastmodifiedlabel.text = [NSString stringWithFormat:@"%@",dateLastModified];
-    cell.ldportslabel.text = l.ld_ports;
-    cell.tcelabel.text = [NSString stringWithFormat:@"TCE Per Day: %.2f", [l.tce doubleValue]];
-    cell.l = l;
-    cell.multipleSelectionBackgroundView.backgroundColor = [UIColor clearColor];
-    */
+    PoiImageNSO *FirstImageItem = [cell.poi.Images firstObject];
+    
+    NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",FirstImageItem.ImageFileReference]];
+
+    NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
+    cell.PoiKeyImage.image = [UIImage imageWithData:pngData];
     return cell;
-    
-    
 }
+
 
 /*
  created date:      28/04/2018
@@ -77,7 +81,17 @@
         LocatorVC *controller = (LocatorVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.db = self.db;
+    } else if ([segue.identifier isEqualToString:@"ShowPoi"]){
+        PoiDataEntryVC *controller = (PoiDataEntryVC *)segue.destinationViewController;
+        controller.delegate = self;
+        controller.db = self.db;
+        if ([sender isKindOfClass: [PoiListCell class]]) {
+            PoiListCell *cell = (PoiListCell *)sender;
+            controller.PointOfInterest = cell.poi;
+        }
+        controller.newitem = false;
     }
+    
 }
 
 

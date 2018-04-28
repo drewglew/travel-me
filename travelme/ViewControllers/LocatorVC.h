@@ -23,7 +23,7 @@
 @property (weak, nonatomic) IBOutlet MKMapView *MapView;
 @property (weak, nonatomic) IBOutlet UISearchBar *SearchBar;
 @property (strong, nonatomic) PoiNSO *PointOfInterest;
-
+@property (strong, nonatomic) PoiNSO *TempPoi;
 @property (strong, nonatomic) Dal *db;
 @property (nonatomic, weak) id <LocatorDelegate> delegate;
 @property (weak, nonatomic) IBOutlet UITableView *TableViewSearchResult;

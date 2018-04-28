@@ -16,16 +16,19 @@
 @protocol PoiDataEntryDelegate <NSObject>
 @end
 
-@interface PoiDataEntryVC : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+@interface PoiDataEntryVC : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate>
 @property (strong, nonatomic) Dal *db;
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;
 @property (nonatomic) NSString *Title;
+@property (assign) bool newitem;
 @property (weak, nonatomic) IBOutlet UITextField *TextFieldTitle;
 @property (weak, nonatomic) IBOutlet UICollectionView *CollectionViewPoiImages;
 @property (strong, nonatomic) PoiNSO *PointOfInterest;
 @property (nonatomic, weak) id <PoiDataEntryDelegate> delegate;
 @property (weak, nonatomic) IBOutlet UITextView *TextViewNotes;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentTypeOfPoi;
+// only used on preview controller
+@property (weak, nonatomic) IBOutlet MKMapView *MapView;
 
 
 @end

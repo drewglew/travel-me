@@ -14,6 +14,7 @@
 @property (nonatomic) NSString *name;
 @property (nonatomic) NSNumber *categoryid;
 @property (nonatomic) NSString *countrykey;
+@property (nonatomic) NSString *countrycode;
 @property (nonatomic) NSString *administrativearea;
 @property (nonatomic) NSString *privatenotes;
 @property (nonatomic) NSString *locality;

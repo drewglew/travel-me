@@ -9,6 +9,7 @@
 #import "SearchResultListCell.h"
 
 @implementation SearchResultListCell
+@synthesize subTitle;
 
 - (void)awakeFromNib {
     [super awakeFromNib];

@@ -209,4 +209,85 @@
     return true;
 }
 
+-(NSMutableArray*) GetPoiContent :(NSString*) RequiredKey {
+    NSMutableArray *poidata  = [[NSMutableArray alloc] init];
+   
+    sqlite3_stmt *statement;
+    const char *dbpath = [_databasePath UTF8String];
+        
+    if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
+            
+        NSString *whereClause = @"";
+            
+        if (RequiredKey != nil) {
+            whereClause = @"WHERE";
+            whereClause = [NSString stringWithFormat:@"%@ %@='%@' AND ", whereClause, @"key",RequiredKey];
+            if (![whereClause isEqualToString:@"WHERE"]) {
+                whereClause = [whereClause substringToIndex:[whereClause length]-5];
+            }
+        }
+
+        
+        
+        NSString *selectSQL = [NSString stringWithFormat:@"SELECT key,name,administrativearea,categoryid,privatenotes,lat,lon FROM poi %@ ORDER BY name", whereClause];
+        
+        const char *select_statement = [selectSQL UTF8String];
+            
+            
+            if (sqlite3_prepare_v2(_DB, select_statement, -1, &statement, NULL) == SQLITE_OK)
+            {
+                while (sqlite3_step(statement) == SQLITE_ROW)
+                {
+                    PoiNSO *poi = [[PoiNSO alloc] init];
+                    poi.key = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 0)];
+                    poi.name = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 1)];
+                    poi.administrativearea = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 2)];
+                    poi.categoryid = [NSNumber numberWithInt:sqlite3_column_int(statement, 3)];
+                    poi.privatenotes = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 4)];
+                    poi.lat = [NSNumber numberWithDouble:sqlite3_column_double(statement, 5)];
+                    poi.lon = [NSNumber numberWithDouble:sqlite3_column_double(statement, 6)];
+                    poi.Images = [NSMutableArray arrayWithArray:[self GetImagesForSelectedPoi:poi.key]];
+                    [poidata addObject:poi];
+                }
+            }
+            sqlite3_finalize(statement);
+            sqlite3_close(_DB);
+        } else {
+            NSLog(@"Cannot open database");
+        }
+        
+        return poidata;
+    }
+
+
+-(NSMutableArray *)GetImagesForSelectedPoi :(NSString *) RequiredKey {
+    NSMutableArray *ImagesDataSet = [[NSMutableArray alloc] init];
+    
+    sqlite3_stmt *statement;
+    const char *dbpath = [_databasePath UTF8String];
+    
+    if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
+        NSString *selectSQL = [NSString stringWithFormat:@"SELECT filename, keyimage FROM imageitem WHERE poikey='%@'", RequiredKey];
+
+        const char *select_statement = [selectSQL UTF8String];
+        
+        if (sqlite3_prepare_v2(_DB, select_statement, -1, &statement, NULL) == SQLITE_OK)
+        {
+            while (sqlite3_step(statement) == SQLITE_ROW)
+            {
+                PoiImageNSO *imgitem = [[PoiImageNSO alloc] init];
+                imgitem.ImageFileReference = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 0)];
+                imgitem.KeyImage = sqlite3_column_int(statement, 1);
+                
+                [ImagesDataSet addObject:imgitem];
+            }
+        }
+        sqlite3_finalize(statement);
+        sqlite3_close(_DB);
+    } else {
+        NSLog(@"Cannot open database");
+    }
+    return ImagesDataSet;
+}
+
 @end

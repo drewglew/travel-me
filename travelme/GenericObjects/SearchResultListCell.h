@@ -11,5 +11,6 @@
 @interface SearchResultListCell : UITableViewCell
 @property (weak, nonatomic) IBOutlet UILabel *LabelSearchItem;
 @property (weak, nonatomic) IBOutlet UILabel *LabelSearchCountryItem;
+@property (strong, nonatomic) NSString *subTitle;
 
 @end

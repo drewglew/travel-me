@@ -45,10 +45,7 @@ MKLocalSearchResponse *results;
     self.PointOfInterest.Coordinates = kCLLocationCoordinate2DInvalid;
     self.PointOfInterest.key = [[NSUUID UUID] UUIDString];
     
-    
-    
     self.PointOfInterest.Images  = [[NSMutableArray alloc] init];
-    //self.PointOfInterest.ImageFileNameCollection  = [[NSMutableArray alloc] init];
     self.PointOfInterest.Links = [[NSMutableArray alloc] init];
     self.TableViewSearchResult.rowHeight = 70;
 }
@@ -173,12 +170,10 @@ MKLocalSearchResponse *results;
     if ([AdminArea isEqualToString:@""] || AdminArea == NULL) {
         AdminArea = [dictStructuredAddress valueForKey:@"administrativeArea"];
     }
-    
+    cell.subTitle = [NSString stringWithFormat:@"%@, %@", AdminArea, [dictStructuredAddress valueForKey:@"countryCode"]];
     cell.LabelSearchItem.text = item.name;
-    cell.LabelSearchCountryItem.text = [NSString stringWithFormat:@"%@, %@", AdminArea, [dictStructuredAddress valueForKey:@"countryCode"]];
+    cell.LabelSearchCountryItem.text = cell.subTitle;
 
-
-    
     return cell;
 }
 
@@ -192,24 +187,30 @@ MKLocalSearchResponse *results;
     static NSString *IDENTIFIER = @"SearchResultsCell";
     
     SearchResultListCell *cell = [tableView dequeueReusableCellWithIdentifier:IDENTIFIER];
+    if (cell == nil) {
+        cell = [[SearchResultListCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:IDENTIFIER];
+    }
     
     MKMapItem *item = results.mapItems[indexPath.row];
+    
     MKPointAnnotation *anno = [[MKPointAnnotation alloc] init];
     anno.title = item.name;
-    anno.subtitle = cell.LabelSearchCountryItem.text;
+    
+    NSString *AdminArea = item.placemark.subAdministrativeArea;
+    if ([AdminArea isEqualToString:@""] || AdminArea == NULL) {
+        AdminArea = item.placemark.administrativeArea;
+    }
+    
+    anno.subtitle = [NSString stringWithFormat:@"%@, %@", AdminArea,item.placemark.countryCode ];
     anno.coordinate = item.placemark.coordinate;
     
     [self.MapView addAnnotation:anno];
     [self.MapView selectAnnotation:anno animated:YES];
     [self.MapView setCenterCoordinate:item.placemark.location.coordinate animated:YES];
     [self.MapView setUserTrackingMode:MKUserTrackingModeNone];
-    
     self.SearchBar.text  = item.name;
-    
     [self.SearchBar endEditing:YES];
-    
     self.TableViewSearchResult.hidden = true;
-    
 }
 
 /*
@@ -242,6 +243,7 @@ MKLocalSearchResponse *results;
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view {
     
     self.PointOfInterest.name = @"";
+    self.PointOfInterest.administrativearea = @"";
     self.PointOfInterest.Coordinates = kCLLocationCoordinate2DInvalid;
     self.PointOfInterest.lat = [NSNumber numberWithDouble:0];
     self.PointOfInterest.lon = [NSNumber numberWithDouble:0];
@@ -308,11 +310,13 @@ MKLocalSearchResponse *results;
         controller.delegate = self;
         controller.db = self.db;
         controller.PointOfInterest = self.PointOfInterest;
+        controller.newitem = true;
     } else if([segue.identifier isEqualToString:@"ShowPoiWithoutMapData"]){
         PoiDataEntryVC *controller = (PoiDataEntryVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.db = self.db;
         controller.PointOfInterest = self.PointOfInterest;
+        controller.newitem = true;
     }
 }
 

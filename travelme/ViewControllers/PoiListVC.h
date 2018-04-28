@@ -8,9 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import "PoiNSO.h"
-#import "PoiTVC.h"
+#import "PoiListCell.h"
 #import "Dal.h"
 #import "LocatorVC.h"
+#import "PoiDataEntryVC.h"
 
 @protocol PoiListDelegate <NSObject>
 @end

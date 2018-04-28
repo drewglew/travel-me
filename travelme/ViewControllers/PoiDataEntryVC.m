@@ -22,8 +22,24 @@
  */
 - (void)viewDidLoad {
     [super viewDidLoad];
-    if (![self.PointOfInterest.name isEqualToString:@""]) {
-        self.TextFieldTitle.text = self.PointOfInterest.name;
+    if (self.newitem) {
+        if (![self.PointOfInterest.name isEqualToString:@""]) {
+            self.TextFieldTitle.text = self.PointOfInterest.name;
+        }
+    } else {
+        self.MapView.delegate = self;
+        MKPointAnnotation *anno = [[MKPointAnnotation alloc] init];
+        anno.title = self.PointOfInterest.name;
+        anno.subtitle = [NSString stringWithFormat:@"%@", self.PointOfInterest.administrativearea];
+        
+        CLLocationCoordinate2D coord = CLLocationCoordinate2DMake([self.PointOfInterest.lat doubleValue], [self.PointOfInterest.lon doubleValue]);
+        
+        anno.coordinate = coord;
+        
+        [self.MapView addAnnotation:anno];
+        [self.MapView selectAnnotation:anno animated:YES];
+        [self.MapView setCenterCoordinate:coord animated:YES];
+        
     }
     self.CollectionViewPoiImages.dataSource = self;
     self.CollectionViewPoiImages.delegate = self;
@@ -223,7 +239,11 @@
     if (self.PointOfInterest.Images.count>0) {
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         NSString *imagesDirectory = [paths objectAtIndex:0];
+
         NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",self.PointOfInterest.key]];
+        
+        [[NSFileManager defaultManager] createDirectoryAtPath:dataPath withIntermediateDirectories:YES attributes:nil error:nil];
+
         int counter = 1;
     
         for (PoiImageNSO *imageitem in self.PointOfInterest.Images) {
@@ -233,10 +253,14 @@
                 imageitem.KeyImage = 0;
             }
             NSData *imageData =  UIImagePNGRepresentation(imageitem.Image);
-            NSString *filepathname = [dataPath stringByAppendingPathComponent:[NSString stringWithFormat:@"image_%03d.png",counter]];
+            NSString *filename = [NSString stringWithFormat:@"image_%03d.png",counter];
+            NSString *filepathname = [dataPath stringByAppendingPathComponent:filename];
             [imageData writeToFile:filepathname atomically:YES];
-            imageitem.ImageFileReference = filepathname;
+            
+            imageitem.ImageFileReference = [NSString stringWithFormat:@"%@/%@",self.PointOfInterest.key,filename];
             counter++;
+            
+            
         }
     }
     

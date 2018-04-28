@@ -6,9 +6,10 @@
 //  Copyright © 2018 andrew glew. All rights reserved.
 //
 
-#import "PoiTVC.h"
+#import "PoiListCell.h"
 
-@implementation PoiTVC
+@implementation PoiListCell
+@synthesize poi;
 
 - (void)awakeFromNib {
     [super awakeFromNib];

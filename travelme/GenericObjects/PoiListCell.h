@@ -9,10 +9,13 @@
 #import <UIKit/UIKit.h>
 #import "PoiNSO.h"
 
-@interface PoiTVC : UITableViewCell
+@interface PoiListCell : UITableViewCell
 
 @property (weak, nonatomic) IBOutlet UILabel *Name;
-@property (weak, nonatomic) IBOutlet UILabel *Country;
+@property (weak, nonatomic) IBOutlet UILabel *AdministrativeArea;
+@property (weak, nonatomic) IBOutlet UIImageView *PoiKeyImage;
+
+
 @property (strong, nonatomic) PoiNSO *poi;
 
 @end
