@@ -56,7 +56,8 @@
     if (indexPath.row == NumberOfItems -1) {
         cell.ImagePoi.image = [UIImage imageNamed:@"AddPoiImage"];
     } else {
-        cell.ImagePoi.image = [self.PointOfInterest.Images objectAtIndex:indexPath.row];
+        PoiImageNSO *img = [self.PointOfInterest.Images objectAtIndex:indexPath.row];
+        cell.ImagePoi.image = img.Image;
     }
     return cell;
 }
@@ -172,8 +173,11 @@
     /* obtain the image from the camera */
     UIImage *chosenImage = info[UIImagePickerControllerEditedImage];
     
-    
-    [self.PointOfInterest.Images addObject:chosenImage];
+    PoiImageNSO *img = [[PoiImageNSO alloc] init];
+    img.Image = chosenImage;
+    img.KeyImage = 1;
+
+    [self.PointOfInterest.Images addObject:img];
     [self.CollectionViewPoiImages reloadData];
     [picker dismissViewControllerAnimated:YES completion:NULL];
     
@@ -214,17 +218,32 @@
  remarks:
  */
 - (IBAction)AddPoiItemPressed:(id)sender {
-    /* save Poi and its images to the database! */
-    /*
-     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-     
-     NSData *imageData =  UIImagePNGRepresentation(chosenImage);
-     [imageData writeToFile:[[paths objectAtIndex:0] stringByAppendingPathComponent:@"image.png"] atomically:YES];
-     */
     
+    /* manage the images if any exist */
+    if (self.PointOfInterest.Images.count>0) {
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *imagesDirectory = [paths objectAtIndex:0];
+        NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",self.PointOfInterest.key]];
+        int counter = 1;
     
+        for (PoiImageNSO *imageitem in self.PointOfInterest.Images) {
+            if (counter==1) {
+                imageitem.KeyImage = 1;
+            } else {
+                imageitem.KeyImage = 0;
+            }
+            NSData *imageData =  UIImagePNGRepresentation(imageitem.Image);
+            NSString *filepathname = [dataPath stringByAppendingPathComponent:[NSString stringWithFormat:@"image_%03d.png",counter]];
+            [imageData writeToFile:filepathname atomically:YES];
+            imageitem.ImageFileReference = filepathname;
+            counter++;
+        }
+    }
     
+    self.PointOfInterest.privatenotes = self.TextViewNotes.text;
+    self.PointOfInterest.categoryid = [NSNumber numberWithLong:self.SegmentTypeOfPoi.selectedSegmentIndex];
     
+    [self.db InsertPoiItem :self.PointOfInterest];
     
     [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }

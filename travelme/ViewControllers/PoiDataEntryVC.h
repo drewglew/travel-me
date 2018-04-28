@@ -10,6 +10,7 @@
 #import <MapKit/MapKit.h>
 #import "Dal.h"
 #import "PoiImageCell.h"
+#import "PoiImageNSO.h"
 #import "PoiNSO.h"
 
 @protocol PoiDataEntryDelegate <NSObject>

@@ -12,17 +12,28 @@
 
 @interface LocatorVC () <LocatorDelegate, PoiDataEntryDelegate>
 
+
 @end
 
 
 @implementation LocatorVC
+
+MKLocalSearch *localSearch;
+MKLocalSearchResponse *results;
+
 @synthesize MapView = _MapView;
 @synthesize delegate;
 @synthesize PointOfInterest;
 
+/*
+ created date:      27/04/2018
+ last modified:     28/04/2018
+ remarks:
+ */
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.SearchBar.delegate = self;
+    self.TableViewSearchResult.delegate = self;
     
     UILongPressGestureRecognizer* mapLongPressAddAnnotation = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(AddAnnotationToMap:)];
     [mapLongPressAddAnnotation setMinimumPressDuration:0.5];
@@ -33,9 +44,13 @@
     self.PointOfInterest.name = @"";
     self.PointOfInterest.Coordinates = kCLLocationCoordinate2DInvalid;
     self.PointOfInterest.key = [[NSUUID UUID] UUIDString];
-    self.PointOfInterest.Images  = [[NSMutableArray alloc] init];
-    self.PointOfInterest.Links = [[NSMutableArray alloc] init];
     
+    
+    
+    self.PointOfInterest.Images  = [[NSMutableArray alloc] init];
+    //self.PointOfInterest.ImageFileNameCollection  = [[NSMutableArray alloc] init];
+    self.PointOfInterest.Links = [[NSMutableArray alloc] init];
+    self.TableViewSearchResult.rowHeight = 70;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -43,11 +58,11 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (IBAction)BackPressed:(id)sender {
-    [self dismissViewControllerAnimated:YES completion:Nil];
-}
-
-/* last modified 20170116 */
+/*
+ created date:      27/04/2018
+ last modified:     27/04/2018
+ remarks:
+ */
 -(void)AddAnnotationToMap:(UILongPressGestureRecognizer *)gesture
 {
     UIGestureRecognizer *recognizer = (UIGestureRecognizer*) gesture;
@@ -89,58 +104,156 @@
     
 }
 
-
-
-
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
-    [self.SearchBar resignFirstResponder];
+/*
+ created date:      27/04/2018
+ last modified:     27/04/2018
+ remarks:
+ */
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
     
-    CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
+    self.TableViewSearchResult.hidden=false;
+    // Cancel any previous searches.
+    [localSearch cancel];
     
-    [geoCoder geocodeAddressString:self.SearchBar.text completionHandler:^(NSArray *placemarks, NSError *error) {
-        if (error) {
-            NSLog(@"%@", [NSString stringWithFormat:@"%@", error.localizedDescription]);
-        } else {
-            CLPlacemark *placemark = [placemarks firstObject];
+    // Perform a new search.
+    MKLocalSearchRequest *request = [[MKLocalSearchRequest alloc] init];
+    request.naturalLanguageQuery = searchBar.text;
+    request.region = self.MapView.region;
+    
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    localSearch = [[MKLocalSearch alloc] initWithRequest:request];
+    
+    [localSearch startWithCompletionHandler:^(MKLocalSearchResponse *response, NSError *error){
+        
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+        
+        if (error != nil) {
             
-            MKPointAnnotation *anno = [[MKPointAnnotation alloc] init];
-            anno.coordinate = placemark.location.coordinate;
-            if (placemark.subThoroughfare == nil && placemark.thoroughfare != nil) {
-                anno.title = placemark.thoroughfare;
-            } else if (placemark.thoroughfare == nil) {
-                anno.title = self.SearchBar.text;
-            } else {
-                anno.title = [NSString stringWithFormat:@"%@, %@",placemark.thoroughfare, placemark.subThoroughfare];
-            }
-            anno.subtitle = placemark.subLocality;
-            
-            CLLocationCoordinate2D location = placemark.location.coordinate;
-            [self.MapView setCenterCoordinate:location animated:TRUE];
-            
-            [self.MapView addAnnotation:anno];
-            [self.MapView selectAnnotation:anno animated:true];
+            return;
         }
+        
+        if ([response.mapItems count] == 0) {
+            
+            return;
+        }
+        
+        results = response;
+        [self.TableViewSearchResult reloadData];
     }];
+}
+
+/*
+ created date:      28/04/2018
+ last modified:     28/04/2018
+ remarks:
+ */
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return [results.mapItems count];
+}
+
+/*
+ created date:      28/04/2018
+ last modified:     28/04/2018
+ remarks:
+ */
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    static NSString *IDENTIFIER = @"SearchResultsCell";
+    
+    SearchResultListCell *cell = [tableView dequeueReusableCellWithIdentifier:IDENTIFIER];
+    if (cell == nil) {
+        cell = [[SearchResultListCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:IDENTIFIER];
+    }
+    
+    MKMapItem *item = results.mapItems[indexPath.row];
+    
+    NSDictionary *dictStructuredAddress = [[[item valueForKey:@"place"] valueForKey:@"address"] valueForKey:@"structuredAddress"];
+
+    NSString *AdminArea = [dictStructuredAddress valueForKey:@"subAdministrativeArea"];
+    if ([AdminArea isEqualToString:@""] || AdminArea == NULL) {
+        AdminArea = [dictStructuredAddress valueForKey:@"administrativeArea"];
+    }
+    
+    cell.LabelSearchItem.text = item.name;
+    cell.LabelSearchCountryItem.text = [NSString stringWithFormat:@"%@, %@", AdminArea, [dictStructuredAddress valueForKey:@"countryCode"]];
+
+
+    
+    return cell;
+}
+
+/*
+ created date:      28/04/2018
+ last modified:     28/04/2018
+ remarks:
+ */
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    //[self.SearchBar setActive:NO animated:YES];
+    static NSString *IDENTIFIER = @"SearchResultsCell";
+    
+    SearchResultListCell *cell = [tableView dequeueReusableCellWithIdentifier:IDENTIFIER];
+    
+    MKMapItem *item = results.mapItems[indexPath.row];
+    MKPointAnnotation *anno = [[MKPointAnnotation alloc] init];
+    anno.title = item.name;
+    anno.subtitle = cell.LabelSearchCountryItem.text;
+    anno.coordinate = item.placemark.coordinate;
+    
+    [self.MapView addAnnotation:anno];
+    [self.MapView selectAnnotation:anno animated:YES];
+    [self.MapView setCenterCoordinate:item.placemark.location.coordinate animated:YES];
+    [self.MapView setUserTrackingMode:MKUserTrackingModeNone];
+    
+    self.SearchBar.text  = item.name;
+    
+    [self.SearchBar endEditing:YES];
+    
+    self.TableViewSearchResult.hidden = true;
     
 }
 
+/*
+ created date:      27/04/2018
+ last modified:     28/04/2018
+ remarks:
+ */
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+    [self.SearchBar resignFirstResponder];
+    self.TableViewSearchResult.hidden=true;
+}
+/*
+ created date:      27/04/2018
+ last modified:     28/04/2018
+ remarks:
+ */
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view {
     self.PointOfInterest.name = view.annotation.title;
+    self.PointOfInterest.administrativearea = view.annotation.subtitle;
+    self.PointOfInterest.lat = [NSNumber numberWithDouble:view.annotation.coordinate.latitude];
+    self.PointOfInterest.lon = [NSNumber numberWithDouble:view.annotation.coordinate.longitude];
     self.PointOfInterest.Coordinates = view.annotation.coordinate;
 }
 
+/*
+ created date:      27/04/2018
+ last modified:     28/04/2018
+ remarks:
+ */
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view {
     
     self.PointOfInterest.name = @"";
     self.PointOfInterest.Coordinates = kCLLocationCoordinate2DInvalid;
-
+    self.PointOfInterest.lat = [NSNumber numberWithDouble:0];
+    self.PointOfInterest.lon = [NSNumber numberWithDouble:0];
 }
 
-
+/*
+ created date:      27/04/2018
+ last modified:     27/04/2018
+ remarks:
+ */
 - (IBAction)ClearAnnotationsOnMapPressed:(id)sender {
     [self.MapView removeAnnotations:self.MapView.annotations];
-
-    
 }
 
 /*
@@ -170,6 +283,15 @@
     }
     
     
+}
+
+/*
+ created date:      27/04/2018
+ last modified:     27/04/2018
+ remarks:
+ */
+- (IBAction)BackPressed:(id)sender {
+    [self dismissViewControllerAnimated:YES completion:Nil];
 }
 
 /*

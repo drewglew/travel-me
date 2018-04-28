@@ -11,11 +11,13 @@
 #import "Dal.h"
 #import "PoiDataEntryVC.h"
 #import "PoiNSO.h"
+#import "PoiImageNSO.h"
+#import "SearchResultListCell.h"
 
 @protocol LocatorDelegate <NSObject>
 @end
 
-@interface LocatorVC : UIViewController <UISearchBarDelegate, MKMapViewDelegate> {
+@interface LocatorVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, MKMapViewDelegate> {
     MKMapView *MapView;
 }
 @property (weak, nonatomic) IBOutlet MKMapView *MapView;
@@ -24,5 +26,6 @@
 
 @property (strong, nonatomic) Dal *db;
 @property (nonatomic, weak) id <LocatorDelegate> delegate;
+@property (weak, nonatomic) IBOutlet UITableView *TableViewSearchResult;
 
 @end

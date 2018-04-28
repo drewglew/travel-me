@@ -12,9 +12,20 @@
 @interface PoiNSO : NSObject
 @property (nonatomic) NSString *key;
 @property (nonatomic) NSString *name;
-@property (nonatomic) NSNumber *classid;
+@property (nonatomic) NSNumber *categoryid;
 @property (nonatomic) NSString *countrykey;
+@property (nonatomic) NSString *administrativearea;
+@property (nonatomic) NSString *privatenotes;
+@property (nonatomic) NSString *locality;
+@property (nonatomic) NSString *postcode;
+@property (nonatomic) NSNumber *lat;
+@property (nonatomic) NSNumber *lon;
+
+
+
+
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;
+
 @property (strong, nonatomic) NSMutableArray *Images;
 @property (strong, nonatomic) NSMutableArray *Links;
 @end

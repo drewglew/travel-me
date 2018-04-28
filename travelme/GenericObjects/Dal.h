@@ -9,14 +9,17 @@
 #import <Foundation/Foundation.h>
 #import <sqlite3.h>
 #import "PoiNSO.h"
+#import "PoiImageNSO.h"
+
 
 @interface Dal : NSObject
 
 @property (strong, nonatomic) NSString *databasePath;
 @property (nonatomic) sqlite3 *DB;
 
-
--(bool) Create :(NSString*) databaseName;
--(void) Delete :(NSString*) databaseName;
+-(bool) Init :(NSString*) databaseName;
+-(bool) Create;
+-(void) Delete;
+-(bool)InsertPoiItem :(PoiNSO*) Poi;
 
 @end

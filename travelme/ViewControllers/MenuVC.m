@@ -16,42 +16,41 @@
 
 /*
  created date:      27/04/2018
- last modified:     27/04/2018
+ last modified:     28/04/2018
  remarks:           Simple delete action that initially can be triggered by user on a button.
 */
 -(void)CreateDB {
-    [self.db Create :@"travelme_01.db"];
+    [self.db Create];
 }
 /*
  created date:      27/04/2018
- last modified:     27/04/2018
+ last modified:     28/04/2018
  remarks:           Simple delete action that initially can be triggered by user on a button.
  */
 -(void)DeleteDB {
-    [self.db Delete:@"travelme_01.db"];
+    [self.db Delete];
 }
 
 /*
  created date:      27/04/2018
- last modified:     27/04/2018
+ last modified:     28/04/2018
  remarks:           Simple delete action that initially can be triggered by user on a button.
  */
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.db = [[Dal alloc] init];
+    [self.db Init :@"travelme_01.db"];
     
 }
 
 /*
  created date:      27/04/2018
- last modified:     27/04/2018
+ last modified:     28/04/2018
  remarks:           temporary button pressed to create db.
  */
 - (IBAction)CreateDatabasePressed:(id)sender {
-    
     [self CreateDB];
-    
 }
 
 
