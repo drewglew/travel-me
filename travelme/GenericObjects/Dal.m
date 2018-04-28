@@ -138,6 +138,11 @@
     return true;
 }
 
+/*
+ created date:      27/04/2018
+ last modified:     27/04/2018
+ remarks:
+ */
 -(bool)InsertCountry :(NSString*)Name :(NSString*)Currency :(NSString*)Capital :(NSNumber*) Lat :(NSNumber*) Lon {
     
     NSString *key = [[NSUUID UUID] UUIDString];
@@ -157,8 +162,17 @@
     return true;
 }
 
-
-
-
+/*
+ created date:      28/04/2018
+ last modified:     28/04/2018
+ remarks:
+ */
+-(bool)InsertPoiItem :(PoiNSO*)Poi {
+    
+    
+    
+    
+    return true;
+}
 
 @end
