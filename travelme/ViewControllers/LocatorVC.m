@@ -8,13 +8,8 @@
 
 #import "LocatorVC.h"
 
-
-
 @interface LocatorVC () <LocatorDelegate, PoiDataEntryDelegate>
-
-
 @end
-
 
 @implementation LocatorVC
 
@@ -57,8 +52,8 @@ MKLocalSearchResponse *results;
 
 /*
  created date:      27/04/2018
- last modified:     27/04/2018
- remarks:
+ last modified:     29/04/2018
+ remarks: User gestures a long tap, the annotation is placed where the figure is.
  */
 -(void)AddAnnotationToMap:(UILongPressGestureRecognizer *)gesture
 {
@@ -79,14 +74,16 @@ MKLocalSearchResponse *results;
                 if ([placemarks count]>0) {
                     CLPlacemark *placemark = [placemarks firstObject];
                     anno.coordinate = placemark.location.coordinate;
-                    if (placemark.subThoroughfare == nil) {
-                        anno.title = placemark.thoroughfare;
-                    } else {
-                        
-                        anno.title = [NSString stringWithFormat:@"%@, %@",placemark.thoroughfare, placemark.subThoroughfare];
+                    anno.title = placemark.name;
+                    NSString *AdminArea = placemark.subAdministrativeArea;
+                    if ([AdminArea isEqualToString:@""] || AdminArea == NULL) {
+                        AdminArea = placemark.administrativeArea;
                     }
                     
-                    anno.subtitle = placemark.subLocality;
+                    anno.subtitle = [NSString stringWithFormat:@"%@, %@", AdminArea, placemark.ISOcountryCode ];
+                    
+                    
+                    //anno.subtitle = placemark.subLocality;
                     [self.MapView addAnnotation:anno];
                     [self.MapView selectAnnotation:anno animated:true];
                 } else {
@@ -125,15 +122,12 @@ MKLocalSearchResponse *results;
         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
         
         if (error != nil) {
-            
             return;
         }
         
         if ([response.mapItems count] == 0) {
-            
             return;
         }
-        
         results = response;
         [self.TableViewSearchResult reloadData];
     }];
@@ -283,8 +277,6 @@ MKLocalSearchResponse *results;
         
         NSLog(@"Nothing doing!");
     }
-    
-    
 }
 
 /*

@@ -73,6 +73,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3A224CB02095916000075457 /* TableViewCells */ = {
+			isa = PBXGroup;
+			children = (
+				3A374F10209386F700E5A652 /* PoiListCell.h */,
+				3A374F11209386F700E5A652 /* PoiListCell.m */,
+				3A224CAA2094736200075457 /* SearchResultListCell.h */,
+				3A224CAB2094736200075457 /* SearchResultListCell.m */,
+			);
+			path = TableViewCells;
+			sourceTree = "<group>";
+		};
+		3A224CB12095917300075457 /* CollectionViewCells */ = {
+			isa = PBXGroup;
+			children = (
+				3A224CA42094338D00075457 /* PoiImageCell.h */,
+				3A224CA52094338D00075457 /* PoiImageCell.m */,
+			);
+			path = CollectionViewCells;
+			sourceTree = "<group>";
+		};
 		3A374ED820936A9200E5A652 = {
 			isa = PBXGroup;
 			children = (
@@ -93,6 +113,8 @@
 		3A374EE320936A9300E5A652 /* travelme */ = {
 			isa = PBXGroup;
 			children = (
+				3A224CB12095917300075457 /* CollectionViewCells */,
+				3A224CB02095916000075457 /* TableViewCells */,
 				3A374F072093738F00E5A652 /* GenericObjects */,
 				3A374EFD209372E700E5A652 /* ViewControllers */,
 				3A374EE420936A9300E5A652 /* AppDelegate.h */,
@@ -128,14 +150,8 @@
 			children = (
 				3A374F082093754200E5A652 /* Dal.h */,
 				3A374F092093754200E5A652 /* Dal.m */,
-				3A374F10209386F700E5A652 /* PoiListCell.h */,
-				3A374F11209386F700E5A652 /* PoiListCell.m */,
 				3A374F132093877F00E5A652 /* PoiNSO.h */,
 				3A374F142093877F00E5A652 /* PoiNSO.m */,
-				3A224CA42094338D00075457 /* PoiImageCell.h */,
-				3A224CA52094338D00075457 /* PoiImageCell.m */,
-				3A224CAA2094736200075457 /* SearchResultListCell.h */,
-				3A224CAB2094736200075457 /* SearchResultListCell.m */,
 				3A224CAD2094946800075457 /* PoiImageNSO.h */,
 				3A224CAE2094946800075457 /* PoiImageNSO.m */,
 			);

@@ -32,6 +32,7 @@
 @property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentDetailOption;
 @property (weak, nonatomic) IBOutlet UIImageView *ImagePicture;
 @property (weak, nonatomic) IBOutlet UILabel *LabelPrivateNotes;
-@property (weak, nonatomic) IBOutlet UILabel *LabelPoiName;
+@property (weak, nonatomic) IBOutlet UIImageView *ImageViewKey;
+@property (weak, nonatomic) IBOutlet UILabel *LabelPoi;
 
 @end

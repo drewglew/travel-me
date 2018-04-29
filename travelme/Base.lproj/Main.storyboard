@@ -28,7 +28,7 @@
                                 </constraints>
                                 <state key="normal">
                                     <attributedString key="attributedTitle">
-                                        <fragment content="Trips">
+                                        <fragment content="Events">
                                             <attributes>
                                                 <color key="NSColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <font key="NSFont" metaFont="system" size="30"/>
@@ -155,7 +155,7 @@
                                                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="City" translatesAutoresizingMaskIntoConstraints="NO" id="xFx-wi-ayP">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Poi" translatesAutoresizingMaskIntoConstraints="NO" id="xFx-wi-ayP">
                                                     <rect key="frame" x="10" y="10" width="75" height="75"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="75" id="7Ks-zy-ijN"/>
@@ -474,7 +474,7 @@
                                     <outlet property="delegate" destination="8lT-sr-xUS" id="uu0-wl-SI0"/>
                                 </connections>
                             </collectionView>
-                            <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="NaN-Yg-ddC">
+                            <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Poi" translatesAutoresizingMaskIntoConstraints="NO" id="NaN-Yg-ddC">
                                 <rect key="frame" x="0.0" y="20" width="375" height="375"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="NaN-Yg-ddC" secondAttribute="height" multiplier="1:1" id="puT-v2-bP5"/>
@@ -495,7 +495,7 @@
                                 </connections>
                             </button>
                             <segmentedControl opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Cjg-SC-iSe">
-                                <rect key="frame" x="20" y="82" width="335" height="51"/>
+                                <rect key="frame" x="20" y="122" width="335" height="51"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="ZZj-el-siD"/>
                                 </constraints>
@@ -511,14 +511,14 @@
                                 <color key="tintColor" name="systemBlueColor" catalog="System" colorSpace="catalog"/>
                             </segmentedControl>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" keyboardDismissMode="onDrag" translatesAutoresizingMaskIntoConstraints="NO" id="KmR-lf-hx8">
-                                <rect key="frame" x="20" y="184" width="335" height="345"/>
+                                <rect key="frame" x="20" y="224" width="335" height="305"/>
                                 <color key="backgroundColor" red="0.94459866749999999" green="0.94459866749999999" blue="0.94459866749999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences" enablesReturnKeyAutomatically="YES"/>
                                 <dataDetectorType key="dataDetectorTypes" phoneNumber="YES" address="YES" calendarEvent="YES" flightNumber="YES"/>
                             </textView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Private Notes" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="84m-0U-or5">
-                                <rect key="frame" x="20" y="152" width="335" height="22"/>
+                                <rect key="frame" x="20" y="192" width="335" height="22"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="22" id="ane-19-v33"/>
                                 </constraints>
@@ -526,8 +526,8 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Point Of Interest:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nZe-fY-KVE">
-                                <rect key="frame" x="20" y="40" width="335" height="22"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Point Of Interest" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nZe-fY-KVE">
+                                <rect key="frame" x="90" y="40" width="265" height="22"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="22" id="Npu-vp-U7i"/>
                                 </constraints>
@@ -535,11 +535,25 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="NEq-vb-iQN">
+                                <rect key="frame" x="90" y="72" width="265" height="30"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Poi" translatesAutoresizingMaskIntoConstraints="NO" id="Qlf-7s-aY9">
+                                <rect key="frame" x="20" y="45" width="50" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="RcL-MW-Oow"/>
+                                    <constraint firstAttribute="width" constant="50" id="y15-zh-cHA"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="UdR-HC-M0a" firstAttribute="top" secondItem="m0a-e6-gok" secondAttribute="bottom" constant="20" id="00T-8H-AbY"/>
                             <constraint firstItem="KmR-lf-hx8" firstAttribute="top" secondItem="84m-0U-or5" secondAttribute="bottom" constant="10" id="03y-Vx-m1Y"/>
+                            <constraint firstItem="Qlf-7s-aY9" firstAttribute="leading" secondItem="7L2-3f-anA" secondAttribute="leading" constant="20" id="0OK-WI-T9Q"/>
                             <constraint firstItem="7L2-3f-anA" firstAttribute="trailing" secondItem="sQu-Qh-XBe" secondAttribute="trailing" constant="20" id="21a-0J-xXH"/>
                             <constraint firstItem="9ai-pr-T2w" firstAttribute="trailing" secondItem="7L2-3f-anA" secondAttribute="trailing" id="4Ak-oV-dBq"/>
                             <constraint firstItem="7L2-3f-anA" firstAttribute="trailing" secondItem="KmR-lf-hx8" secondAttribute="trailing" constant="20" id="627-Vk-WF2"/>
@@ -552,20 +566,24 @@
                             <constraint firstItem="84m-0U-or5" firstAttribute="top" secondItem="Cjg-SC-iSe" secondAttribute="bottom" constant="20" id="Oac-0I-4X1"/>
                             <constraint firstItem="7L2-3f-anA" firstAttribute="trailing" secondItem="nZe-fY-KVE" secondAttribute="trailing" constant="20" id="PNG-Vp-13p"/>
                             <constraint firstItem="9ai-pr-T2w" firstAttribute="leading" secondItem="7L2-3f-anA" secondAttribute="leading" id="RmH-0Z-cqo"/>
-                            <constraint firstItem="nZe-fY-KVE" firstAttribute="leading" secondItem="7L2-3f-anA" secondAttribute="leading" constant="20" id="XMQ-PV-HZ2"/>
+                            <constraint firstItem="NEq-vb-iQN" firstAttribute="top" secondItem="nZe-fY-KVE" secondAttribute="bottom" constant="10" id="Vo1-vK-62y"/>
+                            <constraint firstItem="7L2-3f-anA" firstAttribute="trailing" secondItem="NEq-vb-iQN" secondAttribute="trailing" constant="20" id="Ysn-ec-IRY"/>
+                            <constraint firstItem="nZe-fY-KVE" firstAttribute="leading" secondItem="Qlf-7s-aY9" secondAttribute="trailing" constant="20" id="b4H-Yd-6Uz"/>
                             <constraint firstItem="7L2-3f-anA" firstAttribute="trailing" secondItem="NaN-Yg-ddC" secondAttribute="trailing" id="bZB-Zt-FYP"/>
                             <constraint firstItem="NaN-Yg-ddC" firstAttribute="top" secondItem="nZe-fY-KVE" secondAttribute="top" constant="-20" id="cOa-cP-PSG"/>
                             <constraint firstItem="Cjg-SC-iSe" firstAttribute="leading" secondItem="7L2-3f-anA" secondAttribute="leading" constant="20" id="dN3-BS-0G0"/>
+                            <constraint firstItem="Cjg-SC-iSe" firstAttribute="top" secondItem="NEq-vb-iQN" secondAttribute="bottom" constant="20" id="e0N-qf-9BS"/>
                             <constraint firstItem="7L2-3f-anA" firstAttribute="trailing" secondItem="aB7-OJ-z64" secondAttribute="trailing" constant="20" id="eFW-Tc-zEZ"/>
+                            <constraint firstItem="NaN-Yg-ddC" firstAttribute="top" secondItem="Qlf-7s-aY9" secondAttribute="top" constant="-25" id="eIN-GP-9fK"/>
                             <constraint firstItem="NaN-Yg-ddC" firstAttribute="leading" secondItem="7L2-3f-anA" secondAttribute="leading" id="ey9-vv-iK6"/>
                             <constraint firstItem="7L2-3f-anA" firstAttribute="trailing" secondItem="Cjg-SC-iSe" secondAttribute="trailing" constant="20" id="geK-uC-D2O"/>
                             <constraint firstItem="m0a-e6-gok" firstAttribute="top" secondItem="9ai-pr-T2w" secondAttribute="bottom" constant="20" id="hdv-Jh-cz6"/>
                             <constraint firstItem="m0a-e6-gok" firstAttribute="top" secondItem="sQu-Qh-XBe" secondAttribute="bottom" constant="20" id="mPv-PK-N7g"/>
                             <constraint firstItem="UdR-HC-M0a" firstAttribute="leading" secondItem="7L2-3f-anA" secondAttribute="leading" constant="20" id="mRL-F5-Ei1"/>
+                            <constraint firstItem="NEq-vb-iQN" firstAttribute="leading" secondItem="Qlf-7s-aY9" secondAttribute="trailing" constant="20" id="nWq-aF-QQm"/>
                             <constraint firstItem="m0a-e6-gok" firstAttribute="leading" secondItem="7L2-3f-anA" secondAttribute="leading" constant="20" id="nu4-cC-49p"/>
                             <constraint firstItem="7L2-3f-anA" firstAttribute="bottom" secondItem="UdR-HC-M0a" secondAttribute="bottom" constant="20" id="r9t-c4-dZo"/>
                             <constraint firstItem="7L2-3f-anA" firstAttribute="trailing" secondItem="84m-0U-or5" secondAttribute="trailing" constant="20" id="tZc-Sc-z0f"/>
-                            <constraint firstItem="Cjg-SC-iSe" firstAttribute="top" secondItem="nZe-fY-KVE" secondAttribute="bottom" constant="20" id="uJV-q6-7Ye"/>
                             <constraint firstItem="7L2-3f-anA" firstAttribute="bottom" secondItem="aB7-OJ-z64" secondAttribute="bottom" constant="20" id="v3b-sE-RNb"/>
                             <constraint firstItem="NaN-Yg-ddC" firstAttribute="top" secondItem="7L2-3f-anA" secondAttribute="top" id="ywE-Wj-xtb"/>
                         </constraints>
@@ -574,11 +592,13 @@
                     <connections>
                         <outlet property="CollectionViewPoiImages" destination="sQu-Qh-XBe" id="5SS-Ds-7jD"/>
                         <outlet property="ImagePicture" destination="NaN-Yg-ddC" id="YxP-Q5-4ra"/>
-                        <outlet property="LabelPoiName" destination="nZe-fY-KVE" id="sYt-bs-BVt"/>
+                        <outlet property="ImageViewKey" destination="Qlf-7s-aY9" id="JtE-po-Nyz"/>
+                        <outlet property="LabelPoi" destination="nZe-fY-KVE" id="4gQ-HB-t9w"/>
                         <outlet property="LabelPrivateNotes" destination="84m-0U-or5" id="eeh-mf-9Vw"/>
                         <outlet property="MapView" destination="9ai-pr-T2w" id="Jdb-MX-fkQ"/>
                         <outlet property="SegmentDetailOption" destination="m0a-e6-gok" id="yfN-1Y-w3h"/>
                         <outlet property="SegmentTypeOfPoi" destination="Cjg-SC-iSe" id="6vq-d2-mYI"/>
+                        <outlet property="TextFieldTitle" destination="NEq-vb-iQN" id="6EQ-RJ-k52"/>
                         <outlet property="TextViewNotes" destination="KmR-lf-hx8" id="tpA-PA-bMB"/>
                     </connections>
                 </viewController>
@@ -810,7 +830,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="City" width="85" height="85"/>
+        <image name="Poi" width="170" height="170"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="niS-tv-KJ0"/>

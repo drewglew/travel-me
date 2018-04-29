@@ -41,7 +41,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     28/04/2018
+ last modified:     29/04/2018
  remarks:
  */
 -(void) LoadExistingData {
@@ -67,12 +67,16 @@
         NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",imageitem.ImageFileReference]];
         NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
         imageitem.Image = [UIImage imageWithData:pngData];
+        if (imageitem.KeyImage) {
+            [self.ImagePicture setImage:imageitem.Image];
+            [self.ImageViewKey setImage:imageitem.Image];
+        }
     }
 
     /* Text fields and Segment */
     self.TextViewNotes.text = self.PointOfInterest.privatenotes;
     self.SegmentTypeOfPoi.selectedSegmentIndex = [self.PointOfInterest.categoryid longValue];
-    self.LabelPoiName.text = [NSString stringWithFormat:@"Point Of Interest: %@",self.PointOfInterest.name];
+    self.TextFieldTitle.text = self.PointOfInterest.name;
 }
 
 
@@ -111,7 +115,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     28/04/2018
+ last modified:     29/04/2018
  remarks:
  */
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -125,8 +129,6 @@
     } else {
         
         if (!self.newitem) {
-            // preview item - TODO, does not work yet.
-            // PoiImageCell *cell=[collectionView dequeueReusableCellWithReuseIdentifier:@"PoiImageId" forIndexPath:indexPath];
             PoiImageNSO *item = [self.PointOfInterest.Images objectAtIndex:indexPath.row];
             
             [self.ImagePicture setImage:item.Image];
@@ -254,11 +256,12 @@
 
 /*
  created date:      28/04/2018
- last modified:     28/04/2018
+ last modified:     29/04/2018
  remarks:
  */
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     [self.TextViewNotes endEditing:YES];
+    [self.TextFieldTitle endEditing:YES];
 }
 
 
@@ -315,8 +318,8 @@
 
 /*
  created date:      28/04/2018
- last modified:     28/04/2018
- remarks:  Not Working
+ last modified:     29/04/2018
+ remarks:
  */
 - (IBAction)UpdatePoiItemPressed:(id)sender {
 
@@ -359,7 +362,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     28/04/2018
+ last modified:     29/04/2018
  remarks:
  */
 -(IBAction)SegmentOptionChanged:(id)sender {
@@ -374,7 +377,9 @@
         self.LabelPrivateNotes.hidden=false;
         self.TextViewNotes.hidden=false;
         self.SegmentTypeOfPoi.hidden=false;
-        self.LabelPoiName.hidden=false;
+        self.TextFieldTitle.hidden=false;
+        self.ImageViewKey.hidden=false;
+        self.LabelPoi.hidden=false;
         
     } else if (segment.selectedSegmentIndex==1) {
         self.MapView.hidden=false;
@@ -385,7 +390,9 @@
         self.LabelPrivateNotes.hidden=true;
         self.TextViewNotes.hidden=true;
         self.SegmentTypeOfPoi.hidden=true;
-        self.LabelPoiName.hidden=true;
+        self.TextFieldTitle.hidden=true;
+        self.ImageViewKey.hidden=true;
+        self.LabelPoi.hidden=true;
         
     } else {
         self.MapView.hidden=true;
@@ -396,7 +403,9 @@
         self.LabelPrivateNotes.hidden=true;
         self.TextViewNotes.hidden=true;
         self.SegmentTypeOfPoi.hidden=true;
-        self.LabelPoiName.hidden=true;
+        self.TextFieldTitle.hidden=true;
+        self.ImageViewKey.hidden=true;
+        self.LabelPoi.hidden=true;
     }
 
 }

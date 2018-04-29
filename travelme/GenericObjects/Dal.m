@@ -172,7 +172,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     28/04/2018
+ last modified:     29/04/2018
  remarks:
  */
 -(bool) UpdatePoiItem :(PoiNSO*) Poi {
@@ -182,7 +182,7 @@
         
     if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
         
-        NSString *updateSQL = [NSString stringWithFormat:@"UPDATE poi SET categoryid = %@, privatenotes = '%@' WHERE key='%@'", Poi.categoryid, Poi.privatenotes, Poi.key];
+        NSString *updateSQL = [NSString stringWithFormat:@"UPDATE poi SET name = '%@', categoryid = %@, privatenotes = '%@' WHERE key='%@'", Poi.name, Poi.categoryid, Poi.privatenotes, Poi.key];
         
         const char *update_statement = [updateSQL UTF8String];
         sqlite3_prepare_v2(_DB, update_statement, -1, &statement, NULL);

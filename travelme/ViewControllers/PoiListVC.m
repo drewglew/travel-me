@@ -68,7 +68,7 @@
 
 /*
  created date:      27/04/2018
- last modified:     27/04/2018
+ last modified:     29/04/2018
  remarks:
  */
 - (PoiListCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -86,12 +86,17 @@
     cell.Name.text = cell.poi.name;
     cell.AdministrativeArea.text = cell.poi.administrativearea;
     
-    PoiImageNSO *FirstImageItem = [cell.poi.Images firstObject];
+    if (cell.poi.Images.count==0) {
+        [cell.PoiKeyImage setImage:[UIImage imageNamed:@"Poi"]];
+    } else {
+        PoiImageNSO *FirstImageItem = [cell.poi.Images firstObject];
     
-    NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",FirstImageItem.ImageFileReference]];
+        NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",FirstImageItem.ImageFileReference]];
 
-    NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
-    cell.PoiKeyImage.image = [UIImage imageWithData:pngData];
+        NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
+    
+        cell.PoiKeyImage.image = [UIImage imageWithData:pngData];
+    }
     return cell;
 }
 
