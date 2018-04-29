@@ -104,7 +104,7 @@
     PoiImageCell *cell=[collectionView dequeueReusableCellWithReuseIdentifier:@"PoiImageId" forIndexPath:indexPath];
     NSInteger NumberOfItems = self.PointOfInterest.Images.count + 1;
     if (indexPath.row == NumberOfItems -1) {
-        cell.ImagePoi.image = [UIImage imageNamed:@"AddPoiImage"];
+        cell.ImagePoi.image = [UIImage imageNamed:@"AddItem"];
     } else {
         PoiImageNSO *img = [self.PointOfInterest.Images objectAtIndex:indexPath.row];
         cell.ImagePoi.image = img.Image;
@@ -134,13 +134,7 @@
             [self.ImagePicture setImage:item.Image];
             
         }
-        
-        /* we show the image in main view */
-        //PoiImageCell *cell=[collectionView dequeueReusableCellWithReuseIdentifier:@"PoiImageId" forIndexPath:indexPath];
-        
     }
-    
-    
 }
 
 /*

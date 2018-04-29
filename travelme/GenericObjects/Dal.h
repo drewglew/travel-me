@@ -10,6 +10,7 @@
 #import <sqlite3.h>
 #import "PoiNSO.h"
 #import "PoiImageNSO.h"
+#import "ProjectNSO.h"
 
 
 @interface Dal : NSObject
@@ -22,6 +23,8 @@
 -(void) Delete;
 -(bool) InsertPoiItem :(PoiNSO*) Poi;
 -(bool) UpdatePoiItem :(PoiNSO*) Poi;
+-(bool) InsertProjectItem :(ProjectNSO*) Project;
+-(bool) UpdateProjectItem :(ProjectNSO*) Project;
 -(NSMutableArray*) GetPoiContent :(NSString*) RequiredKey;
-
+-(NSMutableArray*) GetProjectContent :(NSString*) RequiredKey;
 @end

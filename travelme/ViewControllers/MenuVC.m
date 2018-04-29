@@ -8,7 +8,7 @@
 
 #import "MenuVC.h"
 
-@interface MenuVC () <PoiListDelegate>
+@interface MenuVC () <PoiListDelegate, ProjectListDelegate>
 
 @end
 
@@ -56,7 +56,7 @@
 
 /*
  created date:      27/04/2018
- last modified:     27/04/2018
+ last modified:     29/04/2018
  remarks:           segue controls .
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -65,6 +65,10 @@
     
     if([segue.identifier isEqualToString:@"ShowPoiList"]){
         PoiListVC *controller = (PoiListVC *)segue.destinationViewController;
+        controller.delegate = self;
+        controller.db = self.db;
+    } else  if([segue.identifier isEqualToString:@"ShowProjectList"]){
+        ProjectListVC *controller = (ProjectListVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.db = self.db;
     }

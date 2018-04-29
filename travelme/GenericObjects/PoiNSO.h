@@ -21,12 +21,7 @@
 @property (nonatomic) NSString *postcode;
 @property (nonatomic) NSNumber *lat;
 @property (nonatomic) NSNumber *lon;
-
-
-
-
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;
-
 @property (strong, nonatomic) NSMutableArray *Images;
 @property (strong, nonatomic) NSMutableArray *Links;
 @end

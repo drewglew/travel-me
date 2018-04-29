@@ -1,18 +1,18 @@
 //
-//  TripListVC.m
+//  ActivityListVC.m
 //  travelme
 //
-//  Created by andrew glew on 27/04/2018.
+//  Created by andrew glew on 29/04/2018.
 //  Copyright © 2018 andrew glew. All rights reserved.
 //
 
-#import "TripListVC.h"
+#import "ActivityListVC.h"
 
-@interface TripListVC ()
+@interface ActivityListVC ()
 
 @end
 
-@implementation TripListVC
+@implementation ActivityListVC
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -33,9 +33,8 @@
     // Pass the selected object to the new view controller.
 }
 */
+
 - (IBAction)BackPressed:(id)sender {
     [self dismissViewControllerAnimated:YES completion:Nil];
-
 }
-
 @end

@@ -10,13 +10,17 @@
 		3A224CA62094338D00075457 /* PoiImageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CA52094338D00075457 /* PoiImageCell.m */; };
 		3A224CAC2094736200075457 /* SearchResultListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CAB2094736200075457 /* SearchResultListCell.m */; };
 		3A224CAF2094946800075457 /* PoiImageNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CAE2094946800075457 /* PoiImageNSO.m */; };
+		3A224CB42095E13600075457 /* ProjectNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CB32095E13600075457 /* ProjectNSO.m */; };
+		3A224CB72095E5D900075457 /* ProjectListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CB62095E5D900075457 /* ProjectListCell.m */; };
+		3A224CBA2095F1DF00075457 /* ProjectDataEntryVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CB92095F1DF00075457 /* ProjectDataEntryVC.m */; };
+		3A224CBD2095F1FD00075457 /* ActivityListVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CBC2095F1FD00075457 /* ActivityListVC.m */; };
 		3A374EE620936A9300E5A652 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374EE520936A9300E5A652 /* AppDelegate.m */; };
 		3A374EEC20936A9300E5A652 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3A374EEA20936A9300E5A652 /* Main.storyboard */; };
 		3A374EEE20936A9600E5A652 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3A374EED20936A9600E5A652 /* Assets.xcassets */; };
 		3A374EF120936A9600E5A652 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3A374EEF20936A9600E5A652 /* LaunchScreen.storyboard */; };
 		3A374EF420936A9600E5A652 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374EF320936A9600E5A652 /* main.m */; };
 		3A374EFC209372CC00E5A652 /* MenuVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374EFB209372CC00E5A652 /* MenuVC.m */; };
-		3A374F032093735300E5A652 /* TripListVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F022093735300E5A652 /* TripListVC.m */; };
+		3A374F032093735300E5A652 /* ProjectListVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F022093735300E5A652 /* ProjectListVC.m */; };
 		3A374F062093737700E5A652 /* PoiListVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F052093737700E5A652 /* PoiListVC.m */; };
 		3A374F0A2093754200E5A652 /* Dal.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F092093754200E5A652 /* Dal.m */; };
 		3A374F0F2093764C00E5A652 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A374F0E2093764B00E5A652 /* libsqlite3.tbd */; };
@@ -33,6 +37,14 @@
 		3A224CAB2094736200075457 /* SearchResultListCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SearchResultListCell.m; sourceTree = "<group>"; };
 		3A224CAD2094946800075457 /* PoiImageNSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PoiImageNSO.h; sourceTree = "<group>"; };
 		3A224CAE2094946800075457 /* PoiImageNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PoiImageNSO.m; sourceTree = "<group>"; };
+		3A224CB22095E13600075457 /* ProjectNSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProjectNSO.h; sourceTree = "<group>"; };
+		3A224CB32095E13600075457 /* ProjectNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ProjectNSO.m; sourceTree = "<group>"; };
+		3A224CB52095E5D900075457 /* ProjectListCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProjectListCell.h; sourceTree = "<group>"; };
+		3A224CB62095E5D900075457 /* ProjectListCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ProjectListCell.m; sourceTree = "<group>"; };
+		3A224CB82095F1DF00075457 /* ProjectDataEntryVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProjectDataEntryVC.h; sourceTree = "<group>"; };
+		3A224CB92095F1DF00075457 /* ProjectDataEntryVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ProjectDataEntryVC.m; sourceTree = "<group>"; };
+		3A224CBB2095F1FD00075457 /* ActivityListVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActivityListVC.h; sourceTree = "<group>"; };
+		3A224CBC2095F1FD00075457 /* ActivityListVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ActivityListVC.m; sourceTree = "<group>"; };
 		3A374EE120936A9300E5A652 /* travelme.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = travelme.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A374EE420936A9300E5A652 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		3A374EE520936A9300E5A652 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -43,8 +55,8 @@
 		3A374EF320936A9600E5A652 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		3A374EFA209372CC00E5A652 /* MenuVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MenuVC.h; sourceTree = "<group>"; };
 		3A374EFB209372CC00E5A652 /* MenuVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MenuVC.m; sourceTree = "<group>"; };
-		3A374F012093735300E5A652 /* TripListVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TripListVC.h; sourceTree = "<group>"; };
-		3A374F022093735300E5A652 /* TripListVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TripListVC.m; sourceTree = "<group>"; };
+		3A374F012093735300E5A652 /* ProjectListVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProjectListVC.h; sourceTree = "<group>"; };
+		3A374F022093735300E5A652 /* ProjectListVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ProjectListVC.m; sourceTree = "<group>"; };
 		3A374F042093737700E5A652 /* PoiListVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PoiListVC.h; sourceTree = "<group>"; };
 		3A374F052093737700E5A652 /* PoiListVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PoiListVC.m; sourceTree = "<group>"; };
 		3A374F082093754200E5A652 /* Dal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Dal.h; sourceTree = "<group>"; };
@@ -87,6 +99,8 @@
 		3A224CB12095917300075457 /* CollectionViewCells */ = {
 			isa = PBXGroup;
 			children = (
+				3A224CB52095E5D900075457 /* ProjectListCell.h */,
+				3A224CB62095E5D900075457 /* ProjectListCell.m */,
 				3A224CA42094338D00075457 /* PoiImageCell.h */,
 				3A224CA52094338D00075457 /* PoiImageCell.m */,
 			);
@@ -133,12 +147,16 @@
 			children = (
 				3A374EFA209372CC00E5A652 /* MenuVC.h */,
 				3A374EFB209372CC00E5A652 /* MenuVC.m */,
-				3A374F012093735300E5A652 /* TripListVC.h */,
-				3A374F022093735300E5A652 /* TripListVC.m */,
-				3A374F042093737700E5A652 /* PoiListVC.h */,
-				3A374F052093737700E5A652 /* PoiListVC.m */,
+				3A374F012093735300E5A652 /* ProjectListVC.h */,
+				3A374F022093735300E5A652 /* ProjectListVC.m */,
+				3A224CB82095F1DF00075457 /* ProjectDataEntryVC.h */,
+				3A224CB92095F1DF00075457 /* ProjectDataEntryVC.m */,
+				3A224CBB2095F1FD00075457 /* ActivityListVC.h */,
+				3A224CBC2095F1FD00075457 /* ActivityListVC.m */,
 				3A374F1C2093939400E5A652 /* LocatorVC.h */,
 				3A374F1D2093939400E5A652 /* LocatorVC.m */,
+				3A374F042093737700E5A652 /* PoiListVC.h */,
+				3A374F052093737700E5A652 /* PoiListVC.m */,
 				3A374F1F2093D55500E5A652 /* PoiDataEntryVC.h */,
 				3A374F202093D55500E5A652 /* PoiDataEntryVC.m */,
 			);
@@ -150,6 +168,8 @@
 			children = (
 				3A374F082093754200E5A652 /* Dal.h */,
 				3A374F092093754200E5A652 /* Dal.m */,
+				3A224CB22095E13600075457 /* ProjectNSO.h */,
+				3A224CB32095E13600075457 /* ProjectNSO.m */,
 				3A374F132093877F00E5A652 /* PoiNSO.h */,
 				3A374F142093877F00E5A652 /* PoiNSO.m */,
 				3A224CAD2094946800075457 /* PoiImageNSO.h */,
@@ -237,9 +257,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A224CBA2095F1DF00075457 /* ProjectDataEntryVC.m in Sources */,
 				3A374F062093737700E5A652 /* PoiListVC.m in Sources */,
+				3A224CBD2095F1FD00075457 /* ActivityListVC.m in Sources */,
 				3A374EFC209372CC00E5A652 /* MenuVC.m in Sources */,
-				3A374F032093735300E5A652 /* TripListVC.m in Sources */,
+				3A374F032093735300E5A652 /* ProjectListVC.m in Sources */,
 				3A374F152093877F00E5A652 /* PoiNSO.m in Sources */,
 				3A374F0A2093754200E5A652 /* Dal.m in Sources */,
 				3A374EF420936A9600E5A652 /* main.m in Sources */,
@@ -248,7 +270,9 @@
 				3A224CA62094338D00075457 /* PoiImageCell.m in Sources */,
 				3A374F12209386F700E5A652 /* PoiListCell.m in Sources */,
 				3A224CAF2094946800075457 /* PoiImageNSO.m in Sources */,
+				3A224CB72095E5D900075457 /* ProjectListCell.m in Sources */,
 				3A374F212093D55500E5A652 /* PoiDataEntryVC.m in Sources */,
+				3A224CB42095E13600075457 /* ProjectNSO.m in Sources */,
 				3A374EE620936A9300E5A652 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

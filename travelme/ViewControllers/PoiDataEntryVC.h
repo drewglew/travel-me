@@ -24,7 +24,7 @@
 @property (weak, nonatomic) IBOutlet UITextField *TextFieldTitle;
 @property (weak, nonatomic) IBOutlet UICollectionView *CollectionViewPoiImages;
 @property (strong, nonatomic) PoiNSO *PointOfInterest;
-@property (nonatomic, weak) id <PoiDataEntryDelegate> delegate;
+
 @property (weak, nonatomic) IBOutlet UITextView *TextViewNotes;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentTypeOfPoi;
 // only used on preview controller
@@ -34,5 +34,5 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelPrivateNotes;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewKey;
 @property (weak, nonatomic) IBOutlet UILabel *LabelPoi;
-
+@property (nonatomic, weak) id <PoiDataEntryDelegate> delegate;
 @end

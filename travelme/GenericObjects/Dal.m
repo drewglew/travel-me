@@ -54,7 +54,7 @@
 
 /*
  created date:      27/04/2018
- last modified:     28/04/2018
+ last modified:     29/04/2018
  remarks:           Create a new database with model.
  */
 -(bool)Create {
@@ -65,7 +65,7 @@
 
             
         /* PROJECT table */
-        const char *sql_statement = "CREATE TABLE project (key TEXT PRIMARY KEY, title TEXT, imagelocation TEXT, notes TEXT)";
+        const char *sql_statement = "CREATE TABLE project (key TEXT PRIMARY KEY, name TEXT, privatenotes TEXT, imagefilename TEXT)";
             
         if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
             NSLog(@"failed to create project table");
@@ -122,7 +122,7 @@
         }
             
         /* IMAGE table */
-        sql_statement = "CREATE TABLE imageitem (filename TEXT, poikey TEXT, keyimage INTEGER, description TEXT, FOREIGN KEY(poikey) REFERENCES poi(key))";
+        sql_statement = "CREATE TABLE imageitem (filename TEXT, poikey TEXT, keyimage INTEGER, description TEXT, PRIMARY KEY (filename, poikey), FOREIGN KEY(poikey) REFERENCES poi(key))";
             
         if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
             NSLog(@"failed to create images table");
@@ -198,6 +198,30 @@
 }
 
 /*
+ created date:      29/04/2018
+ last modified:     29/04/2018
+ remarks:
+ */
+-(bool) UpdateProjectItem :(ProjectNSO*) Project {
+    sqlite3_stmt *statement;
+    const char *dbpath = [_databasePath UTF8String];
+    
+    if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
+        
+        NSString *updateSQL = [NSString stringWithFormat:@"UPDATE project SET name = '%@', privatenotes = '%@' WHERE key='%@'", Project.name, Project.privatenotes, Project.key];
+        
+        const char *update_statement = [updateSQL UTF8String];
+        sqlite3_prepare_v2(_DB, update_statement, -1, &statement, NULL);
+        if (sqlite3_step(statement) != SQLITE_DONE) {
+            NSLog(@"Failed to update record(s) inside project table");
+        }
+        sqlite3_finalize(statement);
+        sqlite3_close(_DB);
+    }
+    return true;
+
+}
+/*
  created date:      28/04/2018
  last modified:     28/04/2018
  remarks:
@@ -257,6 +281,32 @@
     return true;
 }
 
+/*
+ created date:      29/04/2018
+ last modified:     29/04/2018
+ remarks: Flat table with single image representing the project.
+ */
+-(bool) InsertProjectItem :(ProjectNSO*) Project {
+    const char *dbpath = [_databasePath UTF8String];
+    
+    if(sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
+        /* PROJECT table */
+        NSString *insertSQL = [NSString stringWithFormat:@"INSERT INTO project (key, name, privatenotes, imagefilename) VALUES ('%@','%@','%@','%@')", Project.key, Project.name, Project.privatenotes, Project.imagefilereference];
+        
+        sqlite3_stmt *statement;
+        const char *insert_statement = [insertSQL UTF8String];
+        sqlite3_prepare_v2(_DB, insert_statement, -1, &statement, NULL);
+        if (sqlite3_step(statement) != SQLITE_DONE) {
+            NSLog(@"Failed to insert new record inside project table");
+            return false;
+        } else {
+            NSLog(@"inserted new project record inside table!");
+        }
+        sqlite3_finalize(statement);
+    }
+    sqlite3_close(_DB);
+    return true;
+}
 
 
 
@@ -312,6 +362,55 @@
         
         return poidata;
     }
+
+/*
+ created date:      29/04/2018
+ last modified:     29/04/2018
+ remarks:
+ */
+-(NSMutableArray*) GetProjectContent :(NSString*) RequiredKey {
+    NSMutableArray *projectdata  = [[NSMutableArray alloc] init];
+    
+    sqlite3_stmt *statement;
+    const char *dbpath = [_databasePath UTF8String];
+    
+    if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
+        
+        NSString *whereClause = @"";
+        if (RequiredKey != nil) {
+            whereClause = @"WHERE";
+            whereClause = [NSString stringWithFormat:@"%@ %@='%@' AND ", whereClause, @"key",RequiredKey];
+            if (![whereClause isEqualToString:@"WHERE"]) {
+                whereClause = [whereClause substringToIndex:[whereClause length]-5];
+            }
+        }
+        
+        NSString *selectSQL = [NSString stringWithFormat:@"SELECT key, name, privatenotes, imagefilename FROM project %@ ORDER BY name", whereClause];
+        
+        const char *select_statement = [selectSQL UTF8String];
+
+        if (sqlite3_prepare_v2(_DB, select_statement, -1, &statement, NULL) == SQLITE_OK)
+        {
+            while (sqlite3_step(statement) == SQLITE_ROW)
+            {
+                ProjectNSO *project = [[ProjectNSO alloc] init];
+                project.key = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 0)];
+                project.name = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 1)];
+                project.privatenotes = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 2)];
+                project.imagefilereference = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 3)];
+                
+                [projectdata addObject:project];
+            }
+        }
+        sqlite3_finalize(statement);
+        sqlite3_close(_DB);
+    } else {
+        NSLog(@"Cannot open database");
+    }
+    
+    return projectdata;
+}
+
 
 
 -(NSMutableArray *)GetImagesForSelectedPoi :(NSString *) RequiredKey {
