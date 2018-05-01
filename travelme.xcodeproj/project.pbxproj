@@ -14,6 +14,11 @@
 		3A224CB72095E5D900075457 /* ProjectListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CB62095E5D900075457 /* ProjectListCell.m */; };
 		3A224CBA2095F1DF00075457 /* ProjectDataEntryVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CB92095F1DF00075457 /* ProjectDataEntryVC.m */; };
 		3A224CBD2095F1FD00075457 /* ActivityListVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CBC2095F1FD00075457 /* ActivityListVC.m */; };
+		3A224CC02096E2C700075457 /* ActivityListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CBF2096E2C700075457 /* ActivityListCell.m */; };
+		3A224CC320976B1100075457 /* ActivityNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CC220976B1100075457 /* ActivityNSO.m */; };
+		3A224CC62097792800075457 /* PoiSearchVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CC52097792800075457 /* PoiSearchVC.m */; };
+		3A224CC92097950600075457 /* ActivityDataEntryVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CC82097950600075457 /* ActivityDataEntryVC.m */; };
+		3A224CCC2097B39F00075457 /* DatePickerRangeVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CCB2097B39F00075457 /* DatePickerRangeVC.m */; };
 		3A374EE620936A9300E5A652 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374EE520936A9300E5A652 /* AppDelegate.m */; };
 		3A374EEC20936A9300E5A652 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3A374EEA20936A9300E5A652 /* Main.storyboard */; };
 		3A374EEE20936A9600E5A652 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3A374EED20936A9600E5A652 /* Assets.xcassets */; };
@@ -45,6 +50,16 @@
 		3A224CB92095F1DF00075457 /* ProjectDataEntryVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ProjectDataEntryVC.m; sourceTree = "<group>"; };
 		3A224CBB2095F1FD00075457 /* ActivityListVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActivityListVC.h; sourceTree = "<group>"; };
 		3A224CBC2095F1FD00075457 /* ActivityListVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ActivityListVC.m; sourceTree = "<group>"; };
+		3A224CBE2096E2C700075457 /* ActivityListCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActivityListCell.h; sourceTree = "<group>"; };
+		3A224CBF2096E2C700075457 /* ActivityListCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ActivityListCell.m; sourceTree = "<group>"; };
+		3A224CC120976B1100075457 /* ActivityNSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActivityNSO.h; sourceTree = "<group>"; };
+		3A224CC220976B1100075457 /* ActivityNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ActivityNSO.m; sourceTree = "<group>"; };
+		3A224CC42097792800075457 /* PoiSearchVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PoiSearchVC.h; sourceTree = "<group>"; };
+		3A224CC52097792800075457 /* PoiSearchVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PoiSearchVC.m; sourceTree = "<group>"; };
+		3A224CC72097950600075457 /* ActivityDataEntryVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActivityDataEntryVC.h; sourceTree = "<group>"; };
+		3A224CC82097950600075457 /* ActivityDataEntryVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ActivityDataEntryVC.m; sourceTree = "<group>"; };
+		3A224CCA2097B39F00075457 /* DatePickerRangeVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DatePickerRangeVC.h; sourceTree = "<group>"; };
+		3A224CCB2097B39F00075457 /* DatePickerRangeVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DatePickerRangeVC.m; sourceTree = "<group>"; };
 		3A374EE120936A9300E5A652 /* travelme.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = travelme.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A374EE420936A9300E5A652 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		3A374EE520936A9300E5A652 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -103,6 +118,8 @@
 				3A224CB62095E5D900075457 /* ProjectListCell.m */,
 				3A224CA42094338D00075457 /* PoiImageCell.h */,
 				3A224CA52094338D00075457 /* PoiImageCell.m */,
+				3A224CBE2096E2C700075457 /* ActivityListCell.h */,
+				3A224CBF2096E2C700075457 /* ActivityListCell.m */,
 			);
 			path = CollectionViewCells;
 			sourceTree = "<group>";
@@ -151,14 +168,20 @@
 				3A374F022093735300E5A652 /* ProjectListVC.m */,
 				3A224CB82095F1DF00075457 /* ProjectDataEntryVC.h */,
 				3A224CB92095F1DF00075457 /* ProjectDataEntryVC.m */,
-				3A224CBB2095F1FD00075457 /* ActivityListVC.h */,
-				3A224CBC2095F1FD00075457 /* ActivityListVC.m */,
 				3A374F1C2093939400E5A652 /* LocatorVC.h */,
 				3A374F1D2093939400E5A652 /* LocatorVC.m */,
 				3A374F042093737700E5A652 /* PoiListVC.h */,
 				3A374F052093737700E5A652 /* PoiListVC.m */,
 				3A374F1F2093D55500E5A652 /* PoiDataEntryVC.h */,
 				3A374F202093D55500E5A652 /* PoiDataEntryVC.m */,
+				3A224CBB2095F1FD00075457 /* ActivityListVC.h */,
+				3A224CBC2095F1FD00075457 /* ActivityListVC.m */,
+				3A224CC42097792800075457 /* PoiSearchVC.h */,
+				3A224CC52097792800075457 /* PoiSearchVC.m */,
+				3A224CC72097950600075457 /* ActivityDataEntryVC.h */,
+				3A224CC82097950600075457 /* ActivityDataEntryVC.m */,
+				3A224CCA2097B39F00075457 /* DatePickerRangeVC.h */,
+				3A224CCB2097B39F00075457 /* DatePickerRangeVC.m */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -174,6 +197,8 @@
 				3A374F142093877F00E5A652 /* PoiNSO.m */,
 				3A224CAD2094946800075457 /* PoiImageNSO.h */,
 				3A224CAE2094946800075457 /* PoiImageNSO.m */,
+				3A224CC120976B1100075457 /* ActivityNSO.h */,
+				3A224CC220976B1100075457 /* ActivityNSO.m */,
 			);
 			path = GenericObjects;
 			sourceTree = "<group>";
@@ -258,19 +283,24 @@
 			buildActionMask = 2147483647;
 			files = (
 				3A224CBA2095F1DF00075457 /* ProjectDataEntryVC.m in Sources */,
+				3A224CC320976B1100075457 /* ActivityNSO.m in Sources */,
 				3A374F062093737700E5A652 /* PoiListVC.m in Sources */,
+				3A224CC02096E2C700075457 /* ActivityListCell.m in Sources */,
 				3A224CBD2095F1FD00075457 /* ActivityListVC.m in Sources */,
 				3A374EFC209372CC00E5A652 /* MenuVC.m in Sources */,
+				3A224CC62097792800075457 /* PoiSearchVC.m in Sources */,
 				3A374F032093735300E5A652 /* ProjectListVC.m in Sources */,
 				3A374F152093877F00E5A652 /* PoiNSO.m in Sources */,
 				3A374F0A2093754200E5A652 /* Dal.m in Sources */,
 				3A374EF420936A9600E5A652 /* main.m in Sources */,
 				3A224CAC2094736200075457 /* SearchResultListCell.m in Sources */,
+				3A224CC92097950600075457 /* ActivityDataEntryVC.m in Sources */,
 				3A374F1E2093939400E5A652 /* LocatorVC.m in Sources */,
 				3A224CA62094338D00075457 /* PoiImageCell.m in Sources */,
 				3A374F12209386F700E5A652 /* PoiListCell.m in Sources */,
 				3A224CAF2094946800075457 /* PoiImageNSO.m in Sources */,
 				3A224CB72095E5D900075457 /* ProjectListCell.m in Sources */,
+				3A224CCC2097B39F00075457 /* DatePickerRangeVC.m in Sources */,
 				3A374F212093D55500E5A652 /* PoiDataEntryVC.m in Sources */,
 				3A224CB42095E13600075457 /* ProjectNSO.m in Sources */,
 				3A374EE620936A9300E5A652 /* AppDelegate.m in Sources */,

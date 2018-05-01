@@ -9,13 +9,21 @@
 #import <UIKit/UIKit.h>
 #import "ProjectNSO.h"
 #import "Dal.h"
+#import "ActivityListCell.h"
+#import "PoiSearchVC.h"
+#import "ActivityDataEntryVC.h"
 
-@protocol ActivityDelegate <NSObject>
+@protocol ActivityListDelegate <NSObject>
 @end
 
-@interface ActivityListVC : UIViewController
+@interface ActivityListVC : UIViewController <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, PoiSearchDelegate, ActivityDelegate>
 
 @property (strong, nonatomic) Dal *db;
 @property (strong, nonatomic) ProjectNSO *Project;
-@property (nonatomic, weak) id <ActivityDelegate> delegate;
+@property (nonatomic, weak) id <ActivityListDelegate> delegate;
+@property (weak, nonatomic) IBOutlet UICollectionView *CollectionViewActivities;
+@property (weak, nonatomic) IBOutlet UILabel *LabelProject;
+@property (strong, nonatomic) NSMutableArray *activityitems;
+
+
 @end

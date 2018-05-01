@@ -19,6 +19,7 @@
 @property (nonatomic) NSString *privatenotes;
 @property (nonatomic) NSString *locality;
 @property (nonatomic) NSString *postcode;
+@property (nonatomic) NSString *searchstring;
 @property (nonatomic) NSNumber *lat;
 @property (nonatomic) NSNumber *lon;
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;

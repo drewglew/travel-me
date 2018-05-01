@@ -56,9 +56,13 @@
     
     anno.coordinate = coord;
     
+    [self.MapView setCenterCoordinate:coord animated:YES];
+    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(coord, 500, 500);
+    MKCoordinateRegion adjustedRegion = [self.MapView regionThatFits:viewRegion];
+    [self.MapView setRegion:adjustedRegion animated:YES];
     [self.MapView addAnnotation:anno];
     [self.MapView selectAnnotation:anno animated:YES];
-    [self.MapView setCenterCoordinate:coord animated:YES];
+    
     
     /* load images from file - TODO make sure we locate them all */
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);

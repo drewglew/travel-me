@@ -11,6 +11,7 @@
 #import "PoiNSO.h"
 #import "PoiImageNSO.h"
 #import "ProjectNSO.h"
+#import "ActivityNSO.h"
 
 
 @interface Dal : NSObject
@@ -25,6 +26,10 @@
 -(bool) UpdatePoiItem :(PoiNSO*) Poi;
 -(bool) InsertProjectItem :(ProjectNSO*) Project;
 -(bool) UpdateProjectItem :(ProjectNSO*) Project;
+-(bool) InsertActivityItem :(ActivityNSO*) Activity;
+-(bool) UpdateActivityItem :(ActivityNSO*) Activity;
 -(NSMutableArray*) GetPoiContent :(NSString*) RequiredKey;
 -(NSMutableArray*) GetProjectContent :(NSString*) RequiredKey;
+-(NSMutableArray*) GetActivityContent :(NSString*) RequiredKey :(NSString*) RequiredProjectKey;
+-(NSMutableArray*) GetActivityListContentForState :(NSString*) RequiredProjectKey :(NSNumber*) RequiredState;
 @end

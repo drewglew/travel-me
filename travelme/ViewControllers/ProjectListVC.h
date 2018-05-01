@@ -15,7 +15,7 @@
 @protocol ProjectListDelegate <NSObject>
 @end
 
-@interface ProjectListVC : UIViewController <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, ActivityDelegate, ProjectDataEntryDelegate>
+@interface ProjectListVC : UIViewController <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, ActivityListDelegate, ProjectDataEntryDelegate>
 @property (weak, nonatomic) IBOutlet UICollectionView *CollectionViewProjects;
 @property (strong, nonatomic) NSMutableArray *projectitems;
 @property (strong, nonatomic) Dal *db;

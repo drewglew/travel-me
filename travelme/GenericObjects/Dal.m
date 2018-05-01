@@ -102,8 +102,8 @@
             return false;
         }
 
-        /* POI table */
-        sql_statement = "CREATE TABLE activity (projectkey TEXT, poikey TEXT, key TEXT PRIMARY KEY, name TEXT, totalprice INTEGER, notes TEXT, startdt TEXT, enddt TEXT, FOREIGN KEY(projectkey) REFERENCES project(key), FOREIGN KEY(poikey) REFERENCES poi(key))";
+        /* ACTIVITY table */
+        sql_statement = "CREATE TABLE activity (projectkey TEXT, poikey TEXT, key TEXT PRIMARY KEY, name TEXT, totalprice INTEGER, notes TEXT, startdt TEXT, enddt TEXT, state INTEGER, FOREIGN KEY(projectkey) REFERENCES project(key), FOREIGN KEY(poikey) REFERENCES poi(key))";
             
             
         if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
@@ -219,8 +219,32 @@
         sqlite3_close(_DB);
     }
     return true;
-
 }
+
+/*
+ created date:      30/04/2018
+ last modified:     30/04/2018
+ remarks:
+ */
+-(bool) UpdateActivityItem :(ActivityNSO*) Activity {
+    sqlite3_stmt *statement;
+    const char *dbpath = [_databasePath UTF8String];
+    
+    if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
+        
+        NSString *updateSQL = [NSString stringWithFormat:@"UPDATE activity SET name = '%@', notes = '%@', poikey = '%@', totalprice = '%d', startdt = '%@', enddt = '%@', state = %@ WHERE key='%@'", Activity.name, Activity.privatenotes, Activity.poi.key, 100, [Activity GetStringFromDt :Activity.startdt], [Activity GetStringFromDt :Activity.enddt], Activity.activitystate, Activity.key];
+        
+        const char *update_statement = [updateSQL UTF8String];
+        sqlite3_prepare_v2(_DB, update_statement, -1, &statement, NULL);
+        if (sqlite3_step(statement) != SQLITE_DONE) {
+            NSLog(@"Failed to update record(s) inside activity table");
+        }
+        sqlite3_finalize(statement);
+        sqlite3_close(_DB);
+    }
+    return true;
+}
+
 /*
  created date:      28/04/2018
  last modified:     28/04/2018
@@ -309,6 +333,36 @@
 }
 
 
+/*
+ created date:      30/04/2018
+ last modified:     30/04/2018
+ remarks: Flat table with single image representing the project.
+ */
+-(bool) InsertActivityItem :(ActivityNSO*) Activity {
+    const char *dbpath = [_databasePath UTF8String];
+
+    if(sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
+        /* PROJECT table */
+        NSString *insertSQL = [NSString stringWithFormat:@"INSERT INTO activity (projectkey, poikey, key, name, totalprice, notes, startdt, enddt, state) VALUES ('%@','%@','%@','%@', %d, '%@','%@','%@', %@)", Activity.project.key, Activity.poi.key, Activity.key, Activity.name, 100, Activity.privatenotes, [Activity GetStringFromDt :Activity.startdt], [Activity GetStringFromDt :Activity.enddt], Activity.activitystate];
+        
+        sqlite3_stmt *statement;
+        const char *insert_statement = [insertSQL UTF8String];
+        sqlite3_prepare_v2(_DB, insert_statement, -1, &statement, NULL);
+        if (sqlite3_step(statement) != SQLITE_DONE) {
+            NSLog(@"Failed to insert new record inside activity table");
+            return false;
+        } else {
+            NSLog(@"inserted new activity record inside table!");
+        }
+        sqlite3_finalize(statement);
+    }
+    sqlite3_close(_DB);
+    return true;
+}
+
+
+
+
 
 /*
  created date:      28/04/2018
@@ -351,6 +405,7 @@
                     poi.lat = [NSNumber numberWithDouble:sqlite3_column_double(statement, 5)];
                     poi.lon = [NSNumber numberWithDouble:sqlite3_column_double(statement, 6)];
                     poi.Images = [NSMutableArray arrayWithArray:[self GetImagesForSelectedPoi:poi.key]];
+                    poi.searchstring = [NSString stringWithFormat:@"%@|%@",poi.name,poi.administrativearea];
                     [poidata addObject:poi];
                 }
             }
@@ -411,8 +466,74 @@
     return projectdata;
 }
 
+/*
+ created date:      30/04/2018
+ last modified:     30/04/2018
+ remarks:
+ */
+-(NSMutableArray*) GetActivityContent :(NSString*) RequiredKey :(NSString*) RequiredProjectKey {
+    
+    NSMutableArray *activitydata  = [[NSMutableArray alloc] init];
+
+    sqlite3_stmt *statement;
+    const char *dbpath = [_databasePath UTF8String];
+    
+    if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
+        
+        NSString *whereClause = @"";
+        if (RequiredKey != nil) {
+            whereClause = @"WHERE";
+            whereClause = [NSString stringWithFormat:@"%@ %@='%@' AND ", whereClause, @"key",RequiredKey];
+            if (![whereClause isEqualToString:@"WHERE"]) {
+                whereClause = [whereClause substringToIndex:[whereClause length]-5];
+            }
+        } else if (RequiredProjectKey != nil) {
+            whereClause = @"WHERE";
+            whereClause = [NSString stringWithFormat:@"%@ %@='%@' AND ", whereClause, @"projectkey",RequiredProjectKey];
+            if (![whereClause isEqualToString:@"WHERE"]) {
+                whereClause = [whereClause substringToIndex:[whereClause length]-5];
+            }
+        }
+  
+        NSString *selectSQL = [NSString stringWithFormat:@"SELECT projectkey, poikey, key, name, notes, totalprice, startdt, enddt, state FROM activity %@ ORDER BY name", whereClause];
+        
+        const char *select_statement = [selectSQL UTF8String];
+        
+        if (sqlite3_prepare_v2(_DB, select_statement, -1, &statement, NULL) == SQLITE_OK)
+        {
+            while (sqlite3_step(statement) == SQLITE_ROW)
+            {
+                ActivityNSO *activity = [[ActivityNSO alloc] init];
+                activity.project.key = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 0)];
+                activity.poi.key = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 1)];
+                activity.key = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 2)];
+                activity.name = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 3)];
+                activity.privatenotes = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 4)];
+                activity.costamt = [NSNumber numberWithInt:sqlite3_column_int(statement, 5)];
+                activity.startdt = [activity GetDtFromString :[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 6)]];
+                activity.enddt = [activity GetDtFromString :[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 7)]];
+                activity.activitystate = [NSNumber numberWithInt:sqlite3_column_int(statement, 8)];
+                [activitydata addObject:activity];
+            }
+        }
+        sqlite3_finalize(statement);
+        sqlite3_close(_DB);
+    } else {
+        NSLog(@"Cannot open database");
+    }
+    
+    return activitydata;
+}
 
 
+
+
+
+/*
+ created date:      29/04/2018
+ last modified:     29/04/2018
+ remarks:
+ */
 -(NSMutableArray *)GetImagesForSelectedPoi :(NSString *) RequiredKey {
     NSMutableArray *ImagesDataSet = [[NSMutableArray alloc] init];
     
@@ -441,6 +562,58 @@
         NSLog(@"Cannot open database");
     }
     return ImagesDataSet;
+}
+
+/*
+ created date:      01/05/2018
+ last modified:     01/05/2018
+ remarks:           state 1 = idea; state 2 = actual
+ */
+-(NSMutableArray*) GetActivityListContentForState :(NSString*) RequiredProjectKey :(NSNumber*) RequiredState {
+    NSMutableArray *activitydata  = [[NSMutableArray alloc] init];
+    
+    sqlite3_stmt *statement;
+    const char *dbpath = [_databasePath UTF8String];
+    
+    if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
+        NSString *selectSQL;
+
+        if ([RequiredState intValue] == 1) {
+            /* Ideas */
+            selectSQL = [NSString stringWithFormat:@"SELECT projectkey, poikey, key, name, notes, totalprice, startdt, enddt, state FROM activity WHERE projectkey='%@' AND state=%@ ORDER BY name", RequiredProjectKey, RequiredState];
+        }
+        else
+        {
+            /* Actual - containing ideas too if there are no matching actuals */
+            selectSQL = [NSString stringWithFormat:@"SELECT projectkey, poikey, key, name, notes, totalprice, startdt, enddt, state FROM activity WHERE projectkey='%@' AND state= (SELECT MAX(state) FROM activity WHERE projectkey='%@') ORDER BY name", RequiredProjectKey, RequiredState];
+        }
+        
+        const char *select_statement = [selectSQL UTF8String];
+        
+        if (sqlite3_prepare_v2(_DB, select_statement, -1, &statement, NULL) == SQLITE_OK)
+        {
+            while (sqlite3_step(statement) == SQLITE_ROW)
+            {
+                ActivityNSO *activity = [[ActivityNSO alloc] init];
+                activity.project.key = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 0)];
+                activity.poi.key = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 1)];
+                activity.key = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 2)];
+                activity.name = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 3)];
+                activity.privatenotes = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 4)];
+                activity.costamt = [NSNumber numberWithInt:sqlite3_column_int(statement, 5)];
+                activity.startdt = [activity GetDtFromString :[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 6)]];
+                activity.enddt = [activity GetDtFromString :[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 7)]];
+                activity.activitystate = [NSNumber numberWithInt:sqlite3_column_int(statement, 8)];
+                [activitydata addObject:activity];
+            }
+        }
+        sqlite3_finalize(statement);
+        sqlite3_close(_DB);
+    } else {
+        NSLog(@"Cannot open database");
+    }
+    
+    return activitydata;
 }
 
 @end
