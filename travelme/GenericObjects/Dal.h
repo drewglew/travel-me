@@ -30,6 +30,6 @@
 -(bool) UpdateActivityItem :(ActivityNSO*) Activity;
 -(NSMutableArray*) GetPoiContent :(NSString*) RequiredKey;
 -(NSMutableArray*) GetProjectContent :(NSString*) RequiredKey;
--(NSMutableArray*) GetActivityContent :(NSString*) RequiredKey :(NSString*) RequiredProjectKey;
+-(NSMutableArray*) GetActivityContent :(NSString*) RequiredKey;
 -(NSMutableArray*) GetActivityListContentForState :(NSString*) RequiredProjectKey :(NSNumber*) RequiredState;
 @end

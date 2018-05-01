@@ -12,6 +12,7 @@
 #import "ActivityListCell.h"
 #import "PoiSearchVC.h"
 #import "ActivityDataEntryVC.h"
+#import "PoiImageNSO.h"
 
 @protocol ActivityListDelegate <NSObject>
 @end
@@ -24,6 +25,7 @@
 @property (weak, nonatomic) IBOutlet UICollectionView *CollectionViewActivities;
 @property (weak, nonatomic) IBOutlet UILabel *LabelProject;
 @property (strong, nonatomic) NSMutableArray *activityitems;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentState;
 
 
 @end

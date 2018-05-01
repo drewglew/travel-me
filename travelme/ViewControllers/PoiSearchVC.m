@@ -183,23 +183,21 @@
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     
     if([segue.identifier isEqualToString:@"ShowNewActivity"]){
+        
+        
         ActivityDataEntryVC *controller = (ActivityDataEntryVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.db = self.db;
-        controller.Activity = [[ActivityNSO alloc] init];
-        controller.Project = self.Project;
-        
-        
-        
+        controller.Activity = self.Activity;
+
         if ([sender isKindOfClass: [PoiListCell class]]) {
-            
             PoiListCell *cell = (PoiListCell *) sender;
             PoiImageNSO *img = [cell.poi.Images firstObject];
             img.Image = cell.PoiKeyImage.image;
-            controller.PointOfInterest = cell.poi;
-            
+            controller.Activity.poi = cell.poi;
+            controller.Activity.project = self.Project;
         }
-        
+        controller.transformed = self.transformed;
         controller.newitem = true;
     }
 }

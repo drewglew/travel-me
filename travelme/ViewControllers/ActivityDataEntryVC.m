@@ -15,25 +15,59 @@
 @implementation ActivityDataEntryVC
 @synthesize ImageViewPoi;
 
+/*
+ created date:      01/05/2018
+ last modified:     01/05/2018
+ remarks:
+ */
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    [self LoadPoiData];
-    //[self.ImageViewPoi setImage:self.Poi.
-    
+    if (!self.newitem && !self.transformed) {
+        [self.ButtonAction setTitle:@"Upd" forState:UIControlStateNormal];
+        [self LoadActivityData];
+    } else if (self.transformed) {
+        [self LoadActivityData];
+    } else if (self.newitem) {
+        self.TextFieldName.text = self.Activity.poi.name;
+        self.Activity.startdt = [NSDate date];
+        self.Activity.enddt = [NSDate date];
+        self.Activity.costamt = [NSNumber numberWithInteger:200];
+        [self LoadPoiData];
+    }
     // Do any additional setup after loading the view.
 }
 
+/*
+ created date:      01/05/2018
+ last modified:     01/05/2018
+ remarks: Load the activity data received from the views 
+ */
+-(void) LoadActivityData {
+    /* set text data */
+    self.TextFieldName.text = self.Activity.name;
+    self.TextViewNotes.text = self.Activity.privatenotes;
+    self.Activity.startdt = [NSDate date];
+    self.Activity.enddt = [NSDate date];
+    self.Activity.costamt = [NSNumber numberWithInteger:200];
+    [self LoadPoiData];
+}
 
+
+/*
+ created date:      01/05/2018
+ last modified:     01/05/2018
+ remarks: Focus on Point of Interest Data
+ */
 -(void) LoadPoiData {
+
     /* set map */
     self.PoiMapView.delegate = self;
 
     MKPointAnnotation *anno = [[MKPointAnnotation alloc] init];
-    anno.title = self.PointOfInterest.name;
-    anno.subtitle = [NSString stringWithFormat:@"%@", self.PointOfInterest.administrativearea];
+    anno.title = self.Activity.poi.name;
+    anno.subtitle = [NSString stringWithFormat:@"%@", self.Activity.poi.administrativearea];
     
-    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake([self.PointOfInterest.lat doubleValue], [self.PointOfInterest.lon doubleValue]);
+    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake([self.Activity.poi.lat doubleValue], [self.Activity.poi.lon doubleValue]);
     
     anno.coordinate = coord;
 
@@ -45,20 +79,54 @@
     [self.PoiMapView selectAnnotation:anno animated:YES];
     
     /* load images from file - TODO make sure we locate them all */
-    if (self.PointOfInterest.Images.count==0) {
+    if (self.Activity.poi.Images.count==0) {
         self.ImageViewPoi.image = [UIImage imageNamed:@"Poi"];
     } else {
-    /*
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *imagesDirectory = [paths objectAtIndex:0];
-        PoiImageNSO *FirstImage = [self.PointOfInterest.Images firstObject];
-        NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",FirstImage.ImageFileReference]];
-        NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
-     */
-        PoiImageNSO *img = [self.PointOfInterest.Images firstObject];
+        PoiImageNSO *img = [self.Activity.poi.Images firstObject];
         self.ImageViewPoi.image = img.Image;
     }
 }
+
+
+/*
+ created date:      01/05/2018
+ last modified:     01/05/2018
+ remarks:
+ */
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    [self.TextFieldName endEditing:YES];
+    [self.TextViewNotes endEditing:YES];
+}
+
+/*
+ created date:      01/05/2018
+ last modified:     01/05/2018
+ remarks:
+ */
+- (IBAction)AddActivityPressed:(id)sender {
+    /* validations perhaps? */
+    
+    if (self.TextFieldName.text == nil) {
+        return;
+    }
+    self.Activity.name = self.TextFieldName.text;
+    self.Activity.privatenotes = self.TextViewNotes.text;
+    if (self.newitem || self.transformed) {
+        /* working */
+        if (self.newitem) self.Activity.key = [[NSUUID UUID] UUIDString];
+        [self.db InsertActivityItem:self.Activity];
+        // double dismissing so we flow back to the activity window bypassing the search..
+        if (self.newitem) {
+            [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+        } else {
+           [self dismissViewControllerAnimated:YES completion:Nil];
+        }
+    } else {
+        [self.db UpdateActivityItem:self.Activity];
+        [self dismissViewControllerAnimated:YES completion:Nil];
+    }
+}
+
 
 
 /*

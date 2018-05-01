@@ -25,6 +25,7 @@
 @property (strong, nonatomic) NSMutableArray *poifiltereditems;
 @property (strong, nonatomic) Dal *db;
 @property (assign) bool newitem;
+@property (assign) bool transformed;
 @property (assign) bool isSearching;
 @property (nonatomic, weak) id <PoiSearchDelegate> delegate;
 @property (strong, nonatomic) ActivityNSO *Activity;

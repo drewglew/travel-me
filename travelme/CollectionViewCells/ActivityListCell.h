@@ -7,8 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "ActivityNSO.h"
 @interface ActivityListCell : UICollectionViewCell
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewActivity;
+@property (strong, nonatomic) ActivityNSO *activity;
+@property (weak, nonatomic) IBOutlet UILabel *LabelName;
+@property (weak, nonatomic) IBOutlet UIVisualEffectView *VisualViewBlur;
+
+
 
 @end

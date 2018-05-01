@@ -29,22 +29,35 @@
 
 /*
  created date:      30/04/2018
- last modified:     30/04/2018
+ last modified:     01/05/2018
  remarks:
  */
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self LoadActivityData];
+    [self LoadActivityData :[NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex]];
 }
 
 /*
  created date:      30/04/2018
- last modified:     30/04/2018
+ last modified:     01/05/2018
  remarks:
  */
--(void) LoadActivityData {
-    self.activityitems = [self.db GetActivityContent :nil :self.Project.key];
-    //[self LoadSupportingData];
+-(void) LoadActivityData:(NSNumber*) State {
+    
+    self.activityitems = [self.db GetActivityListContentForState :self.Project.key :State];
+
+    /* for each activity we need to show the image of the poi attached to it */
+    /* load images from file - TODO make sure we locate them all */
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *imagesDirectory = [paths objectAtIndex:0];
+    for (ActivityNSO *activity in self.activityitems) {
+        PoiImageNSO *imageitem = [activity.poi.Images firstObject];
+        NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",imageitem.ImageFileReference]];
+        NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
+        imageitem.Image = [UIImage imageWithData:pngData];
+    }
+    
+    
     [self.CollectionViewActivities reloadData];
 }
 
@@ -70,26 +83,24 @@
     NSInteger NumberOfItems = self.activityitems.count + 1;
     if (indexPath.row == NumberOfItems -1) {
         cell.ImageViewActivity.image = [UIImage imageNamed:@"AddItem"];
-        //cell.LabelProjectName.text = @"";
-        //cell.isNewAccessor = true;
-        //cell.editButton.hidden = true;
-        //cell.VisualEffectsViewBlur.hidden = true;*/
+        cell.VisualViewBlur.hidden = true;
+        cell.LabelName.hidden = true;
     } else {
-        cell.ImageViewActivity.image = [UIImage imageNamed:@"Activity"];
-        /*ProjectNSO *project = [self.projectitems objectAtIndex:indexPath.row];
-        if (project.Image == nil) {
-            cell.ImageViewProject.image = [UIImage imageNamed:@"Project"];
+        cell.activity = [self.activityitems objectAtIndex:indexPath.row];
+        if (self.SegmentState.selectedSegmentIndex==1) {
+            if (cell.activity.activitystate== [NSNumber numberWithInt:0]) {
+                // show blurred image of activity!
+                cell.VisualViewBlur.hidden = false;
+            } else {
+                cell.VisualViewBlur.hidden = true;
+            }
         } else {
-            cell.ImageViewProject.image = project.Image;
+            cell.VisualViewBlur.hidden = true;
         }
-        cell.LabelProjectName.text = project.name;
-        cell.VisualEffectsViewBlur.hidden = false;
-        cell.isNewAccessor = false;
-        if (self.editmode) {
-            cell.editButton.hidden=false;
-        } else {
-            cell.editButton.hidden=true;
-        }*/
+        cell.LabelName.hidden = false;
+        cell.LabelName.text = cell.activity.name;
+        PoiImageNSO *imageitem = [cell.activity.poi.Images firstObject];
+        cell.ImageViewActivity.image = imageitem.Image;
     }
     return cell;
 }
@@ -98,23 +109,37 @@
 /*
  created date:      30/04/2018
  last modified:     30/04/2018
- remarks:
+ remarks:  ImG todo
  */
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    
     NSInteger NumberOfItems = self.activityitems.count + 1;
     
     if (indexPath.row == NumberOfItems -1) {
         [self performSegueWithIdentifier:@"ShowNewActivity" sender:nil];
     } else {
+        //ActivityListCell *cell=[collectionView dequeueReusableCellWithReuseIdentifier:@"ActivityCellId" forIndexPath:indexPath];
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-        ActivityDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ActivityViewController"];
+        ActivityDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ActivityDataEntryViewController"];
         controller.delegate = self;
         controller.db = self.db;
         controller.Activity = [self.activityitems objectAtIndex:indexPath.row];
-        /* load Poi */
-        controller.PointOfInterest = [[self.db GetPoiContent:controller.Activity.poi.key] firstObject];
+        ActivityNSO *activity = [self.activityitems objectAtIndex:indexPath.row];
+        PoiImageNSO *imageitem = [activity.poi.Images firstObject];
+        controller.Activity.poi = [[self.db GetPoiContent:activity.poi.key] firstObject];
+        [controller.Activity.poi.Images removeAllObjects];
+        [controller.Activity.poi.Images addObject:imageitem];
+        controller.Activity.project = self.Project;
+        long selectedSegmentState = self.SegmentState.selectedSegmentIndex;
         controller.newitem = false;
+        if (selectedSegmentState == 1 && activity.activitystate == [NSNumber numberWithInt:0]) {
+            // this is an activity item selected from the actual selection that is in fact an idea item.
+            controller.transformed = true;
+            controller.Activity.activitystate = [NSNumber numberWithInt:1];
+            // how can we determine on destination controller what is a brand new item and a transformed item?  Do we need to?
+        } else {
+            controller.transformed = false;
+        }
+        
         [controller setModalPresentationStyle:UIModalPresentationFullScreen];
         [self presentViewController:controller animated:YES completion:nil];
         
@@ -150,11 +175,15 @@
         controller.db = self.db;
         controller.Activity = [[ActivityNSO alloc] init];
         controller.newitem = true;
+        controller.transformed = false;
+        controller.Activity.activitystate = [NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex];
         controller.Project = self.Project;
-        //controller.PointOfInterest = [[self.db GetPoiContent:controller.Activity.poi.key] firstObject];
     }
 }
 
+- (IBAction)ActivityStateChanged:(id)sender {
+    [self LoadActivityData :[NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex]];
+}
 
 
 /*
