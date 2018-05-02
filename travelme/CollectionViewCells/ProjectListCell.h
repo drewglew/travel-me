@@ -13,6 +13,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelProjectName;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewProject;
 @property (weak, nonatomic) IBOutlet UIButton *editButton;
+@property (weak, nonatomic) IBOutlet UIButton *deleteButton;
+
 @property (assign) bool isNewAccessor;
 @property (strong, nonatomic) ProjectNSO *project;
 @property (weak, nonatomic) IBOutlet UIVisualEffectView *VisualEffectsViewBlur;

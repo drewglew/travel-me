@@ -28,8 +28,12 @@
 -(bool) UpdateProjectItem :(ProjectNSO*) Project;
 -(bool) InsertActivityItem :(ActivityNSO*) Activity;
 -(bool) UpdateActivityItem :(ActivityNSO*) Activity;
+-(bool) DeletePoi :(PoiNSO*) Poi;
+-(bool) DeleteProject :(ProjectNSO*) Project;
+
 -(NSMutableArray*) GetPoiContent :(NSString*) RequiredKey;
 -(NSMutableArray*) GetProjectContent :(NSString*) RequiredKey;
 -(NSMutableArray*) GetActivityContent :(NSString*) RequiredKey;
 -(NSMutableArray*) GetActivityListContentForState :(NSString*) RequiredProjectKey :(NSNumber*) RequiredState;
+
 @end

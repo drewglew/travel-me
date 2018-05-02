@@ -99,6 +99,34 @@
     }
     return cell;
 }
+/*
+ created date:      02/05/2018
+ last modified:     02/05/2018
+ remarks:
+ */
+-(NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
+    UITableViewRowAction *deleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Delete" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath)
+                                          {
+                                              
+                                              [self tableView:tableView deletePoi:indexPath];
+                                              self.tableView.editing = NO;
+                                          
+                                          }];
+    
+    deleteAction.backgroundColor = [UIColor redColor];
+    return @[deleteAction];
+}
+/*
+ created date:      02/05/2018
+ last modified:     02/05/2018
+ remarks:           Might not be totally necessary, but seperated out from editActionsForRowAtIndexPath method above.
+ */
+- (void)tableView:(UITableView *)tableView deletePoi:(NSIndexPath *)indexPath  {
+    if ([self.db DeletePoi:[self.poiitems objectAtIndex:indexPath.row]] == true)
+    {
+        [self LoadPoiData];
+    }
+}
 
 
 /*

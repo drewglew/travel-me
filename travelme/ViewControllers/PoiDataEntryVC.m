@@ -223,7 +223,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     28/04/2018
+ last modified:     02/05/2018
  remarks:
  */
 
@@ -231,11 +231,17 @@
     
     /* obtain the image from the camera */
     UIImage *chosenImage = info[UIImagePickerControllerEditedImage];
+    if (self.newitem) {
     
+        CGSize size = CGSizeMake(self.TextViewNotes.frame.size.width, self.TextViewNotes.frame.size.width);
+        chosenImage = [ToolBoxNSO imageWithImage:chosenImage scaledToSize:size];
+        
+    } else {
+        chosenImage = [ToolBoxNSO imageWithImage:chosenImage scaledToSize:self.ImagePicture.frame.size];
+    }
     PoiImageNSO *img = [[PoiImageNSO alloc] init];
     img.Image = chosenImage;
     img.KeyImage = 1;
-
     [self.PointOfInterest.Images addObject:img];
     [self.CollectionViewPoiImages reloadData];
     [picker dismissViewControllerAnimated:YES completion:NULL];
@@ -295,9 +301,15 @@
             } else {
                 imageitem.KeyImage = 0;
             }
+           
+            
+            
             NSData *imageData =  UIImagePNGRepresentation(imageitem.Image);
             NSString *filename = [NSString stringWithFormat:@"image_%03d.png",counter];
             NSString *filepathname = [dataPath stringByAppendingPathComponent:filename];
+            
+            
+            
             [imageData writeToFile:filepathname atomically:YES];
             imageitem.NewImage = true;
             imageitem.ImageFileReference = [NSString stringWithFormat:@"%@/%@",self.PointOfInterest.key,filename];
@@ -312,6 +324,7 @@
     
     [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
+
 
 
 /*

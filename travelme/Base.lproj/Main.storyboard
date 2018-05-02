@@ -56,7 +56,7 @@
                                     <segue destination="WPa-Cn-6ER" kind="show" identifier="ShowPoiList" id="2IA-Zw-xQ9"/>
                                 </connections>
                             </button>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hg0-Z9-pu2">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hg0-Z9-pu2">
                                 <rect key="frame" x="235" y="597" width="50" height="50"/>
                                 <color key="backgroundColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
                                 <constraints>
@@ -70,7 +70,7 @@
                                     <action selector="CreateDatabasePressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="lhQ-Ae-CIz"/>
                                 </connections>
                             </button>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZAI-FM-677">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZAI-FM-677">
                                 <rect key="frame" x="305" y="597" width="50" height="50"/>
                                 <color key="backgroundColor" name="systemBrownColor" catalog="System" colorSpace="catalog"/>
                                 <constraints>
@@ -849,14 +849,25 @@
                                                     <color key="shadowColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 </label>
                                                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iwB-ao-dF5">
-                                                    <rect key="frame" x="117" y="117" width="25" height="25"/>
+                                                    <rect key="frame" x="107" y="107" width="35" height="35"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="height" constant="25" id="Qxt-uc-DsT"/>
-                                                        <constraint firstAttribute="width" constant="25" id="zic-Z8-4bL"/>
+                                                        <constraint firstAttribute="height" constant="35" id="Qxt-uc-DsT"/>
+                                                        <constraint firstAttribute="width" constant="35" id="zic-Z8-4bL"/>
                                                     </constraints>
                                                     <state key="normal" title="Button" image="EditMode"/>
                                                     <connections>
                                                         <segue destination="Zbt-l0-Qeq" kind="show" identifier="ShowUpdateProject" id="0ng-Sg-LI3"/>
+                                                    </connections>
+                                                </button>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jL8-oy-MAA" userLabel="Delete Button">
+                                                    <rect key="frame" x="8" y="107" width="35" height="35"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="35" id="d67-tu-USI"/>
+                                                        <constraint firstAttribute="width" constant="35" id="mfp-PJ-75F"/>
+                                                    </constraints>
+                                                    <state key="normal" image="Delete"/>
+                                                    <connections>
+                                                        <segue destination="Zbt-l0-Qeq" kind="show" identifier="ShowDeleteProject" id="3DY-I8-tb9"/>
                                                     </connections>
                                                 </button>
                                             </subviews>
@@ -865,9 +876,11 @@
                                         <constraints>
                                             <constraint firstAttribute="trailingMargin" secondItem="eMC-Jt-Vff" secondAttribute="trailing" constant="5" id="8wh-cL-dxZ"/>
                                             <constraint firstItem="Czk-iu-3Hc" firstAttribute="width" secondItem="AoG-Ja-32T" secondAttribute="width" id="DJS-7g-Asw"/>
+                                            <constraint firstAttribute="bottomMargin" secondItem="jL8-oy-MAA" secondAttribute="bottom" id="NcM-g9-1mc"/>
                                             <constraint firstItem="7KJ-LI-L5O" firstAttribute="width" secondItem="AoG-Ja-32T" secondAttribute="width" id="UFX-Lx-eua"/>
                                             <constraint firstItem="Czk-iu-3Hc" firstAttribute="height" secondItem="AoG-Ja-32T" secondAttribute="height" id="YWQ-qx-kWj"/>
                                             <constraint firstItem="eMC-Jt-Vff" firstAttribute="top" secondItem="AoG-Ja-32T" secondAttribute="topMargin" constant="10" id="Zrx-Ot-e8P"/>
+                                            <constraint firstItem="jL8-oy-MAA" firstAttribute="leading" secondItem="AoG-Ja-32T" secondAttribute="leadingMargin" id="cD5-ec-IV7"/>
                                             <constraint firstItem="7KJ-LI-L5O" firstAttribute="height" secondItem="AoG-Ja-32T" secondAttribute="height" id="fOi-DW-Sh1"/>
                                             <constraint firstAttribute="trailingMargin" secondItem="iwB-ao-dF5" secondAttribute="trailing" id="g5t-uL-kFY"/>
                                             <constraint firstItem="eMC-Jt-Vff" firstAttribute="leading" secondItem="AoG-Ja-32T" secondAttribute="leadingMargin" constant="5" id="qjR-EA-463"/>
@@ -878,6 +891,7 @@
                                             <outlet property="ImageViewProject" destination="Czk-iu-3Hc" id="Yv0-Of-dGW"/>
                                             <outlet property="LabelProjectName" destination="eMC-Jt-Vff" id="Mog-ZV-BDR"/>
                                             <outlet property="VisualEffectsViewBlur" destination="7KJ-LI-L5O" id="fdG-YF-wH4"/>
+                                            <outlet property="deleteButton" destination="jL8-oy-MAA" id="iWQ-Q8-6lt"/>
                                             <outlet property="editButton" destination="iwB-ao-dF5" id="Zy1-7E-RDM"/>
                                         </connections>
                                     </collectionViewCell>
@@ -1017,10 +1031,10 @@
                                         <rect key="frame" x="0.0" y="0.0" width="303" height="303"/>
                                     </imageView>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IUZ-RJ-wtL">
-                                        <rect key="frame" x="273" y="273" width="25" height="25"/>
+                                        <rect key="frame" x="263" y="263" width="35" height="35"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="25" id="jfL-lf-kYO"/>
-                                            <constraint firstAttribute="height" constant="25" id="yHS-HL-gXh"/>
+                                            <constraint firstAttribute="width" constant="35" id="jfL-lf-kYO"/>
+                                            <constraint firstAttribute="height" constant="35" id="yHS-HL-gXh"/>
                                         </constraints>
                                         <state key="normal" title="Button" image="EditMode"/>
                                         <connections>
@@ -1053,10 +1067,20 @@
                                     <action selector="ProjectActionPressed:" destination="Zbt-l0-Qeq" eventType="touchUpInside" id="BjQ-Vs-UxC"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="g5h-Ns-CAA">
+                                <rect key="frame" x="90" y="612" width="195" height="22"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="22" id="cFs-Vi-KUZ"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" name="systemPinkColor" catalog="System" colorSpace="catalog"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="97g-4i-GdI" firstAttribute="top" secondItem="brh-kj-lpt" secondAttribute="top" constant="20" id="4kK-M9-tJA"/>
+                            <constraint firstItem="g5h-Ns-CAA" firstAttribute="top" secondItem="Q4U-YB-yYV" secondAttribute="bottom" constant="35" id="4s8-P7-jMw"/>
                             <constraint firstItem="brh-kj-lpt" firstAttribute="trailing" secondItem="rjX-3b-Ox8" secondAttribute="trailing" constant="20" id="6UH-Nk-dZe"/>
                             <constraint firstItem="97g-4i-GdI" firstAttribute="leading" secondItem="brh-kj-lpt" secondAttribute="leading" constant="20" id="CU2-9T-x6Z"/>
                             <constraint firstItem="brh-kj-lpt" firstAttribute="trailing" secondItem="4ab-VP-Ub4" secondAttribute="trailing" constant="20" id="EiX-rN-Dld"/>
@@ -1071,6 +1095,8 @@
                             <constraint firstItem="Q4U-YB-yYV" firstAttribute="centerX" secondItem="MqK-qv-i5g" secondAttribute="centerX" id="mh5-cT-XgO"/>
                             <constraint firstItem="brh-kj-lpt" firstAttribute="trailing" secondItem="v7a-jJ-MjS" secondAttribute="trailing" constant="20" id="nOS-lf-yuW"/>
                             <constraint firstItem="brh-kj-lpt" firstAttribute="bottom" secondItem="rjX-3b-Ox8" secondAttribute="bottom" constant="20" id="nhp-DU-doL"/>
+                            <constraint firstItem="g5h-Ns-CAA" firstAttribute="leading" secondItem="t5D-NT-kqP" secondAttribute="trailing" constant="20" id="psp-fl-gC0"/>
+                            <constraint firstItem="rjX-3b-Ox8" firstAttribute="leading" secondItem="g5h-Ns-CAA" secondAttribute="trailing" constant="20" id="pvF-4d-Ztd"/>
                             <constraint firstItem="brh-kj-lpt" firstAttribute="trailing" secondItem="97g-4i-GdI" secondAttribute="trailing" constant="20" id="qPG-Lv-itJ"/>
                             <constraint firstItem="4ab-VP-Ub4" firstAttribute="top" secondItem="y1Q-1i-kck" secondAttribute="bottom" constant="20" id="s04-IF-2vy"/>
                             <constraint firstItem="brh-kj-lpt" firstAttribute="bottom" secondItem="t5D-NT-kqP" secondAttribute="bottom" constant="20" id="vOi-aO-Hg0"/>
@@ -1080,7 +1106,9 @@
                     </view>
                     <connections>
                         <outlet property="ButtonAction" destination="rjX-3b-Ox8" id="Aac-sO-HYg"/>
+                        <outlet property="ButtonEditImage" destination="IUZ-RJ-wtL" id="3Mf-kV-aH0"/>
                         <outlet property="ImageViewProject" destination="AQm-lO-7wv" id="4ei-mq-iIM"/>
+                        <outlet property="LabelInfo" destination="g5h-Ns-CAA" id="x69-zt-4jQ"/>
                         <outlet property="TextFieldName" destination="y1Q-1i-kck" id="j70-a0-D8R"/>
                         <outlet property="TextViewNotes" destination="v7a-jJ-MjS" id="wWm-PW-jph"/>
                         <outlet property="ViewProjectImage" destination="Q4U-YB-yYV" id="Pb1-XW-bJb"/>
@@ -1605,12 +1633,13 @@
     <resources>
         <image name="Activity" width="256" height="256"/>
         <image name="Calendar" width="85" height="85"/>
+        <image name="Delete" width="256" height="256"/>
         <image name="EditMode" width="256" height="256"/>
         <image name="Poi" width="170" height="170"/>
         <image name="Project" width="170" height="170"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="0ng-Sg-LI3"/>
+        <segue reference="3DY-I8-tb9"/>
         <segue reference="wFJ-9c-TZG"/>
     </inferredMetricsTieBreakers>
 </document>

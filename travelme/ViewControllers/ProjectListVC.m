@@ -94,6 +94,7 @@
         cell.LabelProjectName.text = @"";
         cell.isNewAccessor = true;
         cell.editButton.hidden = true;
+        cell.deleteButton.hidden = true;
         cell.VisualEffectsViewBlur.hidden = true;
     } else {
         ProjectNSO *project = [self.projectitems objectAtIndex:indexPath.row];
@@ -107,8 +108,10 @@
         cell.isNewAccessor = false;
         if (self.editmode) {
             cell.editButton.hidden=false;
+            cell.deleteButton.hidden=false;
         } else {
             cell.editButton.hidden=true;
+            cell.deleteButton.hidden=true;
         }
     }
     return cell;
@@ -134,7 +137,6 @@
         controller.delegate = self;
         controller.db = self.db;
         controller.Project = [self.projectitems objectAtIndex:indexPath.row];
-        
         [controller setModalPresentationStyle:UIModalPresentationFullScreen];
         [self presentViewController:controller animated:YES completion:nil];
         
@@ -191,22 +193,36 @@
         ProjectDataEntryVC *controller = (ProjectDataEntryVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.db = self.db;
-        
          if ([sender isKindOfClass: [UIButton class]]) {
              UIButton *button = (UIButton *) sender;
              ProjectListCell *cell = (ProjectListCell*)[[button superview] superview];
              NSIndexPath *indexPath = [self.CollectionViewProjects indexPathForCell:cell];
              controller.Project = [self.projectitems objectAtIndex:indexPath.row];
          }
-        
-     
         controller.newitem = false;
+        controller.deleteitem = false;
+
+        
+    } else if([segue.identifier isEqualToString:@"ShowDeleteProject"]){
+        ProjectDataEntryVC *controller = (ProjectDataEntryVC *)segue.destinationViewController;
+        controller.delegate = self;
+        controller.db = self.db;
+        if ([sender isKindOfClass: [UIButton class]]) {
+            UIButton *button = (UIButton *) sender;
+            ProjectListCell *cell = (ProjectListCell*)[[button superview] superview];
+            NSIndexPath *indexPath = [self.CollectionViewProjects indexPathForCell:cell];
+            controller.Project = [self.projectitems objectAtIndex:indexPath.row];
+        }
+        controller.newitem = false;
+        controller.deleteitem = true;
+
     } else if([segue.identifier isEqualToString:@"ShowNewProject"]){
         ProjectDataEntryVC *controller = (ProjectDataEntryVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.db = self.db;
         controller.Project = [[ProjectNSO alloc] init];
         controller.newitem = true;
+        controller.deleteitem = false;
     }
 }
 

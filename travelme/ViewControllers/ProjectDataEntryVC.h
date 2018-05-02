@@ -9,8 +9,8 @@
 #import <UIKit/UIKit.h>
 #import "ProjectNSO.h"
 #import "Dal.h"
-@
-protocol ProjectDataEntryDelegate <NSObject>
+#import "ToolBoxNSO.h"
+@protocol ProjectDataEntryDelegate <NSObject>
 @end
 
 @interface ProjectDataEntryVC : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
@@ -22,8 +22,11 @@ protocol ProjectDataEntryDelegate <NSObject>
 @property (weak, nonatomic) IBOutlet UITextView *TextViewNotes;
 @property (weak, nonatomic) IBOutlet UITextField *TextFieldName;
 @property (assign) bool newitem;
+@property (assign) bool deleteitem;
 @property (assign) bool updatedimage;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonAction;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonEditImage;
+@property (weak, nonatomic) IBOutlet UILabel *LabelInfo;
 
 
 

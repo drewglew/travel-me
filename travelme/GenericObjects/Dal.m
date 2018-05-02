@@ -387,8 +387,9 @@
                 whereClause = [whereClause substringToIndex:[whereClause length]-5];
             }
         }
+        
+        NSString *selectSQL = [NSString stringWithFormat:@"SELECT key,name,administrativearea,categoryid,privatenotes,lat,lon,(select count(*) as counter from activity a where a.poikey=p.key) as sumofactivities FROM poi p %@ ORDER BY name", whereClause];
 
-        NSString *selectSQL = [NSString stringWithFormat:@"SELECT key,name,administrativearea,categoryid,privatenotes,lat,lon FROM poi %@ ORDER BY name", whereClause];
         
         const char *select_statement = [selectSQL UTF8String];
             
@@ -404,6 +405,7 @@
                     poi.privatenotes = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 4)];
                     poi.lat = [NSNumber numberWithDouble:sqlite3_column_double(statement, 5)];
                     poi.lon = [NSNumber numberWithDouble:sqlite3_column_double(statement, 6)];
+                    poi.connectedactivitycount = [NSNumber numberWithInt:sqlite3_column_int(statement, 7)];
                     poi.Images = [NSMutableArray arrayWithArray:[self GetImagesForSelectedPoi:poi.key]];
                     poi.searchstring = [NSString stringWithFormat:@"%@|%@",poi.name,poi.administrativearea];
                     [poidata addObject:poi];
@@ -642,7 +644,171 @@
     }
     return poi;
 };
+
+/*
+ created date:      02/05/2018
+ last modified:     02/05/2018
+ remarks:
+ */
+-(bool) DeleteProject :(ProjectNSO*) Project {
     
+    bool returnValue = [self DeleteActivity:nil :Project.key];
+    if (returnValue) {
+    
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *imagesDirectory = [paths objectAtIndex:0];
+        NSFileManager *fm = [NSFileManager defaultManager];
+    
+        NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",Project.imagefilereference]];
+        NSError *error = nil;
+        for (NSString *file in [fm contentsOfDirectoryAtPath:dataPath error:&error]) {
+            BOOL success = [fm removeItemAtPath:[NSString stringWithFormat:@"%@/%@", imagesDirectory, file] error:&error];
+            if (!success || error) {
+                NSLog(@"something failed in deleting unwanted data");
+            }
+        }
+    
+        sqlite3_stmt *statement;
+        NSString *deleteSQL = [NSString stringWithFormat:@"DELETE FROM project WHERE key = '%@'",Project.key];
+        const char *dbpath = [_databasePath UTF8String];
+    
+        if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
+        
+            const char *deleteStatement = [deleteSQL UTF8String];
+            sqlite3_prepare_v2(_DB, deleteStatement, -1, &statement, NULL);
+            if (sqlite3_step(statement) != SQLITE_DONE) {
+                NSLog(@"Failed to delete record from project");
+                returnValue = false;
+            } else {
+                NSLog(@"Successfuly deleted record from project");
+            }
+            sqlite3_finalize(statement);
+            sqlite3_close(_DB);
+        }
+    }
+    return returnValue;
+}
+
+/*
+ created date:      02/05/2018
+ last modified:     02/05/2018
+ remarks:
+ */
+-(bool) DeleteActivity :(ActivityNSO*) Activity :(NSString*) ProjectKey {
+    
+    bool returnValue = true;
+    sqlite3_stmt *statement;
+    NSString *deleteSQL;
+    if (Activity==nil) {
+        deleteSQL = [NSString stringWithFormat:@"DELETE FROM activity WHERE projectkey = '%@'",ProjectKey];
+    } else {
+        deleteSQL = [NSString stringWithFormat:@"DELETE FROM activity WHERE key = '%@'",Activity.key];
+    }
+    const char *dbpath = [_databasePath UTF8String];
+    
+    if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
+        
+        const char *deleteStatement = [deleteSQL UTF8String];
+        sqlite3_prepare_v2(_DB, deleteStatement, -1, &statement, NULL);
+        
+        if (sqlite3_step(statement) != SQLITE_DONE) {
+            NSLog(@"Failed to delete record from activity");
+            returnValue = false;
+        } else {
+            NSLog(@"Successfuly deleted record from activity");
+        }
+        sqlite3_finalize(statement);
+        sqlite3_close(_DB);
+    }
+    return returnValue;
+
+}
+
+
+
+
+
+/*
+ created date:      02/05/2018
+ last modified:     02/05/2018
+ remarks:           
+ */
+-(bool) DeletePoi :(PoiNSO*) Poi {
+    
+    // we need to check if any activity is using the Poi
+   
+    if (Poi.connectedactivitycount > [NSNumber numberWithInt:0]) {
+        return false;
+    }
+    
+    // if no activity is linked with Poi - we firstly delete any images. that includes any that might exist on the file system.
+    [self DeletePoiAttachments :Poi.key];
+    // then we delete the Poi
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *imagesDirectory = [paths objectAtIndex:0];
+    NSFileManager *fm = [NSFileManager defaultManager];
+    
+    NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",Poi.key]];
+    NSError *error = nil;
+    for (NSString *file in [fm contentsOfDirectoryAtPath:dataPath error:&error]) {
+        BOOL success = [fm removeItemAtPath:[NSString stringWithFormat:@"%@/%@", imagesDirectory, file] error:&error];
+        if (!success || error) {
+            NSLog(@"something failed in deleting unwanted data");
+        }
+    }
+
+    bool returnValue = true;
+    sqlite3_stmt *statement;
+    NSString *deleteSQL = [NSString stringWithFormat:@"DELETE FROM poi WHERE key = '%@'",Poi.key];
+    
+    const char *dbpath = [_databasePath UTF8String];
+    
+    if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
+        
+        const char *deleteStatement = [deleteSQL UTF8String];
+        sqlite3_prepare_v2(_DB, deleteStatement, -1, &statement, NULL);
+        
+        if (sqlite3_step(statement) != SQLITE_DONE) {
+            NSLog(@"Failed to delete record from poi");
+            returnValue = false;
+        } else {
+            NSLog(@"Successfuly deleted record from poi");
+        }
+        sqlite3_finalize(statement);
+        sqlite3_close(_DB);
+    }
+    return returnValue;
+}
+
+/*
+ created date:      02/05/2018
+ last modified:     02/05/2018
+ remarks:
+ */
+-(bool) DeletePoiAttachments :(NSString *) poikey {
+    bool returnValue = true;
+    sqlite3_stmt *statement;
+    NSString *deleteSQL = [NSString stringWithFormat:@"DELETE FROM imageitem WHERE poikey = '%@'",poikey];
+    
+    const char *dbpath = [_databasePath UTF8String];
+    
+    if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
+        
+        const char *deleteStatement = [deleteSQL UTF8String];
+        sqlite3_prepare_v2(_DB, deleteStatement, -1, &statement, NULL);
+        
+        if (sqlite3_step(statement) != SQLITE_DONE) {
+            NSLog(@"Failed to delete items from imageitem");
+            returnValue = false;
+        } else {
+            NSLog(@"Successfuly deleted items from imageitem");
+        }
+        sqlite3_finalize(statement);
+        sqlite3_close(_DB);
+    }
+    return returnValue;
+}
+
 
 
 @end

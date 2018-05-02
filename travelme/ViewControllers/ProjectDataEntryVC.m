@@ -23,9 +23,15 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
     if (!self.newitem) {
-        [self.ButtonAction setTitle:@"Upd" forState:UIControlStateNormal];
+        if (self.deleteitem) {
+            [self.ButtonAction setTitle:@"Del" forState:UIControlStateNormal];
+            self.ButtonEditImage.hidden = true;
+            self.LabelInfo.hidden = false;
+            self.LabelInfo.text = @"Confirm Deletion";
+        } else {
+            [self.ButtonAction setTitle:@"Upd" forState:UIControlStateNormal];
+        }
         [self LoadExistingData];
         self.updatedimage = false;
     }
@@ -33,13 +39,17 @@
 
 /*
  created date:      29/04/2018
- last modified:     29/04/2018
+ last modified:     02/05/2018
  remarks:
  */
 -(void) LoadExistingData {
     self.TextFieldName.text = self.Project.name;
     self.TextViewNotes.text = self.Project.privatenotes;
-    [self.ImageViewProject setImage:self.Project.Image];
+    if ([self.Project.imagefilereference isEqualToString:@""]) {
+        [self.ImageViewProject setImage:self.Project.Image];
+    } else {
+        [self.ImageViewProject setImage:[UIImage imageNamed:@"Project"]];
+    }
 }
 
 
@@ -69,7 +79,11 @@
     
         [self.db InsertProjectItem :self.Project];
     }
-    else {
+    else if (self.deleteitem) {
+        [self.db DeleteProject:self.Project];
+    }
+    else
+    {
         if ([self.Project.privatenotes isEqualToString:self.TextViewNotes.text] && [self.Project.name isEqualToString:self.TextFieldName.text] && !self.updatedimage) {
             // nothing to do
         } else {
@@ -176,6 +190,8 @@
     
     /* obtain the image from the camera */
     UIImage *chosenImage = info[UIImagePickerControllerEditedImage];
+    
+    chosenImage = [ToolBoxNSO imageWithImage:chosenImage scaledToSize:self.ImageViewProject.frame.size];
     self.Project.Image = chosenImage;
     self.ImageViewProject.image = chosenImage;
     
