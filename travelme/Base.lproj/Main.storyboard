@@ -21,49 +21,42 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" hasAttributedTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cNZ-UL-0BM">
-                                <rect key="frame" x="100" y="120" width="175" height="175"/>
-                                <color key="backgroundColor" name="systemGreenColor" catalog="System" colorSpace="catalog"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" hasAttributedTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cNZ-UL-0BM" userLabel="Project">
+                                <rect key="frame" x="51" y="40" width="273.5" height="273.5"/>
+                                <color key="backgroundColor" red="0.95686274509803926" green="0.45882352941176469" blue="0.1803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" secondItem="cNZ-UL-0BM" secondAttribute="height" multiplier="1:1" id="wKj-Km-pTU"/>
+                                    <constraint firstAttribute="width" secondItem="cNZ-UL-0BM" secondAttribute="height" multiplier="1:1" id="Ce4-hU-YTv"/>
                                 </constraints>
-                                <state key="normal">
-                                    <attributedString key="attributedTitle">
-                                        <fragment content="Events">
-                                            <attributes>
-                                                <color key="NSColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <font key="NSFont" metaFont="system" size="30"/>
-                                                <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
-                                            </attributes>
-                                        </fragment>
-                                    </attributedString>
+                                <state key="normal" image="Project">
+                                    <attributedString key="attributedTitle"/>
                                 </state>
                                 <connections>
                                     <segue destination="ySu-A3-tYm" kind="show" identifier="ShowProjectList" id="raf-VT-Xzm"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="characterWrap" hasAttributedTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vtH-os-Fbr">
-                                <rect key="frame" x="100" y="345" width="175" height="175"/>
-                                <color key="backgroundColor" name="systemPinkColor" catalog="System" colorSpace="catalog"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Projects" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y7e-Fj-JOA" userLabel="ProjectsLabel">
+                                <rect key="frame" x="61" y="281" width="250" height="22"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" secondItem="vtH-os-Fbr" secondAttribute="height" multiplier="1:1" id="OyY-vl-GA5"/>
+                                    <constraint firstAttribute="height" constant="22" id="dgw-dh-CYP"/>
                                 </constraints>
-                                <state key="normal">
-                                    <attributedString key="attributedTitle">
-                                        <fragment content="Points Of Interest">
-                                            <attributes>
-                                                <color key="NSColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <font key="NSFont" size="30" name=".SFNSDisplay"/>
-                                                <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
-                                            </attributes>
-                                        </fragment>
-                                    </attributedString>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="characterWrap" hasAttributedTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vtH-os-Fbr" userLabel="Poi">
+                                <rect key="frame" x="51" y="318.5" width="273.5" height="273.5"/>
+                                <color key="backgroundColor" red="0.24313725490196078" green="0.32156862745098042" blue="0.54117647058823526" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="vtH-os-Fbr" secondAttribute="height" multiplier="1:1" id="RTT-hw-a2Y"/>
+                                </constraints>
+                                <state key="normal" image="Poi">
+                                    <attributedString key="attributedTitle"/>
                                 </state>
                                 <connections>
                                     <segue destination="WPa-Cn-6ER" kind="show" identifier="ShowPoiList" id="2IA-Zw-xQ9"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hg0-Z9-pu2">
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hg0-Z9-pu2">
                                 <rect key="frame" x="235" y="597" width="50" height="50"/>
                                 <color key="backgroundColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
                                 <constraints>
@@ -77,7 +70,7 @@
                                     <action selector="CreateDatabasePressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="lhQ-Ae-CIz"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZAI-FM-677">
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZAI-FM-677">
                                 <rect key="frame" x="305" y="597" width="50" height="50"/>
                                 <color key="backgroundColor" name="systemBrownColor" catalog="System" colorSpace="catalog"/>
                                 <constraints>
@@ -91,21 +84,35 @@
                                     <action selector="DeleteDatabasePressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="C6m-P0-8Lz"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Points Of Interest" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UjL-JO-c9R" userLabel="PoiLabel">
+                                <rect key="frame" x="61" y="560" width="253.5" height="22"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="22" id="rZL-s3-aBI"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="Y7e-Fj-JOA" firstAttribute="bottom" secondItem="cNZ-UL-0BM" secondAttribute="bottom" constant="-10" id="1En-hm-iRx"/>
                             <constraint firstItem="ZAI-FM-677" firstAttribute="leading" secondItem="hg0-Z9-pu2" secondAttribute="trailing" constant="20" id="2B2-rZ-h5N"/>
-                            <constraint firstItem="vtH-os-Fbr" firstAttribute="top" secondItem="cNZ-UL-0BM" secondAttribute="bottom" constant="50" id="EjR-DW-5Jg"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="cNZ-UL-0BM" secondAttribute="trailing" constant="100" id="FGc-A6-cbW"/>
+                            <constraint firstItem="Y7e-Fj-JOA" firstAttribute="trailing" secondItem="cNZ-UL-0BM" secondAttribute="trailing" constant="-10" id="41v-fe-3FH"/>
+                            <constraint firstItem="vtH-os-Fbr" firstAttribute="height" secondItem="cNZ-UL-0BM" secondAttribute="height" id="7Fs-Qs-Xnu"/>
                             <constraint firstItem="vtH-os-Fbr" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="L06-yO-wqQ"/>
-                            <constraint firstItem="cNZ-UL-0BM" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="100" id="Mpt-Wx-siy"/>
+                            <constraint firstItem="vtH-os-Fbr" firstAttribute="width" secondItem="cNZ-UL-0BM" secondAttribute="width" id="N7q-zt-rfp"/>
+                            <constraint firstItem="cNZ-UL-0BM" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="RfL-yN-xGv"/>
+                            <constraint firstItem="hg0-Z9-pu2" firstAttribute="top" secondItem="vtH-os-Fbr" secondAttribute="bottom" constant="5" id="SQE-Qg-OKo"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="ZAI-FM-677" secondAttribute="bottom" constant="20" id="Tfr-Yz-gyN"/>
+                            <constraint firstItem="UjL-JO-c9R" firstAttribute="trailing" secondItem="vtH-os-Fbr" secondAttribute="trailing" constant="-10" id="U5n-HP-8r2"/>
+                            <constraint firstItem="vtH-os-Fbr" firstAttribute="top" secondItem="cNZ-UL-0BM" secondAttribute="bottom" constant="5" id="Zpy-1r-yat"/>
+                            <constraint firstItem="vtH-os-Fbr" firstAttribute="leading" secondItem="UjL-JO-c9R" secondAttribute="leading" constant="-10" id="au8-Zw-TMT"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="hg0-Z9-pu2" secondAttribute="bottom" constant="20" id="cT7-aS-YBj"/>
+                            <constraint firstItem="UjL-JO-c9R" firstAttribute="bottom" secondItem="vtH-os-Fbr" secondAttribute="bottom" constant="-10" id="cdq-Jz-T1K"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="ZAI-FM-677" secondAttribute="trailing" constant="20" id="eUz-jC-dbY"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="vtH-os-Fbr" secondAttribute="trailing" constant="100" id="kQJ-Na-2Cd"/>
+                            <constraint firstItem="Y7e-Fj-JOA" firstAttribute="leading" secondItem="cNZ-UL-0BM" secondAttribute="leading" constant="10" id="k0t-Tz-HgP"/>
                             <constraint firstItem="cNZ-UL-0BM" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="nT9-ns-krI"/>
-                            <constraint firstItem="cNZ-UL-0BM" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="100" id="wSX-yA-yGY"/>
-                            <constraint firstItem="vtH-os-Fbr" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="100" id="xCl-hj-wfA"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
@@ -282,7 +289,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uh9-Rx-lma">
                                 <rect key="frame" x="305" y="597" width="50" height="50"/>
-                                <color key="backgroundColor" name="systemPinkColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="systemOrangeColor" catalog="System" colorSpace="catalog"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="Q6R-Wi-G9w"/>
                                     <constraint firstAttribute="height" constant="50" id="eZu-fk-rpz"/>
@@ -297,7 +304,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bv1-M6-Qit">
                                 <rect key="frame" x="165" y="597" width="50" height="50"/>
-                                <color key="backgroundColor" name="systemPurpleColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="systemOrangeColor" catalog="System" colorSpace="catalog"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="Td4-SW-Vnr"/>
                                     <constraint firstAttribute="width" constant="50" id="YgD-at-EIQ"/>
@@ -882,7 +889,7 @@
                             </collectionView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jKP-cv-zm7">
                                 <rect key="frame" x="305" y="597" width="50" height="50"/>
-                                <color key="backgroundColor" name="systemGreenColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="systemPinkColor" catalog="System" colorSpace="catalog"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="coZ-ws-JtU"/>
                                     <constraint firstAttribute="width" constant="50" id="yMk-dc-hZq"/>
@@ -1034,7 +1041,7 @@
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rjX-3b-Ox8">
                                 <rect key="frame" x="305" y="597" width="50" height="50"/>
-                                <color key="backgroundColor" name="selectedTextBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="systemPinkColor" catalog="System" colorSpace="catalog"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="4Gy-j5-Kyv"/>
                                     <constraint firstAttribute="width" constant="50" id="gk3-TS-U2s"/>
@@ -1187,7 +1194,7 @@
                             </segmentedControl>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IGh-QP-FoG">
                                 <rect key="frame" x="305" y="597" width="50" height="50"/>
-                                <color key="backgroundColor" name="systemGreenColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="systemPinkColor" catalog="System" colorSpace="catalog"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="bxW-w3-eet"/>
                                     <constraint firstAttribute="width" constant="50" id="rxQ-FG-EQ0"/>
@@ -1432,7 +1439,7 @@
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eCL-jd-0zQ">
                                 <rect key="frame" x="305" y="597" width="50" height="50"/>
-                                <color key="backgroundColor" name="selectedTextBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="systemPinkColor" catalog="System" colorSpace="catalog"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="AOw-pI-nnh"/>
                                     <constraint firstAttribute="height" constant="50" id="xjf-Ye-v81"/>

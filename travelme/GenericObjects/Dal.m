@@ -232,7 +232,7 @@
     
     if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
         
-        NSString *updateSQL = [NSString stringWithFormat:@"UPDATE activity SET name = '%@', notes = '%@', poikey = '%@', totalprice = '%d', startdt = '%@', enddt = '%@', state = %@ WHERE key='%@'", Activity.name, Activity.privatenotes, Activity.poi.key, 100, [Activity GetStringFromDt :Activity.startdt], [Activity GetStringFromDt :Activity.enddt], Activity.activitystate, Activity.key];
+        NSString *updateSQL = [NSString stringWithFormat:@"UPDATE activity SET name = '%@', notes = '%@', poikey = '%@', totalprice = '%d', startdt = '%@', enddt = '%@', state = %@ WHERE key='%@' and state=%@", Activity.name, Activity.privatenotes, Activity.poi.key, 100, [Activity GetStringFromDt :Activity.startdt], [Activity GetStringFromDt :Activity.enddt], Activity.activitystate, Activity.key, Activity.activitystate];
         
         const char *update_statement = [updateSQL UTF8String];
         sqlite3_prepare_v2(_DB, update_statement, -1, &statement, NULL);
