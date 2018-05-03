@@ -79,11 +79,11 @@
     [self.PoiMapView selectAnnotation:anno animated:YES];
     
     /* load images from file - TODO make sure we locate them all */
-    if (self.Activity.poi.Images.count==0) {
-        self.ImageViewPoi.image = [UIImage imageNamed:@"Poi"];
-    } else {
+    if (self.Activity.poi.Images.count > 0) {
         PoiImageNSO *img = [self.Activity.poi.Images firstObject];
         self.ImageViewPoi.image = img.Image;
+    } else {
+        self.ImageViewPoi.image = [UIImage imageNamed:@"Poi"];
     }
 }
 
@@ -128,6 +128,22 @@
 }
 
 
+/*
+ created date:      03/05/2018
+ last modified:     03/05/2018
+ remarks:           segue controls .
+ */
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    
+    if([segue.identifier isEqualToString:@"ShowPoiDetail"]){
+        PoiDataEntryVC *controller = (PoiDataEntryVC *)segue.destinationViewController;
+        controller.delegate = self;
+        controller.db = self.db;
+        controller.PointOfInterest = self.Activity.poi;
+        controller.newitem = false;
+        controller.readonlyitem = true;
+    }
+}
 
 /*
  created date:      30/04/2018

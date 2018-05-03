@@ -14,12 +14,13 @@
 #import "PoiListCell.h"
 //#import "ProjectNSO.h"
 #import "PoiImageNSO.h"
+#import "PoiDataEntryVC.h"
 
 
 @protocol ActivityDelegate <NSObject>
 @end
 
-@interface ActivityDataEntryVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, MKMapViewDelegate>
+@interface ActivityDataEntryVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, MKMapViewDelegate, PoiDataEntryDelegate>
 
 @property (strong, nonatomic) Dal *db;
 @property (assign) bool newitem;

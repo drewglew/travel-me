@@ -303,12 +303,14 @@ MKLocalSearchResponse *results;
         controller.db = self.db;
         controller.PointOfInterest = self.PointOfInterest;
         controller.newitem = true;
+        controller.readonlyitem = false;
     } else if([segue.identifier isEqualToString:@"ShowPoiWithoutMapData"]){
         PoiDataEntryVC *controller = (PoiDataEntryVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.db = self.db;
         controller.PointOfInterest = self.PointOfInterest;
         controller.newitem = true;
+        controller.readonlyitem = false;
     }
 }
 

@@ -178,6 +178,10 @@
     
 }
 
+- (IBAction)SwitchEditModePressed:(id)sender {
+    self.editmode = !self.editmode;
+    [self.CollectionViewProjects reloadData];
+}
 
 
 /*

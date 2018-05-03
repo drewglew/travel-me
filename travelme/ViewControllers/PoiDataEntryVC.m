@@ -28,6 +28,13 @@
         }
     } else {
         [self LoadExistingData];
+        if (self.readonlyitem) {
+            self.TextFieldTitle.enabled = false;
+            [self.TextViewNotes setEditable:false];
+            self.SegmentTypeOfPoi.enabled = false;
+            [self.CollectionViewPoiImages setUserInteractionEnabled:false];
+            self.CollectionViewPoiImages.scrollEnabled = true;
+        }
     }
     self.CollectionViewPoiImages.dataSource = self;
     self.CollectionViewPoiImages.delegate = self;
@@ -317,6 +324,7 @@
         }
     }
     
+    self.PointOfInterest.name = self.TextFieldTitle.text;
     self.PointOfInterest.privatenotes = self.TextViewNotes.text;
     self.PointOfInterest.categoryid = [NSNumber numberWithLong:self.SegmentTypeOfPoi.selectedSegmentIndex];
     
@@ -329,11 +337,12 @@
 
 /*
  created date:      28/04/2018
- last modified:     29/04/2018
+ last modified:     03/04/2018
  remarks:
  */
 - (IBAction)UpdatePoiItemPressed:(id)sender {
 
+    self.PointOfInterest.name = self.TextFieldTitle.text;
     self.PointOfInterest.privatenotes = self.TextViewNotes.text;
     self.PointOfInterest.categoryid = [NSNumber numberWithLong:self.SegmentTypeOfPoi.selectedSegmentIndex];
 

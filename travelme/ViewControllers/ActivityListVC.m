@@ -51,10 +51,12 @@
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *imagesDirectory = [paths objectAtIndex:0];
     for (ActivityNSO *activity in self.activityitems) {
-        PoiImageNSO *imageitem = [activity.poi.Images firstObject];
-        NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",imageitem.ImageFileReference]];
-        NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
-        imageitem.Image = [UIImage imageWithData:pngData];
+        if (activity.poi.Images.count>0) {
+            PoiImageNSO *imageitem = [activity.poi.Images firstObject];
+            NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",imageitem.ImageFileReference]];
+            NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
+            imageitem.Image = [UIImage imageWithData:pngData];
+        }
     }
     
     
@@ -99,8 +101,13 @@
         }
         cell.LabelName.hidden = false;
         cell.LabelName.text = cell.activity.name;
-        PoiImageNSO *imageitem = [cell.activity.poi.Images firstObject];
-        cell.ImageViewActivity.image = imageitem.Image;
+        if (cell.activity.poi.Images.count == 0) {
+            cell.ImageViewActivity.image = [UIImage imageNamed:@"Poi"];
+        } else {
+            PoiImageNSO *imageitem = [cell.activity.poi.Images firstObject];
+            cell.ImageViewActivity.image = imageitem.Image;
+        }
+        
     }
     return cell;
 }
@@ -124,10 +131,13 @@
         controller.db = self.db;
         controller.Activity = [self.activityitems objectAtIndex:indexPath.row];
         ActivityNSO *activity = [self.activityitems objectAtIndex:indexPath.row];
-        PoiImageNSO *imageitem = [activity.poi.Images firstObject];
         controller.Activity.poi = [[self.db GetPoiContent:activity.poi.key] firstObject];
-        [controller.Activity.poi.Images removeAllObjects];
-        [controller.Activity.poi.Images addObject:imageitem];
+        if (activity.poi.Images.count > 0) {
+            PoiImageNSO *imageitem = [activity.poi.Images firstObject];
+            [controller.Activity.poi.Images removeAllObjects];
+            [controller.Activity.poi.Images addObject:imageitem];
+        }
+
         controller.Activity.project = self.Project;
         long selectedSegmentState = self.SegmentState.selectedSegmentIndex;
         controller.newitem = false;

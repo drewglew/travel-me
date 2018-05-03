@@ -39,12 +39,26 @@
 }
 
 /*
+ created date:      03/05/2018
+ last modified:     03/05/2018
+ remarks:
+ */
+-(void)RefreshPoiFilteredData {
+    //[self.SearchBarPoi resignFirstResponder];
+    [self.poifiltereditems removeAllObjects];
+    [self.poifiltereditems addObjectsFromArray: self.poiitems];
+    [self.TableViewSearchPoiItems reloadData];
+}
+
+
+/*
  created date:      30/04/2018
  last modified:     30/04/2018
  remarks:
  */
 -(void) LoadPoiData {
     self.poiitems = [self.db GetPoiContent :nil];
+    [self.poifiltereditems addObjectsFromArray: self.poiitems];
     [self.TableViewSearchPoiItems reloadData];
 }
 
@@ -101,6 +115,9 @@
 }
 
 
+-(void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+    [self.SearchBarPoi resignFirstResponder];
+}
 
 
 /*
@@ -148,29 +165,30 @@
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
     NSLog(@"Text change - %d",self.isSearching);
     
-    //Remove all objects first.
-    [self.poifiltereditems removeAllObjects];
+    if ([searchText length] ==0) {
+        [self RefreshPoiFilteredData];
+        self.isSearching = NO;
+    } else {
+        //Remove all objects first.
+        [self.poifiltereditems removeAllObjects];
     
-    if([searchText length] != 0) {
+        
         self.isSearching = YES;
         [self searchTableList];
-    }
-    else {
-        self.isSearching = NO;
         
+        [self.TableViewSearchPoiItems reloadData];
     }
-    [self.TableViewSearchPoiItems reloadData];
 }
 
 
 
 /*
  created date:      30/04/2018
- last modified:     30/04/2018
+ last modified:     03/05/2018
  remarks:
  */
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
-    [self.SearchBarPoi resignFirstResponder];
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+    [self RefreshPoiFilteredData];
 }
 
 
@@ -199,6 +217,10 @@
         }
         controller.transformed = self.transformed;
         controller.newitem = true;
+    } else if([segue.identifier isEqualToString:@"ShowPoiLocator"]){
+        LocatorVC *controller = (LocatorVC *)segue.destinationViewController;
+        controller.delegate = self;
+        controller.db = self.db;
     }
 }
 

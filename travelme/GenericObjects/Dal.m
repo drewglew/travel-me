@@ -173,7 +173,7 @@
 /*
  created date:      28/04/2018
  last modified:     29/04/2018
- remarks:
+ remarks:           TODO add new way of inserting parms
  */
 -(bool) UpdatePoiItem :(PoiNSO*) Poi {
   
@@ -200,7 +200,7 @@
 /*
  created date:      29/04/2018
  last modified:     29/04/2018
- remarks:
+ remarks:           TODO add new way of inserting parms
  */
 -(bool) UpdateProjectItem :(ProjectNSO*) Project {
     sqlite3_stmt *statement;
@@ -224,7 +224,7 @@
 /*
  created date:      30/04/2018
  last modified:     30/04/2018
- remarks:
+ remarks:           TODO add new way of inserting parms
  */
 -(bool) UpdateActivityItem :(ActivityNSO*) Activity {
     sqlite3_stmt *statement;
@@ -248,7 +248,7 @@
 /*
  created date:      28/04/2018
  last modified:     28/04/2018
- remarks:
+ remarks:           TODO add new way of inserting parms
  */
 -(bool)InsertImages :(PoiNSO*) Poi {
     /* Images table */
@@ -276,8 +276,8 @@
 
 /*
  created date:      28/04/2018
- last modified:     28/04/2018
- remarks:
+ last modified:     03/05/2018
+ remarks: using proper insertion of Poi character data.
  */
 -(bool)InsertPoiItem :(PoiNSO*)Poi {
 
@@ -286,19 +286,24 @@
     if(sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
         /* POI table */
         Poi.key = [[NSUUID UUID] UUIDString];
-    
-        NSString *insertSQL = [NSString stringWithFormat:@"INSERT INTO poi (key, name, administrativearea, categoryid, privatenotes, lat, lon) VALUES ('%@','%@','%@',%@,'%@', %@, %@)", Poi.key, Poi.name, Poi.administrativearea, Poi.categoryid, Poi.privatenotes, Poi.lat, Poi.lon];
-    
-        sqlite3_stmt *statement;
-        const char *insert_statement = [insertSQL UTF8String];
-        sqlite3_prepare_v2(_DB, insert_statement, -1, &statement, NULL);
-        if (sqlite3_step(statement) != SQLITE_DONE) {
+
+        sqlite3_stmt *stmt = NULL;
+        sqlite3_prepare_v2(_DB, "INSERT INTO poi (key, name, administrativearea, categoryid, privatenotes, lat, lon) VALUES (?,?,?,?,?,?,?)", -1, &stmt, nil);
+        sqlite3_bind_text(stmt, 1, [Poi.key UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, [Poi.name UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 3, [Poi.administrativearea UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_int(stmt,4, [Poi.categoryid intValue]);
+        sqlite3_bind_text(stmt, 5, [Poi.privatenotes UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_double(stmt, 6, [Poi.lat doubleValue]);
+        sqlite3_bind_double(stmt, 7, [Poi.lon doubleValue]);
+
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
             NSLog(@"Failed to insert new record inside poi table");
             return false;
         } else {
             NSLog(@"inserted new poi record inside table!");
         }
-        sqlite3_finalize(statement);
+        sqlite3_finalize(stmt);
         [self InsertImages :Poi];
     }
     sqlite3_close(_DB);
@@ -307,7 +312,7 @@
 
 /*
  created date:      29/04/2018
- last modified:     29/04/2018
+ last modified:     03/05/2018
  remarks: Flat table with single image representing the project.
  */
 -(bool) InsertProjectItem :(ProjectNSO*) Project {
@@ -315,18 +320,21 @@
     
     if(sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
         /* PROJECT table */
-        NSString *insertSQL = [NSString stringWithFormat:@"INSERT INTO project (key, name, privatenotes, imagefilename) VALUES ('%@','%@','%@','%@')", Project.key, Project.name, Project.privatenotes, Project.imagefilereference];
         
-        sqlite3_stmt *statement;
-        const char *insert_statement = [insertSQL UTF8String];
-        sqlite3_prepare_v2(_DB, insert_statement, -1, &statement, NULL);
-        if (sqlite3_step(statement) != SQLITE_DONE) {
+        sqlite3_stmt *stmt = NULL;
+        sqlite3_prepare_v2(_DB, "INSERT INTO project (key, name, privatenotes, imagefilename) VALUES (?,?,?,?)", -1, &stmt, nil);
+        sqlite3_bind_text(stmt, 1, [Project.key UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, [Project.name UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 3, [Project.privatenotes UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt,4,  [Project.imagefilereference UTF8String], -1, SQLITE_TRANSIENT);
+
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
             NSLog(@"Failed to insert new record inside project table");
             return false;
         } else {
             NSLog(@"inserted new project record inside table!");
         }
-        sqlite3_finalize(statement);
+        sqlite3_finalize(stmt);
     }
     sqlite3_close(_DB);
     return true;
@@ -335,27 +343,32 @@
 
 /*
  created date:      30/04/2018
- last modified:     30/04/2018
+ last modified:     03/05/2018
  remarks: Flat table with single image representing the project.
  */
 -(bool) InsertActivityItem :(ActivityNSO*) Activity {
     const char *dbpath = [_databasePath UTF8String];
 
     if(sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
-
-        /* ACTIVITY table */
-        NSString *insertSQL = [NSString stringWithFormat:@"INSERT INTO activity (projectkey, poikey, key, name, totalprice, notes, startdt, enddt, state) VALUES ('%@','%@','%@','%@', %d, '%@','%@','%@', %@)", Activity.project.key, Activity.poi.key, Activity.key, Activity.name, 100, Activity.privatenotes, [Activity GetStringFromDt :Activity.startdt], [Activity GetStringFromDt :Activity.enddt], Activity.activitystate];
+        sqlite3_stmt *stmt = NULL;
+        sqlite3_prepare_v2(_DB, "INSERT INTO activity (projectkey, poikey, key, name, totalprice, notes, startdt, enddt, state) VALUES (?,?,?,?,?,?,?,?,?)", -1, &stmt, nil);
+        sqlite3_bind_text(stmt, 1, [Activity.project.key UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, [Activity.poi.key UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 3, [Activity.key UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 4, [Activity.name UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_int(stmt,5, [Activity.costamt intValue]);
+        sqlite3_bind_text(stmt, 6, [Activity.privatenotes UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 7, [[Activity GetStringFromDt :Activity.startdt] UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 8, [[Activity GetStringFromDt :Activity.enddt] UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_int(stmt,9, [Activity.activitystate intValue]);
         
-        sqlite3_stmt *statement;
-        const char *insert_statement = [insertSQL UTF8String];
-        sqlite3_prepare_v2(_DB, insert_statement, -1, &statement, NULL);
-        if (sqlite3_step(statement) != SQLITE_DONE) {
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
             NSLog(@"Failed to insert new record inside activity table");
             return false;
         } else {
             NSLog(@"inserted new activity record inside table!");
         }
-        sqlite3_finalize(statement);
+        sqlite3_finalize(stmt);
     }
     sqlite3_close(_DB);
     return true;
@@ -368,7 +381,7 @@
 /*
  created date:      28/04/2018
  last modified:     28/04/2018
- remarks:
+ remarks:           TODO add new way of inserting parms
  */
 -(NSMutableArray*) GetPoiContent :(NSString*) RequiredKey {
     NSMutableArray *poidata  = [[NSMutableArray alloc] init];
@@ -423,7 +436,7 @@
 /*
  created date:      29/04/2018
  last modified:     29/04/2018
- remarks:
+ remarks:           TODO add new way of inserting parms
  */
 -(NSMutableArray*) GetProjectContent :(NSString*) RequiredKey {
     NSMutableArray *projectdata  = [[NSMutableArray alloc] init];
@@ -471,7 +484,7 @@
 /*
  created date:      30/04/2018
  last modified:     01/05/2018
- remarks:  Only need to retrieve one record here.
+ remarks:  Only need to retrieve one record here.  TODO add new way of inserting parms
  */
 -(ActivityNSO*) GetActivityContent :(NSString*) RequiredKey {
     
@@ -552,7 +565,7 @@
 /*
  created date:      01/05/2018
  last modified:     01/05/2018
- remarks:           state 1 = idea; state 2 = actual
+ remarks:           state 1 = idea; state 2 = actual  - TODO add new way of inserting parms
  */
 -(NSMutableArray*) GetActivityListContentForState :(NSString*) RequiredProjectKey :(NSNumber*) RequiredState {
     NSMutableArray *activitydata  = [[NSMutableArray alloc] init];
