@@ -8,7 +8,7 @@
 
 #import "MenuVC.h"
 
-@interface MenuVC () <PoiListDelegate, ProjectListDelegate>
+@interface MenuVC () <PoiSearchDelegate, ProjectListDelegate>
 
 @end
 
@@ -64,9 +64,11 @@
     // Pass the selected object to the new view controller.
     
     if([segue.identifier isEqualToString:@"ShowPoiList"]){
-        PoiListVC *controller = (PoiListVC *)segue.destinationViewController;
+        PoiSearchVC *controller = (PoiSearchVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.db = self.db;
+        controller.Project = nil;
+        controller.Activity = nil;
     } else  if([segue.identifier isEqualToString:@"ShowProjectList"]){
         ProjectListVC *controller = (ProjectListVC *)segue.destinationViewController;
         controller.delegate = self;

@@ -115,7 +115,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     30/04/2018
+ last modified:     03/05/2018
  remarks:  ImG todo
  */
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -124,20 +124,20 @@
     if (indexPath.row == NumberOfItems -1) {
         [self performSegueWithIdentifier:@"ShowNewActivity" sender:nil];
     } else {
-        //ActivityListCell *cell=[collectionView dequeueReusableCellWithReuseIdentifier:@"ActivityCellId" forIndexPath:indexPath];
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         ActivityDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ActivityDataEntryViewController"];
         controller.delegate = self;
         controller.db = self.db;
         controller.Activity = [self.activityitems objectAtIndex:indexPath.row];
         ActivityNSO *activity = [self.activityitems objectAtIndex:indexPath.row];
+        
+        NSMutableArray *Images = [[NSMutableArray alloc] init];
+        [Images addObjectsFromArray:activity.poi.Images];
+        
         controller.Activity.poi = [[self.db GetPoiContent:activity.poi.key] firstObject];
         if (activity.poi.Images.count > 0) {
-            PoiImageNSO *imageitem = [activity.poi.Images firstObject];
-            [controller.Activity.poi.Images removeAllObjects];
-            [controller.Activity.poi.Images addObject:imageitem];
+            activity.poi.Images = Images;
         }
-
         controller.Activity.project = self.Project;
         long selectedSegmentState = self.SegmentState.selectedSegmentIndex;
         controller.newitem = false;

@@ -58,6 +58,17 @@
  */
 -(void) LoadPoiData {
     self.poiitems = [self.db GetPoiContent :nil];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *imagesDirectory = [paths objectAtIndex:0];
+    for (PoiNSO *poi in self.poiitems) {
+        if (poi.Images.count > 0) {
+            PoiImageNSO *FirstImageItem = [poi.Images firstObject];
+            NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",FirstImageItem.ImageFileReference]];
+            NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
+            FirstImageItem.Image = [UIImage imageWithData:pngData];
+        }
+    }
+    [self.poifiltereditems removeAllObjects];
     [self.poifiltereditems addObjectsFromArray: self.poiitems];
     [self.TableViewSearchPoiItems reloadData];
 }
@@ -82,16 +93,12 @@
 
 /*
  created date:      30/04/2018
- last modified:     30/04/2018
+ last modified:     03/04/2018
  remarks:
  */
 - (PoiListCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"SearchPoiCellId";
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *imagesDirectory = [paths objectAtIndex:0];
-    
     PoiListCell *cell = [self.TableViewSearchPoiItems dequeueReusableCellWithIdentifier:CellIdentifier];
-    
     if (cell == nil) {
         cell = [[PoiListCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
@@ -104,14 +111,83 @@
         [cell.PoiKeyImage setImage:[UIImage imageNamed:@"Poi"]];
     } else {
         PoiImageNSO *FirstImageItem = [cell.poi.Images firstObject];
-        
-        NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",FirstImageItem.ImageFileReference]];
-        
-        NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
-        
-        cell.PoiKeyImage.image = [UIImage imageWithData:pngData];
+        [cell.PoiKeyImage setImage:FirstImageItem.Image];
     }
     return cell;
+}
+
+
+/*
+ created date:      03/05/2018
+ last modified:     03/05/2018
+ remarks:
+ */
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+
+    static NSString *IDENTIFIER = @"SearchPoiCellId";
+    
+    PoiListCell *cell = [tableView dequeueReusableCellWithIdentifier:IDENTIFIER];
+    if (cell == nil) {
+        cell = [[PoiListCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:IDENTIFIER];
+    }
+
+    PoiNSO *Poi = [self.poifiltereditems objectAtIndex:indexPath.row];
+    
+    if (self.Activity==nil) {
+        /* open Poi view */
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        PoiDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"PoiDataEntryId"];
+        controller.delegate = self;
+        controller.db = self.db;
+        controller.PointOfInterest = Poi;
+        controller.newitem = false;
+        [controller setModalPresentationStyle:UIModalPresentationFullScreen];
+        [self presentViewController:controller animated:YES completion:nil];
+       
+    } else {
+        /* we select project and go onto it's activities! */
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        ActivityDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ActivityDataEntryViewController"];
+        controller.delegate = self;
+        controller.db = self.db;
+        controller.Activity = self.Activity;
+        controller.Activity.project = self.Project;
+        controller.Activity.poi = Poi;
+     
+        controller.transformed = self.transformed;
+        controller.newitem = true;
+        [controller setModalPresentationStyle:UIModalPresentationFullScreen];
+        [self presentViewController:controller animated:YES completion:nil];
+    }
+}
+
+/*
+ created date:      02/05/2018
+ last modified:     02/05/2018
+ remarks:
+ */
+-(NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
+    UITableViewRowAction *deleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Delete" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath)
+                                          {
+                                              
+                                              [self tableView:tableView deletePoi:indexPath];
+                                              self.TableViewSearchPoiItems.editing = NO;
+                                              
+                                          }];
+    
+    deleteAction.backgroundColor = [UIColor redColor];
+    return @[deleteAction];
+}
+/*
+ created date:      02/05/2018
+ last modified:     02/05/2018
+ remarks:           Might not be totally necessary, but seperated out from editActionsForRowAtIndexPath method above.
+ */
+- (void)tableView:(UITableView *)tableView deletePoi:(NSIndexPath *)indexPath  {
+    if ([self.db DeletePoi:[self.poifiltereditems objectAtIndex:indexPath.row]] == true)
+    {
+        [self LoadPoiData];
+    }
 }
 
 
@@ -200,9 +276,8 @@
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     
+    /*
     if([segue.identifier isEqualToString:@"ShowNewActivity"]){
-        
-        
         ActivityDataEntryVC *controller = (ActivityDataEntryVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.db = self.db;
@@ -217,7 +292,9 @@
         }
         controller.transformed = self.transformed;
         controller.newitem = true;
-    } else if([segue.identifier isEqualToString:@"ShowPoiLocator"]){
+    } else
+    */
+    if([segue.identifier isEqualToString:@"ShowPoiLocator"]){
         LocatorVC *controller = (LocatorVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.db = self.db;

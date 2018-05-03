@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "Dal.h"
-#import "PoiListVC.h"
+#import "PoiSearchVC.h"
 #import "ProjectListVC.h"
 
 @interface MenuVC : UIViewController

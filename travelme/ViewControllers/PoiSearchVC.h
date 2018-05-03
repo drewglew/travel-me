@@ -18,7 +18,7 @@
 @protocol PoiSearchDelegate <NSObject>
 @end
 
-@interface PoiSearchVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, ActivityDelegate, LocatorDelegate>
+@interface PoiSearchVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, ActivityDelegate, LocatorDelegate, PoiDataEntryDelegate>
 @property (weak, nonatomic) IBOutlet UISearchBar *SearchBarPoi;
 @property (weak, nonatomic) IBOutlet UITableView *TableViewSearchPoiItems;
 @property (strong, nonatomic) NSMutableArray *poiitems;
@@ -26,6 +26,7 @@
 @property (strong, nonatomic) NSMutableArray *poifiltereditems;
 @property (strong, nonatomic) Dal *db;
 @property (assign) bool newitem;
+
 @property (assign) bool transformed;
 @property (assign) bool isSearching;
 @property (nonatomic, weak) id <PoiSearchDelegate> delegate;

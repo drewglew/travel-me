@@ -45,7 +45,7 @@
 -(void) LoadExistingData {
     self.TextFieldName.text = self.Project.name;
     self.TextViewNotes.text = self.Project.privatenotes;
-    if ([self.Project.imagefilereference isEqualToString:@""]) {
+    if (![self.Project.imagefilereference isEqualToString:@""]) {
         [self.ImageViewProject setImage:self.Project.Image];
     } else {
         [self.ImageViewProject setImage:[UIImage imageNamed:@"Project"]];
