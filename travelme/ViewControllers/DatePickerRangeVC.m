@@ -13,28 +13,50 @@
 @end
 
 @implementation DatePickerRangeVC
-
+@synthesize delegate;
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+
+    self.DatePickerStart.date = self.Activity.startdt;
+    self.DatePickerEnd.date = self.Activity.enddt;
+    
+
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 - (IBAction)BackPressed:(id)sender {
     [self dismissViewControllerAnimated:YES completion:Nil];
 }
+
+- (IBAction)StartDateAdjusted:(id)sender {
+    if (self.DatePickerStart.date > self.DatePickerEnd.date) {
+        self.ButtonAcceptDates.alpha = 0.5f;
+        self.ButtonAcceptDates.enabled = false;
+    } else {
+        self.ButtonAcceptDates.alpha = 1.0f;
+        self.ButtonAcceptDates.enabled = true;
+    }
+}
+
+
+- (IBAction)EndDateAdjusted:(id)sender {
+    if (self.DatePickerStart.date > self.DatePickerEnd.date) {
+        self.ButtonAcceptDates.alpha = 0.5f;
+        self.ButtonAcceptDates.enabled = false;
+    } else {
+        self.ButtonAcceptDates.alpha = 1.0f;
+        self.ButtonAcceptDates.enabled = true;
+    }
+}
+
+- (IBAction)AcceptDatesPressed:(id)sender {
+    [self.delegate didPickDateSelection :self.DatePickerStart.date :self.DatePickerEnd.date];
+    [self dismissViewControllerAnimated:YES completion:Nil];
+    
+}
+- (void)didPickDateSelection :(NSDate*)Start :(NSDate*)End {
+    
+}
+
 
 @end

@@ -34,6 +34,7 @@
 		3A374F152093877F00E5A652 /* PoiNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F142093877F00E5A652 /* PoiNSO.m */; };
 		3A374F1E2093939400E5A652 /* LocatorVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F1D2093939400E5A652 /* LocatorVC.m */; };
 		3A374F212093D55500E5A652 /* PoiDataEntryVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F202093D55500E5A652 /* PoiDataEntryVC.m */; };
+		3A81B509209D80B8005CABDA /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A81B508209D80B8005CABDA /* Photos.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -89,6 +90,7 @@
 		3A374F1D2093939400E5A652 /* LocatorVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LocatorVC.m; sourceTree = "<group>"; };
 		3A374F1F2093D55500E5A652 /* PoiDataEntryVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PoiDataEntryVC.h; sourceTree = "<group>"; };
 		3A374F202093D55500E5A652 /* PoiDataEntryVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PoiDataEntryVC.m; sourceTree = "<group>"; };
+		3A81B508209D80B8005CABDA /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +98,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A81B509209D80B8005CABDA /* Photos.framework in Frameworks */,
 				3A374F0F2093764C00E5A652 /* libsqlite3.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -211,6 +214,7 @@
 		3A374F0B2093762E00E5A652 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3A81B508209D80B8005CABDA /* Photos.framework */,
 				3A374F0E2093764B00E5A652 /* libsqlite3.tbd */,
 				3A374F0C2093762F00E5A652 /* libsqlite3.0.tbd */,
 			);

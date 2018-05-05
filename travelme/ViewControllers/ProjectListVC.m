@@ -91,10 +91,7 @@
     NSInteger NumberOfItems = self.projectitems.count + 1;
     if (indexPath.row == NumberOfItems -1) {
         cell.ImageViewProject.image = [UIImage imageNamed:@"AddItem"];
-        cell.LabelProjectName.text = @"";
         cell.isNewAccessor = true;
-        cell.editButton.hidden = true;
-        cell.deleteButton.hidden = true;
         cell.VisualEffectsViewBlur.hidden = true;
     } else {
         ProjectNSO *project = [self.projectitems objectAtIndex:indexPath.row];
@@ -104,14 +101,16 @@
             cell.ImageViewProject.image = project.Image;
         }
         cell.LabelProjectName.text = project.name;
-        cell.VisualEffectsViewBlur.hidden = false;
+        
         cell.isNewAccessor = false;
         if (self.editmode) {
             cell.editButton.hidden=false;
             cell.deleteButton.hidden=false;
+            cell.VisualEffectsViewBlur.hidden = false;
         } else {
             cell.editButton.hidden=true;
             cell.deleteButton.hidden=true;
+            cell.VisualEffectsViewBlur.hidden = true;
         }
     }
     return cell;
@@ -197,11 +196,15 @@
         ProjectDataEntryVC *controller = (ProjectDataEntryVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.db = self.db;
-         if ([sender isKindOfClass: [UIButton class]]) {
-             UIButton *button = (UIButton *) sender;
-             ProjectListCell *cell = (ProjectListCell*)[[button superview] superview];
-             NSIndexPath *indexPath = [self.CollectionViewProjects indexPathForCell:cell];
-             controller.Project = [self.projectitems objectAtIndex:indexPath.row];
+        if ([sender isKindOfClass: [UIButton class]]) {
+            UIView * cellView=(UIView*)sender;
+            while ((cellView = [cellView superview])) {
+                if([cellView isKindOfClass:[ProjectListCell class]]) {
+                    ProjectListCell *cell = (ProjectListCell*)cellView;
+                    NSIndexPath *indexPath = [self.CollectionViewProjects indexPathForCell:cell];
+                    controller.Project = [self.projectitems objectAtIndex:indexPath.row];
+                }
+            }
          }
         controller.newitem = false;
         controller.deleteitem = false;
@@ -212,10 +215,14 @@
         controller.delegate = self;
         controller.db = self.db;
         if ([sender isKindOfClass: [UIButton class]]) {
-            UIButton *button = (UIButton *) sender;
-            ProjectListCell *cell = (ProjectListCell*)[[button superview] superview];
-            NSIndexPath *indexPath = [self.CollectionViewProjects indexPathForCell:cell];
-            controller.Project = [self.projectitems objectAtIndex:indexPath.row];
+            UIView * cellView=(UIView*)sender;
+            while ((cellView= [cellView superview])) {
+                if([cellView isKindOfClass:[ProjectListCell class]]) {
+                    ProjectListCell *cell = (ProjectListCell*)cellView;
+                    NSIndexPath *indexPath = [self.CollectionViewProjects indexPathForCell:cell];
+                    controller.Project = [self.projectitems objectAtIndex:indexPath.row];
+                }
+            }
         }
         controller.newitem = false;
         controller.deleteitem = true;

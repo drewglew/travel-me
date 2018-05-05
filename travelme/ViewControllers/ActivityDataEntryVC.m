@@ -27,10 +27,23 @@
         [self LoadActivityData];
     } else if (self.transformed) {
         [self LoadActivityData];
+        
+        UIImage *btnImage = [UIImage imageNamed:@"ActivityDone"];
+        [self.ButtonAction setImage:btnImage forState:UIControlStateNormal];
+        [self.ButtonAction setBackgroundColor:[UIColor clearColor]];
     } else if (self.newitem) {
         self.TextFieldName.text = self.Activity.poi.name;
-        self.Activity.startdt = [NSDate date];
-        self.Activity.enddt = [NSDate date];
+        NSCalendar *cal = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        [cal setTimeZone:[NSTimeZone systemTimeZone]];
+        
+        NSDateComponents * comp = [cal components:( NSCalendarUnitYear| NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute) fromDate:[NSDate date]];
+        [comp setMinute:0];
+        [comp setHour:0];
+        [comp setSecond:0];
+        NSDate *startOfToday = [cal dateFromComponents:comp];
+                
+        self.Activity.startdt = startOfToday;
+        self.Activity.enddt = startOfToday;
         self.Activity.costamt = [NSNumber numberWithInteger:200];
         [self LoadPoiData];
     }
@@ -46,8 +59,9 @@
     /* set text data */
     self.TextFieldName.text = self.Activity.name;
     self.TextViewNotes.text = self.Activity.privatenotes;
-    self.Activity.startdt = [NSDate date];
-    self.Activity.enddt = [NSDate date];
+    self.Activity.startdt = self.Activity.startdt;
+    self.Activity.enddt = self.Activity.enddt;
+    [self FormatPrettyDates:self.Activity.startdt :self.Activity.enddt];
     self.Activity.costamt = [NSNumber numberWithInteger:200];
     [self LoadPoiData];
 }
@@ -142,6 +156,10 @@
         controller.PointOfInterest = self.Activity.poi;
         controller.newitem = false;
         controller.readonlyitem = true;
+    } else if ([segue.identifier isEqualToString:@"ShowDateRangePicker"]){
+        DatePickerRangeVC *controller = (DatePickerRangeVC *)segue.destinationViewController;
+        controller.delegate = self;
+        controller.Activity = self.Activity;
     }
 }
 
@@ -152,6 +170,32 @@
  */
 - (IBAction)BackPressed:(id)sender {
     [self dismissViewControllerAnimated:YES completion:Nil];
+}
+
+/*
+ created date:      04/05/2018
+ last modified:     04/05/2018
+ remarks:
+ */
+- (void)didPickDateSelection :(NSDate*)Start :(NSDate*)End {
+    self.Activity.startdt = Start;
+    self.Activity.enddt = End;
+    [self FormatPrettyDates:Start :End];
+}
+/*
+ created date:      04/05/2018
+ last modified:     04/05/2018
+ remarks:
+ */
+-(void)FormatPrettyDates :(NSDate*)Start :(NSDate*)End {
+    NSDateFormatter *dateformatter = [[NSDateFormatter alloc] init];
+    [dateformatter setDateFormat:@"dd MMM yyyy"];
+    NSDateFormatter *timeformatter = [[NSDateFormatter alloc] init];
+    [timeformatter setDateFormat:@"HH:mm"];
+    
+    self.LabelStartDT.text = [NSString stringWithFormat:@"%@\r%@",[dateformatter stringFromDate:Start], [timeformatter stringFromDate:Start]];
+     self.LabelEndDT.text = [NSString stringWithFormat:@"%@\r%@",[dateformatter stringFromDate:End], [timeformatter stringFromDate :End]];
+    
 }
 
 

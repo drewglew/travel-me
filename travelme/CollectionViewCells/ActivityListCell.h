@@ -13,6 +13,10 @@
 @property (strong, nonatomic) ActivityNSO *activity;
 @property (weak, nonatomic) IBOutlet UILabel *LabelName;
 @property (weak, nonatomic) IBOutlet UIVisualEffectView *VisualViewBlur;
+@property (weak, nonatomic) IBOutlet UIView *ViewBackground;
+@property (weak, nonatomic) IBOutlet UIView *ViewAction;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonDelete;
+
 
 
 

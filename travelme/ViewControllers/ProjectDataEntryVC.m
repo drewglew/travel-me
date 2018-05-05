@@ -26,6 +26,12 @@
     if (!self.newitem) {
         if (self.deleteitem) {
             [self.ButtonAction setTitle:@"Del" forState:UIControlStateNormal];
+            
+            UIImage *btnImage = [UIImage imageNamed:@"Delete"];
+            [self.ButtonAction setImage:btnImage forState:UIControlStateNormal];
+            [self.ButtonAction setTitle:@"" forState:UIControlStateNormal];
+            //[self.ButtonAction setBackgroundColor:[UIColor clearColor]];
+            
             self.ButtonEditImage.hidden = true;
             self.LabelInfo.hidden = false;
             self.LabelInfo.text = @"Confirm Deletion";
@@ -105,7 +111,7 @@
 
 /*
  created date:      29/04/2018
- last modified:     29/04/2018
+ last modified:     05/04/2018
  remarks:
  */
 - (IBAction)EditImagePressed:(id)sender {
@@ -119,6 +125,7 @@
     
     NSString *cameraOption = @"Take a photo with the camera";
     NSString *photorollOption = @"Choose a photo from camera roll";
+    NSString *lastphotoOption = @"Select last photo taken";
     
     UIAlertAction *cameraAction = [UIAlertAction actionWithTitle:cameraOption
                                                            style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
@@ -141,7 +148,7 @@
                                                                    picker.allowsEditing = YES;
                                                                    picker.sourceType = UIImagePickerControllerSourceTypeCamera;
                                                                    picker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
-                                                                   
+                                                                
                                                                    [self presentViewController:picker animated:YES completion:NULL];
                                                                    
                                                                }
@@ -152,6 +159,50 @@
                                                            }];
     
     
+    UIAlertAction *lastphotoAction = [UIAlertAction actionWithTitle:lastphotoOption
+                                style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+                                    PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+                                    if (status == PHAuthorizationStatusNotDetermined) {
+                                    // Access has not been determined.
+                                    [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+                                    }];
+                                    }
+                                    
+                                    if (status == PHAuthorizationStatusAuthorized)
+                                    {
+                                        PHImageRequestOptions* options = [[PHImageRequestOptions alloc] init];
+                                        options.version = PHImageRequestOptionsVersionCurrent;
+                                        options.deliveryMode =  PHImageRequestOptionsDeliveryModeHighQualityFormat;
+                                        options.resizeMode = PHImageRequestOptionsResizeModeExact;
+                                        options.synchronous = NO;
+                                        options.networkAccessAllowed =  TRUE;
+    
+                                        PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
+                                        fetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
+                                        PHFetchResult *fetchResult = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeImage options:fetchOptions];
+                                        PHAsset *lastAsset = [fetchResult lastObject];
+
+                                        [[PHImageManager defaultManager] requestImageForAsset:lastAsset
+                                                                               targetSize:self.ImageViewProject.frame.size
+                                                                              contentMode:PHImageContentModeAspectFill
+                                                                                  options:options
+                                                                            resultHandler:^(UIImage *result, NSDictionary *info) {
+                                                                                
+                                                                                dispatch_async(dispatch_get_main_queue(), ^{
+                                                                                    
+                                                                                    self.Project.Image = result;
+                                                                                    self.ImageViewProject.image = result;
+                                                                                    
+                                                                                    if (!self.newitem) {
+                                                                                        self.updatedimage = true;
+                                                                                    }
+                                                                                    
+                                                                                });
+                                                                            }];                                    
+                                    }
+                                }];
+    
+    
     
     UIAlertAction *photorollAction = [UIAlertAction actionWithTitle:photorollOption
                                                               style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
@@ -159,6 +210,7 @@
                                                                   UIImagePickerController *picker = [[UIImagePickerController alloc] init];
                                                                   picker.delegate = self;
                                                                   picker.allowsEditing = YES;
+                                                                  
                                                                   picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
                                                                   [self presentViewController:picker animated:YES completion:nil];
                                                                   
@@ -175,6 +227,7 @@
     
     [alert addAction:cameraAction];
     [alert addAction:photorollAction];
+    [alert addAction:lastphotoAction];
     [alert addAction:cancelAction];
     
     [self presentViewController:alert animated:YES completion:nil];

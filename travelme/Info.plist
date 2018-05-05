@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Travel-Me would like to access your photos so you can access last photo taken.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Travel-Me would like to access your camera.</string>
 	<key>CFBundleDevelopmentRegion</key>

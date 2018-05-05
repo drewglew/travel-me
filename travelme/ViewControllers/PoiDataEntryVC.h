@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
+#import <Photos/Photos.h>
 #import "Dal.h"
 #import "ToolBoxNSO.h"
 #import "PoiImageCell.h"

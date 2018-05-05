@@ -150,7 +150,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     28/04/2018
+ last modified:     05/04/2018
  remarks:
  */
 -(void)InsertPoiImage {
@@ -165,6 +165,7 @@
     
     NSString *cameraOption = @"Take a photo with the camera";
     NSString *photorollOption = @"Choose a photo from camera roll";
+    NSString *lastphotoOption = @"Select last photo taken";
     
     UIAlertAction *cameraAction = [UIAlertAction actionWithTitle:cameraOption
                                                            style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
@@ -212,6 +213,53 @@
                                                                   
                                                               }];
     
+    UIAlertAction *lastphotoAction = [UIAlertAction actionWithTitle:lastphotoOption
+                                    style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+                                    PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+                                    if (status == PHAuthorizationStatusNotDetermined) {
+                                        // Access has not been determined.
+                                        [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+                                        }];
+                                    }
+                                                                  
+                                    if (status == PHAuthorizationStatusAuthorized)
+                                    {
+                                        PHImageRequestOptions* options = [[PHImageRequestOptions alloc] init];
+                                        options.version = PHImageRequestOptionsVersionCurrent;
+                                        options.deliveryMode =  PHImageRequestOptionsDeliveryModeHighQualityFormat;
+                                        options.resizeMode = PHImageRequestOptionsResizeModeExact;
+                                        options.synchronous = NO;
+                                        options.networkAccessAllowed =  TRUE;
+                                                                      
+                                        PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
+                                        fetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
+                                        PHFetchResult *fetchResult = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeImage options:fetchOptions];
+                                        PHAsset *lastAsset = [fetchResult lastObject];
+                                        CGSize size = CGSizeMake(self.TextViewNotes.frame.size.width, self.TextViewNotes.frame.size.width);
+                                        
+                                        [[PHImageManager defaultManager] requestImageForAsset:lastAsset
+                                            targetSize:size
+                                            contentMode:PHImageContentModeAspectFill
+                                            options:options
+                                            resultHandler:^(UIImage *result, NSDictionary *info) {
+                                                                                                                  
+                                                dispatch_async(dispatch_get_main_queue(), ^{
+                                                                                                                     
+                                                    CGSize size = CGSizeMake(self.TextViewNotes.frame.size.width, self.TextViewNotes.frame.size.width);
+                                                    PoiImageNSO *img = [[PoiImageNSO alloc] init];
+                                                    img.Image = [ToolBoxNSO imageWithImage:result scaledToSize:size];;
+                                                    img.KeyImage = 1;
+                                                    [self.PointOfInterest.Images addObject:img];
+                                                    [self.CollectionViewPoiImages reloadData];
+                                                    
+                                                                                                                      
+                                                });
+                                            }];
+                                        }
+                                    }];
+    
+    
+    
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
                                                            style:UIAlertActionStyleCancel handler:^(UIAlertAction * action) {
                                                                NSLog(@"You pressed cancel");
@@ -221,6 +269,7 @@
     
     [alert addAction:cameraAction];
     [alert addAction:photorollAction];
+    [alert addAction:lastphotoAction];
     [alert addAction:cancelAction];
     
     [self presentViewController:alert animated:YES completion:nil];

@@ -23,7 +23,7 @@
     [super viewDidLoad];
     self.CollectionViewActivities.delegate = self;
     self.LabelProject.text =  [NSString stringWithFormat:@"Activities for %@", self.Project.name];
-    
+    self.editmode = false;
     // Do any additional setup after loading the view.
 }
 
@@ -75,7 +75,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     30/04/2018
+ last modified:     04/05/2018
  remarks:
  */
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -86,20 +86,25 @@
     if (indexPath.row == NumberOfItems -1) {
         cell.ImageViewActivity.image = [UIImage imageNamed:@"AddItem"];
         cell.VisualViewBlur.hidden = true;
-        cell.LabelName.hidden = true;
+        cell.ViewBackground.hidden =true;
+        cell.ViewAction.hidden = true;
     } else {
         cell.activity = [self.activityitems objectAtIndex:indexPath.row];
         if (self.SegmentState.selectedSegmentIndex==1) {
             if (cell.activity.activitystate== [NSNumber numberWithInt:0]) {
                 // show blurred image of activity!
+                cell.ButtonDelete.hidden = true;
                 cell.VisualViewBlur.hidden = false;
             } else {
+                cell.ButtonDelete.hidden = false;
                 cell.VisualViewBlur.hidden = true;
             }
         } else {
             cell.VisualViewBlur.hidden = true;
+            cell.ButtonDelete.hidden = false;
         }
-        cell.LabelName.hidden = false;
+        cell.ViewAction.hidden = !self.editmode;
+        cell.ViewBackground.hidden = false;
         cell.LabelName.text = cell.activity.name;
         if (cell.activity.poi.Images.count == 0) {
             cell.ImageViewActivity.image = [UIImage imageNamed:@"Poi"];
@@ -107,7 +112,6 @@
             PoiImageNSO *imageitem = [cell.activity.poi.Images firstObject];
             cell.ImageViewActivity.image = imageitem.Image;
         }
-        
     }
     return cell;
 }
@@ -194,6 +198,13 @@
 - (IBAction)ActivityStateChanged:(id)sender {
     [self LoadActivityData :[NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex]];
 }
+
+- (IBAction)SwitchEditModeChanged:(id)sender {
+    self.editmode = !self.editmode;
+    [self.CollectionViewActivities reloadData];
+}
+
+
 
 
 /*

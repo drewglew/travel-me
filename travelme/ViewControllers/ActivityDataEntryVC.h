@@ -15,12 +15,13 @@
 //#import "ProjectNSO.h"
 #import "PoiImageNSO.h"
 #import "PoiDataEntryVC.h"
+#import "DatePickerRangeVC.h"
 
 
 @protocol ActivityDelegate <NSObject>
 @end
 
-@interface ActivityDataEntryVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, MKMapViewDelegate, PoiDataEntryDelegate>
+@interface ActivityDataEntryVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, MKMapViewDelegate, PoiDataEntryDelegate, SelectDateRangeDelegate>
 
 @property (strong, nonatomic) Dal *db;
 @property (assign) bool newitem;
@@ -32,7 +33,8 @@
 @property (weak, nonatomic) IBOutlet UITextField *TextFieldName;
 @property (weak, nonatomic) IBOutlet UITextView *TextViewNotes;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonAction;
-
+@property (weak, nonatomic) IBOutlet UILabel *LabelStartDT;
+@property (weak, nonatomic) IBOutlet UILabel *LabelEndDT;
 
 
 

@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <Photos/Photos.h>
 #import "ProjectNSO.h"
 #import "Dal.h"
 #import "ToolBoxNSO.h"
