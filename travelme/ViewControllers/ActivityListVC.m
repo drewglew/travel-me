@@ -178,7 +178,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     30/04/2018
+ last modified:     06/05/2018
  remarks:           segue controls .
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -192,6 +192,13 @@
         controller.transformed = false;
         controller.Activity.activitystate = [NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex];
         controller.Project = self.Project;
+    } else if([segue.identifier isEqualToString:@"ShowSchedule"]){
+        ScheduleVC *controller = (ScheduleVC *)segue.destinationViewController;
+        controller.delegate = self;
+        controller.db = self.db;
+        controller.activityitems = self.activityitems;
+        controller.Project = self.Project;
+        controller.ActivityState = [NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex];
     }
 }
 
@@ -203,8 +210,6 @@
     self.editmode = !self.editmode;
     [self.CollectionViewActivities reloadData];
 }
-
-
 
 
 /*

@@ -35,6 +35,10 @@
 		3A374F1E2093939400E5A652 /* LocatorVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F1D2093939400E5A652 /* LocatorVC.m */; };
 		3A374F212093D55500E5A652 /* PoiDataEntryVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F202093D55500E5A652 /* PoiDataEntryVC.m */; };
 		3A81B509209D80B8005CABDA /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A81B508209D80B8005CABDA /* Photos.framework */; };
+		3A81B50C209D90CA005CABDA /* AlphaView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A81B50B209D90CA005CABDA /* AlphaView.m */; };
+		3AFE356D209E462500C46180 /* ScheduleVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AFE356C209E462500C46180 /* ScheduleVC.m */; };
+		3AFE3570209E4ADA00C46180 /* ScheduleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AFE356F209E4ADA00C46180 /* ScheduleCell.m */; };
+		3AFE3573209E504F00C46180 /* ScheduleNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AFE3572209E504F00C46180 /* ScheduleNSO.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -91,6 +95,14 @@
 		3A374F1F2093D55500E5A652 /* PoiDataEntryVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PoiDataEntryVC.h; sourceTree = "<group>"; };
 		3A374F202093D55500E5A652 /* PoiDataEntryVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PoiDataEntryVC.m; sourceTree = "<group>"; };
 		3A81B508209D80B8005CABDA /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
+		3A81B50A209D90CA005CABDA /* AlphaView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AlphaView.h; sourceTree = "<group>"; };
+		3A81B50B209D90CA005CABDA /* AlphaView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AlphaView.m; sourceTree = "<group>"; };
+		3AFE356B209E462500C46180 /* ScheduleVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScheduleVC.h; sourceTree = "<group>"; };
+		3AFE356C209E462500C46180 /* ScheduleVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScheduleVC.m; sourceTree = "<group>"; };
+		3AFE356E209E4ADA00C46180 /* ScheduleCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScheduleCell.h; sourceTree = "<group>"; };
+		3AFE356F209E4ADA00C46180 /* ScheduleCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScheduleCell.m; sourceTree = "<group>"; };
+		3AFE3571209E504F00C46180 /* ScheduleNSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScheduleNSO.h; sourceTree = "<group>"; };
+		3AFE3572209E504F00C46180 /* ScheduleNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScheduleNSO.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,6 +125,8 @@
 				3A374F11209386F700E5A652 /* PoiListCell.m */,
 				3A224CAA2094736200075457 /* SearchResultListCell.h */,
 				3A224CAB2094736200075457 /* SearchResultListCell.m */,
+				3AFE356E209E4ADA00C46180 /* ScheduleCell.h */,
+				3AFE356F209E4ADA00C46180 /* ScheduleCell.m */,
 			);
 			path = TableViewCells;
 			sourceTree = "<group>";
@@ -188,6 +202,8 @@
 				3A224CC82097950600075457 /* ActivityDataEntryVC.m */,
 				3A224CCA2097B39F00075457 /* DatePickerRangeVC.h */,
 				3A224CCB2097B39F00075457 /* DatePickerRangeVC.m */,
+				3AFE356B209E462500C46180 /* ScheduleVC.h */,
+				3AFE356C209E462500C46180 /* ScheduleVC.m */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -207,6 +223,10 @@
 				3A224CC220976B1100075457 /* ActivityNSO.m */,
 				3A224CCD209A178700075457 /* ToolBoxNSO.h */,
 				3A224CCE209A178700075457 /* ToolBoxNSO.m */,
+				3A81B50A209D90CA005CABDA /* AlphaView.h */,
+				3A81B50B209D90CA005CABDA /* AlphaView.m */,
+				3AFE3571209E504F00C46180 /* ScheduleNSO.h */,
+				3AFE3572209E504F00C46180 /* ScheduleNSO.m */,
 			);
 			path = GenericObjects;
 			sourceTree = "<group>";
@@ -300,6 +320,7 @@
 				3A224CC62097792800075457 /* PoiSearchVC.m in Sources */,
 				3A374F032093735300E5A652 /* ProjectListVC.m in Sources */,
 				3A374F152093877F00E5A652 /* PoiNSO.m in Sources */,
+				3AFE356D209E462500C46180 /* ScheduleVC.m in Sources */,
 				3A224CCF209A178700075457 /* ToolBoxNSO.m in Sources */,
 				3A374F0A2093754200E5A652 /* Dal.m in Sources */,
 				3A374EF420936A9600E5A652 /* main.m in Sources */,
@@ -309,11 +330,14 @@
 				3A224CA62094338D00075457 /* PoiImageCell.m in Sources */,
 				3A374F12209386F700E5A652 /* PoiListCell.m in Sources */,
 				3A224CAF2094946800075457 /* PoiImageNSO.m in Sources */,
+				3AFE3573209E504F00C46180 /* ScheduleNSO.m in Sources */,
 				3A224CB72095E5D900075457 /* ProjectListCell.m in Sources */,
+				3AFE3570209E4ADA00C46180 /* ScheduleCell.m in Sources */,
 				3A224CCC2097B39F00075457 /* DatePickerRangeVC.m in Sources */,
 				3A374F212093D55500E5A652 /* PoiDataEntryVC.m in Sources */,
 				3A224CB42095E13600075457 /* ProjectNSO.m in Sources */,
 				3A374EE620936A9300E5A652 /* AppDelegate.m in Sources */,
+				3A81B50C209D90CA005CABDA /* AlphaView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

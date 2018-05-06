@@ -13,11 +13,12 @@
 #import "PoiSearchVC.h"
 #import "ActivityDataEntryVC.h"
 #import "PoiImageNSO.h"
+#import "ScheduleVC.h"
 
 @protocol ActivityListDelegate <NSObject>
 @end
 
-@interface ActivityListVC : UIViewController <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, PoiSearchDelegate, ActivityDelegate>
+@interface ActivityListVC : UIViewController <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, PoiSearchDelegate, ActivityDelegate, ScheduleListDelegate>
 
 @property (strong, nonatomic) Dal *db;
 @property (assign) bool editmode;

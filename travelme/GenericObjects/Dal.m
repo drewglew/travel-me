@@ -495,7 +495,7 @@
     
     if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
    
-        NSString *selectSQL = [NSString stringWithFormat:@"SELECT projectkey, poikey, key, name, notes, totalprice, startdt, enddt, state FROM activity WHERE key='%@' ORDER BY name", RequiredKey];
+        NSString *selectSQL = [NSString stringWithFormat:@"SELECT projectkey, poikey, key, name, notes, totalprice, startdt, enddt, state FROM activity WHERE key='%@' ORDER BY startdt", RequiredKey];
         
         const char *select_statement = [selectSQL UTF8String];
         
@@ -578,12 +578,12 @@
 
         if ([RequiredState intValue] == 0) {
             /* Ideas */
-            selectSQL = [NSString stringWithFormat:@"SELECT projectkey, poikey, key, name, notes, totalprice, startdt, enddt, state FROM activity WHERE projectkey='%@' AND state=0 ORDER BY name", RequiredProjectKey];
+            selectSQL = [NSString stringWithFormat:@"SELECT projectkey, poikey, key, name, notes, totalprice, startdt, enddt, state FROM activity WHERE projectkey='%@' AND state=0 ORDER BY startdt", RequiredProjectKey];
         }
         else
         {
             
-            selectSQL = [NSString stringWithFormat:@"SELECT projectkey, poikey, activity.key, name, notes, totalprice, startdt, enddt, activity.state FROM activity, (select max(state) as maxstate, key from activity group by key) data where activity.key=data.key and activity.state=data.maxstate and projectkey='%@' ORDER BY name", RequiredProjectKey];
+            selectSQL = [NSString stringWithFormat:@"SELECT projectkey, poikey, activity.key, name, notes, totalprice, startdt, enddt, activity.state FROM activity, (select max(state) as maxstate, key from activity group by key) data where activity.key=data.key and activity.state=data.maxstate and projectkey='%@' ORDER BY startdt", RequiredProjectKey];
             
         }
         
@@ -822,6 +822,51 @@
     return returnValue;
 }
 
+/*
+ created date:      05/05/2018
+ last modified:     06/05/2018
+ remarks:
+ */
+-(NSMutableArray*) GetActivitySchedule :(NSString *) ProjectKey :(NSNumber *) RequiredState {
 
+    NSMutableArray *activityschedulelist  = [[NSMutableArray alloc] init];
+    
+    sqlite3_stmt *statement;
+    const char *dbpath = [_databasePath UTF8String];
+    
+    if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
+        NSString *selectSQL;
+        if (RequiredState == [NSNumber numberWithLong:0]) {
+           selectSQL = [NSString stringWithFormat:@"select activity.key, activity.name, activity.startdt as dt, 'open' as legtype, activity.state from activity where projectkey = '%@' and activity.state = 0 union select activity.key, activity.name, activity.enddt as dt, 'close' as legtype, activity.state from activity where projectkey = '%@' and activity.state = 0 order by dt", ProjectKey, ProjectKey];
+        } else {
+            selectSQL = [NSString stringWithFormat:@"select activity.key, activity.name, activity.startdt as dt, 'open' as legtype, activity.state from activity, (select max(state) as maxstate, key from activity group by key) data where projectkey = '%@'  and activity.state = data.maxstate union select activity.key, activity.name, activity.enddt as dt, 'close' as legtype, activity.state from activity, (select max(state) as maxstate, key from activity group by key) data where projectkey = '%@' and activity.state = data.maxstate order by dt", ProjectKey, ProjectKey];
+        }
+        
+        const char *select_statement = [selectSQL UTF8String];
+        
+        if (sqlite3_prepare_v2(_DB, select_statement, -1, &statement, NULL) == SQLITE_OK)
+        {
+            while (sqlite3_step(statement) == SQLITE_ROW)
+            {
+                ScheduleNSO *schedule = [[ScheduleNSO alloc] init];
+                schedule.key = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 0)];
+                schedule.name = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 1)];
+                schedule.dt = [schedule GetDtFromString :[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 2)]];
+                schedule.type = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 3)];
+                schedule.activitystate = [NSNumber numberWithInt:sqlite3_column_int(statement, 4)];
+                [activityschedulelist addObject:schedule];
+                
+            }
+        }
+        sqlite3_finalize(statement);
+        sqlite3_close(_DB);
+    } else {
+        NSLog(@"Cannot open database");
+    }
+    
+    
+    
+    return activityschedulelist;
+ }
 
 @end

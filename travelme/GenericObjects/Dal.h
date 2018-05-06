@@ -12,6 +12,7 @@
 #import "PoiImageNSO.h"
 #import "ProjectNSO.h"
 #import "ActivityNSO.h"
+#import "ScheduleNSO.h"
 
 
 @interface Dal : NSObject
@@ -35,5 +36,6 @@
 -(NSMutableArray*) GetProjectContent :(NSString*) RequiredKey;
 -(NSMutableArray*) GetActivityContent :(NSString*) RequiredKey;
 -(NSMutableArray*) GetActivityListContentForState :(NSString*) RequiredProjectKey :(NSNumber*) RequiredState;
+-(NSMutableArray*) GetActivitySchedule :(NSString *) ProjectKey :(NSNumber*) RequiredState;
 
 @end
