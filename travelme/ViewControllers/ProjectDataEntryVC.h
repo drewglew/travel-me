@@ -9,14 +9,13 @@
 #import <UIKit/UIKit.h>
 #import <Photos/Photos.h>
 #import "ProjectNSO.h"
-#import "Dal.h"
+#import "AppDelegate.h"
 #import "ToolBoxNSO.h"
 @protocol ProjectDataEntryDelegate <NSObject>
 @end
 
 @interface ProjectDataEntryVC : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
-@property (strong, nonatomic) Dal *db;
 @property (strong, nonatomic) ProjectNSO *Project;
 @property (weak, nonatomic) IBOutlet UIView *ViewProjectImage;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewProject;

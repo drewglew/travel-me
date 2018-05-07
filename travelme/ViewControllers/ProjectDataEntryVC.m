@@ -83,10 +83,10 @@
         self.Project.privatenotes = self.TextViewNotes.text;
         self.Project.name = self.TextFieldName.text;
     
-        [self.db InsertProjectItem :self.Project];
+        [AppDelegateDef.Db InsertProjectItem :self.Project];
     }
     else if (self.deleteitem) {
-        [self.db DeleteProject:self.Project];
+        [AppDelegateDef.Db DeleteProject:self.Project];
     }
     else
     {
@@ -103,7 +103,7 @@
             }
             self.Project.privatenotes = self.TextViewNotes.text;
             self.Project.name = self.TextFieldName.text;
-            [self.db UpdateProjectItem :self.Project];
+            [AppDelegateDef.Db UpdateProjectItem :self.Project];
         }
     }
     [self dismissViewControllerAnimated:YES completion:Nil];

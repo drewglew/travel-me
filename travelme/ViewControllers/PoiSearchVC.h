@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "Dal.h"
+#import "AppDelegate.h"
 #import "ActivityNSO.h"
 #import "PoiNSO.h"
 #import "PoiListCell.h"
@@ -24,9 +24,7 @@
 @property (strong, nonatomic) NSMutableArray *poiitems;
 @property (strong, nonatomic) PoiNSO *PointOfInterest;
 @property (strong, nonatomic) NSMutableArray *poifiltereditems;
-@property (strong, nonatomic) Dal *db;
 @property (assign) bool newitem;
-
 @property (assign) bool transformed;
 @property (assign) bool isSearching;
 @property (nonatomic, weak) id <PoiSearchDelegate> delegate;

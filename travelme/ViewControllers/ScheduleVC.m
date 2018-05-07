@@ -38,7 +38,7 @@
  remarks:
  */
 -(void) LoadScheduleData {
-    self.scheduleitems = [self.db GetActivitySchedule:self.Project.key :self.ActivityState];
+    self.scheduleitems = [AppDelegateDef.Db GetActivitySchedule:self.Project.key :self.ActivityState];
     
     
     for (ScheduleNSO *schedule in self.scheduleitems) {

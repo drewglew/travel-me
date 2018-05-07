@@ -38,7 +38,7 @@
  remarks:
  */
 -(void) LoadProjectData {
-    self.projectitems = [self.db GetProjectContent :nil];
+    self.projectitems = [AppDelegateDef.Db GetProjectContent :nil];
     [self LoadSupportingData];
     [self.CollectionViewProjects reloadData];
 }
@@ -134,7 +134,6 @@
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         ActivityListVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ActivityListViewController"];
         controller.delegate = self;
-        controller.db = self.db;
         controller.Project = [self.projectitems objectAtIndex:indexPath.row];
         [controller setModalPresentationStyle:UIModalPresentationFullScreen];
         [self presentViewController:controller animated:YES completion:nil];
@@ -195,7 +194,6 @@
     if([segue.identifier isEqualToString:@"ShowUpdateProject"]){
         ProjectDataEntryVC *controller = (ProjectDataEntryVC *)segue.destinationViewController;
         controller.delegate = self;
-        controller.db = self.db;
         if ([sender isKindOfClass: [UIButton class]]) {
             UIView * cellView=(UIView*)sender;
             while ((cellView = [cellView superview])) {
@@ -213,7 +211,6 @@
     } else if([segue.identifier isEqualToString:@"ShowDeleteProject"]){
         ProjectDataEntryVC *controller = (ProjectDataEntryVC *)segue.destinationViewController;
         controller.delegate = self;
-        controller.db = self.db;
         if ([sender isKindOfClass: [UIButton class]]) {
             UIView * cellView=(UIView*)sender;
             while ((cellView= [cellView superview])) {
@@ -230,7 +227,6 @@
     } else if([segue.identifier isEqualToString:@"ShowNewProject"]){
         ProjectDataEntryVC *controller = (ProjectDataEntryVC *)segue.destinationViewController;
         controller.delegate = self;
-        controller.db = self.db;
         controller.Project = [[ProjectNSO alloc] init];
         controller.newitem = true;
         controller.deleteitem = false;

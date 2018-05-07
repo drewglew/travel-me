@@ -128,7 +128,7 @@
     if (self.newitem || self.transformed) {
         /* working */
         if (self.newitem) self.Activity.key = [[NSUUID UUID] UUIDString];
-        [self.db InsertActivityItem:self.Activity];
+        [AppDelegateDef.Db InsertActivityItem:self.Activity];
         // double dismissing so we flow back to the activity window bypassing the search..
         if (self.newitem) {
             [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
@@ -136,7 +136,7 @@
            [self dismissViewControllerAnimated:YES completion:Nil];
         }
     } else {
-        [self.db UpdateActivityItem:self.Activity];
+        [AppDelegateDef.Db UpdateActivityItem:self.Activity];
         [self dismissViewControllerAnimated:YES completion:Nil];
     }
 }
@@ -152,7 +152,6 @@
     if([segue.identifier isEqualToString:@"ShowPoiDetail"]){
         PoiDataEntryVC *controller = (PoiDataEntryVC *)segue.destinationViewController;
         controller.delegate = self;
-        controller.db = self.db;
         controller.PointOfInterest = self.Activity.poi;
         controller.newitem = false;
         controller.readonlyitem = true;
@@ -160,6 +159,11 @@
         DatePickerRangeVC *controller = (DatePickerRangeVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.Activity = self.Activity;
+    } else if ([segue.identifier isEqualToString:@"ShowDirections"]){
+        // todo
+        DirectionsVC *controller = (DirectionsVC *)segue.destinationViewController;
+        controller.delegate = self;
+        controller.LocationToCoord = CLLocationCoordinate2DMake([self.Activity.poi.lat doubleValue], [self.Activity.poi.lon doubleValue]);
     }
 }
 

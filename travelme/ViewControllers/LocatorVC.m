@@ -20,6 +20,8 @@ MKLocalSearchResponse *results;
 @synthesize delegate;
 @synthesize PointOfInterest;
 
+
+
 /*
  created date:      27/04/2018
  last modified:     28/04/2018
@@ -43,12 +45,18 @@ MKLocalSearchResponse *results;
     self.PointOfInterest.Images  = [[NSMutableArray alloc] init];
     self.PointOfInterest.Links = [[NSMutableArray alloc] init];
     self.TableViewSearchResult.rowHeight = 70;
+    
+
+
+    
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+-(void) viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+
 }
+
+
 
 /*
  created date:      27/04/2018
@@ -70,7 +78,7 @@ MKLocalSearchResponse *results;
             if (error) {
                 NSLog(@"%@", [NSString stringWithFormat:@"%@", error.localizedDescription]);
             } else {
-                MKPointAnnotation *anno = [[MKPointAnnotation alloc] init];
+                AnnotationMK *anno = [[AnnotationMK alloc] init];
                 if ([placemarks count]>0) {
                     CLPlacemark *placemark = [placemarks firstObject];
                     anno.coordinate = placemark.location.coordinate;
@@ -82,7 +90,12 @@ MKLocalSearchResponse *results;
                     
                     anno.subtitle = [NSString stringWithFormat:@"%@, %@", AdminArea, placemark.ISOcountryCode ];
                     
-                    
+                    anno.Country = placemark.country;
+                    anno.SubLocality = placemark.subLocality;
+                    anno.Locality = placemark.locality;
+                    anno.PostCode = placemark.postalCode;
+                    anno.CountryCode = placemark.ISOcountryCode;
+
                     //anno.subtitle = placemark.subLocality;
                     [self.MapView addAnnotation:anno];
                     [self.MapView selectAnnotation:anno animated:true];
@@ -115,6 +128,7 @@ MKLocalSearchResponse *results;
     request.region = self.MapView.region;
     
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    
     localSearch = [[MKLocalSearch alloc] initWithRequest:request];
     
     [localSearch startWithCompletionHandler:^(MKLocalSearchResponse *response, NSError *error){
@@ -187,7 +201,7 @@ MKLocalSearchResponse *results;
     
     MKMapItem *item = results.mapItems[indexPath.row];
     
-    MKPointAnnotation *anno = [[MKPointAnnotation alloc] init];
+    AnnotationMK *anno = [[AnnotationMK alloc] init];
     anno.title = item.name;
     
     NSString *AdminArea = item.placemark.subAdministrativeArea;
@@ -196,6 +210,13 @@ MKLocalSearchResponse *results;
     }
     
     anno.subtitle = [NSString stringWithFormat:@"%@, %@", AdminArea,item.placemark.countryCode ];
+    
+    anno.Country = item.placemark.country;
+    anno.SubLocality = item.placemark.subLocality;
+    anno.Locality = item.placemark.locality;
+    anno.PostCode = item.placemark.postalCode;
+    anno.CountryCode = item.placemark.countryCode;
+    
     anno.coordinate = item.placemark.coordinate;
     
     [self.MapView addAnnotation:anno];
@@ -218,26 +239,42 @@ MKLocalSearchResponse *results;
 }
 /*
  created date:      27/04/2018
- last modified:     28/04/2018
+ last modified:     07/05/2018
  remarks:
  */
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view {
-    self.PointOfInterest.name = view.annotation.title;
-    self.PointOfInterest.administrativearea = view.annotation.subtitle;
-    self.PointOfInterest.lat = [NSNumber numberWithDouble:view.annotation.coordinate.latitude];
-    self.PointOfInterest.lon = [NSNumber numberWithDouble:view.annotation.coordinate.longitude];
-    self.PointOfInterest.Coordinates = view.annotation.coordinate;
+    
+    AnnotationMK *annotation = (AnnotationMK *)[view annotation];
+    self.PointOfInterest.name = annotation.title;
+    self.PointOfInterest.administrativearea = annotation.subtitle;
+    self.PointOfInterest.lat = [NSNumber numberWithDouble:annotation.coordinate.latitude];
+    self.PointOfInterest.lon = [NSNumber numberWithDouble:annotation.coordinate.longitude];
+    self.PointOfInterest.Coordinates = annotation.coordinate;
+    self.PointOfInterest.country = annotation.Country;
+    self.PointOfInterest.countrycode = annotation.CountryCode;
+    self.PointOfInterest.locality = annotation.Locality;
+    self.PointOfInterest.sublocality = annotation.SubLocality;
+    self.PointOfInterest.postcode = annotation.PostCode;
+    self.PointOfInterest.subadministrativearea = annotation.SubAdministrativeArea;
 }
 
 /*
  created date:      27/04/2018
- last modified:     28/04/2018
+ last modified:     07/05/2018
  remarks:
  */
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view {
     
+    //AnnotationMK *annotation = (AnnotationMK *)[view annotation];
+    
     self.PointOfInterest.name = @"";
     self.PointOfInterest.administrativearea = @"";
+    self.PointOfInterest.subadministrativearea = @"";
+    self.PointOfInterest.locality = @"";
+    self.PointOfInterest.sublocality = @"";
+    self.PointOfInterest.postcode = @"";
+    self.PointOfInterest.country = @"";
+    self.PointOfInterest.countrycode = @"";
     self.PointOfInterest.Coordinates = kCLLocationCoordinate2DInvalid;
     self.PointOfInterest.lat = [NSNumber numberWithDouble:0];
     self.PointOfInterest.lon = [NSNumber numberWithDouble:0];
@@ -300,14 +337,12 @@ MKLocalSearchResponse *results;
     if([segue.identifier isEqualToString:@"ShowPoiWithMapData"]){
         PoiDataEntryVC *controller = (PoiDataEntryVC *)segue.destinationViewController;
         controller.delegate = self;
-        controller.db = self.db;
         controller.PointOfInterest = self.PointOfInterest;
         controller.newitem = true;
         controller.readonlyitem = false;
     } else if([segue.identifier isEqualToString:@"ShowPoiWithoutMapData"]){
         PoiDataEntryVC *controller = (PoiDataEntryVC *)segue.destinationViewController;
         controller.delegate = self;
-        controller.db = self.db;
         controller.PointOfInterest = self.PointOfInterest;
         controller.newitem = true;
         controller.readonlyitem = false;

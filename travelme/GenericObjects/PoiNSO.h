@@ -14,14 +14,18 @@
 @property (nonatomic) NSString *name;
 @property (nonatomic) NSNumber *categoryid;
 @property (nonatomic) NSString *countrykey;
+@property (nonatomic) NSString *country;
 @property (nonatomic) NSString *countrycode;
 @property (nonatomic) NSString *administrativearea;
+@property (nonatomic) NSString *subadministrativearea;
 @property (nonatomic) NSString *privatenotes;
 @property (nonatomic) NSString *locality;
+@property (nonatomic) NSString *sublocality;
 @property (nonatomic) NSString *postcode;
 @property (nonatomic) NSString *searchstring;
 @property (nonatomic) NSNumber *lat;
 @property (nonatomic) NSNumber *lon;
+
 @property (nonatomic) NSNumber *connectedactivitycount;
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;
 @property (strong, nonatomic) NSMutableArray *Images;

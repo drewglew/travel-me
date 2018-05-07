@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "ProjectNSO.h"
-#import "Dal.h"
+#import "AppDelegate.h"
 #import "ActivityListCell.h"
 #import "PoiSearchVC.h"
 #import "ActivityDataEntryVC.h"
@@ -20,7 +20,6 @@
 
 @interface ActivityListVC : UIViewController <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, PoiSearchDelegate, ActivityDelegate, ScheduleListDelegate>
 
-@property (strong, nonatomic) Dal *db;
 @property (assign) bool editmode;
 @property (strong, nonatomic) ProjectNSO *Project;
 @property (nonatomic, weak) id <ActivityListDelegate> delegate;

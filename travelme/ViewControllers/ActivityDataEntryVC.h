@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
-#import "Dal.h"
+#import "AppDelegate.h"
 #import "ActivityNSO.h"
 //#import "PoiNSO.h"
 #import "PoiListCell.h"
@@ -16,14 +16,14 @@
 #import "PoiImageNSO.h"
 #import "PoiDataEntryVC.h"
 #import "DatePickerRangeVC.h"
+#import "DirectionsVC.h"
 
 
 @protocol ActivityDelegate <NSObject>
 @end
 
-@interface ActivityDataEntryVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, MKMapViewDelegate, PoiDataEntryDelegate, SelectDateRangeDelegate>
+@interface ActivityDataEntryVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, MKMapViewDelegate, PoiDataEntryDelegate, SelectDateRangeDelegate, DirectionsDelegate>
 
-@property (strong, nonatomic) Dal *db;
 @property (assign) bool newitem;
 @property (assign) bool transformed;
 @property (nonatomic, weak) id <ActivityDelegate> delegate;

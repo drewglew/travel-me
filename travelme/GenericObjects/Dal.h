@@ -13,6 +13,7 @@
 #import "ProjectNSO.h"
 #import "ActivityNSO.h"
 #import "ScheduleNSO.h"
+#import "CountryNSO.h"
 
 
 @interface Dal : NSObject
@@ -20,9 +21,11 @@
 @property (strong, nonatomic) NSString *databasePath;
 @property (nonatomic) sqlite3 *DB;
 
--(bool) Init :(NSString*) databaseName;
--(bool) Create;
--(void) Delete;
+-(bool) InitDb :(NSString*) databaseName;
+-(void) CloseDb;
+-(bool) CreateDb;
+-(void) DeleteDb;
+
 -(bool) InsertPoiItem :(PoiNSO*) Poi;
 -(bool) UpdatePoiItem :(PoiNSO*) Poi;
 -(bool) InsertProjectItem :(ProjectNSO*) Project;

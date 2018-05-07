@@ -27,7 +27,6 @@
 		3A374EF420936A9600E5A652 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374EF320936A9600E5A652 /* main.m */; };
 		3A374EFC209372CC00E5A652 /* MenuVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374EFB209372CC00E5A652 /* MenuVC.m */; };
 		3A374F032093735300E5A652 /* ProjectListVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F022093735300E5A652 /* ProjectListVC.m */; };
-		3A374F062093737700E5A652 /* PoiListVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F052093737700E5A652 /* PoiListVC.m */; };
 		3A374F0A2093754200E5A652 /* Dal.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F092093754200E5A652 /* Dal.m */; };
 		3A374F0F2093764C00E5A652 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A374F0E2093764B00E5A652 /* libsqlite3.tbd */; };
 		3A374F12209386F700E5A652 /* PoiListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F11209386F700E5A652 /* PoiListCell.m */; };
@@ -36,6 +35,10 @@
 		3A374F212093D55500E5A652 /* PoiDataEntryVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F202093D55500E5A652 /* PoiDataEntryVC.m */; };
 		3A81B509209D80B8005CABDA /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A81B508209D80B8005CABDA /* Photos.framework */; };
 		3A81B50C209D90CA005CABDA /* AlphaView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A81B50B209D90CA005CABDA /* AlphaView.m */; };
+		3A9F73A320A0FB5A00D61666 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 3A9F73A220A0FB5A00D61666 /* Settings.bundle */; };
+		3AEE018B209F3BC700AE260E /* DirectionsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEE018A209F3BC600AE260E /* DirectionsVC.m */; };
+		3AEE018F20A0B05700AE260E /* AnnotationMK.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEE018E20A0B05700AE260E /* AnnotationMK.m */; };
+		3AEE019220A0CBB100AE260E /* CountryNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEE019120A0CBB100AE260E /* CountryNSO.m */; };
 		3AFE356D209E462500C46180 /* ScheduleVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AFE356C209E462500C46180 /* ScheduleVC.m */; };
 		3AFE3570209E4ADA00C46180 /* ScheduleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AFE356F209E4ADA00C46180 /* ScheduleCell.m */; };
 		3AFE3573209E504F00C46180 /* ScheduleNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AFE3572209E504F00C46180 /* ScheduleNSO.m */; };
@@ -80,8 +83,6 @@
 		3A374EFB209372CC00E5A652 /* MenuVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MenuVC.m; sourceTree = "<group>"; };
 		3A374F012093735300E5A652 /* ProjectListVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProjectListVC.h; sourceTree = "<group>"; };
 		3A374F022093735300E5A652 /* ProjectListVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ProjectListVC.m; sourceTree = "<group>"; };
-		3A374F042093737700E5A652 /* PoiListVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PoiListVC.h; sourceTree = "<group>"; };
-		3A374F052093737700E5A652 /* PoiListVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PoiListVC.m; sourceTree = "<group>"; };
 		3A374F082093754200E5A652 /* Dal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Dal.h; sourceTree = "<group>"; };
 		3A374F092093754200E5A652 /* Dal.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Dal.m; sourceTree = "<group>"; };
 		3A374F0C2093762F00E5A652 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
@@ -97,6 +98,13 @@
 		3A81B508209D80B8005CABDA /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		3A81B50A209D90CA005CABDA /* AlphaView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AlphaView.h; sourceTree = "<group>"; };
 		3A81B50B209D90CA005CABDA /* AlphaView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AlphaView.m; sourceTree = "<group>"; };
+		3A9F73A220A0FB5A00D61666 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		3AEE0189209F3BC600AE260E /* DirectionsVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DirectionsVC.h; sourceTree = "<group>"; };
+		3AEE018A209F3BC600AE260E /* DirectionsVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DirectionsVC.m; sourceTree = "<group>"; };
+		3AEE018D20A0B05700AE260E /* AnnotationMK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AnnotationMK.h; sourceTree = "<group>"; };
+		3AEE018E20A0B05700AE260E /* AnnotationMK.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AnnotationMK.m; sourceTree = "<group>"; };
+		3AEE019020A0CBB100AE260E /* CountryNSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CountryNSO.h; sourceTree = "<group>"; };
+		3AEE019120A0CBB100AE260E /* CountryNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CountryNSO.m; sourceTree = "<group>"; };
 		3AFE356B209E462500C46180 /* ScheduleVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScheduleVC.h; sourceTree = "<group>"; };
 		3AFE356C209E462500C46180 /* ScheduleVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScheduleVC.m; sourceTree = "<group>"; };
 		3AFE356E209E4ADA00C46180 /* ScheduleCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScheduleCell.h; sourceTree = "<group>"; };
@@ -147,6 +155,7 @@
 		3A374ED820936A9200E5A652 = {
 			isa = PBXGroup;
 			children = (
+				3A9F73A220A0FB5A00D61666 /* Settings.bundle */,
 				3A374EE320936A9300E5A652 /* travelme */,
 				3A374EE220936A9300E5A652 /* Products */,
 				3A374F0B2093762E00E5A652 /* Frameworks */,
@@ -190,8 +199,6 @@
 				3A224CB92095F1DF00075457 /* ProjectDataEntryVC.m */,
 				3A374F1C2093939400E5A652 /* LocatorVC.h */,
 				3A374F1D2093939400E5A652 /* LocatorVC.m */,
-				3A374F042093737700E5A652 /* PoiListVC.h */,
-				3A374F052093737700E5A652 /* PoiListVC.m */,
 				3A374F1F2093D55500E5A652 /* PoiDataEntryVC.h */,
 				3A374F202093D55500E5A652 /* PoiDataEntryVC.m */,
 				3A224CBB2095F1FD00075457 /* ActivityListVC.h */,
@@ -204,6 +211,8 @@
 				3A224CCB2097B39F00075457 /* DatePickerRangeVC.m */,
 				3AFE356B209E462500C46180 /* ScheduleVC.h */,
 				3AFE356C209E462500C46180 /* ScheduleVC.m */,
+				3AEE0189209F3BC600AE260E /* DirectionsVC.h */,
+				3AEE018A209F3BC600AE260E /* DirectionsVC.m */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -227,6 +236,10 @@
 				3A81B50B209D90CA005CABDA /* AlphaView.m */,
 				3AFE3571209E504F00C46180 /* ScheduleNSO.h */,
 				3AFE3572209E504F00C46180 /* ScheduleNSO.m */,
+				3AEE018D20A0B05700AE260E /* AnnotationMK.h */,
+				3AEE018E20A0B05700AE260E /* AnnotationMK.m */,
+				3AEE019020A0CBB100AE260E /* CountryNSO.h */,
+				3AEE019120A0CBB100AE260E /* CountryNSO.m */,
 			);
 			path = GenericObjects;
 			sourceTree = "<group>";
@@ -298,6 +311,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A9F73A320A0FB5A00D61666 /* Settings.bundle in Resources */,
 				3A374EF120936A9600E5A652 /* LaunchScreen.storyboard in Resources */,
 				3A374EEE20936A9600E5A652 /* Assets.xcassets in Resources */,
 				3A374EEC20936A9300E5A652 /* Main.storyboard in Resources */,
@@ -313,12 +327,12 @@
 			files = (
 				3A224CBA2095F1DF00075457 /* ProjectDataEntryVC.m in Sources */,
 				3A224CC320976B1100075457 /* ActivityNSO.m in Sources */,
-				3A374F062093737700E5A652 /* PoiListVC.m in Sources */,
 				3A224CC02096E2C700075457 /* ActivityListCell.m in Sources */,
 				3A224CBD2095F1FD00075457 /* ActivityListVC.m in Sources */,
 				3A374EFC209372CC00E5A652 /* MenuVC.m in Sources */,
 				3A224CC62097792800075457 /* PoiSearchVC.m in Sources */,
 				3A374F032093735300E5A652 /* ProjectListVC.m in Sources */,
+				3AEE019220A0CBB100AE260E /* CountryNSO.m in Sources */,
 				3A374F152093877F00E5A652 /* PoiNSO.m in Sources */,
 				3AFE356D209E462500C46180 /* ScheduleVC.m in Sources */,
 				3A224CCF209A178700075457 /* ToolBoxNSO.m in Sources */,
@@ -328,6 +342,7 @@
 				3A224CC92097950600075457 /* ActivityDataEntryVC.m in Sources */,
 				3A374F1E2093939400E5A652 /* LocatorVC.m in Sources */,
 				3A224CA62094338D00075457 /* PoiImageCell.m in Sources */,
+				3AEE018F20A0B05700AE260E /* AnnotationMK.m in Sources */,
 				3A374F12209386F700E5A652 /* PoiListCell.m in Sources */,
 				3A224CAF2094946800075457 /* PoiImageNSO.m in Sources */,
 				3AFE3573209E504F00C46180 /* ScheduleNSO.m in Sources */,
@@ -337,6 +352,7 @@
 				3A374F212093D55500E5A652 /* PoiDataEntryVC.m in Sources */,
 				3A224CB42095E13600075457 /* ProjectNSO.m in Sources */,
 				3A374EE620936A9300E5A652 /* AppDelegate.m in Sources */,
+				3AEE018B209F3BC700AE260E /* DirectionsVC.m in Sources */,
 				3A81B50C209D90CA005CABDA /* AlphaView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

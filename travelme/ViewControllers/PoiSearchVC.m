@@ -14,6 +14,12 @@
 
 @implementation PoiSearchVC
 
+- (NSURL *)applicationDocumentsDirectory
+{
+    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory
+                                                   inDomains:NSUserDomainMask] lastObject];
+}
+
 /*
  created date:      30/04/2018
  last modified:     30/04/2018
@@ -24,8 +30,8 @@
     self.SearchBarPoi.delegate = self;
     self.TableViewSearchPoiItems.delegate = self;
     self.TableViewSearchPoiItems.rowHeight = 100;
+    self.poiitems = [[NSMutableArray alloc] init];
     self.poifiltereditems = [[NSMutableArray alloc] init];
-    
     // Do any additional setup after loading the view.
 }
 /*
@@ -36,6 +42,12 @@
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self LoadPoiData];
+}
+
+
+-(void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+
 }
 
 /*
@@ -57,17 +69,31 @@
  remarks:
  */
 -(void) LoadPoiData {
-    self.poiitems = [self.db GetPoiContent :nil];
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *imagesDirectory = [paths objectAtIndex:0];
+    self.poiitems = [AppDelegateDef.Db GetPoiContent :nil];
+    
+    
+    NSURL *url = [self applicationDocumentsDirectory];
+    
+    
+    
+    NSData *pngData;
     for (PoiNSO *poi in self.poiitems) {
+        
         if (poi.Images.count > 0) {
+
             PoiImageNSO *FirstImageItem = [poi.Images firstObject];
-            NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",FirstImageItem.ImageFileReference]];
-            NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
+            NSURL *imagefile = [url URLByAppendingPathComponent:FirstImageItem.ImageFileReference];
+            
+            //FirstImageItem.Image = [UIImage imageWithContentsOfFile:[imagefile absoluteString]];
+            NSError *err;
+            
+            pngData = [NSData dataWithContentsOfURL:imagefile options:NSDataReadingMappedIfSafe error:&err];
+           
             FirstImageItem.Image = [UIImage imageWithData:pngData];
+
         }
     }
+ 
     [self.poifiltereditems removeAllObjects];
     [self.poifiltereditems addObjectsFromArray: self.poiitems];
     [self.TableViewSearchPoiItems reloadData];
@@ -97,20 +123,33 @@
  remarks:
  */
 - (PoiListCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *CellIdentifier = @"SearchPoiCellId";
-    PoiListCell *cell = [self.TableViewSearchPoiItems dequeueReusableCellWithIdentifier:CellIdentifier];
+
+    
+    PoiListCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SearchPoiCellId"];
+
+    
     if (cell == nil) {
-        cell = [[PoiListCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
+        
+        /*
+         *   Actually create a new cell (with an identifier so that it can be dequeued).
+         */
+        
+        cell = [[PoiListCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"SearchPoiCellId"];
+        
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
     }
+
+    PoiNSO *poi = [self.poifiltereditems objectAtIndex:indexPath.row];
     
-    cell.poi = [self.poifiltereditems objectAtIndex:indexPath.row];
-    cell.Name.text = cell.poi.name;
-    cell.AdministrativeArea.text = cell.poi.administrativearea;
+    cell.poi = poi;
+    cell.Name.text = poi.name;
+    cell.AdministrativeArea.text = poi.administrativearea;
     
-    if (cell.poi.Images.count==0) {
+    if (poi.Images.count==0) {
         [cell.PoiKeyImage setImage:[UIImage imageNamed:@"Poi"]];
     } else {
-        PoiImageNSO *FirstImageItem = [cell.poi.Images firstObject];
+        PoiImageNSO *FirstImageItem = [poi.Images firstObject];
         [cell.PoiKeyImage setImage:FirstImageItem.Image];
     }
     return cell;
@@ -138,7 +177,6 @@
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         PoiDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"PoiDataEntryId"];
         controller.delegate = self;
-        controller.db = self.db;
         controller.PointOfInterest = Poi;
         controller.newitem = false;
         [controller setModalPresentationStyle:UIModalPresentationFullScreen];
@@ -149,7 +187,6 @@
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         ActivityDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ActivityDataEntryViewController"];
         controller.delegate = self;
-        controller.db = self.db;
         controller.Activity = self.Activity;
         controller.Activity.project = self.Project;
         controller.Activity.poi = Poi;
@@ -184,7 +221,7 @@
  remarks:           Might not be totally necessary, but seperated out from editActionsForRowAtIndexPath method above.
  */
 - (void)tableView:(UITableView *)tableView deletePoi:(NSIndexPath *)indexPath  {
-    if ([self.db DeletePoi:[self.poifiltereditems objectAtIndex:indexPath.row]] == true)
+    if ([AppDelegateDef.Db DeletePoi:[self.poifiltereditems objectAtIndex:indexPath.row]] == true)
     {
         [self LoadPoiData];
     }
@@ -247,11 +284,8 @@
     } else {
         //Remove all objects first.
         [self.poifiltereditems removeAllObjects];
-    
-        
         self.isSearching = YES;
         [self searchTableList];
-        
         [self.TableViewSearchPoiItems reloadData];
     }
 }
@@ -279,7 +313,6 @@
     if([segue.identifier isEqualToString:@"ShowPoiLocator"]){
         LocatorVC *controller = (LocatorVC *)segue.destinationViewController;
         controller.delegate = self;
-        controller.db = self.db;
     }
 }
 
@@ -290,6 +323,7 @@
  remarks:
  */
 - (IBAction)BackPressed:(id)sender {
+    
     [self dismissViewControllerAnimated:YES completion:Nil];
     
 }

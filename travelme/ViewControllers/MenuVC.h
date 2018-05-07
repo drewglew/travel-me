@@ -7,10 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "Dal.h"
+#import "AppDelegate.h"
 #import "PoiSearchVC.h"
 #import "ProjectListVC.h"
 
 @interface MenuVC : UIViewController
-@property (strong, nonatomic) Dal *db;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonProject;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonPoi;
+
 @end

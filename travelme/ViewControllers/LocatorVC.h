@@ -8,11 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
-#import "Dal.h"
 #import "PoiDataEntryVC.h"
 #import "PoiNSO.h"
 #import "PoiImageNSO.h"
 #import "SearchResultListCell.h"
+#import "AnnotationMK.h"
 
 @protocol LocatorDelegate <NSObject>
 @end
@@ -24,7 +24,6 @@
 @property (weak, nonatomic) IBOutlet UISearchBar *SearchBar;
 @property (strong, nonatomic) PoiNSO *PointOfInterest;
 @property (strong, nonatomic) PoiNSO *TempPoi;
-@property (strong, nonatomic) Dal *db;
 @property (nonatomic, weak) id <LocatorDelegate> delegate;
 @property (weak, nonatomic) IBOutlet UITableView *TableViewSearchResult;
 

@@ -9,7 +9,6 @@
 #import "MenuVC.h"
 
 @interface MenuVC () <PoiSearchDelegate, ProjectListDelegate>
-
 @end
 
 @implementation MenuVC
@@ -19,16 +18,16 @@
  last modified:     28/04/2018
  remarks:           Simple delete action that initially can be triggered by user on a button.
 */
--(void)CreateDB {
-    [self.db Create];
+-(void)CreateDb {
+    [AppDelegateDef.Db CreateDb];
 }
 /*
  created date:      27/04/2018
  last modified:     28/04/2018
  remarks:           Simple delete action that initially can be triggered by user on a button.
  */
--(void)DeleteDB {
-    [self.db Delete];
+-(void)DeleteDb {
+    [AppDelegateDef.Db DeleteDb];
 }
 
 /*
@@ -38,10 +37,9 @@
  */
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    self.db = [[Dal alloc] init];
-    [self.db Init :@"travelme_01.db"];
     
+    [self.ButtonPoi.imageView setContentMode:UIViewContentModeScaleAspectFit];
+    [self.ButtonProject.imageView setContentMode:UIViewContentModeScaleAspectFit];
 }
 
 /*
@@ -50,7 +48,7 @@
  remarks:           temporary button pressed to create db.
  */
 - (IBAction)CreateDatabasePressed:(id)sender {
-    [self CreateDB];
+    [self CreateDb];
 }
 
 
@@ -66,13 +64,11 @@
     if([segue.identifier isEqualToString:@"ShowPoiList"]){
         PoiSearchVC *controller = (PoiSearchVC *)segue.destinationViewController;
         controller.delegate = self;
-        controller.db = self.db;
         controller.Project = nil;
         controller.Activity = nil;
     } else  if([segue.identifier isEqualToString:@"ShowProjectList"]){
         ProjectListVC *controller = (ProjectListVC *)segue.destinationViewController;
         controller.delegate = self;
-        controller.db = self.db;
     }
 }
 
@@ -84,7 +80,7 @@
  */
 - (IBAction)DeleteDatabasePressed:(id)sender {
     
-    [self DeleteDB];
+    [self DeleteDb];
 }
 
 - (void)didReceiveMemoryWarning {

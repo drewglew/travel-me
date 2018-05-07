@@ -44,7 +44,7 @@
  */
 -(void) LoadActivityData:(NSNumber*) State {
     
-    self.activityitems = [self.db GetActivityListContentForState :self.Project.key :State];
+    self.activityitems = [AppDelegateDef.Db GetActivityListContentForState :self.Project.key :State];
 
     /* for each activity we need to show the image of the poi attached to it */
     /* load images from file - TODO make sure we locate them all */
@@ -131,14 +131,13 @@
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         ActivityDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ActivityDataEntryViewController"];
         controller.delegate = self;
-        controller.db = self.db;
         controller.Activity = [self.activityitems objectAtIndex:indexPath.row];
         ActivityNSO *activity = [self.activityitems objectAtIndex:indexPath.row];
         
         NSMutableArray *Images = [[NSMutableArray alloc] init];
         [Images addObjectsFromArray:activity.poi.Images];
         
-        controller.Activity.poi = [[self.db GetPoiContent:activity.poi.key] firstObject];
+        controller.Activity.poi = [[AppDelegateDef.Db GetPoiContent:activity.poi.key] firstObject];
         if (activity.poi.Images.count > 0) {
             activity.poi.Images = Images;
         }
@@ -186,7 +185,6 @@
     if([segue.identifier isEqualToString:@"ShowNewActivity"]){
         PoiSearchVC *controller = (PoiSearchVC *)segue.destinationViewController;
         controller.delegate = self;
-        controller.db = self.db;
         controller.Activity = [[ActivityNSO alloc] init];
         controller.newitem = true;
         controller.transformed = false;
@@ -195,7 +193,6 @@
     } else if([segue.identifier isEqualToString:@"ShowSchedule"]){
         ScheduleVC *controller = (ScheduleVC *)segue.destinationViewController;
         controller.delegate = self;
-        controller.db = self.db;
         controller.activityitems = self.activityitems;
         controller.Project = self.Project;
         controller.ActivityState = [NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex];

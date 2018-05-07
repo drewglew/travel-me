@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PreferenceSpecifiers</key>
+	<array>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Home Currency</string>
+			<key>Key</key>
+			<string>HomeCurrency</string>
+			<key>DefaultValue</key>
+			<string>EUR</string>
+			<key>Titles</key>
+			<array>
+				<string>Euro</string>
+				<string>Great British Pound</string>
+				<string>Danish Kroner</string>
+				<string>US Dollar</string>
+				<string>Swedish Krone</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<string>EUR</string>
+				<string>GBP</string>
+				<string>DKK</string>
+				<string>USD</string>
+				<string>SEK</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

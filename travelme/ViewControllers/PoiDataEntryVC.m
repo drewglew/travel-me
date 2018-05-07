@@ -289,11 +289,13 @@
     UIImage *chosenImage = info[UIImagePickerControllerEditedImage];
     if (self.newitem) {
     
-        CGSize size = CGSizeMake(self.TextViewNotes.frame.size.width, self.TextViewNotes.frame.size.width);
+        CGSize size = CGSizeMake(self.TextViewNotes.frame.size.width * 2, self.TextViewNotes.frame.size.width *2);
         chosenImage = [ToolBoxNSO imageWithImage:chosenImage scaledToSize:size];
         
     } else {
-        chosenImage = [ToolBoxNSO imageWithImage:chosenImage scaledToSize:self.ImagePicture.frame.size];
+        
+        CGSize size = CGSizeMake(self.ImagePicture.frame.size.width * 2, self.ImagePicture.frame.size.width *2);
+        chosenImage = [ToolBoxNSO imageWithImage:chosenImage scaledToSize:size];
     }
     PoiImageNSO *img = [[PoiImageNSO alloc] init];
     img.Image = chosenImage;
@@ -377,7 +379,7 @@
     self.PointOfInterest.privatenotes = self.TextViewNotes.text;
     self.PointOfInterest.categoryid = [NSNumber numberWithLong:self.SegmentTypeOfPoi.selectedSegmentIndex];
     
-    [self.db InsertPoiItem :self.PointOfInterest];
+    [AppDelegateDef.Db InsertPoiItem :self.PointOfInterest];
     
     [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
@@ -424,7 +426,7 @@
             counter++;
         }
     }
-    [self.db UpdatePoiItem :self.PointOfInterest];
+    [AppDelegateDef.Db UpdatePoiItem :self.PointOfInterest];
 
     [self dismissViewControllerAnimated:YES completion:Nil];
 }

@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
 #import <Photos/Photos.h>
-#import "Dal.h"
+#import "AppDelegate.h"
 #import "ToolBoxNSO.h"
 #import "PoiImageCell.h"
 #import "PoiImageNSO.h"
@@ -20,7 +20,7 @@
 @end
 
 @interface PoiDataEntryVC : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate>
-@property (strong, nonatomic) Dal *db;
+
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;
 @property (nonatomic) NSString *Title;
 @property (assign) bool newitem;
