@@ -91,14 +91,9 @@
              NSLog(@"%@",[error localizedDescription]);
          } else {
              [self showRoute:response];
-             
-             //self.LabelJourneyDetail.text = response.description;
-             
          }
      }];
 }
-
-
 
 -(void)showRoute:(MKDirectionsResponse *)response
 {

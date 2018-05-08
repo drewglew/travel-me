@@ -47,11 +47,14 @@
     NSURL *fileURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:databaseName];
     _databasePath = [[NSString alloc] initWithString:[fileURL path]];
 
+    
+    
     NSFileManager *filemgr = [NSFileManager defaultManager];
     const char *dbpath = [_databasePath UTF8String];
     if([filemgr fileExistsAtPath:_databasePath] ==  NO) {
         if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
             [self CreateDb];
+            [self LoadCountryData];
         }
         return true;
     } else {
@@ -77,7 +80,7 @@
 
 /*
  created date:      27/04/2018
- last modified:     06/05/2018
+ last modified:     08/05/2018
  remarks:           Create a new database with model.
  */
 -(bool)CreateDb {
@@ -98,16 +101,6 @@
             NSLog(@"failed to create country table");
             retVal=false;
         }
-
-        [self InsertCountry :@"GB"  :@"United Kingdom" :@"GBP" :@"London" :[NSNumber numberWithDouble:54.0] :[NSNumber numberWithDouble:-2.0]];
-    
-        [self InsertCountry :@"DK" :@"Denmark" :@"DKK" :@"Copenhagen" :[NSNumber numberWithDouble:56.0] :[NSNumber numberWithDouble:10.0]];
-    
-        [self InsertCountry :@"SE" :@"Sweden" :@"SEK" :@"Stockholm" :[NSNumber numberWithDouble:62.0] :[NSNumber numberWithDouble:15.0]];
-    
-        [self InsertCountry :@"DE" :@"Germany" :@"EUR" :@"Berlin" :[NSNumber numberWithDouble:51.0] :[NSNumber numberWithDouble:9.0]];
-    
-        [self InsertCountry :@"CH" :@"Switzerland" :@"CHF" :@"Bern" :[NSNumber numberWithDouble:47.0] :[NSNumber numberWithDouble:8.0]];
   
         /* POI table */
         sql_statement = "CREATE TABLE poi (key TEXT PRIMARY KEY, name TEXT, administrativearea TEXT, subadministrativearea TEXT, countrycode TEXT, locality TEXT, sublocality TEXT, postcode TEXT, categoryid INTEGER, privatenotes TEXT, lat DOUBLE, lon DOUBLE)";
@@ -150,29 +143,104 @@
             retVal=false;
             
         }
+        /* EXCHANGERATE table */
+        sql_statement = "CREATE TABLE exchangerate (currencycode TEXT, homecurrencycode TEXT, rate INTEGER, dt TEXT, PRIMARY KEY (currencycode, homecurrencycode, dt))";
+        if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+            NSLog(@"failed to create exchangerate table");
+        }
+        /* PAYMENT table */
+        sql_statement = "CREATE TABLE payment (projectkey TEXT, activitykey TEXT, key TEXT PRIMARY KEY, state INTEGER, amount INTEGER, currencycode TEXT, paymentdt TEXT, FOREIGN KEY(projectkey) REFERENCES project(key), FOREIGN KEY(activitykey) REFERENCES activity(key))";
+        if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+            NSLog(@"failed to create payment table");
+        }
+        /* TRAVELLEG table */
+        sql_statement = "CREATE TABLE travelleg (projectkey TEXT, activitykey TEXT, dt TEXT, state INTEGER, distance DOUBLE, PRIMARY KEY(activitykey, dt, state),FOREIGN KEY(projectkey) REFERENCES project(key), FOREIGN KEY(activitykey) REFERENCES activity(key))";
+        if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+            NSLog(@"failed to create travelleg table");
+        }
+
     return retVal;
 }
 
+
 /*
- created date:      27/04/2018
- last modified:     07/05/2018
+ created date:      08/05/2018
+ last modified:     08/05/2018
  remarks:
  */
--(bool)InsertCountry :(NSString*)CountryCode :(NSString*)Name :(NSString*)Currency :(NSString*)Capital :(NSNumber*) Lat :(NSNumber*) Lon {
+-(bool)LoadCountryData {
+    NSDictionary *dict = [self JSONFromFile];
+    
+    for (NSDictionary *country in dict) {
+        NSString *Name = [country objectForKey:@"name"];
+        NSString *CountryCode = [country objectForKey:@"alpha2Code"];
+        NSString *Capital = [country objectForKey:@"capital"];
+        NSArray *LatLng = [country objectForKey:@"latlng"];
+        NSArray *Currencies = [country objectForKey:@"currencies"];
+        if (Currencies.count>0) {
+            NSString *CurrencyCode;
+            for (NSDictionary *currency in Currencies) {
+                CurrencyCode = [currency objectForKey:@"code"];
+                break;
+            }
+        
+            if (LatLng.count==2) {
+                double Lat = [[LatLng objectAtIndex:0] doubleValue];
+                double Lon = [[LatLng objectAtIndex:1] doubleValue];
+            
+                [self InsertCountry :CountryCode  :Name :CurrencyCode :Capital :[NSNumber numberWithDouble:Lat] :[NSNumber numberWithDouble:Lon]];
+            } else {
+                NSLog(@"Skipping %@ as no coordinates attached", Name);
+            }
+            
+        } else {
+            NSLog(@"Skipping %@ as no currency attached", Name);
+        }
+    }
+    
+    return true;
+}
+
+/*
+ created date:      08/05/2018
+ last modified:     08/05/2018
+ remarks:
+ */
+- (NSDictionary *)JSONFromFile
+{
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"country" ofType:@"json"];
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    return [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
+}
+
+
+
+
+/*
+ created date:      27/04/2018
+ last modified:     08/05/2018
+ remarks:
+ */
+-(bool)InsertCountry :(NSString*)CountryCode :(NSString*)Name :(NSString*)CurrencyCode :(NSString*)Capital :(NSNumber*) Lat :(NSNumber*) Lon {
     bool retVal=true;
 
-    NSString *insertSQL = [NSString stringWithFormat:@"INSERT INTO country (countrycode, name, currency, capital, lon, lat) VALUES ('%@','%@','%@','%@', %f, %f)", CountryCode, Name, Currency, Capital, [Lat doubleValue], [Lon doubleValue]];
+    sqlite3_stmt *stmt = NULL;
+    sqlite3_prepare_v2(_DB, "INSERT INTO country (countrycode, name, currency, capital, lon, lat) VALUES (?,?,?,?,?,?)", -1, &stmt, nil);
     
-    sqlite3_stmt *statement;
-    const char *insert_statement = [insertSQL UTF8String];
-    sqlite3_prepare_v2(_DB, insert_statement, -1, &statement, NULL);
-    if (sqlite3_step(statement) != SQLITE_DONE) {
-        NSLog(@"Failed to insert new record inside country table");
+    sqlite3_bind_text(stmt, 1, CountryCode==nil?"":[CountryCode UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 2, Name==nil?"":[Name UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 3, CurrencyCode==nil?"":[CurrencyCode UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 4, Capital==nil?"":[Capital UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_double(stmt, 5, [Lat doubleValue]);
+    sqlite3_bind_double(stmt, 6, [Lon doubleValue]);
+    
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+        NSLog(@"Failed to insert new record %@ inside country table", Name);
         retVal = false;
     } else {
-        NSLog(@"inserted new country record inside table!");
+         NSLog(@"inserted new country record %@ inside table!", Name);
     }
-    sqlite3_finalize(statement);
+    sqlite3_finalize(stmt);
     return retVal;
 }
 
@@ -654,7 +722,7 @@
 
 /*
  created date:      02/05/2018
- last modified:     06/05/2018
+ last modified:     08/05/2018
  remarks:
  */
 -(bool) DeleteProject :(ProjectNSO*) Project {
@@ -677,10 +745,34 @@
                 }
             }
             
+            /* delete all references of project in payment table */
             sqlite3_stmt *statement;
-            NSString *deleteSQL = [NSString stringWithFormat:@"DELETE FROM project WHERE key = '%@'",Project.key];
-
+            NSString *deleteSQL = [NSString stringWithFormat:@"DELETE FROM payment WHERE projectkey = '%@'",Project.key];
             const char *deleteStatement = [deleteSQL UTF8String];
+            sqlite3_prepare_v2(_DB, deleteStatement, -1, &statement, NULL);
+            if (sqlite3_step(statement) != SQLITE_DONE) {
+                NSLog(@"Failed to delete project record from payment");
+                retVal = false;
+            } else {
+                NSLog(@"Successfuly deleted project record from payment");
+            }
+            sqlite3_finalize(statement);
+            
+            /* delete all references of project in travelleg table */
+            deleteSQL = [NSString stringWithFormat:@"DELETE FROM travelleg WHERE projectkey = '%@'",Project.key];
+            deleteStatement = [deleteSQL UTF8String];
+            sqlite3_prepare_v2(_DB, deleteStatement, -1, &statement, NULL);
+            if (sqlite3_step(statement) != SQLITE_DONE) {
+                NSLog(@"Failed to delete project record from travelleg");
+                retVal = false;
+            } else {
+                NSLog(@"Successfuly deleted project record from travelleg");
+            }
+            sqlite3_finalize(statement);
+            
+            /* finally we can delete project safely */
+            deleteSQL = [NSString stringWithFormat:@"DELETE FROM project WHERE key = '%@'",Project.key];
+            deleteStatement = [deleteSQL UTF8String];
             sqlite3_prepare_v2(_DB, deleteStatement, -1, &statement, NULL);
             if (sqlite3_step(statement) != SQLITE_DONE) {
                 NSLog(@"Failed to delete record from project");

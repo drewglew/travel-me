@@ -1440,7 +1440,7 @@
                                     <action selector="BackPressed:" destination="QyH-le-0QK" eventType="touchUpInside" id="Ykd-ad-X8I"/>
                                 </connections>
                             </button>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="RKY-wb-8dt">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="RKY-wb-8dt">
                                 <rect key="frame" x="20" y="40" width="335" height="537"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
@@ -1516,10 +1516,21 @@
                                     <outlet property="delegate" destination="QyH-le-0QK" id="agN-av-EBu"/>
                                 </connections>
                             </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fF1-YG-kko">
+                                <rect key="frame" x="305" y="597" width="50" height="50"/>
+                                <color key="backgroundColor" red="0.55476588010000005" green="0.43260467050000001" blue="0.68511033060000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="TNm-ks-gfh"/>
+                                    <constraint firstAttribute="height" constant="50" id="x9v-eL-nyU"/>
+                                </constraints>
+                                <state key="normal" title="Button" image="Directions"/>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="5ag-mk-Rpd" firstAttribute="trailing" secondItem="fF1-YG-kko" secondAttribute="trailing" constant="20" id="7nU-K1-PA4"/>
                             <constraint firstItem="RKY-wb-8dt" firstAttribute="top" secondItem="5ag-mk-Rpd" secondAttribute="top" constant="20" id="7ry-8t-mbQ"/>
+                            <constraint firstItem="5ag-mk-Rpd" firstAttribute="bottom" secondItem="fF1-YG-kko" secondAttribute="bottom" constant="20" id="LY9-EN-meT"/>
                             <constraint firstItem="5ag-mk-Rpd" firstAttribute="trailing" secondItem="RKY-wb-8dt" secondAttribute="trailing" constant="20" id="OtS-Ua-LB9"/>
                             <constraint firstItem="y4t-Mr-ozm" firstAttribute="leading" secondItem="5ag-mk-Rpd" secondAttribute="leading" constant="20" id="P4Q-Bb-wWR"/>
                             <constraint firstItem="y4t-Mr-ozm" firstAttribute="top" secondItem="RKY-wb-8dt" secondAttribute="bottom" constant="20" id="Pkm-S8-4UF"/>

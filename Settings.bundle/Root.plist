@@ -6,29 +6,11 @@
 	<array>
 		<dict>
 			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
-			<string>Home Currency</string>
+			<string>Home Currency Code</string>
 			<key>Key</key>
-			<string>HomeCurrency</string>
-			<key>DefaultValue</key>
-			<string>EUR</string>
-			<key>Titles</key>
-			<array>
-				<string>Euro</string>
-				<string>Great British Pound</string>
-				<string>Danish Kroner</string>
-				<string>US Dollar</string>
-				<string>Swedish Krone</string>
-			</array>
-			<key>Values</key>
-			<array>
-				<string>EUR</string>
-				<string>GBP</string>
-				<string>DKK</string>
-				<string>USD</string>
-				<string>SEK</string>
-			</array>
+			<string>HomeCurrencyCode</string>
 		</dict>
 	</array>
 </dict>

@@ -114,6 +114,42 @@
 }
 
 /*
+ created date:      08/05/2018
+ last modified:     08/05/2018
+ remarks:
+ */
+-(NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
+    UITableViewRowAction *deleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Delete" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath)
+                                          {
+                                              
+                                              [self tableView:tableView deleteSchedule:indexPath];
+                                              self.TableViewScheduleItems.editing = NO;
+                                              
+                                          }];
+    
+    deleteAction.backgroundColor = [UIColor redColor];
+    return @[deleteAction];
+}
+/*
+ created date:      08/05/2018
+ last modified:     08/05/2018
+ remarks:           Might not be totally necessary, but seperated out from editActionsForRowAtIndexPath method above.
+ */
+- (void)tableView:(UITableView *)tableView deleteSchedule:(NSIndexPath *)indexPath  {
+    
+    ScheduleNSO *schedule = [self.scheduleitems objectAtIndex:indexPath.row];
+    if ([schedule.type isEqualToString:@"close"]) {
+        [self.scheduleitems removeObjectAtIndex:indexPath.row];
+        [self.TableViewScheduleItems reloadData];
+    } else {
+        // do nothing.
+    }
+    
+}
+
+
+
+/*
  created date:      06/05/2018
  last modified:     06/05/2018
  remarks:
@@ -125,6 +161,7 @@
     
     return [NSString stringWithFormat:@"%@",[dateformatter stringFromDate:ActivityDt]];
 }
+
 
 
 
