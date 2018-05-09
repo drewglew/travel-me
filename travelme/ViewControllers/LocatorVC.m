@@ -41,14 +41,9 @@ MKLocalSearchResponse *results;
     self.PointOfInterest.name = @"";
     self.PointOfInterest.Coordinates = kCLLocationCoordinate2DInvalid;
     self.PointOfInterest.key = [[NSUUID UUID] UUIDString];
-    
     self.PointOfInterest.Images  = [[NSMutableArray alloc] init];
     self.PointOfInterest.Links = [[NSMutableArray alloc] init];
     self.TableViewSearchResult.rowHeight = 70;
-    
-
-
-    
 }
 
 -(void) viewDidDisappear:(BOOL)animated {
@@ -95,6 +90,7 @@ MKLocalSearchResponse *results;
                     anno.Locality = placemark.locality;
                     anno.PostCode = placemark.postalCode;
                     anno.CountryCode = placemark.ISOcountryCode;
+                    anno.FullThoroughFare = [NSString stringWithFormat:@"%@, %@", placemark.thoroughfare, placemark.subThoroughfare];
 
                     //anno.subtitle = placemark.subLocality;
                     [self.MapView addAnnotation:anno];
@@ -187,7 +183,7 @@ MKLocalSearchResponse *results;
 
 /*
  created date:      28/04/2018
- last modified:     28/04/2018
+ last modified:     09/05/2018
  remarks:
  */
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -210,13 +206,13 @@ MKLocalSearchResponse *results;
     }
     
     anno.subtitle = [NSString stringWithFormat:@"%@, %@", AdminArea,item.placemark.countryCode ];
-    
+    //fullThoroughfare 
     anno.Country = item.placemark.country;
     anno.SubLocality = item.placemark.subLocality;
     anno.Locality = item.placemark.locality;
     anno.PostCode = item.placemark.postalCode;
     anno.CountryCode = item.placemark.countryCode;
-    
+    anno.FullThoroughFare = [NSString stringWithFormat:@"%@, %@",item.placemark.thoroughfare, item.placemark.subThoroughfare];
     anno.coordinate = item.placemark.coordinate;
     
     [self.MapView addAnnotation:anno];
@@ -239,7 +235,7 @@ MKLocalSearchResponse *results;
 }
 /*
  created date:      27/04/2018
- last modified:     07/05/2018
+ last modified:     09/05/2018
  remarks:
  */
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view {
@@ -254,13 +250,14 @@ MKLocalSearchResponse *results;
     self.PointOfInterest.countrycode = annotation.CountryCode;
     self.PointOfInterest.locality = annotation.Locality;
     self.PointOfInterest.sublocality = annotation.SubLocality;
+    self.PointOfInterest.fullthoroughfare = annotation.FullThoroughFare;
     self.PointOfInterest.postcode = annotation.PostCode;
     self.PointOfInterest.subadministrativearea = annotation.SubAdministrativeArea;
 }
 
 /*
  created date:      27/04/2018
- last modified:     07/05/2018
+ last modified:     09/05/2018
  remarks:
  */
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view {
@@ -275,6 +272,7 @@ MKLocalSearchResponse *results;
     self.PointOfInterest.postcode = @"";
     self.PointOfInterest.country = @"";
     self.PointOfInterest.countrycode = @"";
+    self.PointOfInterest.fullthoroughfare = @"";
     self.PointOfInterest.Coordinates = kCLLocationCoordinate2DInvalid;
     self.PointOfInterest.lat = [NSNumber numberWithDouble:0];
     self.PointOfInterest.lon = [NSNumber numberWithDouble:0];

@@ -17,12 +17,13 @@
 #import "PoiDataEntryVC.h"
 #import "DatePickerRangeVC.h"
 #import "DirectionsVC.h"
+#import "PaymentListingVC.h"
 
 
 @protocol ActivityDelegate <NSObject>
 @end
 
-@interface ActivityDataEntryVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, MKMapViewDelegate, PoiDataEntryDelegate, SelectDateRangeDelegate, DirectionsDelegate>
+@interface ActivityDataEntryVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, MKMapViewDelegate, PoiDataEntryDelegate, SelectDateRangeDelegate, DirectionsDelegate, PaymentListingDelegate>
 
 @property (assign) bool newitem;
 @property (assign) bool transformed;

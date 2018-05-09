@@ -395,6 +395,12 @@
 
     self.PointOfInterest.name = self.TextFieldTitle.text;
     self.PointOfInterest.privatenotes = self.TextViewNotes.text;
+    
+    if ([self.PointOfInterest.privatenotes isEqualToString:@""]) {
+        self.PointOfInterest.privatenotes = [NSString stringWithFormat:@"%@\n%@\n%@\n%@\n%@\n%@\n%@", self.PointOfInterest.name, self.PointOfInterest.fullthoroughfare, self.PointOfInterest.administrativearea, self.PointOfInterest.subadministrativearea,  self.PointOfInterest.locality, self.PointOfInterest.sublocality, self.PointOfInterest.postcode];
+        
+    }
+    
     self.PointOfInterest.categoryid = [NSNumber numberWithLong:self.SegmentTypeOfPoi.selectedSegmentIndex];
 
     if (self.PointOfInterest.Images.count>0) {

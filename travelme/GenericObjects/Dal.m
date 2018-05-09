@@ -59,13 +59,17 @@
         return true;
     } else {
         if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
+            NSLocale *theLocale = [NSLocale currentLocale];
+            NSString *currencyCode = [theLocale objectForKey:NSLocaleCurrencyCode];
+            NSLog(@"Currency Code : %@",currencyCode);
+            NSString *measurementSystem = [theLocale objectForKey:NSLocaleMeasurementSystem];
+            NSLog(@"Measurement System: %@",measurementSystem);
+            NSString *metricSystem = [theLocale objectForKey:NSLocaleUsesMetricSystem];
+            NSLog(@"Metric System: %@",metricSystem);
             return true;
         }
         return false;
     }
-    
-   
-
 }
 
 
@@ -81,7 +85,8 @@
 /*
  created date:      27/04/2018
  last modified:     08/05/2018
- remarks:           Create a new database with model.
+ remarks:           Create a new database with model.  We need to remove Country table, but there are still
+ some code attached to it.
  */
 -(bool)CreateDb {
     bool retVal=true;
@@ -103,7 +108,7 @@
         }
   
         /* POI table */
-        sql_statement = "CREATE TABLE poi (key TEXT PRIMARY KEY, name TEXT, administrativearea TEXT, subadministrativearea TEXT, countrycode TEXT, locality TEXT, sublocality TEXT, postcode TEXT, categoryid INTEGER, privatenotes TEXT, lat DOUBLE, lon DOUBLE)";
+        sql_statement = "CREATE TABLE poi (key TEXT PRIMARY KEY, name TEXT, administrativearea TEXT, subadministrativearea TEXT, fullthoroughfare TEXT, countrycode TEXT, locality TEXT, sublocality TEXT, postcode TEXT, categoryid INTEGER, privatenotes TEXT, lat DOUBLE, lon DOUBLE)";
             
         if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
             NSLog(@"failed to create poi table");
@@ -149,7 +154,7 @@
             NSLog(@"failed to create exchangerate table");
         }
         /* PAYMENT table */
-        sql_statement = "CREATE TABLE payment (projectkey TEXT, activitykey TEXT, key TEXT PRIMARY KEY, state INTEGER, amount INTEGER, currencycode TEXT, paymentdt TEXT, FOREIGN KEY(projectkey) REFERENCES project(key), FOREIGN KEY(activitykey) REFERENCES activity(key))";
+        sql_statement = "CREATE TABLE payment (projectkey TEXT, activitykey TEXT, key TEXT PRIMARY KEY, description TEXT, state INTEGER, amount INTEGER, currencycode TEXT, paymentdt TEXT, FOREIGN KEY(projectkey) REFERENCES project(key), FOREIGN KEY(activitykey) REFERENCES activity(key))";
         if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
             NSLog(@"failed to create payment table");
         }
@@ -353,21 +358,22 @@
         Poi.key = [[NSUUID UUID] UUIDString];
 
         sqlite3_stmt *stmt = NULL;
-        sqlite3_prepare_v2(_DB, "INSERT INTO poi (key, name, administrativearea, subadministrativearea, countrycode, locality, sublocality, postcode, categoryid, privatenotes, lat, lon) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", -1, &stmt, nil);
+        sqlite3_prepare_v2(_DB, "INSERT INTO poi (key, name, administrativearea, subadministrativearea, fullthoroughfare, countrycode, locality, sublocality, postcode, categoryid, privatenotes, lat, lon) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", -1, &stmt, nil);
     
         sqlite3_bind_text(stmt, 1, [Poi.key UTF8String], -1, SQLITE_TRANSIENT);
         sqlite3_bind_text(stmt, 2, [Poi.name UTF8String], -1, SQLITE_TRANSIENT);
     
         sqlite3_bind_text(stmt, 3, Poi.administrativearea==nil?"":[Poi.administrativearea UTF8String], -1, SQLITE_TRANSIENT);
         sqlite3_bind_text(stmt, 4, Poi.subadministrativearea==nil?"":[Poi.subadministrativearea UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 5, Poi.countrycode==nil?"":[Poi.countrycode UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 6, Poi.locality==nil?"":[Poi.locality UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 7, Poi.sublocality==nil?"":[Poi.sublocality UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 8, Poi.postcode==nil?"":[Poi.postcode UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_int(stmt, 9, [Poi.categoryid intValue]);
-        sqlite3_bind_text(stmt, 10, [Poi.privatenotes UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_double(stmt, 11, [Poi.lat doubleValue]);
-        sqlite3_bind_double(stmt, 12, [Poi.lon doubleValue]);
+        sqlite3_bind_text(stmt, 5, Poi.fullthoroughfare==nil?"":[Poi.fullthoroughfare UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 6, Poi.countrycode==nil?"":[Poi.countrycode UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 7, Poi.locality==nil?"":[Poi.locality UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 8, Poi.sublocality==nil?"":[Poi.sublocality UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 9, Poi.postcode==nil?"":[Poi.postcode UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_int(stmt, 10, [Poi.categoryid intValue]);
+        sqlite3_bind_text(stmt, 11, [Poi.privatenotes UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_double(stmt, 12, [Poi.lat doubleValue]);
+        sqlite3_bind_double(stmt, 13, [Poi.lon doubleValue]);
     
 
         if (sqlite3_step(stmt) != SQLITE_DONE) {
@@ -466,7 +472,7 @@
                 whereClause = [whereClause substringToIndex:[whereClause length]-5];
             }
         }
-        NSString *selectSQL = [NSString stringWithFormat:@"SELECT key,name,administrativearea,subadministrativearea,countrycode,locality,sublocality,postcode,categoryid,privatenotes,lat,lon,(select count(*) as counter from activity a where a.poikey=p.key) as sumofactivities FROM poi p %@ ORDER BY name", whereClause];
+        NSString *selectSQL = [NSString stringWithFormat:@"SELECT key,name,fullthoroughfare,administrativearea,subadministrativearea,countrycode,locality,sublocality,postcode,categoryid,privatenotes,lat,lon,(select count(*) as counter from activity a where a.poikey=p.key) as sumofactivities FROM poi p %@ ORDER BY name", whereClause];
         sqlite3_stmt *statement;
         const char *select_statement = [selectSQL UTF8String];
     
@@ -478,17 +484,18 @@
             {
                 PoiNSO *poi = [self LoadPoiImageData :[NSString stringWithUTF8String:(char*)sqlite3_column_text(statement, 0)]];
                 poi.name = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 1)];
-                poi.administrativearea = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 2)];
-                poi.subadministrativearea = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 3)];
-                poi.countrycode = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 4)];
-                poi.locality = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 5)];
-                poi.sublocality = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 6)];
-                poi.postcode = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 7)];
-                poi.categoryid = [NSNumber numberWithInt:sqlite3_column_int(statement, 8)];
-                poi.privatenotes = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 9)];
-                poi.lat = [NSNumber numberWithDouble:sqlite3_column_double(statement, 10)];
-                poi.lon = [NSNumber numberWithDouble:sqlite3_column_double(statement, 11)];
-                poi.connectedactivitycount = [NSNumber numberWithInt:sqlite3_column_int(statement, 12)];
+                poi.fullthoroughfare = [NSString stringWithFormat:@"%s",(const char*)sqlite3_column_text(statement, 2)];
+                poi.administrativearea = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 3)];
+                poi.subadministrativearea = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 4)];
+                poi.countrycode = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 5)];
+                poi.locality = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 6)];
+                poi.sublocality = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 7)];
+                poi.postcode = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 8)];
+                poi.categoryid = [NSNumber numberWithInt:sqlite3_column_int(statement, 9)];
+                poi.privatenotes = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 10)];
+                poi.lat = [NSNumber numberWithDouble:sqlite3_column_double(statement, 11)];
+                poi.lon = [NSNumber numberWithDouble:sqlite3_column_double(statement, 12)];
+                poi.connectedactivitycount = [NSNumber numberWithInt:sqlite3_column_int(statement, 13)];
                 poi.Images = [NSMutableArray arrayWithArray:[self GetImagesForSelectedPoi:poi.key]];
                 poi.country = [self GetCountryByCode:poi.countrycode].name;
                 poi.searchstring = [NSString stringWithFormat:@"%@|%@|%@|%@|%@|%@|%@",poi.name,poi.administrativearea,poi.subadministrativearea,poi.postcode,poi.locality,poi.sublocality,poi.country];
@@ -887,6 +894,8 @@
     return retVal;
 }
 
+
+
 /*
  created date:      05/05/2018
  last modified:     06/05/2018
@@ -923,5 +932,85 @@
 
     return activityschedulelist;
  }
+
+/*
+ created date:      09/05/2018
+ last modified:     09/05/2018
+ remarks:
+ */
+-(NSMutableArray*) GetPaymentListContentForState :(NSString *) ProjectKey :(NSString *) ActivityKey   :(NSNumber *) RequiredState {
+    NSMutableArray *activitypaymentlist  = [[NSMutableArray alloc] init];
+    
+    sqlite3_stmt *statement;
+    NSString *selectSQL;
+
+    selectSQL = [NSString stringWithFormat:@"select key, description, amount, currencycode, paymentdt from payment where projectkey='%@' and activitykey='%@' and state=%@", ProjectKey, ActivityKey, RequiredState];
+
+    const char *select_statement = [selectSQL UTF8String];
+    if (sqlite3_prepare_v2(_DB, select_statement, -1, &statement, NULL) == SQLITE_OK)
+    {
+        while (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            PaymentNSO *payment = [[PaymentNSO alloc] init];
+            
+            payment.key = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 0)];
+            payment.description = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 1)];
+            payment.amount = [NSNumber numberWithInt:sqlite3_column_int(statement, 2)];
+            payment.localcurrencycode = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 3)];
+            
+            payment.paymentdt = [payment GetDtFromString :[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 4)]];
+            
+            payment.rate = [self GetExchangeRate:payment.localcurrencycode :[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 4)]];
+            
+            [activitypaymentlist addObject:payment];
+        }
+    }
+    
+    sqlite3_finalize(statement);
+    return activitypaymentlist;
+}
+
+/*
+ created date:      09/05/2018
+ last modified:     09/05/2018
+ remarks:
+ */
+-(NSNumber*) GetExchangeRate :(NSString *) LocalCurrencyCode :(NSString *) PaymentDt  {
+
+    
+    sqlite3_stmt *statement;
+    NSString *selectSQL;
+    
+    NSLocale *theLocale = [NSLocale currentLocale];
+    NSString *HomeCurrencyCode = [theLocale objectForKey:NSLocaleCurrencyCode];
+    
+    if ([HomeCurrencyCode isEqualToString:LocalCurrencyCode]) {
+        return [NSNumber numberWithInt:1];
+    }
+    
+    NSNumber *rate = [[NSNumber alloc] init];
+    
+    selectSQL = [NSString stringWithFormat:@"select rate from exchangerate where currencycode='%@' and homecurrencycode='%@' and dt=%@", LocalCurrencyCode, HomeCurrencyCode, PaymentDt];
+    
+    const char *select_statement = [selectSQL UTF8String];
+    if (sqlite3_prepare_v2(_DB, select_statement, -1, &statement, NULL) == SQLITE_OK)
+    {
+        while (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            rate = [NSNumber numberWithInt:sqlite3_column_int(statement, 0)];
+        }
+    }
+
+    sqlite3_finalize(statement);
+    return rate;
+}
+
+
+
+
+
+
+
+
 
 @end

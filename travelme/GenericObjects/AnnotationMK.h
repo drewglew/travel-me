@@ -23,6 +23,7 @@
 @property (nonatomic) NSString *CountryCode;
 @property (nonatomic) NSString *Locality;
 @property (nonatomic) NSString *SubLocality;
+@property (nonatomic) NSString *FullThoroughFare;
 @property (nonatomic) NSString *PostCode;
 
 @end

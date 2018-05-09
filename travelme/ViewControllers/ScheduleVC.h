@@ -9,11 +9,12 @@
 #import <UIKit/UIKit.h>
 #import "ScheduleCell.h"
 #import "AppDelegate.h"
+#import "DirectionsVC.h"
 
 @protocol ScheduleListDelegate <NSObject>
 @end
 
-@interface ScheduleVC : UIViewController <UITableViewDelegate>
+@interface ScheduleVC : UIViewController <UITableViewDelegate, DirectionsDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *TableViewScheduleItems;
 @property (strong, nonatomic) NSMutableArray *scheduleitems;
 @property (strong, nonatomic) NSMutableArray *activityitems;

@@ -18,6 +18,7 @@
 @property (nonatomic) NSString *countrycode;
 @property (nonatomic) NSString *administrativearea;
 @property (nonatomic) NSString *subadministrativearea;
+@property (nonatomic) NSString *fullthoroughfare;
 @property (nonatomic) NSString *privatenotes;
 @property (nonatomic) NSString *locality;
 @property (nonatomic) NSString *sublocality;

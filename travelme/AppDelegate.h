@@ -14,5 +14,6 @@
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) Dal *Db;
 @property (nonatomic) NSString *databasename;
+@property (nonatomic) NSString *HomeCurrencyCode;
 @end
 

@@ -132,18 +132,18 @@
 }
 /*
  created date:      08/05/2018
- last modified:     08/05/2018
+ last modified:     09/05/2018
  remarks:           Might not be totally necessary, but seperated out from editActionsForRowAtIndexPath method above.
  */
 - (void)tableView:(UITableView *)tableView deleteSchedule:(NSIndexPath *)indexPath  {
     
     ScheduleNSO *schedule = [self.scheduleitems objectAtIndex:indexPath.row];
-    if ([schedule.type isEqualToString:@"close"]) {
+    //if ([schedule.type isEqualToString:@"close"]) {
         [self.scheduleitems removeObjectAtIndex:indexPath.row];
         [self.TableViewScheduleItems reloadData];
-    } else {
+    //} else {
         // do nothing.
-    }
+    //}
     
 }
 
@@ -160,6 +160,25 @@
     [dateformatter setTimeZone:[NSTimeZone localTimeZone]];
     
     return [NSString stringWithFormat:@"%@",[dateformatter stringFromDate:ActivityDt]];
+}
+
+/*
+ created date:      08/05/2018
+ last modified:     08/05/2018
+ remarks:           segue controls.
+ */
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+
+    if ([segue.identifier isEqualToString:@"ShowProjectDirections"]){
+        // todo
+        DirectionsVC *controller = (DirectionsVC *)segue.destinationViewController;
+        controller.delegate = self;
+        NSMutableArray *Route = [[NSMutableArray alloc] init];
+        for (ScheduleNSO *schedule in self.scheduleitems) {
+            [Route addObject:schedule.poi];
+        }
+        controller.Route = Route;
+    }
 }
 
 

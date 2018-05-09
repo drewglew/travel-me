@@ -163,7 +163,17 @@
         // todo
         DirectionsVC *controller = (DirectionsVC *)segue.destinationViewController;
         controller.delegate = self;
+        NSMutableArray *Route = [[NSMutableArray alloc] init];
+        [Route addObject:self.Activity.poi];
+        controller.Route = Route;
+        /* soon to be obsolete */
         controller.LocationToCoord = CLLocationCoordinate2DMake([self.Activity.poi.lat doubleValue], [self.Activity.poi.lon doubleValue]);
+    } else if ([segue.identifier isEqualToString:@"ShowPayments"]){
+        PaymentListingVC *controller = (PaymentListingVC *)segue.destinationViewController;
+        controller.delegate = self;
+        controller.Activity = self.Activity;
+        
+        
     }
 }
 

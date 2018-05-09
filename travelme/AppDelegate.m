@@ -22,7 +22,8 @@
     /* open db */
     self.Db = [[Dal alloc] init];
     
-    //[self.Db DeleteDb];
+    NSLocale *theLocale = [NSLocale currentLocale];
+    self.HomeCurrencyCode = [theLocale objectForKey:NSLocaleCurrencyCode];
     
     // travelme_01.db
     [self.Db InitDb:self.databasename];

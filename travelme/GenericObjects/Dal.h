@@ -14,7 +14,7 @@
 #import "ActivityNSO.h"
 #import "ScheduleNSO.h"
 #import "CountryNSO.h"
-
+#import "PaymentNSO.h"
 
 @interface Dal : NSObject
 
@@ -40,5 +40,5 @@
 -(NSMutableArray*) GetActivityContent :(NSString*) RequiredKey;
 -(NSMutableArray*) GetActivityListContentForState :(NSString*) RequiredProjectKey :(NSNumber*) RequiredState;
 -(NSMutableArray*) GetActivitySchedule :(NSString *) ProjectKey :(NSNumber*) RequiredState;
-
+-(NSMutableArray*) GetPaymentListContentForState :(NSString *) ProjectKey :(NSString *) ActivityKey   :(NSNumber *) RequiredState;
 @end

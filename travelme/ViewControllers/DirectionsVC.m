@@ -22,16 +22,77 @@
 
 /*
  created date:      06/05/2018
- last modified:     06/05/2018
+ last modified:     08/05/2018
  remarks:
  */
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self startUserLocationSearch];
+    /* if coming from activity window we need to find our current position
+     which in turn once found will goto processMultiRouting method. */
+    if (self.Route.count==1) {
+        [self startUserLocationSearch];
+    } else {
+        [self processMultiRouting];
+    }
+}
+/*
+ created date:      08/05/2018
+ last modified:     08/05/2018
+ remarks:
+ */
+-(void)processMultiRouting {
+    
+    bool firstItem = true;
+    
+    MKMapItem *mapItemPrevious;
+    MKDirectionsRequest *request = [[MKDirectionsRequest alloc] init];
+    
+    for (PoiNSO *route in self.Route) {
+
+        AnnotationMK *annotation = [[AnnotationMK alloc] init];
+        PoiNSO* poi;
+        if (![route.name isEqualToString:@"My Current Location"]) {
+           poi  = [[AppDelegateDef.Db GetPoiContent:route.key] firstObject];
+        } else {
+            poi = route;
+        }
+        poi.Coordinates = CLLocationCoordinate2DMake([poi.lat doubleValue], [poi.lon doubleValue]);
+        annotation.coordinate = poi.Coordinates;
+        annotation.title = poi.name;
+        annotation.subtitle = poi.administrativearea;
+        [self.MapView addAnnotation:annotation];
+        
+        MKPlacemark *placemark  = [[MKPlacemark alloc] initWithCoordinate:poi.Coordinates addressDictionary:nil];
+        MKMapItem *mapItem = [[MKMapItem alloc] initWithPlacemark:placemark];
+
+        if (firstItem) {
+            firstItem = false;
+        } else  {
+            request.source = mapItemPrevious;
+            request.destination = mapItem;
+            request.requestsAlternateRoutes = NO;
+            MKDirections *directions = [[MKDirections alloc] initWithRequest:request];
+        
+            [directions calculateDirectionsWithCompletionHandler:
+             ^(MKDirectionsResponse *response, NSError *error) {
+                 if (error) {
+                     NSLog(@"ERROR");
+                     NSLog(@"%@",[error localizedDescription]);
+                 } else {
+                     [self showRoute:response];
+                 }
+             }];
+        }
+        mapItemPrevious = [[MKMapItem alloc] initWithPlacemark:placemark];
+    }
+    [self zoomToAnnotationsBounds :self.MapView.annotations];
 }
 
-
-
+/*
+ created date:      06/05/2018
+ last modified:     06/05/2018
+ remarks:
+ */
 -(void)startUserLocationSearch{
     
     self.locationManager = [[CLLocationManager alloc]init];
@@ -44,75 +105,110 @@
     }
     [self.locationManager startUpdatingLocation];
 }
-
+/*
+ created date:      06/05/2018
+ last modified:     08/05/2018
+ remarks:
+ */
 -(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations{
     
     [self.locationManager stopUpdatingLocation];
-
-    CLLocationCoordinate2D coordinateArray[2];
-
-    coordinateArray[0] = CLLocationCoordinate2DMake(self.locationManager.location.coordinate.latitude, self.locationManager.location.coordinate.longitude);
-    coordinateArray[1] = self.LocationToCoord;
+    PoiNSO *mylocation = [[PoiNSO alloc] init];
     
-    MKPlacemark *placemark  = [[MKPlacemark alloc] initWithCoordinate:coordinateArray[0] addressDictionary:nil];
+    mylocation.name = @"My Current Location";
+    mylocation.lat = [NSNumber numberWithDouble: self.locationManager.location.coordinate.latitude];
+    mylocation.lon = [NSNumber numberWithDouble:self.locationManager.location.coordinate.longitude];
+    mylocation.administrativearea =@"";
+    [self.Route insertObject:mylocation atIndex:0];
     
-    MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
-    annotation.coordinate = coordinateArray[0];
-    annotation.title = @"My Location";
-    [self.MapView addAnnotation:annotation];
-
-    self.startlocation = placemark;
-    
-    MKMapItem *mapItem = [[MKMapItem alloc] initWithPlacemark:self.startlocation];
-    
-    MKPlacemark *placemark1  = [[MKPlacemark alloc] initWithCoordinate:coordinateArray[1] addressDictionary:nil];
-    
-    MKPointAnnotation *annotation1 = [[MKPointAnnotation alloc] init];
-    annotation1.coordinate = coordinateArray[1];
-    annotation1.title = @"Destination";
-    [self.MapView addAnnotation:annotation1];
-    
-    self.destination = placemark1;
-    
-    MKMapItem *mapItem1 = [[MKMapItem alloc] initWithPlacemark:self.destination];
-    
-    MKDirectionsRequest *request = [[MKDirectionsRequest alloc] init];
-    request.source = mapItem1;
-    
-    request.destination = mapItem;
-    request.requestsAlternateRoutes = NO;
-    
-    MKDirections *directions = [[MKDirections alloc] initWithRequest:request];
-    
-    [directions calculateDirectionsWithCompletionHandler:
-     ^(MKDirectionsResponse *response, NSError *error) {
-         if (error) {
-             NSLog(@"ERROR");
-             NSLog(@"%@",[error localizedDescription]);
-         } else {
-             [self showRoute:response];
-         }
-     }];
+    [self processMultiRouting];
 }
-
+/*
+ created date:      06/05/2018
+ last modified:     08/05/2018
+ remarks:
+ */
 -(void)showRoute:(MKDirectionsResponse *)response
 {
+    
     for (MKRoute *route in response.routes)
     {
         [self.MapView
          addOverlay:route.polyline level:MKOverlayLevelAboveRoads];
-    
         for (MKRouteStep *step in route.steps)
         {
             NSLog(@"%@", step.instructions);
         }
-        
-        self.LabelDistance.text = [NSString stringWithFormat:@"Distance = %.02f km", (route.distance / 1000)];
-        
-        [self zoomToPolyLine:self.MapView polyline:route.polyline animated:true];
+        self.Distance += (route.distance / 1000);
+        self.LabelDistance.text = [NSString stringWithFormat:@"Distance = %.02f km", self.Distance];
     }
 }
+/*
+ created date:      08/05/2018
+ last modified:     08/05/2018
+ remarks:
+ */
+- (void) zoomToAnnotationsBounds:(NSArray *)annotations {
+    
+    CLLocationDegrees minLatitude = DBL_MAX;
+    CLLocationDegrees maxLatitude = -DBL_MAX;
+    CLLocationDegrees minLongitude = DBL_MAX;
+    CLLocationDegrees maxLongitude = -DBL_MAX;
+    
+    for (AnnotationMK *annotation in annotations) {
+        double annotationLat = annotation.coordinate.latitude;
+        double annotationLong = annotation.coordinate.longitude;
+        minLatitude = fmin(annotationLat, minLatitude);
+        maxLatitude = fmax(annotationLat, maxLatitude);
+        minLongitude = fmin(annotationLong, minLongitude);
+        maxLongitude = fmax(annotationLong, maxLongitude);
+    }
+    
+    // See function below
+    [self setMapRegionForMinLat:minLatitude minLong:minLongitude maxLat:maxLatitude maxLong:maxLongitude];
+    
+    // If your markers were 40 in height and 20 in width, this would zoom the map to fit them perfectly. Note that there is a bug in mkmapview's set region which means it will snap the map to the nearest whole zoom level, so you will rarely get a perfect fit. But this will ensure a minimum padding.
+    UIEdgeInsets mapPadding = UIEdgeInsetsMake(40.0, 40.0, 40.0, 40.0);
+    CLLocationCoordinate2D relativeFromCoord = [self.MapView convertPoint:CGPointMake(0, 0) toCoordinateFromView:self.MapView];
+    
+    // Calculate the additional lat/long required at the current zoom level to add the padding
+    CLLocationCoordinate2D topCoord = [self.MapView convertPoint:CGPointMake(0, mapPadding.top) toCoordinateFromView:self.MapView];
+    CLLocationCoordinate2D rightCoord = [self.MapView convertPoint:CGPointMake(0, mapPadding.right) toCoordinateFromView:self.MapView];
+    CLLocationCoordinate2D bottomCoord = [self.MapView convertPoint:CGPointMake(0, mapPadding.bottom) toCoordinateFromView:self.MapView];
+    CLLocationCoordinate2D leftCoord = [self.MapView convertPoint:CGPointMake(0, mapPadding.left) toCoordinateFromView:self.MapView];
+    
+    double latitudeSpanToBeAddedToTop = relativeFromCoord.latitude - topCoord.latitude;
+    double longitudeSpanToBeAddedToRight = relativeFromCoord.latitude - rightCoord.latitude;
+    double latitudeSpanToBeAddedToBottom = relativeFromCoord.latitude - bottomCoord.latitude;
+    double longitudeSpanToBeAddedToLeft = relativeFromCoord.latitude - leftCoord.latitude;
+    
+    maxLatitude = maxLatitude + latitudeSpanToBeAddedToTop;
+    minLatitude = minLatitude - latitudeSpanToBeAddedToBottom;
+    
+    maxLongitude = maxLongitude + longitudeSpanToBeAddedToRight;
+    minLongitude = minLongitude - longitudeSpanToBeAddedToLeft;
+    
+    [self setMapRegionForMinLat:minLatitude minLong:minLongitude maxLat:maxLatitude maxLong:maxLongitude];
+}
 
+-(void) setMapRegionForMinLat:(double)minLatitude minLong:(double)minLongitude maxLat:(double)maxLatitude maxLong:(double)maxLongitude {
+    
+    MKCoordinateRegion region;
+    region.center.latitude = (minLatitude + maxLatitude) / 2;
+    region.center.longitude = (minLongitude + maxLongitude) / 2;
+    region.span.latitudeDelta = (maxLatitude - minLatitude);
+    region.span.longitudeDelta = (maxLongitude - minLongitude);
+    
+    // MKMapView BUG: this snaps to the nearest whole zoom level, which is wrong- it doesn't respect the exact region you asked for. See http://stackoverflow.com/questions/1383296/why-mkmapview-region-is-different-than-requested
+    [self.MapView setRegion:region animated:YES];
+}
+
+
+/*
+ created date:      06/05/2018
+ last modified:     06/05/2018
+ remarks:
+ */
 - (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
 {
     if ([overlay isKindOfClass:[MKPolyline class]]) {
@@ -124,11 +220,20 @@
     return nil;
 }
 
+/*
+ created date:      06/05/2018
+ last modified:     06/05/2018
+ remarks:           not used
+ */
 -(void)zoomToPolyLine: (MKMapView*)map polyline: (MKPolyline*)polyline animated: (BOOL)animated
 {
     [map setVisibleMapRect:[polyline boundingMapRect] edgePadding:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0) animated:animated];
 }
-
+/*
+ created date:      06/05/2018
+ last modified:     06/05/2018
+ remarks:
+ */
 - (IBAction)BackPressed:(id)sender {
     [self dismissViewControllerAnimated:YES completion:Nil];
 }
