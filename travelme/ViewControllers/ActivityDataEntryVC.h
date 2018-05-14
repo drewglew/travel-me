@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
+#import <QuartzCore/QuartzCore.h>
 #import "AppDelegate.h"
 #import "ActivityNSO.h"
 //#import "PoiNSO.h"
@@ -27,6 +28,7 @@
 
 @property (assign) bool newitem;
 @property (assign) bool transformed;
+@property (assign) bool deleteitem;
 @property (nonatomic, weak) id <ActivityDelegate> delegate;
 @property (strong, nonatomic) ActivityNSO *Activity;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewPoi;
@@ -36,6 +38,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *ButtonAction;
 @property (weak, nonatomic) IBOutlet UILabel *LabelStartDT;
 @property (weak, nonatomic) IBOutlet UILabel *LabelEndDT;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonCheckInOut;
 
 
 

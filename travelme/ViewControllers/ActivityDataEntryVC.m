@@ -17,20 +17,49 @@
 
 /*
  created date:      01/05/2018
- last modified:     01/05/2018
+ last modified:     13/05/2018
  remarks:
  */
 - (void)viewDidLoad {
     [super viewDidLoad];
-    if (!self.newitem && !self.transformed) {
+    
+    self.TextFieldName.layer.cornerRadius=8.0f;
+    self.TextFieldName.layer.masksToBounds=YES;
+    self.TextFieldName.layer.borderColor=[[UIColor colorWithRed:246.0f/255.0f green:247.0f/255.0f blue:235.0f/255.0f alpha:1.0]CGColor];
+    self.TextFieldName.layer.borderWidth= 1.0f;
+    
+    self.TextViewNotes.layer.cornerRadius=8.0f;
+    self.TextViewNotes.layer.masksToBounds=YES;
+    self.TextViewNotes.layer.borderColor=[[UIColor colorWithRed:246.0f/255.0f green:247.0f/255.0f blue:235.0f/255.0f alpha:1.0]CGColor];
+    self.TextViewNotes.layer.borderWidth= 1.0f;
+    
+    
+    NSDate *today = [NSDate date];
+    if (self.deleteitem) {
+        UIImage *btnImage = [UIImage imageNamed:@"Delete"];
+        [self.ButtonAction setImage:btnImage forState:UIControlStateNormal];
+        [self.ButtonAction setTitle:@"" forState:UIControlStateNormal];
+        
+        [self LoadActivityData];
+    } else if (!self.newitem && !self.transformed) {
         [self.ButtonAction setTitle:@"Upd" forState:UIControlStateNormal];
         [self LoadActivityData];
-    } else if (self.transformed) {
-        [self LoadActivityData];
+        NSComparisonResult result = [self.Activity.startdt compare:today];
+        if (self.Activity.startdt == self.Activity.enddt && result==NSOrderedAscending && self.Activity.activitystate==[NSNumber numberWithInt:1]) {
+            self.ButtonCheckInOut.hidden = false;
+            UIImage *btnImage = [UIImage imageNamed:@"ActivityCheckOut"];
+            [self.ButtonCheckInOut setImage:btnImage forState:UIControlStateNormal];
+        }
         
-        UIImage *btnImage = [UIImage imageNamed:@"ActivityDone"];
-        [self.ButtonAction setImage:btnImage forState:UIControlStateNormal];
-        [self.ButtonAction setBackgroundColor:[UIColor clearColor]];
+        
+        
+    } else if (self.transformed) {
+        self.ButtonCheckInOut.hidden = false;
+        UIImage *btnImage = [UIImage imageNamed:@"ActivityCheckIn"];
+        [self.ButtonCheckInOut setImage:btnImage forState:UIControlStateNormal];
+        [self.ButtonCheckInOut setBackgroundColor:[UIColor clearColor]];
+        [self.ButtonAction setTitle:@"Upd" forState:UIControlStateNormal];
+        [self LoadActivityData];
     } else if (self.newitem) {
         self.TextFieldName.text = self.Activity.poi.name;
         NSCalendar *cal = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
@@ -125,7 +154,12 @@
     }
     self.Activity.name = self.TextFieldName.text;
     self.Activity.privatenotes = self.TextViewNotes.text;
-    if (self.newitem || self.transformed) {
+    
+    if (self.deleteitem) {
+        [AppDelegateDef.Db DeleteActivity:self.Activity :nil];
+        [self dismissViewControllerAnimated:YES completion:Nil];
+        
+    } else if (self.newitem || self.transformed) {
         /* working */
         if (self.newitem) self.Activity.key = [[NSUUID UUID] UUIDString];
         [AppDelegateDef.Db InsertActivityItem:self.Activity];
@@ -212,6 +246,33 @@
     
 }
 
+/*
+ created date:      13/05/2018
+ last modified:     13/05/2018
+ remarks:
+ */
+- (IBAction)CheckInOutPressed:(id)sender {
+    
+    NSDate *today = [NSDate date];
+    
+    if (self.newitem || self.transformed) {
+        self.Activity.startdt = today;
+        self.Activity.enddt = today;
+        
+        if (self.newitem) self.Activity.key = [[NSUUID UUID] UUIDString];
+        [AppDelegateDef.Db InsertActivityItem:self.Activity];
+        // double dismissing so we flow back to the activity window bypassing the search..
+        if (self.newitem) {
+            [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+        } else {
+            [self dismissViewControllerAnimated:YES completion:Nil];
+        }
+    } else {
+        self.Activity.enddt = today;
+        [AppDelegateDef.Db UpdateActivityItem:self.Activity];
+        [self dismissViewControllerAnimated:YES completion:Nil];
+    }
+}
 
 
 @end

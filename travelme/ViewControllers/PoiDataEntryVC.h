@@ -39,4 +39,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewKey;
 @property (weak, nonatomic) IBOutlet UILabel *LabelPoi;
 @property (nonatomic, weak) id <PoiDataEntryDelegate> delegate;
+
+
+
 @end

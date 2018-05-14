@@ -24,11 +24,13 @@
 @property (strong, nonatomic) NSMutableArray *poiitems;
 @property (strong, nonatomic) PoiNSO *PointOfInterest;
 @property (strong, nonatomic) NSMutableArray *poifiltereditems;
+@property (strong, nonatomic) NSMutableArray *countries;
 @property (assign) bool newitem;
 @property (assign) bool transformed;
 @property (assign) bool isSearching;
 @property (nonatomic, weak) id <PoiSearchDelegate> delegate;
 @property (strong, nonatomic) ActivityNSO *Activity;
 @property (strong, nonatomic) ProjectNSO *Project;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentPoiFilterList;
 
 @end

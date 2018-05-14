@@ -34,11 +34,13 @@
 -(bool) UpdateActivityItem :(ActivityNSO*) Activity;
 -(bool) DeletePoi :(PoiNSO*) Poi;
 -(bool) DeleteProject :(ProjectNSO*) Project;
+-(bool) DeleteActivity :(ActivityNSO*) Activity :(NSString*) ProjectKey;
 
--(NSMutableArray*) GetPoiContent :(NSString*) RequiredKey;
+-(NSMutableArray*) GetPoiContent :(NSString*) RequiredKey :(NSArray*) Countries :(NSString*) FilterOption;
 -(NSMutableArray*) GetProjectContent :(NSString*) RequiredKey;
 -(NSMutableArray*) GetActivityContent :(NSString*) RequiredKey;
 -(NSMutableArray*) GetActivityListContentForState :(NSString*) RequiredProjectKey :(NSNumber*) RequiredState;
 -(NSMutableArray*) GetActivitySchedule :(NSString *) ProjectKey :(NSNumber*) RequiredState;
 -(NSMutableArray*) GetPaymentListContentForState :(NSString *) ProjectKey :(NSString *) ActivityKey   :(NSNumber *) RequiredState;
+-(NSMutableArray*) GetProjectCountries :(NSString*) RequiredProjectKey;
 @end

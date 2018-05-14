@@ -22,7 +22,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     30/04/2018
+ last modified:     14/05/2018
  remarks:
  */
 - (void)viewDidLoad {
@@ -30,9 +30,22 @@
     self.SearchBarPoi.delegate = self;
     self.TableViewSearchPoiItems.delegate = self;
     self.TableViewSearchPoiItems.rowHeight = 100;
+    
+    if (self.Project == nil) {
+        // we are arriving directly from the menu
+        [self.SegmentPoiFilterList setTitle:@"Unused" forSegmentAtIndex:0];
+        
+    } else {
+        // project is available
+        [self.SegmentPoiFilterList setTitle:@"Project Countries" forSegmentAtIndex:0];
+        self.countries = [AppDelegateDef.Db GetProjectCountries :self.Project.key];
+        
+    }
+    
     self.poiitems = [[NSMutableArray alloc] init];
     self.poifiltereditems = [[NSMutableArray alloc] init];
     // Do any additional setup after loading the view.
+    
 }
 /*
  created date:      30/04/2018
@@ -65,17 +78,28 @@
 
 /*
  created date:      30/04/2018
- last modified:     30/04/2018
+ last modified:     14/05/2018
  remarks:
  */
 -(void) LoadPoiData {
-    self.poiitems = [AppDelegateDef.Db GetPoiContent :nil];
     
-    
+    if (self.Project == nil) {
+        self.poiitems = [AppDelegateDef.Db GetPoiContent :nil :nil :nil];
+        if (self.SegmentPoiFilterList.selectedSegmentIndex == 0) {
+            self.poiitems = [AppDelegateDef.Db GetPoiContent :nil :nil :@"unused"];
+        } else {
+            self.poiitems = [AppDelegateDef.Db GetPoiContent :nil :nil :nil];
+        }
+    } else {
+        if (self.SegmentPoiFilterList.selectedSegmentIndex == 0) {
+            self.poiitems = [AppDelegateDef.Db GetPoiContent :nil :self.countries :nil];
+        } else {
+            self.poiitems = [AppDelegateDef.Db GetPoiContent :nil :nil :nil];
+        }
+    }
+        
     NSURL *url = [self applicationDocumentsDirectory];
-    
-    
-    
+
     NSData *pngData;
     for (PoiNSO *poi in self.poiitems) {
         
@@ -190,7 +214,7 @@
         controller.Activity = self.Activity;
         controller.Activity.project = self.Project;
         controller.Activity.poi = Poi;
-     
+        controller.deleteitem = false;
         controller.transformed = self.transformed;
         controller.newitem = true;
         [controller setModalPresentationStyle:UIModalPresentationFullScreen];
@@ -227,6 +251,10 @@
     }
 }
 
+- (UIView*)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.TableViewSearchPoiItems.frame.size.width, 70)];
+    return footerView;
+}
 
 -(void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
     [self.SearchBarPoi resignFirstResponder];
@@ -323,10 +351,16 @@
  remarks:
  */
 - (IBAction)BackPressed:(id)sender {
-    
     [self dismissViewControllerAnimated:YES completion:Nil];
-    
 }
 
+/*
+ created date:      14/05/2018
+ last modified:     14/05/2018
+ remarks:
+ */
+- (IBAction)SegmentPoiFilterChanged:(id)sender {
+    [self LoadPoiData];
+}
 
 @end

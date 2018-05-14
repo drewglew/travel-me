@@ -21,6 +21,7 @@
 @interface ActivityListVC : UIViewController <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, PoiSearchDelegate, ActivityDelegate, ScheduleListDelegate>
 
 @property (assign) bool editmode;
+
 @property (strong, nonatomic) ProjectNSO *Project;
 @property (nonatomic, weak) id <ActivityListDelegate> delegate;
 @property (weak, nonatomic) IBOutlet UICollectionView *CollectionViewActivities;
@@ -28,6 +29,7 @@
 @property (strong, nonatomic) NSMutableArray *activityitems;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentState;
 @property (weak, nonatomic) IBOutlet UIView *ViewAction;
-
+@property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonRouting;
 
 @end

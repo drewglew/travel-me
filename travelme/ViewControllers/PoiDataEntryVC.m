@@ -40,9 +40,31 @@
     self.CollectionViewPoiImages.delegate = self;
     // Do any additional setup after loading the view.
 
-    UIFont *font = [UIFont fontWithName:@".SFUIText-Medium" size:10];
-    NSDictionary *attributes = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
-    [self.SegmentTypeOfPoi setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    
+    self.LabelPoi.text = [self GetPoiLabelWithType:[NSNumber numberWithLong:self.SegmentTypeOfPoi.selectedSegmentIndex]];
+    
+    
+    
+    [self.SegmentTypeOfPoi setImage:[UIImage imageNamed:@"Airport"] forSegmentAtIndex:0];
+    [self.SegmentTypeOfPoi setImage:[UIImage imageNamed:@"Scenary"] forSegmentAtIndex:1];
+    [self.SegmentTypeOfPoi setImage:[UIImage imageNamed:@"Historic"] forSegmentAtIndex:2];
+    [self.SegmentTypeOfPoi setImage:[UIImage imageNamed:@"Museum"] forSegmentAtIndex:3];
+    [self.SegmentTypeOfPoi setImage:[UIImage imageNamed:@"Restaurant"] forSegmentAtIndex:4];
+    [self.SegmentTypeOfPoi setImage:[UIImage imageNamed:@"Accomodation"] forSegmentAtIndex:5];
+    [self.SegmentTypeOfPoi setImage:[UIImage imageNamed:@"City"] forSegmentAtIndex:6];
+    [self.SegmentTypeOfPoi setImage:[UIImage imageNamed:@"Venue"] forSegmentAtIndex:7];
+    [self.SegmentTypeOfPoi setImage:[UIImage imageNamed:@"Misc"] forSegmentAtIndex:8];
+    
+    self.TextFieldTitle.layer.cornerRadius=8.0f;
+    self.TextFieldTitle.layer.masksToBounds=YES;
+    self.TextFieldTitle.layer.borderColor=[[UIColor colorWithRed:246.0f/255.0f green:247.0f/255.0f blue:235.0f/255.0f alpha:1.0]CGColor];
+    self.TextFieldTitle.layer.borderWidth= 1.0f;
+    
+    self.TextViewNotes.layer.cornerRadius=8.0f;
+    self.TextViewNotes.layer.masksToBounds=YES;
+    self.TextViewNotes.layer.borderColor=[[UIColor colorWithRed:246.0f/255.0f green:247.0f/255.0f blue:235.0f/255.0f alpha:1.0]CGColor];
+    self.TextViewNotes.layer.borderWidth= 1.0f;
+    
 }
 
 
@@ -485,6 +507,56 @@
         self.LabelPoi.hidden=true;
     }
 
+}
+
+
+-(NSString *)GetPoiLabelWithType :(NSNumber*) PoiType {
+    NSString *LabelText;
+    
+    switch ([PoiType intValue])
+    
+    {
+        case 0:
+            LabelText = [NSString stringWithFormat:@"Point Of Interest - %@",@"Service"];
+            break;
+        case 1:
+            LabelText = [NSString stringWithFormat:@"Point Of Interest - %@",@"Scenary"];
+            break;
+        case 2:
+            LabelText = [NSString stringWithFormat:@"Point Of Interest - %@",@"Historic"];
+            break;
+        case 3:
+            LabelText = [NSString stringWithFormat:@"Point Of Interest - %@",@"Museum"];
+            break;
+        case 4:
+            LabelText = [NSString stringWithFormat:@"Point Of Interest - %@",@"Restaurant"];
+            break;
+        case 5:
+            LabelText = [NSString stringWithFormat:@"Point Of Interest - %@",@"Accomodation"];
+            break;
+        case 6:
+            LabelText = [NSString stringWithFormat:@"Point Of Interest - %@",@"City/Town"];
+            break;
+        case 7:
+            LabelText = [NSString stringWithFormat:@"Point Of Interest - %@",@"Venue"];
+            break;
+        case 8:
+            LabelText = [NSString stringWithFormat:@"Point Of Interest - %@",@"Miscellaneous"];
+            break;
+        default:
+            LabelText = @"Point Of Interest";
+            break;
+    }
+
+    return LabelText;
+}
+
+
+
+- (IBAction)SegmentTypeChanged:(id)sender {
+    
+    self.LabelPoi.text = [self GetPoiLabelWithType:[NSNumber numberWithLong:self.SegmentTypeOfPoi.selectedSegmentIndex]];
+    
 }
 
 

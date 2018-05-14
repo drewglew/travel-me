@@ -41,6 +41,16 @@
         [self LoadExistingData];
         self.updatedimage = false;
     }
+    self.TextFieldName.layer.cornerRadius=8.0f;
+    self.TextFieldName.layer.masksToBounds=YES;
+    self.TextFieldName.layer.borderColor=[[UIColor colorWithRed:246.0f/255.0f green:247.0f/255.0f blue:235.0f/255.0f alpha:1.0]CGColor];
+    self.TextFieldName.layer.borderWidth= 1.0f;
+
+    self.TextViewNotes.layer.cornerRadius=8.0f;
+    self.TextViewNotes.layer.masksToBounds=YES;
+    self.TextViewNotes.layer.borderColor=[[UIColor colorWithRed:246.0f/255.0f green:247.0f/255.0f blue:235.0f/255.0f alpha:1.0]CGColor];
+    self.TextViewNotes.layer.borderWidth= 1.0f;
+    
 }
 
 /*
@@ -61,7 +71,7 @@
 
 /*
  created date:      29/04/2018
- last modified:     29/04/2018
+ last modified:     13/05/2018
  remarks:
  */
 - (IBAction)ProjectActionPressed:(id)sender {
@@ -72,14 +82,19 @@
     if (self.newitem) {
     
         self.Project.key = [[NSUUID UUID] UUIDString];
-        NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/Projects/%@",self.Project.key]];
-        [[NSFileManager defaultManager] createDirectoryAtPath:dataPath withIntermediateDirectories:YES attributes:nil error:nil];
+        if (self.updatedimage) {
+  
+            NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/Projects/%@",self.Project.key]];
+            [[NSFileManager defaultManager] createDirectoryAtPath:dataPath withIntermediateDirectories:YES attributes:nil error:nil];
         
-        NSData *imageData =  UIImagePNGRepresentation(self.Project.Image);
-        NSString *filepathname = [dataPath stringByAppendingPathComponent:@"image.png"];
-        [imageData writeToFile:filepathname atomically:YES];
-        self.Project.imagefilereference = [NSString stringWithFormat:@"Projects/%@/image.png",self.Project.key];
-    
+            NSData *imageData =  UIImagePNGRepresentation(self.Project.Image);
+            NSString *filepathname = [dataPath stringByAppendingPathComponent:@"image.png"];
+            [imageData writeToFile:filepathname atomically:YES];
+            self.Project.imagefilereference = [NSString stringWithFormat:@"Projects/%@/image.png",self.Project.key];
+        } else {
+            self.Project.imagefilereference = @"";
+        }
+        
         self.Project.privatenotes = self.TextViewNotes.text;
         self.Project.name = self.TextFieldName.text;
     
@@ -100,6 +115,7 @@
                 
                 NSString *filepathname = [dataPath stringByAppendingPathComponent:@"image.png"];
                 [imageData writeToFile:filepathname atomically:YES];
+                self.Project.imagefilereference = [NSString stringWithFormat:@"Projects/%@/image.png",self.Project.key];
             }
             self.Project.privatenotes = self.TextViewNotes.text;
             self.Project.name = self.TextFieldName.text;

@@ -274,13 +274,13 @@
 
 /*
  created date:      29/04/2018
- last modified:     06/05/2018
+ last modified:     13/05/2018
  remarks:           TODO add new way of inserting parms
  */
 -(bool) UpdateProjectItem :(ProjectNSO*) Project {
     bool retVal=true;
         sqlite3_stmt *statement;
-        NSString *updateSQL = [NSString stringWithFormat:@"UPDATE project SET name = '%@', privatenotes = '%@' WHERE key='%@'", Project.name, Project.privatenotes, Project.key];
+        NSString *updateSQL = [NSString stringWithFormat:@"UPDATE project SET name = '%@', privatenotes = '%@', imagefilename = '%@' WHERE key='%@'", Project.name, Project.privatenotes, Project.imagefilereference, Project.key];
         
         const char *update_statement = [updateSQL UTF8String];
         sqlite3_prepare_v2(_DB, update_statement, -1, &statement, NULL);
@@ -457,20 +457,26 @@
 
 /*
  created date:      28/04/2018
- last modified:     06/05/2018
+ last modified:     14/05/2018
  remarks:           TODO add new way of inserting parms
  */
--(NSMutableArray*) GetPoiContent :(NSString*) RequiredKey {
+-(NSMutableArray*) GetPoiContent :(NSString*) RequiredKey :(NSArray*) Countries :(NSString*) FilterOption {
     NSMutableArray *poidata  = [[NSMutableArray alloc] init];
    
         NSString *whereClause = @"";
             
         if (RequiredKey != nil) {
             whereClause = @"WHERE";
-            whereClause = [NSString stringWithFormat:@"%@ %@='%@' AND ", whereClause, @"key",RequiredKey];
-            if (![whereClause isEqualToString:@"WHERE"]) {
-                whereClause = [whereClause substringToIndex:[whereClause length]-5];
+            whereClause = [NSString stringWithFormat:@"%@ %@='%@'", whereClause, @"key",RequiredKey];
+        } else if (FilterOption != nil) {
+            if ([FilterOption isEqualToString:@"unused"]) {
+                whereClause = @"WHERE";
+                whereClause = [NSString stringWithFormat:@"%@ %@", whereClause, @"p.key NOT IN (SELECT DISTINCT poikey FROM activity)"];
             }
+        } else if (Countries != nil) {
+            
+            whereClause = @"WHERE";
+            whereClause = [NSString stringWithFormat:@"%@ %@ IN (%@)", whereClause, @"countrycode", [Countries componentsJoinedByString:@ ","]];
         }
         NSString *selectSQL = [NSString stringWithFormat:@"SELECT key,name,fullthoroughfare,administrativearea,subadministrativearea,countrycode,locality,sublocality,postcode,categoryid,privatenotes,lat,lon,(select count(*) as counter from activity a where a.poikey=p.key) as sumofactivities FROM poi p %@ ORDER BY name", whereClause];
         sqlite3_stmt *statement;
@@ -645,7 +651,7 @@
 
 /*
  created date:      01/05/2018
- last modified:     06/05/2018
+ last modified:     12/05/2018
  remarks:           state 1 = idea; state 2 = actual  - TODO add new way of inserting parms
  */
 -(NSMutableArray*) GetActivityListContentForState :(NSString*) RequiredProjectKey :(NSNumber*) RequiredState {
@@ -662,7 +668,7 @@
         else
         {
             
-            selectSQL = [NSString stringWithFormat:@"SELECT projectkey, poikey, activity.key, name, notes, totalprice, startdt, enddt, activity.state FROM activity, (select max(state) as maxstate, key from activity group by key) data where activity.key=data.key and activity.state=data.maxstate and projectkey='%@' ORDER BY startdt", RequiredProjectKey];
+            selectSQL = [NSString stringWithFormat:@"SELECT projectkey, poikey, activity.key, name, notes, totalprice, startdt, enddt, activity.state FROM activity, (select max(state) as maxstate, key from activity group by key) data where activity.key=data.key and activity.state=data.maxstate and projectkey='%@' ORDER BY activity.state desc, startdt", RequiredProjectKey];
             
         }
         
@@ -735,7 +741,7 @@
 -(bool) DeleteProject :(ProjectNSO*) Project {
     bool retVal = true;
 
-        retVal = [self DeleteActivity:nil :Project.key];
+    retVal = [self DeleteActivity:nil :Project.key];
         if (retVal) {
     
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -794,7 +800,7 @@
 
 /*
  created date:      02/05/2018
- last modified:     06/05/2018
+ last modified:     12/05/2018
  remarks:
  */
 -(bool) DeleteActivity :(ActivityNSO*) Activity :(NSString*) ProjectKey {
@@ -805,7 +811,7 @@
         if (Activity==nil) {
             deleteSQL = [NSString stringWithFormat:@"DELETE FROM activity WHERE projectkey = '%@'",ProjectKey];
         } else {
-            deleteSQL = [NSString stringWithFormat:@"DELETE FROM activity WHERE key = '%@'",Activity.key];
+            deleteSQL = [NSString stringWithFormat:@"DELETE FROM activity WHERE key = '%@' AND state=%@",Activity.key, Activity.activitystate];
         }
 
         const char *deleteStatement = [deleteSQL UTF8String];
@@ -1005,7 +1011,32 @@
     return rate;
 }
 
+/*
+ created date:      14/05/2018
+ last modified:     14/05/2018
+ remarks:
+ */
+-(NSMutableArray*) GetProjectCountries :(NSString*) RequiredProjectKey {
+    NSMutableArray *countries  = [[NSMutableArray alloc] init];
+    
+    sqlite3_stmt *statement;
+    NSString *selectSQL;
+    
+    selectSQL = [NSString stringWithFormat:@"SELECT DISTINCT countrycode from poi, activity where poi.key = activity.poikey AND activity.projectkey='%@'", RequiredProjectKey];
+    
+    const char *select_statement = [selectSQL UTF8String];
 
+    if (sqlite3_prepare_v2(_DB, select_statement, -1, &statement, NULL) == SQLITE_OK)
+    {
+        while (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            NSString *country = [NSString stringWithFormat:@"'%@'",[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 0)]];
+            [countries addObject:country];
+        }
+    }
+
+    return countries;
+}
 
 
 

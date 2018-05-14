@@ -25,6 +25,9 @@
     self.LabelProject.text =  [NSString stringWithFormat:@"Activities for %@", self.Project.name];
     self.editmode = false;
     // Do any additional setup after loading the view.
+
+
+    
 }
 
 /*
@@ -85,7 +88,11 @@
     NSInteger NumberOfItems = self.activityitems.count + 1;
     if (indexPath.row == NumberOfItems -1) {
         cell.ImageViewActivity.image = [UIImage imageNamed:@"AddItem"];
+        
+       // [cell.ImageViewActivity UIBlurEffect:UIBlurEffectStyleRegular];
         cell.VisualViewBlur.hidden = true;
+        
+        
         cell.ViewBackground.hidden =true;
         cell.ViewAction.hidden = true;
     } else {
@@ -119,7 +126,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     03/05/2018
+ last modified:     14/05/2018
  remarks:  ImG todo
  */
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -137,7 +144,7 @@
         NSMutableArray *Images = [[NSMutableArray alloc] init];
         [Images addObjectsFromArray:activity.poi.Images];
         
-        controller.Activity.poi = [[AppDelegateDef.Db GetPoiContent:activity.poi.key] firstObject];
+        controller.Activity.poi = [[AppDelegateDef.Db GetPoiContent:activity.poi.key :nil :nil] firstObject];
         if (activity.poi.Images.count > 0) {
             activity.poi.Images = Images;
         }
@@ -152,10 +159,9 @@
         } else {
             controller.transformed = false;
         }
-        
+        controller.deleteitem = false;
         [controller setModalPresentationStyle:UIModalPresentationFullScreen];
         [self presentViewController:controller animated:YES completion:nil];
-        
     }
 
 }
@@ -177,7 +183,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     06/05/2018
+ last modified:     12/05/2018
  remarks:           segue controls .
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -190,12 +196,30 @@
         controller.transformed = false;
         controller.Activity.activitystate = [NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex];
         controller.Project = self.Project;
-    } else if([segue.identifier isEqualToString:@"ShowSchedule"]){
+        
+    } else if([segue.identifier isEqualToString:@"ShowSchedule"]) {
         ScheduleVC *controller = (ScheduleVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.activityitems = self.activityitems;
         controller.Project = self.Project;
         controller.ActivityState = [NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex];
+    } else if([segue.identifier isEqualToString:@"ShowDeleteActivity"]) {
+        
+        ActivityDataEntryVC *controller = (ActivityDataEntryVC *)segue.destinationViewController;
+        controller.delegate = self;
+        if ([sender isKindOfClass: [UIButton class]]) {
+            UIView * cellView=(UIView*)sender;
+            while ((cellView= [cellView superview])) {
+                if([cellView isKindOfClass:[ActivityListCell class]]) {
+                    ActivityListCell *cell = (ActivityListCell*)cellView;
+                    NSIndexPath *indexPath = [self.CollectionViewActivities indexPathForCell:cell];
+                    controller.Activity = [self.activityitems objectAtIndex:indexPath.row];
+                }
+            }
+        }
+        controller.deleteitem = true;
+        controller.newitem = false;
+        controller.transformed = false;
     }
 }
 

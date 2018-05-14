@@ -37,7 +37,7 @@
 }
 /*
  created date:      08/05/2018
- last modified:     08/05/2018
+ last modified:     14/05/2018
  remarks:
  */
 -(void)processMultiRouting {
@@ -52,7 +52,7 @@
         AnnotationMK *annotation = [[AnnotationMK alloc] init];
         PoiNSO* poi;
         if (![route.name isEqualToString:@"My Current Location"]) {
-           poi  = [[AppDelegateDef.Db GetPoiContent:route.key] firstObject];
+            poi  = [[AppDelegateDef.Db GetPoiContent:route.key :nil :nil] firstObject];
         } else {
             poi = route;
         }

@@ -20,6 +20,10 @@
     self.DatePickerStart.date = self.Activity.startdt;
     self.DatePickerEnd.date = self.Activity.enddt;
     
+    [self.DatePickerStart setValue:[UIColor whiteColor] forKey:@"textColor"];
+    [self.DatePickerEnd setValue:[UIColor whiteColor] forKey:@"textColor"];
+    
+
 
 }
 

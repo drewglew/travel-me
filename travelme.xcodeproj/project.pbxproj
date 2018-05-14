@@ -41,6 +41,7 @@
 		3A9F73AC20A36A1D00D61666 /* PaymentDataEntryVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9F73AB20A36A1D00D61666 /* PaymentDataEntryVC.m */; };
 		3A9F73AF20A3747300D61666 /* PaymentNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9F73AE20A3747300D61666 /* PaymentNSO.m */; };
 		3A9F73B520A3784400D61666 /* PaymentListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9F73B420A3784400D61666 /* PaymentListCell.m */; };
+		3AAF154820A8AD9800F8DE0C /* InfoVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AAF154720A8AD9800F8DE0C /* InfoVC.m */; };
 		3AEE018B209F3BC700AE260E /* DirectionsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEE018A209F3BC600AE260E /* DirectionsVC.m */; };
 		3AEE018F20A0B05700AE260E /* AnnotationMK.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEE018E20A0B05700AE260E /* AnnotationMK.m */; };
 		3AEE019220A0CBB100AE260E /* CountryNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEE019120A0CBB100AE260E /* CountryNSO.m */; };
@@ -113,6 +114,8 @@
 		3A9F73AE20A3747300D61666 /* PaymentNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PaymentNSO.m; sourceTree = "<group>"; };
 		3A9F73B320A3784400D61666 /* PaymentListCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PaymentListCell.h; path = ../../PaymentListCell.h; sourceTree = "<group>"; };
 		3A9F73B420A3784400D61666 /* PaymentListCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = PaymentListCell.m; path = ../../PaymentListCell.m; sourceTree = "<group>"; };
+		3AAF154620A8AD9800F8DE0C /* InfoVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InfoVC.h; sourceTree = "<group>"; };
+		3AAF154720A8AD9800F8DE0C /* InfoVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InfoVC.m; sourceTree = "<group>"; };
 		3AEE0189209F3BC600AE260E /* DirectionsVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DirectionsVC.h; sourceTree = "<group>"; };
 		3AEE018A209F3BC600AE260E /* DirectionsVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DirectionsVC.m; sourceTree = "<group>"; };
 		3AEE018D20A0B05700AE260E /* AnnotationMK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AnnotationMK.h; sourceTree = "<group>"; };
@@ -234,6 +237,8 @@
 				3A9F73A820A2444A00D61666 /* PaymentListingVC.m */,
 				3A9F73AA20A36A1D00D61666 /* PaymentDataEntryVC.h */,
 				3A9F73AB20A36A1D00D61666 /* PaymentDataEntryVC.m */,
+				3AAF154620A8AD9800F8DE0C /* InfoVC.h */,
+				3AAF154720A8AD9800F8DE0C /* InfoVC.m */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -387,6 +392,7 @@
 				3A9F73B520A3784400D61666 /* PaymentListCell.m in Sources */,
 				3A374F212093D55500E5A652 /* PoiDataEntryVC.m in Sources */,
 				3A224CB42095E13600075457 /* ProjectNSO.m in Sources */,
+				3AAF154820A8AD9800F8DE0C /* InfoVC.m in Sources */,
 				3A374EE620936A9300E5A652 /* AppDelegate.m in Sources */,
 				3AEE018B209F3BC700AE260E /* DirectionsVC.m in Sources */,
 				3A81B50C209D90CA005CABDA /* AlphaView.m in Sources */,
