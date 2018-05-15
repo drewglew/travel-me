@@ -220,6 +220,10 @@
         controller.deleteitem = true;
         controller.newitem = false;
         controller.transformed = false;
+    } else if([segue.identifier isEqualToString:@"ShowProjectPaymentList"]) {
+        PaymentListingVC *controller = (PaymentListingVC *)segue.destinationViewController;
+        controller.delegate = self;
+        controller.Project = self.Project;
     }
 }
 

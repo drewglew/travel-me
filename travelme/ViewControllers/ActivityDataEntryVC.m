@@ -206,7 +206,7 @@
         PaymentListingVC *controller = (PaymentListingVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.Activity = self.Activity;
-        
+        controller.Project = nil;
         
     }
 }

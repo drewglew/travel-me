@@ -20,6 +20,7 @@
 @property (nonatomic) NSString *homecurrencycode;
 @property (nonatomic) NSString *localcurrencycode;
 @property (nonatomic) NSDate   *paymentdt;
+@property (nonatomic) NSString *dtvalue;
 @property (nonatomic) NSNumber *rate;
 
 -(NSDate *)GetDtFromString :(NSString *) dt;

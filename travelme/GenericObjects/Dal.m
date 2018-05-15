@@ -941,16 +941,26 @@
 
 /*
  created date:      09/05/2018
- last modified:     09/05/2018
+ last modified:     15/05/2018
  remarks:
  */
--(NSMutableArray*) GetPaymentListContentForState :(NSString *) ProjectKey :(NSString *) ActivityKey   :(NSNumber *) RequiredState {
+-(NSMutableArray*) GetPaymentListContent :(ProjectNSO*) Project :(ActivityNSO *) Activity{
     NSMutableArray *activitypaymentlist  = [[NSMutableArray alloc] init];
     
     sqlite3_stmt *statement;
     NSString *selectSQL;
+    NSString *whereClause=@"";
 
-    selectSQL = [NSString stringWithFormat:@"select key, description, amount, currencycode, paymentdt from payment where projectkey='%@' and activitykey='%@' and state=%@", ProjectKey, ActivityKey, RequiredState];
+    
+    if (Project != nil) {
+        whereClause = @"WHERE";
+        whereClause = [NSString stringWithFormat:@"%@ %@='%@'", whereClause, @"projectkey",Project.key];
+    } else if (Activity != nil) {
+        whereClause = @"WHERE";
+        whereClause = [NSString stringWithFormat:@"%@ %@='%@'", whereClause, @"activitykey",Activity.key];
+    }
+  
+    selectSQL = [NSString stringWithFormat:@"select key, description, amount, currencycode, paymentdt from payment %@", whereClause];
 
     const char *select_statement = [selectSQL UTF8String];
     if (sqlite3_prepare_v2(_DB, select_statement, -1, &statement, NULL) == SQLITE_OK)
@@ -964,8 +974,8 @@
             payment.amount = [NSNumber numberWithInt:sqlite3_column_int(statement, 2)];
             payment.localcurrencycode = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 3)];
             
-            payment.paymentdt = [payment GetDtFromString :[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 4)]];
-            
+            payment.dtvalue = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 4)];
+
             payment.rate = [self GetExchangeRate:payment.localcurrencycode :[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 4)]];
             
             [activitypaymentlist addObject:payment];
@@ -978,11 +988,12 @@
 
 /*
  created date:      09/05/2018
- last modified:     09/05/2018
- remarks:
+ last modified:     14/05/2018
+ remarks:  Issue here in update process
  */
 -(NSNumber*) GetExchangeRate :(NSString *) LocalCurrencyCode :(NSString *) PaymentDt  {
 
+    NSNumber *rate = [[NSNumber alloc] initWithInt:0];
     
     sqlite3_stmt *statement;
     NSString *selectSQL;
@@ -993,10 +1004,8 @@
     if ([HomeCurrencyCode isEqualToString:LocalCurrencyCode]) {
         return [NSNumber numberWithInt:1];
     }
-    
-    NSNumber *rate = [[NSNumber alloc] init];
-    
-    selectSQL = [NSString stringWithFormat:@"select rate from exchangerate where currencycode='%@' and homecurrencycode='%@' and dt=%@", LocalCurrencyCode, HomeCurrencyCode, PaymentDt];
+
+    selectSQL = [NSString stringWithFormat:@"select rate from exchangerate where currencycode='%@' and homecurrencycode='%@' and dt='%@'", LocalCurrencyCode, HomeCurrencyCode, PaymentDt];
     
     const char *select_statement = [selectSQL UTF8String];
     if (sqlite3_prepare_v2(_DB, select_statement, -1, &statement, NULL) == SQLITE_OK)
@@ -1010,6 +1019,10 @@
     sqlite3_finalize(statement);
     return rate;
 }
+
+
+
+
 
 /*
  created date:      14/05/2018
@@ -1038,10 +1051,95 @@
     return countries;
 }
 
+/*
+ created date:      14/05/2018
+ last modified:     15/05/2018
+ remarks:
+ */
+-(bool) InsertExchangeRate :(NSString*) LocalCurrencyCode :(NSString*) DateValue :(NSNumber*) Rate {
+    
+    NSLocale *theLocale = [NSLocale currentLocale];
+    NSString *HomeCurrencyCode = [theLocale objectForKey:NSLocaleCurrencyCode];
+    
+    bool retVal = true;
+    
+    double adjustedRate = [Rate doubleValue] * 10000;
+    int FormattedRate = (int)adjustedRate;
+    
+    
+    sqlite3_stmt *stmt = NULL;
+    sqlite3_prepare_v2(_DB, "INSERT INTO exchangerate (currencycode, homecurrencycode, rate, dt) VALUES (?,?,?,?)", -1, &stmt, nil);
+    sqlite3_bind_text(stmt, 1, [LocalCurrencyCode UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 2, [HomeCurrencyCode UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt,3, (FormattedRate));
+    sqlite3_bind_text(stmt, 4, [DateValue UTF8String], -1, SQLITE_TRANSIENT);
+    
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+        NSLog(@"Failed to insert new record inside exchangerate table");
+        retVal = false;
+    } else {
+        NSLog(@"inserted new exchangerate record inside table!");
+    }
+    sqlite3_finalize(stmt);
+    
+    return retVal;
+}
 
+/*
+ created date:      14/05/2018
+ last modified:     14/05/2018
+ remarks:
+ */
+-(bool) InsertPayment :(PaymentNSO*) Payment :(ActivityNSO*) Activity {
+    bool retVal = true;
+    
+    sqlite3_stmt *stmt = NULL;
+    sqlite3_prepare_v2(_DB, "INSERT INTO payment (projectkey, activitykey, key, description, amount, currencycode, paymentdt) VALUES (?,?,?,?,?,?,?)", -1, &stmt, nil);
+    sqlite3_bind_text(stmt, 1, [Activity.project.key UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 2, [Activity.key UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 3, [Payment.key UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 4, [Payment.description UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt, 5, [Payment.amount intValue]);
+    sqlite3_bind_text(stmt, 6, [Payment.localcurrencycode UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 7, [Payment.dtvalue UTF8String], -1, SQLITE_TRANSIENT);
+    
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+        NSLog(@"Failed to insert new record inside payment table");
+        retVal = false;
+    } else {
+        NSLog(@"inserted new payment record inside table!");
+    }
+    sqlite3_finalize(stmt);
+    
+    return retVal;
+    
+}
 
-
-
+/*
+ created date:      15/05/2018
+ last modified:     15/05/2018
+ remarks:
+ */
+-(bool) DeletePayment :(PaymentNSO*) Payment {
+    
+    bool retVal = true;
+    
+    sqlite3_stmt *statement;
+    NSString *deleteSQL = [NSString stringWithFormat:@"DELETE FROM payment WHERE key = '%@'",Payment.key];
+    const char *deleteStatement = [deleteSQL UTF8String];
+    sqlite3_prepare_v2(_DB, deleteStatement, -1, &statement, NULL);
+    
+    if (sqlite3_step(statement) != SQLITE_DONE) {
+        NSLog(@"Failed to delete payment from imageitem");
+        retVal = false;
+    } else {
+        NSLog(@"Successfuly deleted items from payment");
+    }
+    sqlite3_finalize(statement);
+    
+    return retVal;
+    
+}
 
 
 @end

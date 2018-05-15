@@ -14,17 +14,18 @@
 @synthesize localcurrencycode;
 @synthesize amount;
 @synthesize paymentdt;
+@synthesize dtvalue;
 @synthesize key;
 @synthesize rate;
 
 /*
  created date:      29/04/2018
- last modified:     29/04/2018
+ last modified:     15/05/2018
  remarks: transform NSString to NSDate.
  */
 -(NSDate *)GetDtFromString :(NSString *) dt {
     NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     NSDate *returnValue = [[NSDate alloc] init];
     returnValue = [dateFormatter dateFromString:dt];
     return returnValue;

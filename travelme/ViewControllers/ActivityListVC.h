@@ -14,11 +14,12 @@
 #import "ActivityDataEntryVC.h"
 #import "PoiImageNSO.h"
 #import "ScheduleVC.h"
+#import "PaymentListingVC.h"
 
 @protocol ActivityListDelegate <NSObject>
 @end
 
-@interface ActivityListVC : UIViewController <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, PoiSearchDelegate, ActivityDelegate, ScheduleListDelegate>
+@interface ActivityListVC : UIViewController <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, PoiSearchDelegate, ActivityDelegate, ScheduleListDelegate, PaymentListingDelegate>
 
 @property (assign) bool editmode;
 

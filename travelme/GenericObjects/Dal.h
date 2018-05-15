@@ -34,6 +34,7 @@
 -(bool) UpdateActivityItem :(ActivityNSO*) Activity;
 -(bool) DeletePoi :(PoiNSO*) Poi;
 -(bool) DeleteProject :(ProjectNSO*) Project;
+-(bool) DeletePayment :(PaymentNSO*) Payment;
 -(bool) DeleteActivity :(ActivityNSO*) Activity :(NSString*) ProjectKey;
 
 -(NSMutableArray*) GetPoiContent :(NSString*) RequiredKey :(NSArray*) Countries :(NSString*) FilterOption;
@@ -41,6 +42,9 @@
 -(NSMutableArray*) GetActivityContent :(NSString*) RequiredKey;
 -(NSMutableArray*) GetActivityListContentForState :(NSString*) RequiredProjectKey :(NSNumber*) RequiredState;
 -(NSMutableArray*) GetActivitySchedule :(NSString *) ProjectKey :(NSNumber*) RequiredState;
--(NSMutableArray*) GetPaymentListContentForState :(NSString *) ProjectKey :(NSString *) ActivityKey   :(NSNumber *) RequiredState;
+-(NSMutableArray*) GetPaymentListContent :(ProjectNSO*) Project :(ActivityNSO *) Activity;
 -(NSMutableArray*) GetProjectCountries :(NSString*) RequiredProjectKey;
+-(NSNumber*) GetExchangeRate :(NSString *) LocalCurrencyCode :(NSString *) PaymentDt;
+-(bool) InsertExchangeRate :(NSString*) LocalCurrencyCode :(NSString*) DateValue :(NSNumber*) Rate;
+-(bool) InsertPayment :(PaymentNSO*) Payment :(ActivityNSO*) Activity;
 @end

@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import "ActivityNSO.h"
+#import "PaymentNSO.h"
+#import "AppDelegate.h"
 
 @protocol PaymentDetailDelegate <NSObject>
 @end
@@ -19,8 +21,10 @@
 @property (weak, nonatomic) IBOutlet UIDatePicker *DatePickerPaymentDt;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonAction;
 @property (strong, nonatomic) ActivityNSO *Activity;
+@property (strong, nonatomic) PaymentNSO *Payment;
 @property (weak, nonatomic) IBOutlet UILabel *LabelTitle;
 @property (assign) bool newitem;
 @property (nonatomic, weak) id <PaymentDetailDelegate> delegate;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentPaymentType;
 
 @end
