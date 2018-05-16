@@ -13,11 +13,15 @@
 @synthesize homecurrencycode;
 @synthesize localcurrencycode;
 @synthesize activityname;
-@synthesize amount;
-@synthesize paymentdt;
-@synthesize dtvalue;
+@synthesize amt_est;
+@synthesize amt_act;
+@synthesize dt_est;
+@synthesize dt_act;
+@synthesize date_est;
+@synthesize date_act;
 @synthesize key;
-@synthesize rate;
+@synthesize rate_est;
+@synthesize rate_act;
 @synthesize status;
 
 /*

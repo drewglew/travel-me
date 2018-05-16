@@ -42,7 +42,7 @@
         self.ButtonAction.hidden = true;
     }
     
-    self.TableViewPayment.rowHeight = 80;
+    self.TableViewPayment.rowHeight = 100;
     // Do any additional setup after loading the view.
 }
 
@@ -122,29 +122,54 @@
     }
         
     /* might need to adjust this with rate */
-    cell.LabelLocalAmt.text = [NSString stringWithFormat:@"%@",item.amount];
-    
-    double localamt = ([item.amount doubleValue] / 100);
-    
+    cell.LabelLocalAmt.text = [NSString stringWithFormat:@"%@",item.amt_act];
+    double localamt = ([item.amt_act doubleValue] / 100);
     cell.LabelLocalAmt.text = [NSString stringWithFormat:@"%.2f",localamt];
-    cell.LabelLocalCurrencyCode.text = item.localcurrencycode;
     
-    if ([item.rate intValue]==1) {
+    cell.LabelLocalAmtEst.text = [NSString stringWithFormat:@"%@",item.amt_est];
+    double localamtest = ([item.amt_est doubleValue] / 100);
+    cell.LabelLocalAmtEst.text = [NSString stringWithFormat:@"%.2f",localamtest];
+    
+    cell.LabelLocalCurrencyCode.text = item.localcurrencycode;
+    cell.LabelLocalCurrencyCodeEst.text = item.localcurrencycode;
+    
+
+    if ([item.rate_act intValue]==1) {
         cell.LabelHomeAmt.hidden = true;
         cell.LabelHomeCurrencyCode.hidden = true;
-    } else if ([item.rate intValue]==0) {
+    } else if ([item.rate_est intValue]==0) {
         cell.LabelHomeAmt.text = @"unknown rate";
         cell.LabelHomeCurrencyCode.hidden = true;
     } else {
         cell.LabelHomeAmt.hidden = false;
         cell.LabelHomeCurrencyCode.hidden = false;
         
-        double rate = [item.rate doubleValue] / 10000;
-        double homeamt = ([item.amount doubleValue] / 100) * rate;
+        double rate = [item.rate_act doubleValue] / 10000;
+        double homeamt = ([item.amt_act doubleValue] / 100) * rate;
         
         cell.LabelHomeAmt.text = [NSString stringWithFormat:@"%.2f",homeamt];
         cell.LabelHomeCurrencyCode.text = [AppDelegateDef HomeCurrencyCode];
     }
+    
+    if ([item.rate_est intValue]==1) {
+        cell.LabelHomeAmtEst.hidden = true;
+        cell.LabelHomeCurrencyCodeEst.hidden = true;
+    } else if ([item.rate_est intValue]==0) {
+        cell.LabelHomeAmtEst.text = @"unknown rate";
+        cell.LabelHomeCurrencyCodeEst.hidden = true;
+    } else {
+        cell.LabelHomeAmtEst.hidden = false;
+        cell.LabelHomeCurrencyCodeEst.hidden = false;
+        
+        double rate = [item.rate_est doubleValue] / 10000;
+        double homeamt = ([item.amt_est doubleValue] / 100) * rate;
+        
+        cell.LabelHomeAmtEst.text = [NSString stringWithFormat:@"%.2f",homeamt];
+        cell.LabelHomeCurrencyCodeEst.text = [AppDelegateDef HomeCurrencyCode];
+    }
+    
+    
+    
 
     return cell;
 }

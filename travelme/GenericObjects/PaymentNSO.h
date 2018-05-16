@@ -17,12 +17,16 @@
 @property (nonatomic) NSString *key;
 @property (nonatomic) NSString *description;
 @property (nonatomic) NSString *activityname;
-@property (nonatomic) NSNumber *amount;
+@property (nonatomic) NSNumber *amt_est;
+@property (nonatomic) NSNumber *amt_act;
 @property (nonatomic) NSString *homecurrencycode;
 @property (nonatomic) NSString *localcurrencycode;
-@property (nonatomic) NSDate   *paymentdt;
-@property (nonatomic) NSString *dtvalue;
-@property (nonatomic) NSNumber *rate;
+@property (nonatomic) NSDate   *dt_est;
+@property (nonatomic) NSDate   *dt_act;
+@property (nonatomic) NSString *date_est;
+@property (nonatomic) NSString *date_act;
+@property (nonatomic) NSNumber *rate_est;
+@property (nonatomic) NSNumber *rate_act;
 @property (nonatomic) NSNumber *status;
 
 

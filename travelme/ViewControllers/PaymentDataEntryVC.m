@@ -13,7 +13,11 @@
 @end
 
 @implementation PaymentDataEntryVC
-
+/*
+ created date:      14/05/2018
+ last modified:     16/05/2018
+ remarks:
+ */
 - (void)viewDidLoad {
     [super viewDidLoad];
 
@@ -29,19 +33,25 @@
         NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:localeIdent];
         self.TextFieldCurrency.text = [locale objectForKey: NSLocaleCurrencyCode];
     } else {
-        
+
         self.TextFieldCurrency.text = self.Payment.localcurrencycode;
         self.TextFieldDescription.text = self.Payment.description;
-        //self.TextFieldAmt.text = [NSString stringWithFormat:@"%@",self.Payment.amount];
+        NSDate *date;
         
-        double amount = [self.Payment.amount doubleValue];
-        amount = amount / 100.0;
-        self.TextFieldAmt.text = [NSString stringWithFormat:@"%.2f",amount];
-
-        NSDate *date = [dateFormatter dateFromString:self.Payment.dtvalue];
+        if (self.Payment.amt_act !=  [NSNumber numberWithInt:0]) {
+            self.SegmentPaymentType.selectedSegmentIndex=1;
+            double amount = [self.Payment.amt_act doubleValue];
+            amount = amount / 100.0;
+            self.TextFieldAmt.text = [NSString stringWithFormat:@"%.2f",amount];
+            date = [dateFormatter dateFromString:self.Payment.date_act];
+        } else {
+            self.SegmentPaymentType.selectedSegmentIndex=0;
+            double amount = [self.Payment.amt_est doubleValue];
+            amount = amount / 100.0;
+            self.TextFieldAmt.text = [NSString stringWithFormat:@"%.2f",amount];
+            date = [dateFormatter dateFromString:self.Payment.date_est];
+        }
         self.DatePickerPaymentDt.date = date;
-        
-        /* load expected values into text box cells */
     }
     self.LabelTitle.text = self.Activity.name;
     
@@ -61,7 +71,7 @@
 
 /*
  created date:      14/05/2018
- last modified:     14/05/2018
+ last modified:     16/05/2018
  remarks:
  */
 - (IBAction)ButtonActionPressed:(id)sender {
@@ -83,49 +93,64 @@
     
     
     self.Payment.description = self.TextFieldDescription.text;
-    self.Payment.amount = [f numberFromString:self.TextFieldAmt.text];
-    
     self.Payment.status = [NSNumber numberWithLong:self.SegmentPaymentType.selectedSegmentIndex];
-    
-    double temp = [self.Payment.amount doubleValue];
-    temp = temp * 100;
-    self.Payment.amount = [NSNumber numberWithDouble:temp];
-    
-    if ([NSNumber numberWithLong:self.SegmentPaymentType.selectedSegmentIndex] == 0 ) {
 
-        // so if date selected is in the future 10/July/2018 we don't bother getting the currency rate.
+    if (self.Payment.status == [NSNumber numberWithLong:0] ) {
+
+        self.Payment.amt_est = [f numberFromString:self.TextFieldAmt.text];
+        double temp = [self.Payment.amt_est doubleValue];
+        temp = temp * 100;
+        self.Payment.amt_est = [NSNumber numberWithDouble:temp];
         
-        // on these items we use the closest to the date of 10/July/2018 if it exists.
+        self.Payment.dt_est = self.DatePickerPaymentDt.date;
+        self.Payment.date_est = [dateFormatter stringFromDate:self.Payment.dt_est];
         
-        // join between the payment table and these expected amounts will be different to the actual..
+        self.Payment.dt_act = self.Payment.dt_est;
+        self.Payment.date_act = self.Payment.date_est;
+        self.Payment.amt_act = [NSNumber numberWithInt:0];
         
-        // when user changes this kind to actual the record will be copied and the status will be changed.
+    } else {
+        self.Payment.amt_act = [f numberFromString:self.TextFieldAmt.text];
+        double temp = [self.Payment.amt_act doubleValue];
+        temp = temp * 100;
+        self.Payment.amt_act = [NSNumber numberWithDouble:temp];
         
-        
-        
+        self.Payment.dt_act = self.DatePickerPaymentDt.date;
+        self.Payment.date_act = [dateFormatter stringFromDate:self.Payment.dt_act];
+        self.Payment.amt_act = [NSNumber numberWithDouble:temp];
+        if (self.newitem) {
+            self.Payment.dt_est = self.Payment.dt_act;
+            self.Payment.date_est = self.Payment.date_act;
+            self.Payment.amt_est = self.Payment.amt_act;
+        }
     }
-    
-    self.Payment.paymentdt = self.DatePickerPaymentDt.date;
-    self.Payment.dtvalue = [dateFormatter stringFromDate:self.Payment.paymentdt];
-    
-    
-    
+
     self.Payment.localcurrencycode = self.TextFieldCurrency.text;
     self.Payment.homecurrencycode = [AppDelegateDef HomeCurrencyCode];
     
-    if (![self.Payment.localcurrencycode isEqualToString:self.Payment.homecurrencycode] && self.Payment.paymentdt!=nil) {
+    if (![self.Payment.localcurrencycode isEqualToString:self.Payment.homecurrencycode]) {
         /* might return zero, but it worked.. */
-        self.Payment.rate = [self GetExchangeRates :self.Payment];
+        if (self.Payment.status == [NSNumber numberWithLong:0] ) {
+            self.Payment.rate_est = [self GetExchangeRates :self.Payment];
+        } else {
+            self.Payment.rate_act = [self GetExchangeRates :self.Payment];
+            if (self.newitem) {
+                self.Payment.rate_est = self.Payment.rate_act;
+            }
+        }
     } else {
-        self.Payment.rate = [NSNumber numberWithInt:1*10000];
+        self.Payment.rate_est = [NSNumber numberWithInt:1*10000];
+        self.Payment.rate_act = self.Payment.rate_est;
     }
     
     /*
      we need to add payment record to database
      */
-    [AppDelegateDef.Db InsertPayment:self.Payment :self.Activity];
-    
-    
+    if (self.newitem) {
+        [AppDelegateDef.Db InsertPayment:self.Payment :self.Activity];
+    } else {
+         [AppDelegateDef.Db UpdatePaymentItem:self.Payment];
+    }
     [self dismissViewControllerAnimated:YES completion:Nil];
 }
 
@@ -156,25 +181,29 @@
 
 /*
  created date:      14/05/2018
- last modified:     15/05/2018
+ last modified:     16/05/2018
  remarks:
  */
 - (NSNumber*)GetExchangeRates:(PaymentNSO*)payment {
    
     NSString *AccessKey = @"";
-
-    NSNumber *ExchangeRate = [AppDelegateDef.Db GetExchangeRate:payment.localcurrencycode :payment.dtvalue];
+    NSString *DateValue = self.Payment.date_act;
+    if (self.Payment.status==[NSNumber numberWithLong:0]) {
+        DateValue = self.Payment.date_est;
+    }
+    
+    NSNumber *ExchangeRate = [AppDelegateDef.Db GetExchangeRate:payment.localcurrencycode :DateValue];
     
     if (ExchangeRate == [NSNumber numberWithInt:0]) {
     
-        NSString *url = [NSString stringWithFormat:@"https://free.currencyconverterapi.com/api/v5/convert?q=%@_%@&compact=ultra&date=%@&apikey=%@", payment.localcurrencycode, payment.homecurrencycode, payment.dtvalue, AccessKey];
+        NSString *url = [NSString stringWithFormat:@"https://free.currencyconverterapi.com/api/v5/convert?q=%@_%@&compact=ultra&date=%@&apikey=%@", payment.localcurrencycode, payment.homecurrencycode, DateValue, AccessKey];
 
         [self fetchFromExchangeRateApi:url withDictionary:^(NSDictionary *data) {
         
             dispatch_async(dispatch_get_main_queue(), ^(void){
                 NSDictionary *LocalToHome = [data objectForKey:[NSString stringWithFormat:@"%@_%@", payment.localcurrencycode, payment.homecurrencycode]];
-                NSNumber *LocalToHomeRate = [LocalToHome valueForKey:payment.dtvalue];
-                 [AppDelegateDef.Db InsertExchangeRate:payment.localcurrencycode :payment.dtvalue :LocalToHomeRate];
+                NSNumber *LocalToHomeRate = [LocalToHome valueForKey:DateValue];
+                 [AppDelegateDef.Db InsertExchangeRate:payment.localcurrencycode :DateValue :LocalToHomeRate];
             });
         }];
         return 0;
@@ -193,10 +222,22 @@
     double amount = [self.TextFieldAmt.text doubleValue];
     amount = (round(amount*100)) / 100.0;
     //amount = amount * 100;
-    self.Payment.amount = [NSNumber numberWithDouble:amount];
+    
+    if (self.Payment.status==[NSNumber numberWithLong:0]) {
+        self.Payment.amt_est = [NSNumber numberWithDouble:amount];
+    } else {
+        self.Payment.amt_act = [NSNumber numberWithDouble:amount];
+        if (self.newitem) {
+            self.Payment.amt_est = self.Payment.amt_act;
+        }
+    }
     self.TextFieldAmt.text = [NSString stringWithFormat:@"%.2f",amount];
 }
 
+
+- (IBAction)SegmentStatusChanged:(id)sender {
+    
+}
 
 
 

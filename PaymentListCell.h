@@ -14,5 +14,9 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelHomeCurrencyCode;
 @property (weak, nonatomic) IBOutlet UILabel *LabelLocalAmt;
 @property (weak, nonatomic) IBOutlet UILabel *LabelLocalCurrencyCode;
+@property (weak, nonatomic) IBOutlet UILabel *LabelHomeAmtEst;
+@property (weak, nonatomic) IBOutlet UILabel *LabelLocalAmtEst;
+@property (weak, nonatomic) IBOutlet UILabel *LabelHomeCurrencyCodeEst;
+@property (weak, nonatomic) IBOutlet UILabel *LabelLocalCurrencyCodeEst;
 
 @end

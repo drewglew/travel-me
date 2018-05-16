@@ -35,6 +35,7 @@
 -(bool) DeletePoi :(PoiNSO*) Poi;
 -(bool) DeleteProject :(ProjectNSO*) Project;
 -(bool) DeletePayment :(PaymentNSO*) Payment;
+-(bool) UpdatePaymentItem :(PaymentNSO*) Payment;
 -(bool) DeleteActivity :(ActivityNSO*) Activity :(NSString*) ProjectKey;
 
 -(NSMutableArray*) GetPoiContent :(NSString*) RequiredKey :(NSArray*) Countries :(NSString*) FilterOption;

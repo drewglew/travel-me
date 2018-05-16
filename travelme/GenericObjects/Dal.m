@@ -155,16 +155,17 @@
             NSLog(@"failed to create exchangerate table");
         }
         /* PAYMENT table */
-        sql_statement = "CREATE TABLE payment (projectkey TEXT, activitykey TEXT, key TEXT PRIMARY KEY, description TEXT, state INTEGER, amount INTEGER, currencycode TEXT, paymentdt TEXT, FOREIGN KEY(projectkey) REFERENCES project(key), FOREIGN KEY(activitykey) REFERENCES activity(key))";
+    sql_statement = "CREATE TABLE payment (projectkey TEXT, activitykey TEXT, key TEXT PRIMARY KEY, description TEXT, state INTEGER, amt_est INTEGER, amt_act INTEGER,  localcurrencycode TEXT, dt_est TEXT, dt_act TEXT, FOREIGN KEY(projectkey) REFERENCES project(key), FOREIGN KEY(activitykey) REFERENCES activity(key))";
+
         if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
             NSLog(@"failed to create payment table");
         }
         /* TRAVELLEG table */
-        sql_statement = "CREATE TABLE travelleg (projectkey TEXT, activitykey TEXT, dt TEXT, state INTEGER, distance DOUBLE, PRIMARY KEY(activitykey, dt, state),FOREIGN KEY(projectkey) REFERENCES project(key), FOREIGN KEY(activitykey) REFERENCES activity(key))";
+        /*sql_statement = "CREATE TABLE travelleg (projectkey TEXT, activitykey TEXT, dt TEXT, state INTEGER, distance DOUBLE, PRIMARY KEY(activitykey, dt, state),FOREIGN KEY(projectkey) REFERENCES project(key), FOREIGN KEY(activitykey) REFERENCES activity(key))";
         if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
             NSLog(@"failed to create travelleg table");
         }
-
+        */
     return retVal;
 }
 
@@ -952,13 +953,12 @@
     NSString *selectSQL;
     NSString *whereClause=@"";
 
-    
     if (Project != nil) {
-        selectSQL = [NSString stringWithFormat:@"select p.key, p.description, p.amount, p.currencycode, p.paymentdt, p.state, (select name from activity a where a.key=p.activitykey LIMIT 1) name from payment p  WHERE p.projectkey = '%@'",Project.key];
+        selectSQL = [NSString stringWithFormat:@"select p.key, p.description, p.amt_est, p.amt_act, p.localcurrencycode, p.dt_est, p.dt_act, p.state, (select name from activity a where a.key=p.activitykey LIMIT 1) name from payment p  WHERE p.projectkey = '%@'",Project.key];
     } else if (Activity != nil) {
         whereClause = @"WHERE";
         whereClause = [NSString stringWithFormat:@"%@ %@='%@'", whereClause, @"activitykey",Activity.key];
-        selectSQL = [NSString stringWithFormat:@"select key, description, amount, currencycode, paymentdt, state from payment %@", whereClause];
+        selectSQL = [NSString stringWithFormat:@"select key, description, amt_est, amt_act, localcurrencycode, dt_est, dt_act, state from payment %@", whereClause];
     }
 
     const char *select_statement = [selectSQL UTF8String];
@@ -967,16 +967,25 @@
         while (sqlite3_step(statement) == SQLITE_ROW)
         {
             PaymentNSO *payment = [[PaymentNSO alloc] init];
-            
+
             payment.key = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 0)];
             payment.description = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 1)];
-            payment.amount = [NSNumber numberWithInt:sqlite3_column_int(statement, 2)];
-            payment.localcurrencycode = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 3)];
-            payment.dtvalue = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 4)];
-            payment.rate = [self GetExchangeRate:payment.localcurrencycode :[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 4)]];
-            payment.status = [NSNumber numberWithInt:sqlite3_column_int(statement, 5)];
+            payment.amt_est = [NSNumber numberWithInt:sqlite3_column_int(statement, 2)];
+            payment.amt_act = [NSNumber numberWithInt:sqlite3_column_int(statement, 3)];
+            
+            payment.localcurrencycode = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 4)];
+            payment.date_est = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 5)];
+            payment.date_act = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 6)];
+            
+            if (payment.amt_est != 0) {
+                payment.rate_est = [self GetExchangeRate:payment.localcurrencycode :[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 5)]];
+            }
+            if (payment.amt_act != 0) {
+                payment.rate_act = [self GetExchangeRate:payment.localcurrencycode :[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 6)]];
+            }
+            payment.status = [NSNumber numberWithInt:sqlite3_column_int(statement, 7)];
             if (Project != nil) {
-                payment.activityname = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 6)];
+                payment.activityname = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 8)];
             }
             [activitypaymentlist addObject:payment];
         }
@@ -1087,21 +1096,23 @@
 
 /*
  created date:      14/05/2018
- last modified:     14/05/2018
+ last modified:     16/05/2018
  remarks:
  */
 -(bool) InsertPayment :(PaymentNSO*) Payment :(ActivityNSO*) Activity {
     bool retVal = true;
-    
+
     sqlite3_stmt *stmt = NULL;
-    sqlite3_prepare_v2(_DB, "INSERT INTO payment (projectkey, activitykey, key, description, amount, currencycode, paymentdt) VALUES (?,?,?,?,?,?,?)", -1, &stmt, nil);
+    sqlite3_prepare_v2(_DB, "INSERT INTO payment (projectkey, activitykey, key, description, amt_est, amt_act, localcurrencycode, dt_est, dt_act) VALUES (?,?,?,?,?,?,?,?,?)", -1, &stmt, nil);
     sqlite3_bind_text(stmt, 1, [Activity.project.key UTF8String], -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, 2, [Activity.key UTF8String], -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, 3, [Payment.key UTF8String], -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, 4, [Payment.description UTF8String], -1, SQLITE_TRANSIENT);
-    sqlite3_bind_int(stmt, 5, [Payment.amount intValue]);
-    sqlite3_bind_text(stmt, 6, [Payment.localcurrencycode UTF8String], -1, SQLITE_TRANSIENT);
-    sqlite3_bind_text(stmt, 7, [Payment.dtvalue UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt, 5, [Payment.amt_est intValue]);
+    sqlite3_bind_int(stmt, 6, [Payment.amt_act intValue]);
+    sqlite3_bind_text(stmt, 7, [Payment.localcurrencycode UTF8String], -1, SQLITE_TRANSIENT);
+     sqlite3_bind_text(stmt, 8, [Payment.date_est UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 9, [Payment.date_act UTF8String], -1, SQLITE_TRANSIENT);
     
     if (sqlite3_step(stmt) != SQLITE_DONE) {
         NSLog(@"Failed to insert new record inside payment table");
@@ -1114,6 +1125,29 @@
     return retVal;
     
 }
+
+/*
+ created date:      16/05/2018
+ last modified:     16/05/2018
+ remarks:           update existing payment record
+ */
+-(bool) UpdatePaymentItem :(PaymentNSO*) Payment {
+    bool retVal=true;
+    sqlite3_stmt *statement;
+   
+    NSString *updateSQL = [NSString stringWithFormat:@"UPDATE payment SET description = '%@', amt_est = %@, amt_act = %@, localcurrencycode = '%@', dt_est = '%@', dt_act = '%@' WHERE key='%@'", Payment.description, Payment.amt_est, Payment.amt_act, Payment.localcurrencycode, Payment.date_est, Payment.date_act, Payment.key];
+    
+    const char *update_statement = [updateSQL UTF8String];
+    sqlite3_prepare_v2(_DB, update_statement, -1, &statement, NULL);
+    if (sqlite3_step(statement) != SQLITE_DONE) {
+        NSLog(@"Failed to update record(s) inside payment table");
+        retVal = false;
+    }
+    sqlite3_finalize(statement);
+    
+    return retVal;
+}
+
 
 /*
  created date:      15/05/2018
