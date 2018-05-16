@@ -59,6 +59,7 @@
         return true;
     } else {
         if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
+
             NSLocale *theLocale = [NSLocale currentLocale];
             NSString *currencyCode = [theLocale objectForKey:NSLocaleCurrencyCode];
             NSLog(@"Currency Code : %@",currencyCode);
@@ -941,7 +942,7 @@
 
 /*
  created date:      09/05/2018
- last modified:     15/05/2018
+ last modified:     16/05/2018
  remarks:
  */
 -(NSMutableArray*) GetPaymentListContent :(ProjectNSO*) Project :(ActivityNSO *) Activity{
@@ -953,14 +954,12 @@
 
     
     if (Project != nil) {
-        whereClause = @"WHERE";
-        whereClause = [NSString stringWithFormat:@"%@ %@='%@'", whereClause, @"projectkey",Project.key];
+        selectSQL = [NSString stringWithFormat:@"select p.key, p.description, p.amount, p.currencycode, p.paymentdt, p.state, (select name from activity a where a.key=p.activitykey LIMIT 1) name from payment p  WHERE p.projectkey = '%@'",Project.key];
     } else if (Activity != nil) {
         whereClause = @"WHERE";
         whereClause = [NSString stringWithFormat:@"%@ %@='%@'", whereClause, @"activitykey",Activity.key];
+        selectSQL = [NSString stringWithFormat:@"select key, description, amount, currencycode, paymentdt, state from payment %@", whereClause];
     }
-  
-    selectSQL = [NSString stringWithFormat:@"select key, description, amount, currencycode, paymentdt from payment %@", whereClause];
 
     const char *select_statement = [selectSQL UTF8String];
     if (sqlite3_prepare_v2(_DB, select_statement, -1, &statement, NULL) == SQLITE_OK)
@@ -973,11 +972,12 @@
             payment.description = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 1)];
             payment.amount = [NSNumber numberWithInt:sqlite3_column_int(statement, 2)];
             payment.localcurrencycode = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 3)];
-            
             payment.dtvalue = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 4)];
-
             payment.rate = [self GetExchangeRate:payment.localcurrencycode :[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 4)]];
-            
+            payment.status = [NSNumber numberWithInt:sqlite3_column_int(statement, 5)];
+            if (Project != nil) {
+                payment.activityname = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 6)];
+            }
             [activitypaymentlist addObject:payment];
         }
     }

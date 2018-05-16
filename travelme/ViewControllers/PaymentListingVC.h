@@ -22,6 +22,9 @@
 @property (weak, nonatomic) IBOutlet UITableView *TableViewPayment;
 @property (weak, nonatomic) IBOutlet UILabel *LabelTitle;
 @property (strong, nonatomic) NSMutableArray *paymentitems;
+@property (strong, nonatomic) NSArray *localcurrencyitems;
+@property (strong, nonatomic) NSMutableArray *paymentsections;
+
 @property (strong, nonatomic) ActivityNSO *Activity;
 @property (strong, nonatomic) ProjectNSO *Project;
 @property (nonatomic, weak) id <PaymentListingDelegate> delegate;

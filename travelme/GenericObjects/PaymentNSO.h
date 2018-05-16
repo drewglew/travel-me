@@ -16,12 +16,15 @@
 
 @property (nonatomic) NSString *key;
 @property (nonatomic) NSString *description;
+@property (nonatomic) NSString *activityname;
 @property (nonatomic) NSNumber *amount;
 @property (nonatomic) NSString *homecurrencycode;
 @property (nonatomic) NSString *localcurrencycode;
 @property (nonatomic) NSDate   *paymentdt;
 @property (nonatomic) NSString *dtvalue;
 @property (nonatomic) NSNumber *rate;
+@property (nonatomic) NSNumber *status;
+
 
 -(NSDate *)GetDtFromString :(NSString *) dt;
 

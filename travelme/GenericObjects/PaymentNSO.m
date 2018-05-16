@@ -12,11 +12,13 @@
 @synthesize description;
 @synthesize homecurrencycode;
 @synthesize localcurrencycode;
+@synthesize activityname;
 @synthesize amount;
 @synthesize paymentdt;
 @synthesize dtvalue;
 @synthesize key;
 @synthesize rate;
+@synthesize status;
 
 /*
  created date:      29/04/2018

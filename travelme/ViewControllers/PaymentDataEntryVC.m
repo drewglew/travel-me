@@ -85,18 +85,31 @@
     self.Payment.description = self.TextFieldDescription.text;
     self.Payment.amount = [f numberFromString:self.TextFieldAmt.text];
     
+    self.Payment.status = [NSNumber numberWithLong:self.SegmentPaymentType.selectedSegmentIndex];
+    
     double temp = [self.Payment.amount doubleValue];
     temp = temp * 100;
     self.Payment.amount = [NSNumber numberWithDouble:temp];
     
-    
-    if (self.SegmentPaymentType == 0 ) {
-        self.Payment.paymentdt = nil;
-    } else {
-        self.Payment.paymentdt = self.DatePickerPaymentDt.date;
-        self.Payment.dtvalue = [dateFormatter stringFromDate:self.Payment.paymentdt];
-    }
+    if ([NSNumber numberWithLong:self.SegmentPaymentType.selectedSegmentIndex] == 0 ) {
 
+        // so if date selected is in the future 10/July/2018 we don't bother getting the currency rate.
+        
+        // on these items we use the closest to the date of 10/July/2018 if it exists.
+        
+        // join between the payment table and these expected amounts will be different to the actual..
+        
+        // when user changes this kind to actual the record will be copied and the status will be changed.
+        
+        
+        
+    }
+    
+    self.Payment.paymentdt = self.DatePickerPaymentDt.date;
+    self.Payment.dtvalue = [dateFormatter stringFromDate:self.Payment.paymentdt];
+    
+    
+    
     self.Payment.localcurrencycode = self.TextFieldCurrency.text;
     self.Payment.homecurrencycode = [AppDelegateDef HomeCurrencyCode];
     

@@ -114,7 +114,7 @@
         cell.ViewBackground.hidden = false;
         cell.LabelName.text = cell.activity.name;
         if (cell.activity.poi.Images.count == 0) {
-            cell.ImageViewActivity.image = [UIImage imageNamed:@"Poi"];
+            cell.ImageViewActivity.image = [UIImage imageNamed:@"Activity"];
         } else {
             PoiImageNSO *imageitem = [cell.activity.poi.Images firstObject];
             cell.ImageViewActivity.image = imageitem.Image;
