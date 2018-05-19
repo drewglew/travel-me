@@ -18,6 +18,7 @@
     [super viewDidLoad];
     self.TableViewScheduleItems.delegate = self;
     self.TableViewScheduleItems.rowHeight = 80;
+    self.level = 0;
     // Do any additional setup after loading the view.
 }
 
@@ -30,6 +31,7 @@
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self LoadScheduleData];
+    
 }
 
 /*
@@ -88,9 +90,7 @@
     if (cell == nil) {
         cell = [[ScheduleCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
-    
-    //cell.poi = [self.poifiltereditems objectAtIndex:indexPath.row];
-    
+
     ScheduleNSO *schedule = [self.scheduleitems objectAtIndex:indexPath.row];
     
     cell.LabelActivity.text = schedule.name;
@@ -102,14 +102,16 @@
         PoiImageNSO *FirstImageItem = [schedule.poi.Images firstObject];
         [cell.ImageViewImage setImage:FirstImageItem.Image];
     }
-    
+
+    [cell.ViewHierarcyDetail addColumns :schedule.hierarcyindex];
+    [cell.ViewHierarcyDetail setNeedsDisplay];
+  
     if ((schedule.activitystate==[NSNumber numberWithInt:0] && self.ActivityState==[NSNumber numberWithLong:1])) {
         [cell.ViewBlur setHidden:false];
     } else {
         [cell.ViewBlur setHidden:true];
     }
-    
-    
+  
     return cell;
 }
 
@@ -132,19 +134,40 @@
 }
 /*
  created date:      08/05/2018
- last modified:     09/05/2018
+ last modified:     19/05/2018
  remarks:           Might not be totally necessary, but seperated out from editActionsForRowAtIndexPath method above.
+                    if user deletes the first "open", we remove the "close" automatically.  we do have a problem
+                    when we have then  "open" "open" "close", but the close is for the first open item.
+                    perhaps when we delete a close we change the "open" to "single" then it is just shown as
+                    an icon.  so we have instead "open" "single" "close".
+ 
+                    we must rearrange the array schedule.type after a deletion as well as the hieracryindex.
  */
 - (void)tableView:(UITableView *)tableView deleteSchedule:(NSIndexPath *)indexPath  {
     
     ScheduleNSO *schedule = [self.scheduleitems objectAtIndex:indexPath.row];
-    //if ([schedule.type isEqualToString:@"close"]) {
-        [self.scheduleitems removeObjectAtIndex:indexPath.row];
-        [self.TableViewScheduleItems reloadData];
-    //} else {
-        // do nothing.
-    //}
     
+    if ([schedule.type isEqualToString:@"close"] || [schedule.type isEqualToString:@"single"]) {
+
+        [self.scheduleitems removeObjectAtIndex:indexPath.row];
+        
+        if ([schedule.type isEqualToString:@"close"]) {
+            // set the matching 'open' type item to "single"
+            
+        }
+        
+        
+    } else if ([schedule.type isEqualToString:@"open"]) {
+        // delete the close too.
+
+        
+        
+        [self.scheduleitems removeObjectAtIndex:indexPath.row];
+    }
+    
+    // loop through all once again and reset the hieracryindex.
+    
+    [self.TableViewScheduleItems reloadData];
 }
 
 - (UIView*)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {

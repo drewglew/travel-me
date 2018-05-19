@@ -15,6 +15,7 @@
 @property (nonatomic) NSString *name;
 @property (nonatomic) NSDate *dt;
 @property (nonatomic) NSString *type;
+@property (assign) int hierarcyindex;
 @property (nonatomic) NSNumber *activitystate;
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;
 

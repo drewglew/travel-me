@@ -8,13 +8,17 @@
 
 #import <UIKit/UIKit.h>
 #import "ScheduleNSO.h"
+#import "ScheduleBackgroundView.h"
 
 @interface ScheduleCell : UITableViewCell
+
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewImage;
 @property (weak, nonatomic) IBOutlet UIVisualEffectView *ViewBlur;
+
 
 @property (weak, nonatomic) IBOutlet UILabel *LabelActivity;
 @property (weak, nonatomic) IBOutlet UILabel *LabelSpanDateTime;
 @property (strong, nonatomic) ScheduleNSO *schedule;
+@property (weak, nonatomic) IBOutlet ScheduleBackgroundView *ViewHierarcyDetail;
 
 @end

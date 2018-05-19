@@ -59,7 +59,6 @@
         return true;
     } else {
         if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
-
             NSLocale *theLocale = [NSLocale currentLocale];
             NSString *currencyCode = [theLocale objectForKey:NSLocaleCurrencyCode];
             NSLog(@"Currency Code : %@",currencyCode);
@@ -135,37 +134,33 @@
             
         /* IMAGE table */
         sql_statement = "CREATE TABLE imageitem (filename TEXT, poikey TEXT, keyimage INTEGER, description TEXT, PRIMARY KEY (filename, poikey), FOREIGN KEY(poikey) REFERENCES poi(key))";
-            
+    
         if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
             NSLog(@"failed to create images table");
             retVal=false;
         }
-            
-        /* LINK table */
-        sql_statement = "CREATE TABLE linkitem (url TEXT, poikey TEXT, description TEXT, FOREIGN KEY(poikey) REFERENCES poi(key))";
-            
+
+        /* IMAGE table */
+        sql_statement = "CREATE TABLE imagepayment (filename TEXT, paymentkey TEXT, keyimage INTEGER, description TEXT, PRIMARY KEY (filename, paymentkey), FOREIGN KEY(paymentkey) REFERENCES payment(key))";
+    
         if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
-            NSLog(@"failed to create leg table");
+            NSLog(@"failed to create imagepayment table");
             retVal=false;
-            
         }
+
         /* EXCHANGERATE table */
         sql_statement = "CREATE TABLE exchangerate (currencycode TEXT, homecurrencycode TEXT, rate INTEGER, dt TEXT, PRIMARY KEY (currencycode, homecurrencycode, dt))";
         if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
             NSLog(@"failed to create exchangerate table");
         }
+    
         /* PAYMENT table */
-    sql_statement = "CREATE TABLE payment (projectkey TEXT, activitykey TEXT, key TEXT PRIMARY KEY, description TEXT, state INTEGER, amt_est INTEGER, amt_act INTEGER,  localcurrencycode TEXT, dt_est TEXT, dt_act TEXT, FOREIGN KEY(projectkey) REFERENCES project(key), FOREIGN KEY(activitykey) REFERENCES activity(key))";
+        sql_statement = "CREATE TABLE payment (projectkey TEXT, activitykey TEXT, key TEXT PRIMARY KEY, description TEXT, state INTEGER, amt_est INTEGER, amt_act INTEGER,  localcurrencycode TEXT, dt_est TEXT, dt_act TEXT, FOREIGN KEY(projectkey) REFERENCES project(key), FOREIGN KEY(activitykey) REFERENCES activity(key))";
 
         if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
             NSLog(@"failed to create payment table");
         }
-        /* TRAVELLEG table */
-        /*sql_statement = "CREATE TABLE travelleg (projectkey TEXT, activitykey TEXT, dt TEXT, state INTEGER, distance DOUBLE, PRIMARY KEY(activitykey, dt, state),FOREIGN KEY(projectkey) REFERENCES project(key), FOREIGN KEY(activitykey) REFERENCES activity(key))";
-        if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
-            NSLog(@"failed to create travelleg table");
-        }
-        */
+
     return retVal;
 }
 
@@ -906,7 +901,7 @@
 
 /*
  created date:      05/05/2018
- last modified:     06/05/2018
+ last modified:     19/05/2018
  remarks:
  */
 -(NSMutableArray*) GetActivitySchedule :(NSString *) ProjectKey :(NSNumber *) RequiredState {
@@ -924,13 +919,22 @@
         const char *select_statement = [selectSQL UTF8String];
         if (sqlite3_prepare_v2(_DB, select_statement, -1, &statement, NULL) == SQLITE_OK)
         {
+            int index = 0;
+            
             while (sqlite3_step(statement) == SQLITE_ROW)
             {
                 ScheduleNSO *schedule = [[ScheduleNSO alloc] init];
                 schedule.key = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 0)];
                 schedule.name = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 1)];
                 schedule.dt = [schedule GetDtFromString :[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 2)]];
+                
                 schedule.type = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 3)];
+                if([schedule.type isEqualToString:@"open"]) {
+                    index ++;
+                } else {
+                    index --;
+                }
+                schedule.hierarcyindex = index;
                 schedule.activitystate = [NSNumber numberWithInt:sqlite3_column_int(statement, 4)];
                 [activityschedulelist addObject:schedule];
                 

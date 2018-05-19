@@ -21,4 +21,5 @@
 @property (nonatomic) NSNumber *ActivityState;
 @property (nonatomic, weak) id <ScheduleListDelegate> delegate;
 @property (strong, nonatomic) ProjectNSO *Project;
+@property (assign) int level;
 @end

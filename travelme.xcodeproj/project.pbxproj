@@ -35,6 +35,7 @@
 		3A374F212093D55500E5A652 /* PoiDataEntryVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F202093D55500E5A652 /* PoiDataEntryVC.m */; };
 		3A81B509209D80B8005CABDA /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A81B508209D80B8005CABDA /* Photos.framework */; };
 		3A81B50C209D90CA005CABDA /* AlphaView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A81B50B209D90CA005CABDA /* AlphaView.m */; };
+		3A9EA18620AE17DF0052CC4F /* ScheduleBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9EA18520AE17DF0052CC4F /* ScheduleBackgroundView.m */; };
 		3A9F73A320A0FB5A00D61666 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 3A9F73A220A0FB5A00D61666 /* Settings.bundle */; };
 		3A9F73A620A1FFE400D61666 /* country.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A9F73A520A1FFE400D61666 /* country.json */; };
 		3A9F73A920A2444A00D61666 /* PaymentListingVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9F73A820A2444A00D61666 /* PaymentListingVC.m */; };
@@ -104,6 +105,8 @@
 		3A81B508209D80B8005CABDA /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		3A81B50A209D90CA005CABDA /* AlphaView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AlphaView.h; sourceTree = "<group>"; };
 		3A81B50B209D90CA005CABDA /* AlphaView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AlphaView.m; sourceTree = "<group>"; };
+		3A9EA18420AE17DF0052CC4F /* ScheduleBackgroundView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScheduleBackgroundView.h; sourceTree = "<group>"; };
+		3A9EA18520AE17DF0052CC4F /* ScheduleBackgroundView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScheduleBackgroundView.m; sourceTree = "<group>"; };
 		3A9F73A220A0FB5A00D61666 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		3A9F73A520A1FFE400D61666 /* country.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = country.json; sourceTree = "<group>"; };
 		3A9F73A720A2444A00D61666 /* PaymentListingVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PaymentListingVC.h; sourceTree = "<group>"; };
@@ -268,6 +271,8 @@
 				3AEE019120A0CBB100AE260E /* CountryNSO.m */,
 				3A9F73AD20A3747300D61666 /* PaymentNSO.h */,
 				3A9F73AE20A3747300D61666 /* PaymentNSO.m */,
+				3A9EA18420AE17DF0052CC4F /* ScheduleBackgroundView.h */,
+				3A9EA18520AE17DF0052CC4F /* ScheduleBackgroundView.m */,
 			);
 			path = GenericObjects;
 			sourceTree = "<group>";
@@ -376,6 +381,7 @@
 				3A9F73AC20A36A1D00D61666 /* PaymentDataEntryVC.m in Sources */,
 				3A374F0A2093754200E5A652 /* Dal.m in Sources */,
 				3A374EF420936A9600E5A652 /* main.m in Sources */,
+				3A9EA18620AE17DF0052CC4F /* ScheduleBackgroundView.m in Sources */,
 				3A224CAC2094736200075457 /* SearchResultListCell.m in Sources */,
 				3A224CC92097950600075457 /* ActivityDataEntryVC.m in Sources */,
 				3A374F1E2093939400E5A652 /* LocatorVC.m in Sources */,

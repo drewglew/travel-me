@@ -19,7 +19,7 @@
 @protocol PoiDataEntryDelegate <NSObject>
 @end
 
-@interface PoiDataEntryVC : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate>
+@interface PoiDataEntryVC : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource>
 
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;
 @property (nonatomic) NSString *Title;
@@ -28,9 +28,8 @@
 @property (weak, nonatomic) IBOutlet UITextField *TextFieldTitle;
 @property (weak, nonatomic) IBOutlet UICollectionView *CollectionViewPoiImages;
 @property (strong, nonatomic) PoiNSO *PointOfInterest;
-
+@property (strong, nonatomic) NSArray *TypeItems;
 @property (weak, nonatomic) IBOutlet UITextView *TextViewNotes;
-@property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentTypeOfPoi;
 // only used on preview controller
 @property (weak, nonatomic) IBOutlet MKMapView *MapView;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentDetailOption;
@@ -39,6 +38,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewKey;
 @property (weak, nonatomic) IBOutlet UILabel *LabelPoi;
 @property (nonatomic, weak) id <PoiDataEntryDelegate> delegate;
+@property (weak, nonatomic) IBOutlet UIPickerView *PickerType;
 
 
 

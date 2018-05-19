@@ -31,7 +31,6 @@
         if (self.readonlyitem) {
             self.TextFieldTitle.enabled = false;
             [self.TextViewNotes setEditable:false];
-            self.SegmentTypeOfPoi.enabled = false;
             [self.CollectionViewPoiImages setUserInteractionEnabled:false];
             self.CollectionViewPoiImages.scrollEnabled = true;
         }
@@ -41,19 +40,17 @@
     // Do any additional setup after loading the view.
 
     
-    self.LabelPoi.text = [self GetPoiLabelWithType:[NSNumber numberWithLong:self.SegmentTypeOfPoi.selectedSegmentIndex]];
+    self.LabelPoi.text = [self GetPoiLabelWithType:[NSNumber numberWithLong:[self.PointOfInterest.categoryid integerValue]]];
+    
+    self.PickerType.delegate = self;
+    self.PickerType.dataSource = self;
+    
+
+    self.TypeItems = @[@"Airport",@"Scenary",@"Historic",@"Museum",@"Restaurant",@"Accomodation",@"City",@"Venue",@"Misc"];
+    
+    [self.PickerType selectRow:[self.PointOfInterest.categoryid integerValue] inComponent:0 animated:YES];
     
     
-    
-    [self.SegmentTypeOfPoi setImage:[UIImage imageNamed:@"Airport"] forSegmentAtIndex:0];
-    [self.SegmentTypeOfPoi setImage:[UIImage imageNamed:@"Scenary"] forSegmentAtIndex:1];
-    [self.SegmentTypeOfPoi setImage:[UIImage imageNamed:@"Historic"] forSegmentAtIndex:2];
-    [self.SegmentTypeOfPoi setImage:[UIImage imageNamed:@"Museum"] forSegmentAtIndex:3];
-    [self.SegmentTypeOfPoi setImage:[UIImage imageNamed:@"Restaurant"] forSegmentAtIndex:4];
-    [self.SegmentTypeOfPoi setImage:[UIImage imageNamed:@"Accomodation"] forSegmentAtIndex:5];
-    [self.SegmentTypeOfPoi setImage:[UIImage imageNamed:@"City"] forSegmentAtIndex:6];
-    [self.SegmentTypeOfPoi setImage:[UIImage imageNamed:@"Venue"] forSegmentAtIndex:7];
-    [self.SegmentTypeOfPoi setImage:[UIImage imageNamed:@"Misc"] forSegmentAtIndex:8];
     
     self.TextFieldTitle.layer.cornerRadius=8.0f;
     self.TextFieldTitle.layer.masksToBounds=YES;
@@ -67,6 +64,31 @@
     
 }
 
+- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
+{
+    return 1;
+}
+
+- (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
+{
+    return self.TypeItems.count;
+}
+
+
+
+- (UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(UIView *)view
+{
+    UIView *pickerCustomView = [UIView new];
+    UIImageView *myIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:self.TypeItems[row]]];
+    [myIcon setFrame:CGRectMake(0, 5, 60, 60)];
+    [pickerCustomView addSubview:myIcon];
+    return pickerCustomView;
+}
+
+- (CGFloat)pickerView:(UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component
+{
+    return 70;
+}
 
 /*
  created date:      28/04/2018
@@ -108,7 +130,7 @@
 
     /* Text fields and Segment */
     self.TextViewNotes.text = self.PointOfInterest.privatenotes;
-    self.SegmentTypeOfPoi.selectedSegmentIndex = [self.PointOfInterest.categoryid longValue];
+    [self.PickerType selectRow:[self.PointOfInterest.categoryid integerValue] inComponent:0 animated:YES];
     self.TextFieldTitle.text = self.PointOfInterest.name;
 }
 
@@ -370,7 +392,7 @@
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         NSString *imagesDirectory = [paths objectAtIndex:0];
 
-        NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",self.PointOfInterest.key]];
+        NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/Images/%@",self.PointOfInterest.key]];
         
         [[NSFileManager defaultManager] createDirectoryAtPath:dataPath withIntermediateDirectories:YES attributes:nil error:nil];
 
@@ -387,20 +409,19 @@
             NSData *imageData =  UIImagePNGRepresentation(imageitem.Image);
             NSString *filename = [NSString stringWithFormat:@"image_%03d.png",counter];
             NSString *filepathname = [dataPath stringByAppendingPathComponent:filename];
-            
-            
-            
+
             [imageData writeToFile:filepathname atomically:YES];
             imageitem.NewImage = true;
-            imageitem.ImageFileReference = [NSString stringWithFormat:@"%@/%@",self.PointOfInterest.key,filename];
+            imageitem.ImageFileReference = [NSString stringWithFormat:@"Images/%@/%@",self.PointOfInterest.key,filename];
             counter++;
         }
     }
     
     self.PointOfInterest.name = self.TextFieldTitle.text;
     self.PointOfInterest.privatenotes = self.TextViewNotes.text;
-    self.PointOfInterest.categoryid = [NSNumber numberWithLong:self.SegmentTypeOfPoi.selectedSegmentIndex];
-    
+ 
+    self.PointOfInterest.categoryid = [NSNumber numberWithLong:[self.PickerType selectedRowInComponent:0]];
+
     [AppDelegateDef.Db InsertPoiItem :self.PointOfInterest];
     
     [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
@@ -410,7 +431,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     03/04/2018
+ last modified:     17/05/2018
  remarks:
  */
 - (IBAction)UpdatePoiItemPressed:(id)sender {
@@ -422,14 +443,13 @@
         self.PointOfInterest.privatenotes = [NSString stringWithFormat:@"%@\n%@\n%@\n%@\n%@\n%@\n%@", self.PointOfInterest.name, self.PointOfInterest.fullthoroughfare, self.PointOfInterest.administrativearea, self.PointOfInterest.subadministrativearea,  self.PointOfInterest.locality, self.PointOfInterest.sublocality, self.PointOfInterest.postcode];
         
     }
-    
-    self.PointOfInterest.categoryid = [NSNumber numberWithLong:self.SegmentTypeOfPoi.selectedSegmentIndex];
+    self.PointOfInterest.categoryid = [NSNumber numberWithLong:[self.PickerType selectedRowInComponent:0]];
 
     if (self.PointOfInterest.Images.count>0) {
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         NSString *imagesDirectory = [paths objectAtIndex:0];
     
-        NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",self.PointOfInterest.key]];
+        NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/Images/%@",self.PointOfInterest.key]];
         
         [[NSFileManager defaultManager] createDirectoryAtPath:dataPath withIntermediateDirectories:YES attributes:nil error:nil];
     
@@ -443,12 +463,14 @@
                     imageitem.KeyImage = 0;
                 }
                 imageitem.NewImage = true;
-                
+
                 NSData *imageData =  UIImagePNGRepresentation(imageitem.Image);
-                NSString *filename = [NSString stringWithFormat:@"image_%03d.png",counter];
+                
+                NSString *filename = [NSString stringWithFormat:@"%@.png", [[NSUUID UUID] UUIDString]];
+                
                 NSString *filepathname = [dataPath stringByAppendingPathComponent:filename];
                 [imageData writeToFile:filepathname atomically:YES];
-                imageitem.ImageFileReference = [NSString stringWithFormat:@"%@/%@",self.PointOfInterest.key,filename];
+                imageitem.ImageFileReference = [NSString stringWithFormat:@"Images/%@/%@",self.PointOfInterest.key,filename];
                 NSLog(@"new image");
             }
             counter++;
@@ -475,7 +497,7 @@
         
         self.LabelPrivateNotes.hidden=false;
         self.TextViewNotes.hidden=false;
-        self.SegmentTypeOfPoi.hidden=false;
+        self.PickerType.hidden=false;
         self.TextFieldTitle.hidden=false;
         self.ImageViewKey.hidden=false;
         self.LabelPoi.hidden=false;
@@ -488,7 +510,7 @@
         
         self.LabelPrivateNotes.hidden=true;
         self.TextViewNotes.hidden=true;
-        self.SegmentTypeOfPoi.hidden=true;
+        self.PickerType.hidden=true;
         self.TextFieldTitle.hidden=true;
         self.ImageViewKey.hidden=true;
         self.LabelPoi.hidden=true;
@@ -501,7 +523,7 @@
         
         self.LabelPrivateNotes.hidden=true;
         self.TextViewNotes.hidden=true;
-        self.SegmentTypeOfPoi.hidden=true;
+        self.PickerType.hidden=true;
         self.TextFieldTitle.hidden=true;
         self.ImageViewKey.hidden=true;
         self.LabelPoi.hidden=true;
@@ -551,13 +573,12 @@
     return LabelText;
 }
 
-
-
-- (IBAction)SegmentTypeChanged:(id)sender {
+- (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
     
-    self.LabelPoi.text = [self GetPoiLabelWithType:[NSNumber numberWithLong:self.SegmentTypeOfPoi.selectedSegmentIndex]];
+    self.LabelPoi.text = [self GetPoiLabelWithType:[NSNumber numberWithInteger:row]];
     
 }
+
 
 
 @end
