@@ -22,4 +22,5 @@
 @property (nonatomic, weak) id <ScheduleListDelegate> delegate;
 @property (strong, nonatomic) ProjectNSO *Project;
 @property (assign) int level;
+@property (assign) int MaxNbrOfHierarcyLevels;
 @end

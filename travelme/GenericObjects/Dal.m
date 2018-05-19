@@ -929,12 +929,14 @@
                 schedule.dt = [schedule GetDtFromString :[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 2)]];
                 
                 schedule.type = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 3)];
+
                 if([schedule.type isEqualToString:@"open"]) {
                     index ++;
+                    schedule.hierarcyindex = index;
                 } else {
+                    schedule.hierarcyindex = index;
                     index --;
                 }
-                schedule.hierarcyindex = index;
                 schedule.activitystate = [NSNumber numberWithInt:sqlite3_column_int(statement, 4)];
                 [activityschedulelist addObject:schedule];
                 

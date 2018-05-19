@@ -36,21 +36,24 @@
 
 /*
  created date:      28/04/2018
- last modified:     28/04/2018
+ last modified:     19/05/2018
  remarks:
  */
 -(void) LoadScheduleData {
     self.scheduleitems = [AppDelegateDef.Db GetActivitySchedule:self.Project.key :self.ActivityState];
+    /* used to dynamically set the width of the hiararcy view */
+    self.MaxNbrOfHierarcyLevels=0;
     
-    
+    /* loop through to get the key images we need as well as the maximum amount of levels in hierarcy */
     for (ScheduleNSO *schedule in self.scheduleitems) {
-        
+        if(schedule.hierarcyindex > self.MaxNbrOfHierarcyLevels) {
+            self.MaxNbrOfHierarcyLevels = schedule.hierarcyindex;
+        }
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"key==%@",schedule.key];
         NSArray *results = [self.activityitems filteredArrayUsingPredicate:predicate];
         ActivityNSO *activity = [results firstObject];
         schedule.poi = activity.poi;
     }
-    
     
     [self.TableViewScheduleItems reloadData];
 }
@@ -81,7 +84,7 @@
 
 /*
  created date:      05/05/2018
- last modified:     06/05/2018
+ last modified:     19/05/2018
  remarks:
  */
 - (ScheduleCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -93,27 +96,73 @@
 
     ScheduleNSO *schedule = [self.scheduleitems objectAtIndex:indexPath.row];
     
-    cell.LabelActivity.text = schedule.name;
-    cell.LabelSpanDateTime.text = [NSString stringWithFormat:@"%@", [self FormatPrettyDates :schedule.dt]];
+    //linestyle 0 = start
+    //linestyle 1 = through
+    //linestyle 2 = end
+    //linestyle 3 = none
     
-    if (schedule.poi.Images.count==0) {
-        [cell.ImageViewImage setImage:[UIImage imageNamed:@"Poi"]];
+    int linestyle = 0;
+    if (indexPath.row == 0) {
+        linestyle = 0;
+    } else if (self.scheduleitems.count <= indexPath.row + 1) {
+        linestyle = 2;
     } else {
-        PoiImageNSO *FirstImageItem = [schedule.poi.Images firstObject];
-        [cell.ImageViewImage setImage:FirstImageItem.Image];
+        ScheduleNSO *nextSchedule = [self.scheduleitems objectAtIndex:indexPath.row + 1];
+        ScheduleNSO *prevSchedule = [self.scheduleitems objectAtIndex:indexPath.row - 1];
+        if (prevSchedule.hierarcyindex < schedule.hierarcyindex && nextSchedule.hierarcyindex < schedule.hierarcyindex ) {
+            linestyle = 3;
+        } else if (nextSchedule.hierarcyindex < schedule.hierarcyindex) {
+            linestyle = 2;
+        } else if (prevSchedule.hierarcyindex < schedule.hierarcyindex) {
+            linestyle = 0;
+        } else {
+            linestyle = 1;
+        }
     }
 
-    [cell.ViewHierarcyDetail addColumns :schedule.hierarcyindex];
-    [cell.ViewHierarcyDetail setNeedsDisplay];
-  
-    if ((schedule.activitystate==[NSNumber numberWithInt:0] && self.ActivityState==[NSNumber numberWithLong:1])) {
-        [cell.ViewBlur setHidden:false];
-    } else {
-        [cell.ViewBlur setHidden:true];
+    [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:cell.ViewHierarcyDetail attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:self.MaxNbrOfHierarcyLevels * 30.0]];
+    
+    cell.LabelActivity.text = schedule.name;
+    cell.LabelSpanDateTime.text = [NSString stringWithFormat:@"%@", [self FormatPrettyDates :schedule.dt]];
+    [cell.ViewHierarcyDetail addColumns :schedule.hierarcyindex :linestyle];
+
+    NSArray *viewsToRemove = [cell.ViewHierarcyDetail subviews];
+    for (UIView *v in viewsToRemove) {
+        [v removeFromSuperview];
     }
-  
+    
+    // 20 is half the size of the image.
+    CGFloat imageYpos = (cell.contentView.bounds.size.height / 2) - 20;
+    UIImageView *view=[[UIImageView alloc]initWithFrame:CGRectMake(0 + (20 * (schedule.hierarcyindex - 1)), imageYpos, 40, 40)];
+
+    view.layer.cornerRadius = 20;
+    view.layer.masksToBounds = YES;
+
+    if (schedule.poi.Images.count==0) {
+        [view setImage:[UIImage imageNamed:@"Poi"]];
+    } else {
+        PoiImageNSO *FirstImageItem = [schedule.poi.Images firstObject];
+        [view setImage:FirstImageItem.Image];
+    }
+    
+    if ((schedule.activitystate == [NSNumber numberWithInt:0] && self.ActivityState == [NSNumber numberWithLong:1])) {
+        UIVisualEffect *blurEffect;
+        blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+        
+        UIVisualEffectView *visualEffectView;
+        visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+        
+        visualEffectView.alpha = 0.75f;
+        visualEffectView.frame = view.bounds;
+        [view addSubview:visualEffectView];
+    }
+    
+
+    [cell.ViewHierarcyDetail addSubview:view];
+    [cell.ViewHierarcyDetail setNeedsDisplay];
     return cell;
 }
+
 
 /*
  created date:      08/05/2018
@@ -135,38 +184,39 @@
 /*
  created date:      08/05/2018
  last modified:     19/05/2018
- remarks:           Might not be totally necessary, but seperated out from editActionsForRowAtIndexPath method above.
-                    if user deletes the first "open", we remove the "close" automatically.  we do have a problem
-                    when we have then  "open" "open" "close", but the close is for the first open item.
-                    perhaps when we delete a close we change the "open" to "single" then it is just shown as
-                    an icon.  so we have instead "open" "single" "close".
- 
-                    we must rearrange the array schedule.type after a deletion as well as the hieracryindex.
+ remarks:
  */
 - (void)tableView:(UITableView *)tableView deleteSchedule:(NSIndexPath *)indexPath  {
-    
     ScheduleNSO *schedule = [self.scheduleitems objectAtIndex:indexPath.row];
-    
     if ([schedule.type isEqualToString:@"close"] || [schedule.type isEqualToString:@"single"]) {
-
         [self.scheduleitems removeObjectAtIndex:indexPath.row];
-        
         if ([schedule.type isEqualToString:@"close"]) {
             // set the matching 'open' type item to "single"
-            
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(key MATCHES %@) AND (activitystate == %@)",schedule.key,schedule.activitystate];
+            NSArray *results = [self.scheduleitems filteredArrayUsingPredicate:predicate];
+            if (results.count>0) {
+                ScheduleNSO *foundschedule = [results firstObject];
+                foundschedule.type = @"single";
+            }
         }
-        
-        
     } else if ([schedule.type isEqualToString:@"open"]) {
         // delete the close too.
-
-        
-        
-        [self.scheduleitems removeObjectAtIndex:indexPath.row];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"NOT (key MATCHES %@) OR (activitystate != %@ AND key MATCHES %@)",schedule.key, schedule.activitystate, schedule.key];
+        [self.scheduleitems filterUsingPredicate:predicate];
     }
     
-    // loop through all once again and reset the hieracryindex.
-    
+    int index = 0;
+    for (ScheduleNSO *schedule in self.scheduleitems) {
+        if([schedule.type isEqualToString:@"open"]) {
+            index ++;
+            schedule.hierarcyindex = index;
+        } else if ([schedule.type isEqualToString:@"single"]) {
+            schedule.hierarcyindex = index + 1;
+        } else {
+            schedule.hierarcyindex = index;
+            index --;
+        }
+    }
     [self.TableViewScheduleItems reloadData];
 }
 
@@ -185,7 +235,6 @@
     NSDateFormatter *dateformatter = [[NSDateFormatter alloc] init];
     [dateformatter setDateFormat:@"dd MMM yyyy HH:mm"];
     [dateformatter setTimeZone:[NSTimeZone localTimeZone]];
-    
     return [NSString stringWithFormat:@"%@",[dateformatter stringFromDate:ActivityDt]];
 }
 

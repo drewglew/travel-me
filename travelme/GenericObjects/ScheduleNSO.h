@@ -17,10 +17,9 @@
 @property (nonatomic) NSString *type;
 @property (assign) int hierarcyindex;
 @property (nonatomic) NSNumber *activitystate;
+@property (nonatomic) NSNumber *categoryid;
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;
-
 @property (strong, nonatomic) ProjectNSO *project;
 @property (strong, nonatomic) PoiNSO *poi;
-
 -(NSDate *)GetDtFromString :(NSString *) dt;
 @end

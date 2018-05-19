@@ -10,6 +10,10 @@
 
 @interface ScheduleBackgroundView : UIView {
     NSMutableArray *columns;
+    int LastLineStyle;
 }
-- (void)addColumns:(int)amount;
+
+- (void)addColumns:(int)amount :(int)linestyle;
+
+
 @end
