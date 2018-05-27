@@ -45,10 +45,11 @@
 -(bool)InitDb :(NSString*) databaseName {
 
     NSURL *fileURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:databaseName];
+    
+    NSURL *fileImageURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"Images" isDirectory:YES];
+    
     _databasePath = [[NSString alloc] initWithString:[fileURL path]];
 
-    
-    
     NSFileManager *filemgr = [NSFileManager defaultManager];
     const char *dbpath = [_databasePath UTF8String];
     if([filemgr fileExistsAtPath:_databasePath] ==  NO) {
@@ -59,6 +60,23 @@
         return true;
     } else {
         if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
+            /* manage images if database is reloaded and the files are not available */
+            NSError *err;
+            if ([fileImageURL checkResourceIsReachableAndReturnError:&err] == NO) {
+                NSLog(@"No folder exists for Images");
+                char *errorMessage;
+                const char *sql_statement = "DELETE FROM imageitem";
+                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                    NSLog(@"failed to delete all content from imageitem table");
+                }
+                sql_statement = "UPDATE project set imagefilename=''";
+                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                    NSLog(@"failed to remove all image content from project data table");
+                }
+                [filemgr createDirectoryAtURL:fileImageURL
+                withIntermediateDirectories:YES attributes:nil error:&err];
+            }
+
             NSLocale *theLocale = [NSLocale currentLocale];
             NSString *currencyCode = [theLocale objectForKey:NSLocaleCurrencyCode];
             NSLog(@"Currency Code : %@",currencyCode);
@@ -185,7 +203,6 @@
                 CurrencyCode = [currency objectForKey:@"code"];
                 break;
             }
-        
             if (LatLng.count==2) {
                 double Lat = [[LatLng objectAtIndex:0] doubleValue];
                 double Lon = [[LatLng objectAtIndex:1] doubleValue];
@@ -194,7 +211,6 @@
             } else {
                 NSLog(@"Skipping %@ as no coordinates attached", Name);
             }
-            
         } else {
             NSLog(@"Skipping %@ as no currency attached", Name);
         }
@@ -264,6 +280,7 @@
             retVal = false;
         }
         [self InsertImages :Poi];
+        [self UpdatePoiImages :Poi];
         sqlite3_finalize(statement);
     
     return retVal;
@@ -340,6 +357,36 @@
 
     return retVal;
 }
+
+/*
+ created date:      21/05/2018
+ last modified:     21/05/2018
+ remarks:           TODO add new way of inserting parms
+ */
+-(bool)UpdatePoiImages :(PoiNSO*) Poi {
+    /* Images table */
+    bool retVal = true;
+    
+    for (PoiImageNSO *imageitem in Poi.Images) {
+        if (imageitem.UpdateImage) {
+            
+            NSString *insertSQL = [NSString stringWithFormat:@"UPDATE imageitem set keyimage=%d, description='%@' WHERE filename='%@'", imageitem.KeyImage, @"test", imageitem.ImageFileReference];
+            sqlite3_stmt *statement;
+            const char *update_statement = [insertSQL UTF8String];
+            sqlite3_prepare_v2(_DB, update_statement, -1, &statement, NULL);
+            if (sqlite3_step(statement) != SQLITE_DONE) {
+                NSLog(@"Failed to update record inside imageitem table");
+                retVal = false;
+            } else {
+                NSLog(@"Updated imageitem record inside table!");
+            }
+            sqlite3_finalize(statement);
+        }
+    }
+    
+    return retVal;
+}
+
 
 
 
@@ -571,13 +618,59 @@
                 project.name = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 1)];
                 project.privatenotes = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 2)];
                 project.imagefilereference = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 3)];
-                
+                project = [self GetProjectDateRanges :project];
                 [projectdata addObject:project];
             }
         }
         sqlite3_finalize(statement);
 
     return projectdata;
+}
+
+
+/*
+ created date:      27/05/2018
+ last modified:     27/05/2018
+ remarks:           we need to handle state of activities.  is the startdt actual or planned?
+ */
+-(ProjectNSO*) GetProjectDateRanges :(ProjectNSO*) project {
+    sqlite3_stmt *statement;
+    //NSString *selectSQL = [NSString stringWithFormat:@"SELECT IFNULL(MIN(startdt),''), IFNULL(MAX(enddt),''), COUNT(1) FROM activity where projectkey = '%@'", project.key];
+    
+    NSString *selectSQL = [NSString stringWithFormat:@"SELECT IFNULL(MIN(startdt),''), IFNULL(MAX(enddt),''), (select count(1) from (select key from activity where projectkey='%@' and state = 0) t1 LEFT JOIN (select key from activity where projectkey='%@' and state = 1) t2 ON t2.key = t1.key WHERE t2.key IS NULL), (select count(1) from (select key from activity where projectkey='%@' and state = 1) t1 LEFT JOIN (select key from activity where projectkey='%@' and state = 0) t2 ON t2.key = t1.key WHERE t2.key IS NULL), (select count (1) from (select count(1) as sum from activity where projectkey='%@' group by key) data where data.sum = 2) FROM activity where projectkey = '%@'", project.key, project.key, project.key, project.key, project.key, project.key];
+
+    const char *select_statement = [selectSQL UTF8String];
+    
+    if (sqlite3_prepare_v2(_DB, select_statement, -1, &statement, NULL) == SQLITE_OK)
+    {
+        while (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            project.startdt = [project GetDtFromString :[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 0)]];
+            project.enddt = [project GetDtFromString :[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 1)]];
+            project.numberofactivitiesonlyplanned = [NSNumber numberWithInt:sqlite3_column_int(statement, 2)];
+            project.numberofactivitiesonlyactual = [NSNumber numberWithInt:sqlite3_column_int(statement, 3)];
+            project.numberofactivities = [NSNumber numberWithInt:sqlite3_column_int(statement, 4)];
+        }
+    }
+    
+    
+    /*
+     GET PLANNED ITEMS WITHOUT ACTUAL
+     select count(1) from (select key from activity where projectkey='F0EC24F9-D8DB-483C-9F64-3EA49F008966' and state = 0) t1 LEFT JOIN (select key from activity where projectkey='F0EC24F9-D8DB-483C-9F64-3EA49F008966' and state = 1) t2 ON t2.key = t1.key WHERE t2.key IS NULL
+     
+     GET ACTUAL WITHOUT PLANNED
+     select count(1) from (select key from activity where projectkey='F0EC24F9-D8DB-483C-9F64-3EA49F008966' and state = 1) t1 LEFT JOIN (select key from activity where projectkey='F0EC24F9-D8DB-483C-9F64-3EA49F008966' and state = 0) t2 ON t2.key = t1.key WHERE t2.key IS NULL
+     
+     GET PLANNED ITEMS THAT WERE MADE
+     select count (1) from (select count(1) as sum from activity where projectkey='F0EC24F9-D8DB-483C-9F64-3EA49F008966' group by key) data where data.sum=2
+     
+     
+     
+     */
+    
+    
+    sqlite3_finalize(statement);
+    return project;
 }
 
 /*
@@ -660,12 +753,12 @@
 
         if ([RequiredState intValue] == 0) {
             /* Ideas */
-            selectSQL = [NSString stringWithFormat:@"SELECT projectkey, poikey, key, name, notes, totalprice, startdt, enddt, state FROM activity WHERE projectkey='%@' AND state=0 ORDER BY startdt", RequiredProjectKey];
+            selectSQL = [NSString stringWithFormat:@"SELECT projectkey, poikey, key, name, notes, totalprice, startdt, enddt, state, (select count(1) from activity data where data.key=act.key group by data.key) FROM activity act WHERE projectkey='%@' AND state=0 ORDER BY startdt", RequiredProjectKey];
         }
         else
         {
             
-            selectSQL = [NSString stringWithFormat:@"SELECT projectkey, poikey, activity.key, name, notes, totalprice, startdt, enddt, activity.state FROM activity, (select max(state) as maxstate, key from activity group by key) data where activity.key=data.key and activity.state=data.maxstate and projectkey='%@' ORDER BY activity.state desc, startdt", RequiredProjectKey];
+            selectSQL = [NSString stringWithFormat:@"SELECT projectkey, poikey, act.key, name, notes, totalprice, startdt, enddt, act.state, (select count(1) from activity ds where ds.key=act.key group by ds.key) FROM activity act, (select max(state) as maxstate, key from activity group by key) data where act.key=data.key and act.state=data.maxstate and projectkey='%@' ORDER BY act.state desc, startdt", RequiredProjectKey];
             
         }
         
@@ -687,6 +780,7 @@
                 activity.startdt = [activity GetDtFromString :[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 6)]];
                 activity.enddt = [activity GetDtFromString :[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 7)]];
                 activity.activitystate = [NSNumber numberWithInt:sqlite3_column_int(statement, 8)];
+                activity.legendref = [NSNumber numberWithInt:sqlite3_column_int(statement, 9)];
                 //activity.poi = [self loadPoiImageData :activity.poi.key];
                 [activitydata addObject:activity];
             }
@@ -732,7 +826,7 @@
 
 /*
  created date:      02/05/2018
- last modified:     08/05/2018
+ last modified:     20/05/2018
  remarks:
  */
 -(bool) DeleteProject :(ProjectNSO*) Project {
@@ -745,13 +839,15 @@
             NSString *imagesDirectory = [paths objectAtIndex:0];
             NSFileManager *fm = [NSFileManager defaultManager];
     
-            NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",Project.imagefilereference]];
-            NSError *error = nil;
-            for (NSString *file in [fm contentsOfDirectoryAtPath:dataPath error:&error]) {
-                BOOL success = [fm removeItemAtPath:[NSString stringWithFormat:@"%@/%@", imagesDirectory, file] error:&error];
-                if (!success || error) {
-                    NSLog(@"something failed in deleting unwanted data");
-                    retVal = false;
+            if (![Project.imagefilereference isEqualToString:@""]) {
+                NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",Project.imagefilereference]];
+                NSError *error = nil;
+                for (NSString *file in [fm contentsOfDirectoryAtPath:dataPath error:&error]) {
+                    BOOL success = [fm removeItemAtPath:[NSString stringWithFormat:@"%@/%@", imagesDirectory, file] error:&error];
+                    if (!success || error) {
+                        NSLog(@"something failed in deleting unwanted data");
+                        retVal = false;
+                    }
                 }
             }
             
@@ -765,18 +861,6 @@
                 retVal = false;
             } else {
                 NSLog(@"Successfuly deleted project record from payment");
-            }
-            sqlite3_finalize(statement);
-            
-            /* delete all references of project in travelleg table */
-            deleteSQL = [NSString stringWithFormat:@"DELETE FROM travelleg WHERE projectkey = '%@'",Project.key];
-            deleteStatement = [deleteSQL UTF8String];
-            sqlite3_prepare_v2(_DB, deleteStatement, -1, &statement, NULL);
-            if (sqlite3_step(statement) != SQLITE_DONE) {
-                NSLog(@"Failed to delete project record from travelleg");
-                retVal = false;
-            } else {
-                NSLog(@"Successfuly deleted project record from travelleg");
             }
             sqlite3_finalize(statement);
             

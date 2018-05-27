@@ -95,6 +95,49 @@ MKLocalSearchResponse *results;
                     //anno.subtitle = placemark.subLocality;
                     [self.MapView addAnnotation:anno];
                     [self.MapView selectAnnotation:anno animated:true];
+                    
+                    
+                    /* new block */
+                    /*
+                    MKLocalSearchRequest *request = [[MKLocalSearchRequest alloc] init];
+                    request.region = self.MapView.region;
+                    request.naturalLanguageQuery = self.SearchBar.text; // or business name
+                    MKLocalSearch *localSearch = [[MKLocalSearch alloc] initWithRequest:request];
+                    [localSearch startWithCompletionHandler:^(MKLocalSearchResponse *response, NSError *error) {
+                        // do something with the results / error
+                        NSMutableArray *annotations = [NSMutableArray array];
+                        
+                        [response.mapItems enumerateObjectsUsingBlock:^(MKMapItem *item, NSUInteger idx, BOOL *stop) {
+
+                            bool found = false;
+                            
+                            for (id<MKAnnotation>annotation in self.MapView.annotations)
+                            {
+                                if (annotation.coordinate.latitude == item.placemark.coordinate.latitude &&
+                                    annotation.coordinate.longitude == item.placemark.coordinate.longitude)
+                                {
+                                    found = true;
+                                   
+                                }
+                            }
+                            if (!found) {
+                                
+                                //AnnotationMK *anno = [[AnnotationMK alloc] init];
+                                
+                                
+                                
+                                
+                                
+                                [annotations addObject:item.placemark];
+                            }
+                        }];
+                        
+                        [self.MapView addAnnotations:annotations];
+                        NSLog(@"%@",response);
+                    }];
+                     */
+                    /* new block */
+                    
                 } else {
                     anno.title = @"Unknown Place";
                 }
@@ -235,24 +278,34 @@ MKLocalSearchResponse *results;
 }
 /*
  created date:      27/04/2018
- last modified:     09/05/2018
+ last modified:     19/05/2018
  remarks:
  */
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view {
+    id annotation = view.annotation;
+    if (![annotation isKindOfClass:[MKUserLocation class]]) {
+        AnnotationMK *annotation = (AnnotationMK *)[view annotation];
+        self.PointOfInterest.name = annotation.title;
+        self.PointOfInterest.administrativearea = annotation.subtitle;
+        self.PointOfInterest.lat = [NSNumber numberWithDouble:annotation.coordinate.latitude];
+        self.PointOfInterest.lon = [NSNumber numberWithDouble:annotation.coordinate.longitude];
+        self.PointOfInterest.Coordinates = annotation.coordinate;
+        self.PointOfInterest.country = annotation.Country;
+        self.PointOfInterest.countrycode = annotation.CountryCode;
+        self.PointOfInterest.locality = annotation.Locality;
+        self.PointOfInterest.sublocality = annotation.SubLocality;
+        self.PointOfInterest.fullthoroughfare = annotation.FullThoroughFare;
+        self.PointOfInterest.postcode = annotation.PostCode;
+        self.PointOfInterest.subadministrativearea = annotation.SubAdministrativeArea;
+    } else {
+        AnnotationMK *annotation = (AnnotationMK *)[view annotation];
+        self.PointOfInterest.name = annotation.title;
+        self.PointOfInterest.administrativearea = annotation.subtitle;
+        self.PointOfInterest.lat = [NSNumber numberWithDouble:annotation.coordinate.latitude];
+        self.PointOfInterest.lon = [NSNumber numberWithDouble:annotation.coordinate.longitude];
+        self.PointOfInterest.Coordinates = annotation.coordinate;
+    }
     
-    AnnotationMK *annotation = (AnnotationMK *)[view annotation];
-    self.PointOfInterest.name = annotation.title;
-    self.PointOfInterest.administrativearea = annotation.subtitle;
-    self.PointOfInterest.lat = [NSNumber numberWithDouble:annotation.coordinate.latitude];
-    self.PointOfInterest.lon = [NSNumber numberWithDouble:annotation.coordinate.longitude];
-    self.PointOfInterest.Coordinates = annotation.coordinate;
-    self.PointOfInterest.country = annotation.Country;
-    self.PointOfInterest.countrycode = annotation.CountryCode;
-    self.PointOfInterest.locality = annotation.Locality;
-    self.PointOfInterest.sublocality = annotation.SubLocality;
-    self.PointOfInterest.fullthoroughfare = annotation.FullThoroughFare;
-    self.PointOfInterest.postcode = annotation.PostCode;
-    self.PointOfInterest.subadministrativearea = annotation.SubAdministrativeArea;
 }
 
 /*
@@ -346,7 +399,36 @@ MKLocalSearchResponse *results;
         controller.readonlyitem = false;
     }
 }
-
-
+/*
+-(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
+    
+    
+    float lon= // longitude you want to compare to your current postion
+    float lat=//your latitude you want to compare to your current position
+    float rad=//radius , if you give this 100m, then it checks the given points are within the 100m from you are not
+    
+    CLLocation *centerLocation = [[CLLocation alloc] initWithLatitude:lat
+                                                            longitude:lon];
+    
+    CLLocation *lastLocation=[locations lastObject];
+    
+    //display current lat and lon in text fields
+    currentLat.text=[NSString stringWithFormat:@"%f",lastLocation.coordinate.latitude];
+    currentLon.text=[NSString stringWithFormat:@"%f",lastLocation.coordinate.longitude];
+    
+    CLLocationDistance distance = [lastLocation distanceFromLocation:centerLocation];
+    
+    if (distance<=rad) {
+        
+        // you are within the radius
+    }
+    
+    CLLocationAccuracy accuracy = [lastLocation horizontalAccuracy];
+    if(accuracy <=10) {   //accuracy in metres
+        
+        [manager stopUpdatingLocation];
+    }
+}
+*/
 
 @end

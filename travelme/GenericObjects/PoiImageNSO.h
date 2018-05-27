@@ -15,5 +15,5 @@
 @property (nonatomic) NSString *ImageFileReference;
 @property (assign) int KeyImage;
 @property (assign) bool NewImage;
-
+@property (assign) bool UpdateImage;
 @end

@@ -25,6 +25,10 @@
     NSLocale *theLocale = [NSLocale currentLocale];
     self.HomeCurrencyCode = [theLocale objectForKey:NSLocaleCurrencyCode];
     
+    if (@available(iOS 11, *)) {
+        UIImageView.appearance.accessibilityIgnoresInvertColors=true;
+    }
+    
     // travelme_01.db
     [self.Db InitDb:self.databasename];
     return YES;

@@ -84,13 +84,13 @@
         self.Project.key = [[NSUUID UUID] UUIDString];
         if (self.updatedimage) {
   
-            NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/Projects/%@",self.Project.key]];
+            NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/Images/Projects/%@",self.Project.key]];
             [[NSFileManager defaultManager] createDirectoryAtPath:dataPath withIntermediateDirectories:YES attributes:nil error:nil];
         
             NSData *imageData =  UIImagePNGRepresentation(self.Project.Image);
             NSString *filepathname = [dataPath stringByAppendingPathComponent:@"image.png"];
             [imageData writeToFile:filepathname atomically:YES];
-            self.Project.imagefilereference = [NSString stringWithFormat:@"Projects/%@/image.png",self.Project.key];
+            self.Project.imagefilereference = [NSString stringWithFormat:@"Images/Projects/%@/image.png",self.Project.key];
         } else {
             self.Project.imagefilereference = @"";
         }

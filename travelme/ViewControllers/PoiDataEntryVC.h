@@ -23,8 +23,12 @@
 
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;
 @property (nonatomic) NSString *Title;
+@property (nonatomic) NSString *SelectedImageReference;
+@property (nonatomic) NSNumber *SelectedImageIndex;
 @property (assign) bool newitem;
+@property (assign) bool imagesupdated;
 @property (assign) bool readonlyitem;
+@property (assign) int imagestate;
 @property (weak, nonatomic) IBOutlet UITextField *TextFieldTitle;
 @property (weak, nonatomic) IBOutlet UICollectionView *CollectionViewPoiImages;
 @property (strong, nonatomic) PoiNSO *PointOfInterest;
@@ -39,6 +43,10 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelPoi;
 @property (nonatomic, weak) id <PoiDataEntryDelegate> delegate;
 @property (weak, nonatomic) IBOutlet UIPickerView *PickerType;
+@property (weak, nonatomic) IBOutlet UIVisualEffectView *ViewBlurImageOptionPanel;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonKey;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *ViewBlurHeightConstraint;
+@property (weak, nonatomic) IBOutlet UISwitch *SwitchViewPhotoOptions;
 
 
 

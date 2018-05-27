@@ -24,10 +24,7 @@
     self.CollectionViewActivities.delegate = self;
     self.LabelProject.text =  [NSString stringWithFormat:@"Activities for %@", self.Project.name];
     self.editmode = false;
-    // Do any additional setup after loading the view.
-
-
-    
+    // Do any additional setup after loading the view. 
 }
 
 /*
@@ -78,7 +75,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     04/05/2018
+ last modified:     27/05/2018
  remarks:
  */
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -88,36 +85,54 @@
     NSInteger NumberOfItems = self.activityitems.count + 1;
     if (indexPath.row == NumberOfItems -1) {
         cell.ImageViewActivity.image = [UIImage imageNamed:@"AddItem"];
-        
-       // [cell.ImageViewActivity UIBlurEffect:UIBlurEffectStyleRegular];
         cell.VisualViewBlur.hidden = true;
-        
-        
-        cell.ViewBackground.hidden =true;
-        cell.ViewAction.hidden = true;
+        cell.VisualViewBlurBehindImage.hidden = true;
+        cell.ImageBlurBackground.hidden = true;
     } else {
         cell.activity = [self.activityitems objectAtIndex:indexPath.row];
         if (self.SegmentState.selectedSegmentIndex==1) {
-            if (cell.activity.activitystate== [NSNumber numberWithInt:0]) {
+            
+            if (cell.activity.legendref== [NSNumber numberWithInt:2]) {
+                cell.LabelActivityLegend.backgroundColor = [UIColor colorWithRed:86.0f/255.0f green:215.0f/255.0f blue:43.0f/255.0f alpha:1.0];
+            } else if (cell.activity.activitystate== [NSNumber numberWithInt:0]) {
                 // show blurred image of activity!
                 cell.ButtonDelete.hidden = true;
                 cell.VisualViewBlur.hidden = false;
+                // only on ideas..
+                cell.LabelActivityLegend.backgroundColor = [UIColor colorWithRed:251.0f/255.0f green:0.0f/255.0f blue:85.0f/255.0f alpha:1.0];
             } else {
+                // only on actual.
                 cell.ButtonDelete.hidden = false;
                 cell.VisualViewBlur.hidden = true;
+                cell.LabelActivityLegend.backgroundColor = [UIColor colorWithRed:29.0f/255.0f green:155.0f/255.0f blue:246.0f/255.0f alpha:1.0];
             }
         } else {
+            if (cell.activity.legendref== [NSNumber numberWithInt:2]) {
+                cell.LabelActivityLegend.backgroundColor = [UIColor colorWithRed:86.0f/255.0f green:215.0f/255.0f blue:43.0f/255.0f alpha:1.0];
+            } else if (cell.activity.legendref== [NSNumber numberWithInt:1]) {
+                cell.LabelActivityLegend.backgroundColor = [UIColor colorWithRed:251.0f/255.0f green:0.0f/255.0f blue:85.0f/255.0f alpha:1.0];
+            }
             cell.VisualViewBlur.hidden = true;
             cell.ButtonDelete.hidden = false;
         }
-        cell.ViewAction.hidden = !self.editmode;
-        cell.ViewBackground.hidden = false;
+        
+        //cell.ViewAction.hidden = !self.editmode;
+        //cell.ViewBackground.hidden = false;
         cell.LabelName.text = cell.activity.name;
+        cell.LabelActivityLegend.layer.cornerRadius = 10;
+        cell.LabelActivityLegend.layer.masksToBounds = YES;
+        NSDateFormatter *dtformatter = [[NSDateFormatter alloc] init];
+        [dtformatter setDateFormat:@"dd MMM HH:mm"];
+        cell.LabelDate.text = [NSString stringWithFormat:@"%@",[dtformatter stringFromDate:cell.activity.startdt]];
+        cell.VisualViewBlurBehindImage.hidden = false;
+        cell.ImageBlurBackground.hidden = false;
         if (cell.activity.poi.Images.count == 0) {
             cell.ImageViewActivity.image = [UIImage imageNamed:@"Activity"];
+            cell.ImageBlurBackground.image = [UIImage imageNamed:@"Activity"];
         } else {
             PoiImageNSO *imageitem = [cell.activity.poi.Images firstObject];
             cell.ImageViewActivity.image = imageitem.Image;
+            cell.ImageBlurBackground.image = imageitem.Image;
         }
     }
     return cell;
@@ -175,8 +190,11 @@
     
     CGFloat collectionWidth = self.CollectionViewActivities.frame.size.width;
     float cellWidth = collectionWidth/3.0f;
-    CGSize size = CGSizeMake(cellWidth,cellWidth);
-    
+    CGSize size = CGSizeMake(cellWidth, cellWidth);
+    if (self.editmode) {
+        size = CGSizeMake(cellWidth,cellWidth*2);
+        
+    }
     return size;
 }
 
@@ -233,7 +251,11 @@
 
 - (IBAction)SwitchEditModeChanged:(id)sender {
     self.editmode = !self.editmode;
+    
+    
+    
     [self.CollectionViewActivities reloadData];
+    [self.CollectionViewActivities layoutSubviews];
 }
 
 

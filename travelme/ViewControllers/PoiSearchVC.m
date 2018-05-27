@@ -78,7 +78,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     14/05/2018
+ last modified:     21/05/2018
  remarks:
  */
 -(void) LoadPoiData {
@@ -104,16 +104,17 @@
     for (PoiNSO *poi in self.poiitems) {
         
         if (poi.Images.count > 0) {
+             NSPredicate *predicate = [NSPredicate predicateWithFormat:@"KeyImage == %@", [NSNumber numberWithInt:1]];
+            NSArray *filteredArray = [poi.Images filteredArrayUsingPredicate:predicate];
+            PoiImageNSO *KeyImageItem = [filteredArray firstObject];
 
-            PoiImageNSO *FirstImageItem = [poi.Images firstObject];
-            NSURL *imagefile = [url URLByAppendingPathComponent:FirstImageItem.ImageFileReference];
+            NSURL *imagefile = [url URLByAppendingPathComponent:KeyImageItem.ImageFileReference];
             
-            //FirstImageItem.Image = [UIImage imageWithContentsOfFile:[imagefile absoluteString]];
             NSError *err;
             
             pngData = [NSData dataWithContentsOfURL:imagefile options:NSDataReadingMappedIfSafe error:&err];
            
-            FirstImageItem.Image = [UIImage imageWithData:pngData];
+            KeyImageItem.Image = [UIImage imageWithData:pngData];
 
         }
     }
@@ -143,7 +144,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     03/04/2018
+ last modified:     21/05/2018
  remarks:
  */
 - (PoiListCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -173,8 +174,11 @@
     if (poi.Images.count==0) {
         [cell.PoiKeyImage setImage:[UIImage imageNamed:@"Poi"]];
     } else {
-        PoiImageNSO *FirstImageItem = [poi.Images firstObject];
-        [cell.PoiKeyImage setImage:FirstImageItem.Image];
+        /* locate key image */
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"KeyImage == %@", [NSNumber numberWithInt:1]];
+        NSArray *filteredArray = [poi.Images filteredArrayUsingPredicate:predicate];
+        PoiImageNSO *KeyImageItem = [filteredArray firstObject];
+        [cell.PoiKeyImage setImage:KeyImageItem.Image];
     }
     return cell;
 }

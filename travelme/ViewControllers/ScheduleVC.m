@@ -17,8 +17,16 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.TableViewScheduleItems.delegate = self;
-    self.TableViewScheduleItems.rowHeight = 80;
+    self.TableViewScheduleItems.rowHeight = 120;
     self.level = 0;
+    
+    if (self.ActivityState == [NSNumber numberWithLong:0]) {
+        self.labelHeader.text = [NSString stringWithFormat:@"%@ - Planned Schedule", self.Project.name];
+        self.ButtonDeleteIdeas.hidden = true;
+    } else {
+        self.labelHeader.text = [NSString stringWithFormat:@"%@ - Actual Schedule", self.Project.name];;
+    }
+    [self LoadScheduleData];
     // Do any additional setup after loading the view.
 }
 
@@ -30,7 +38,6 @@
  */
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self LoadScheduleData];
     
 }
 
@@ -54,6 +61,8 @@
         ActivityNSO *activity = [results firstObject];
         schedule.poi = activity.poi;
     }
+    
+    self.LabelItemCounter.text = [NSString stringWithFormat:@"Nbr of Items:%lu",(unsigned long)self.scheduleitems.count];
     
     [self.TableViewScheduleItems reloadData];
 }
@@ -81,6 +90,14 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.scheduleitems.count;
 }
+
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.TableViewScheduleItems.frame.size.width, 62)];
+    return headerView;
+}
+
+
 
 /*
  created date:      05/05/2018
@@ -120,7 +137,9 @@
         }
     }
 
-    [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:cell.ViewHierarcyDetail attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:self.MaxNbrOfHierarcyLevels * 30.0]];
+    [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:cell.ViewHierarcyDetail attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:self.MaxNbrOfHierarcyLevels * 25.0]];
+    
+    
     
     cell.LabelActivity.text = schedule.name;
     cell.LabelSpanDateTime.text = [NSString stringWithFormat:@"%@", [self FormatPrettyDates :schedule.dt]];
@@ -135,14 +154,15 @@
     CGFloat imageYpos = (cell.contentView.bounds.size.height / 2) - 20;
     UIImageView *view=[[UIImageView alloc]initWithFrame:CGRectMake(0 + (20 * (schedule.hierarcyindex - 1)), imageYpos, 40, 40)];
 
-    view.layer.cornerRadius = 20;
-    view.layer.masksToBounds = YES;
+   
 
     if (schedule.poi.Images.count==0) {
         [view setImage:[UIImage imageNamed:@"Poi"]];
     } else {
         PoiImageNSO *FirstImageItem = [schedule.poi.Images firstObject];
         [view setImage:FirstImageItem.Image];
+        view.layer.cornerRadius = 20;
+        view.layer.masksToBounds = YES;
     }
     
     if ((schedule.activitystate == [NSNumber numberWithInt:0] && self.ActivityState == [NSNumber numberWithLong:1])) {
@@ -151,9 +171,10 @@
         
         UIVisualEffectView *visualEffectView;
         visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-        
-        visualEffectView.alpha = 0.75f;
-        visualEffectView.frame = view.bounds;
+        if (schedule.poi.Images.count!=0) {
+            visualEffectView.alpha = 0.75f;
+            visualEffectView.frame = view.bounds;
+        }
         [view addSubview:visualEffectView];
     }
     
@@ -217,6 +238,7 @@
             index --;
         }
     }
+    self.LabelItemCounter.text = [NSString stringWithFormat:@"Nbr of Items:%lu",(unsigned long)self.scheduleitems.count];
     [self.TableViewScheduleItems reloadData];
 }
 
@@ -254,9 +276,36 @@
             [Route addObject:schedule.poi];
         }
         controller.Route = Route;
+        controller.scheduleitems = self.scheduleitems;
     }
 }
 
+- (IBAction)ResetPressed:(id)sender {
+    [self LoadScheduleData];
+    if (self.ActivityState == [NSNumber numberWithLong:1] ) {
+        self.ButtonDeleteIdeas.hidden = false;
+    }
+}
+
+- (IBAction)DeleteAllIdeasPressed:(id)sender {
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(activitystate == %@)", self.ActivityState];
+    [self.scheduleitems filterUsingPredicate:predicate];
+    int index = 0;
+    for (ScheduleNSO *schedule in self.scheduleitems) {
+        if([schedule.type isEqualToString:@"open"]) {
+            index ++;
+            schedule.hierarcyindex = index;
+        } else if ([schedule.type isEqualToString:@"single"]) {
+            schedule.hierarcyindex = index + 1;
+        } else {
+            schedule.hierarcyindex = index;
+            index --;
+        }
+    }
+    self.LabelItemCounter.text = [NSString stringWithFormat:@"Nbr of Items:%lu",(unsigned long)self.scheduleitems.count];
+    [self.TableViewScheduleItems reloadData];
+    self.ButtonDeleteIdeas.hidden = true;
+}
 
 
 

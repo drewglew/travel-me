@@ -56,7 +56,6 @@
 - (IBAction)AcceptDatesPressed:(id)sender {
     [self.delegate didPickDateSelection :self.DatePickerStart.date :self.DatePickerEnd.date];
     [self dismissViewControllerAnimated:YES completion:Nil];
-    
 }
 - (void)didPickDateSelection :(NSDate*)Start :(NSDate*)End {
     

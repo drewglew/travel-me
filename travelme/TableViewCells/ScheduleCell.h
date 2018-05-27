@@ -16,6 +16,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelSpanDateTime;
 @property (strong, nonatomic) ScheduleNSO *schedule;
 @property (weak, nonatomic) IBOutlet ScheduleBackgroundView *ViewHierarcyDetail;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *ViewHierarcyWidthConstraint;
+
 
 @end

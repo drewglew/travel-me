@@ -81,7 +81,7 @@
 
 /*
  created date:      29/04/2018
- last modified:     29/04/2018
+ last modified:     27/05/2018
  remarks:
  */
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -101,6 +101,44 @@
             cell.ImageViewProject.image = project.Image;
         }
         cell.LabelProjectName.text = project.name;
+        
+        if (project.startdt != nil) {
+            NSDateFormatter *dtformatter = [[NSDateFormatter alloc] init];
+            [dtformatter setDateFormat:@"EEE, dd MMM HH:mm"];
+            cell.LabelDateRange.text = [NSString stringWithFormat:@"%@\n%@",[dtformatter stringFromDate:project.startdt], [dtformatter stringFromDate:project.enddt]];
+        } else {
+            cell.LabelDateRange.text = @"";
+        }
+        
+        if (project.numberofactivitiesonlyactual > [NSNumber numberWithInt:0]) {
+            cell.LabelNbrOfActivities3.hidden=false;
+            cell.LabelNbrOfActivities3.layer.cornerRadius = 20;
+            cell.LabelNbrOfActivities3.layer.masksToBounds = YES;
+            cell.LabelNbrOfActivities3.text = [NSString stringWithFormat:@"%@",project.numberofactivitiesonlyactual];
+        } else {
+            cell.LabelNbrOfActivities3.hidden=true;
+        }
+        
+        if (project.numberofactivities > [NSNumber numberWithInt:0] ) {
+            cell.LabelNbrOfActivities2.hidden=false;
+            cell.LabelNbrOfActivities2.layer.cornerRadius = 20;
+            cell.LabelNbrOfActivities2.layer.masksToBounds = YES;
+            cell.LabelNbrOfActivities2.text = [NSString stringWithFormat:@"%@",project.numberofactivities];
+        } else if (project.numberofactivitiesonlyactual == [NSNumber numberWithInt:0]) {
+            cell.LabelNbrOfActivities2.hidden=true;
+        }
+        
+        if (project.numberofactivitiesonlyplanned > [NSNumber numberWithInt:0] ) {
+            cell.LabelNbrOfActivities.hidden=false;
+            cell.LabelNbrOfActivities.layer.cornerRadius = 20;
+            cell.LabelNbrOfActivities.layer.masksToBounds = YES;
+            cell.LabelNbrOfActivities.text = [NSString stringWithFormat:@"%@",project.numberofactivitiesonlyplanned];
+            
+        } else if (project.numberofactivities == [NSNumber numberWithInt:0] && project.numberofactivitiesonlyactual == [NSNumber numberWithInt:0]) {
+            cell.LabelNbrOfActivities.hidden=true;
+            
+        }
+        
         
         cell.isNewAccessor = false;
         if (self.editmode) {

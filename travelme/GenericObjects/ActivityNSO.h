@@ -20,6 +20,7 @@
 @property (nonatomic) NSString *currency;
 @property (nonatomic) NSNumber *costamt;
 @property (assign) NSNumber *activitystate;
+@property (assign) NSNumber *legendref;
 @property (strong, nonatomic) ProjectNSO *project;
 @property (strong, nonatomic) PoiNSO *poi;
 

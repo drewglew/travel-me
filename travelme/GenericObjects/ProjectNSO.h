@@ -17,10 +17,14 @@
 // properties below for easy access
 @property (nonatomic) UIImage *Image;
 @property (assign) int timeinverval;   // 1=past 2=now 3=future
-@property (assign) int numberofactivities;   // 1=past 2=now 3=future
+@property (assign) NSNumber *numberofactivities;
+@property (assign) NSNumber *numberofactivitiesonlyplanned;
+@property (assign) NSNumber *numberofactivitiesonlyactual;
 @property (nonatomic) NSDate *startdt;
 @property (nonatomic) NSDate *enddt;
 @property (nonatomic) NSNumber *cost;
 @property (nonatomic) NSString *currency;
 @property (strong, nonatomic) NSMutableArray *Links;
+
+-(NSDate *)GetDtFromString :(NSString *) dt;
 @end

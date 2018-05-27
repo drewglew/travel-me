@@ -50,9 +50,7 @@
             UIImage *btnImage = [UIImage imageNamed:@"ActivityCheckOut"];
             [self.ButtonCheckInOut setImage:btnImage forState:UIControlStateNormal];
         }
-        
-        
-        
+
     } else if (self.transformed) {
         self.ButtonCheckInOut.hidden = false;
         UIImage *btnImage = [UIImage imageNamed:@"ActivityCheckIn"];
@@ -272,6 +270,34 @@
         [AppDelegateDef.Db UpdateActivityItem:self.Activity];
         [self dismissViewControllerAnimated:YES completion:Nil];
     }
+}
+/*
+ created date:      23/05/2018
+ last modified:     23/05/2018
+ remarks:
+ */
+- (IBAction)ButtonMorePressed:(id)sender {
+    [self.view layoutIfNeeded];
+    if (self.ButtonViewHeightConstraint.constant==120) {
+        [UIView animateWithDuration:1.0 animations:^{
+            self.ButtonViewHeightConstraint.constant=0;
+            self.ButtonMore.transform = CGAffineTransformMakeRotation(M_PI);
+            [self.view layoutIfNeeded];
+        } completion:^(BOOL finished) {
+            
+        }];
+        
+    } else {
+        [UIView animateWithDuration:1.0 animations:^{
+            self.ButtonViewHeightConstraint.constant=120;
+            self.ButtonMore.transform = CGAffineTransformMakeRotation(-2*M_PI);
+            [self.view layoutIfNeeded];
+        } completion:^(BOOL finished) {
+            
+        }];
+        
+    }
+    
 }
 
 

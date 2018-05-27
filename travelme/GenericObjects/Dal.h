@@ -46,6 +46,7 @@
 -(NSMutableArray*) GetPaymentListContent :(ProjectNSO*) Project :(ActivityNSO *) Activity;
 -(NSMutableArray*) GetProjectCountries :(NSString*) RequiredProjectKey;
 -(NSNumber*) GetExchangeRate :(NSString *) LocalCurrencyCode :(NSString *) PaymentDt;
+-(NSMutableArray *)GetImagesForSelectedPoi :(NSString *) RequiredKey;
 -(bool) InsertExchangeRate :(NSString*) LocalCurrencyCode :(NSString*) DateValue :(NSNumber*) Rate;
 -(bool) InsertPayment :(PaymentNSO*) Payment :(ActivityNSO*) Activity;
 @end

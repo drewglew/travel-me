@@ -23,4 +23,9 @@
 @property (strong, nonatomic) ProjectNSO *Project;
 @property (assign) int level;
 @property (assign) int MaxNbrOfHierarcyLevels;
+@property (weak, nonatomic) IBOutlet UILabel *labelHeader;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonDeleteIdeas;
+@property (weak, nonatomic) IBOutlet UILabel *LabelItemCounter;
+
+
 @end

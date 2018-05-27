@@ -32,7 +32,7 @@
 -(void)drawRect:(CGRect)rect {
     CGContextRef ctx = UIGraphicsGetCurrentContext();
 
-    CGContextSetStrokeColorWithColor(ctx, [[UIColor colorWithRed:246.0f/255.0f green:71.0f/255.0f blue:64.0f/255.0f alpha:1.0] CGColor]);
+    CGContextSetStrokeColorWithColor(ctx, [[UIColor colorWithRed:254.0f/255.0f green:195.0f/255.0f blue:9.0f/255.0f alpha:1.0] CGColor]);
 
     CGContextSetLineWidth(ctx, 6.0);
     

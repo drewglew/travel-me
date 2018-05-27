@@ -39,6 +39,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelStartDT;
 @property (weak, nonatomic) IBOutlet UILabel *LabelEndDT;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonCheckInOut;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *ButtonViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonMore;
 
 
 
