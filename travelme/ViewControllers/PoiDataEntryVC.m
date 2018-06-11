@@ -7,6 +7,9 @@
 //
 
 #import "PoiDataEntryVC.h"
+#define CLCOORDINATE_EPSILON 0.005f
+#define CLCOORDINATES_EQUAL2( coord1, coord2 ) (fabs(coord1.latitude - coord2.latitude) < CLCOORDINATE_EPSILON && fabs(coord1.longitude - coord2.longitude) < CLCOORDINATE_EPSILON)
+
 
 @interface PoiDataEntryVC () <PoiDataEntryDelegate>
 
@@ -17,7 +20,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     21/05/2018
+ last modified:     10/06/2018
  remarks:
  */
 - (void)viewDidLoad {
@@ -43,18 +46,91 @@
     // Do any additional setup after loading the view.
 
     
-    self.LabelPoi.text = [self GetPoiLabelWithType:[NSNumber numberWithLong:[self.PointOfInterest.categoryid integerValue]]];
+
     
     self.PickerType.delegate = self;
     self.PickerType.dataSource = self;
     
 
-    self.TypeItems = @[@"Airport",@"Scenary",@"Historic",@"Museum",@"Restaurant",@"Accomodation",@"City",@"Venue",@"Misc"];
+    self.TypeItems = @[@"Cat-Accomodation",
+                       @"Cat-Airport",
+                       @"Cat-Astronaut",
+                       @"Cat-Beer",
+                       @"Cat-Bike",
+                       @"Cat-Bridge",
+                       @"Cat-CarHire",
+                       @"Cat-Casino",
+                       @"Cat-Church",
+                       @"Cat-City",
+                       @"Cat-Club",
+                       @"Cat-Concert",
+                       @"Cat-FoodWine",
+                       @"Cat-Historic",
+                       @"Cat-House",
+                       @"Cat-Lake",
+                       @"Cat-Lighthouse",
+                       @"Cat-Misc",
+                       @"Cat-Monument",
+                       @"Cat-Museum",
+                       @"Cat-Nature",
+                       @"Cat-Office",
+                       @"Cat-Restaurant",
+                       @"Cat-Scenary",
+                       @"Cat-Sea",
+                       @"Cat-Ship",
+                       @"Cat-Shopping",
+                       @"Cat-Ski",
+                       @"Cat-Sports",
+                       @"Cat-Theatre",
+                       @"Cat-ThemePark",
+                       @"Cat-Train",
+                       @"Cat-Trek",
+                       @"Cat-Venue",
+                       @"Cat-Zoo"
+                     ];
+
+    self.TypeLabelItems  = @[
+                             @"Accomodation",
+                               @"Airport",
+                               @"Astronaut",
+                               @"Beer",
+                               @"Bicycle",
+                               @"Bridge",
+                               @"Car Hire",
+                               @"Casino",
+                               @"Church",
+                               @"City",
+                               @"Club",
+                               @"Concert",
+                               @"Food and Wine",
+                               @"Historic",
+                               @"House",
+                               @"Lake",
+                               @"Lighthouse",
+                               @"Miscellaneous",
+                               @"Monument/Statue",
+                               @"Museum",
+                               @"Nature",
+                               @"Office",
+                               @"Restaurant",
+                               @"Scenery",
+                               @"Coast",
+                               @"Ship",
+                               @"Shopping",
+                               @"Skiing",
+                               @"Sports",
+                               @"Theatre",
+                               @"Theme Park",
+                               @"Train",
+                               @"Trekking",
+                               @"Venue",
+                               @"Zoo"
+                               ];
+    
+    self.LabelPoi.text = [self GetPoiLabelWithType:[NSNumber numberWithLong:[self.PointOfInterest.categoryid integerValue]]];
     
     [self.PickerType selectRow:[self.PointOfInterest.categoryid integerValue] inComponent:0 animated:YES];
-    
-    
-    
+
     self.TextFieldTitle.layer.cornerRadius=8.0f;
     self.TextFieldTitle.layer.masksToBounds=YES;
     self.TextFieldTitle.layer.borderColor=[[UIColor colorWithRed:246.0f/255.0f green:247.0f/255.0f blue:235.0f/255.0f alpha:1.0]CGColor];
@@ -214,8 +290,23 @@
 }
 
 /*
+ created date:      10/06/2018
+ last modified:     10/06/2018
+ remarks:
+ */
+-(PHFetchResult*) getAssetsFromLibraryWithStartDate:(NSDate *)startDate andEndDate:(NSDate*) endDate
+{
+    PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
+    fetchOptions.predicate = [NSPredicate predicateWithFormat:@"creationDate > %@ AND creationDate < %@",startDate ,endDate];
+    PHFetchResult *allPhotos = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeImage options:fetchOptions];
+    return allPhotos;
+}
+
+
+
+/*
  created date:      28/04/2018
- last modified:     21/05/2018
+ last modified:     10/06/2018
  remarks:
  */
 -(void)InsertPoiImage {
@@ -230,6 +321,7 @@
     
     NSString *cameraOption = @"Take a photo with the camera";
     NSString *photorollOption = @"Choose a photo from camera roll";
+    NSString *photoCloseToPoiOption = @"Choose own photos nearby";
     NSString *lastphotoOption = @"Select last photo taken";
     
     UIAlertAction *cameraAction = [UIAlertAction actionWithTitle:cameraOption
@@ -277,6 +369,24 @@
                                                                   NSLog(@"you want to select a photo");
                                                                   
                                                               }];
+    
+    
+    UIAlertAction *photosCloseToPoiAction = [UIAlertAction actionWithTitle:photoCloseToPoiOption
+                                                              style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+                                                                  
+                                                                  UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+                                                                  ImagePickerVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ImagePickerViewController"];
+                                                                  controller.delegate = self;
+                                                                  controller.PointOfInterest = self.PointOfInterest;
+                                                                  controller.ImageSize = CGSizeMake(self.TextViewNotes.frame.size.width, self.TextViewNotes.frame.size.width);
+                                                                  
+                                                                  [controller setModalPresentationStyle:UIModalPresentationFullScreen];
+                                                                  [self presentViewController:controller animated:YES completion:nil];
+                                                                  
+                                                              }];
+    
+    
+    
     
     UIAlertAction *lastphotoAction = [UIAlertAction actionWithTitle:lastphotoOption
                                     style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
@@ -345,6 +455,7 @@
     
     [alert addAction:cameraAction];
     [alert addAction:photorollAction];
+    [alert addAction:photosCloseToPoiAction];
     [alert addAction:lastphotoAction];
     [alert addAction:cancelAction];
     
@@ -590,41 +701,8 @@
 -(NSString *)GetPoiLabelWithType :(NSNumber*) PoiType {
     NSString *LabelText;
     
-    switch ([PoiType intValue])
+    LabelText = [NSString stringWithFormat:@"Point Of Interest - %@",[self.TypeLabelItems objectAtIndex:[PoiType integerValue]]];
     
-    {
-        case 0:
-            LabelText = [NSString stringWithFormat:@"Point Of Interest - %@",@"Service"];
-            break;
-        case 1:
-            LabelText = [NSString stringWithFormat:@"Point Of Interest - %@",@"Scenary"];
-            break;
-        case 2:
-            LabelText = [NSString stringWithFormat:@"Point Of Interest - %@",@"Historic"];
-            break;
-        case 3:
-            LabelText = [NSString stringWithFormat:@"Point Of Interest - %@",@"Museum"];
-            break;
-        case 4:
-            LabelText = [NSString stringWithFormat:@"Point Of Interest - %@",@"Restaurant"];
-            break;
-        case 5:
-            LabelText = [NSString stringWithFormat:@"Point Of Interest - %@",@"Accomodation"];
-            break;
-        case 6:
-            LabelText = [NSString stringWithFormat:@"Point Of Interest - %@",@"City/Town"];
-            break;
-        case 7:
-            LabelText = [NSString stringWithFormat:@"Point Of Interest - %@",@"Venue"];
-            break;
-        case 8:
-            LabelText = [NSString stringWithFormat:@"Point Of Interest - %@",@"Miscellaneous"];
-            break;
-        default:
-            LabelText = @"Point Of Interest";
-            break;
-    }
-
     return LabelText;
 }
 
@@ -648,6 +726,7 @@
  */
 - (IBAction)ButtonImageKeyPressed:(id)sender {
 
+    bool KeyImageEnabled = false;
     if (self.PointOfInterest.Images.count==0) {
         self.ViewBlurImageOptionPanel.hidden = true;
     } else if (self.PointOfInterest.Images.count==1) {
@@ -659,6 +738,7 @@
                     UIImage *btnImage = [UIImage imageNamed:@"Key"];
                     [self.ButtonKey setImage:btnImage forState:UIControlStateNormal];
                     item.KeyImage = 1;
+                    KeyImageEnabled = true;
                     item.UpdateImage = true;
                 } else {
                     UIImage *btnImage = [UIImage imageNamed:@"Key-Off"];
@@ -674,7 +754,39 @@
             }
         }
     }
+    if (!KeyImageEnabled) {
+        PoiImageNSO *item = [self.PointOfInterest.Images firstObject];
+        item.KeyImage = 1;
+        item.UpdateImage = true;
+    }
 }
+
+/*
+ created date:      11/06/2018
+ last modified:     11/06/2018
+ remarks:
+ */
+- (void)didAddImages :(NSMutableArray*)ImageCollection {
+    bool AddedImage = false;
+    for (ImageNSO *imageitem in ImageCollection) {
+    
+        PoiImageNSO *PoiImage = [[PoiImageNSO alloc] init];
+        PoiImage.Image = imageitem.Image;
+        if (self.PointOfInterest.Images.count==0) {
+            PoiImage.KeyImage = 1;
+        } else {
+            PoiImage.KeyImage = 0;
+        }
+        [self.PointOfInterest.Images addObject:PoiImage];
+        AddedImage = true;
+    }
+    if (AddedImage) {
+        [self.CollectionViewPoiImages reloadData];
+    }
+
+}
+
+
 /*
  created date:      23/05/2018
  last modified:     23/05/2018

@@ -43,6 +43,9 @@
 		3A9F73AF20A3747300D61666 /* PaymentNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9F73AE20A3747300D61666 /* PaymentNSO.m */; };
 		3A9F73B520A3784400D61666 /* PaymentListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9F73B420A3784400D61666 /* PaymentListCell.m */; };
 		3AAF154820A8AD9800F8DE0C /* InfoVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AAF154720A8AD9800F8DE0C /* InfoVC.m */; };
+		3AB915EC20CD972F001A08A9 /* ImagePickerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB915EB20CD972F001A08A9 /* ImagePickerVC.m */; };
+		3AB915EF20CD9BE4001A08A9 /* ImageCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB915EE20CD9BE4001A08A9 /* ImageCollectionCell.m */; };
+		3AB915F220CDB3E5001A08A9 /* ImageNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB915F120CDB3E5001A08A9 /* ImageNSO.m */; };
 		3AEE018B209F3BC700AE260E /* DirectionsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEE018A209F3BC600AE260E /* DirectionsVC.m */; };
 		3AEE018F20A0B05700AE260E /* AnnotationMK.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEE018E20A0B05700AE260E /* AnnotationMK.m */; };
 		3AEE019220A0CBB100AE260E /* CountryNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEE019120A0CBB100AE260E /* CountryNSO.m */; };
@@ -119,6 +122,12 @@
 		3A9F73B420A3784400D61666 /* PaymentListCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = PaymentListCell.m; path = ../../PaymentListCell.m; sourceTree = "<group>"; };
 		3AAF154620A8AD9800F8DE0C /* InfoVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InfoVC.h; sourceTree = "<group>"; };
 		3AAF154720A8AD9800F8DE0C /* InfoVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InfoVC.m; sourceTree = "<group>"; };
+		3AB915EA20CD972F001A08A9 /* ImagePickerVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImagePickerVC.h; sourceTree = "<group>"; };
+		3AB915EB20CD972F001A08A9 /* ImagePickerVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImagePickerVC.m; sourceTree = "<group>"; };
+		3AB915ED20CD9BE4001A08A9 /* ImageCollectionCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageCollectionCell.h; sourceTree = "<group>"; };
+		3AB915EE20CD9BE4001A08A9 /* ImageCollectionCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageCollectionCell.m; sourceTree = "<group>"; };
+		3AB915F020CDB3E5001A08A9 /* ImageNSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageNSO.h; sourceTree = "<group>"; };
+		3AB915F120CDB3E5001A08A9 /* ImageNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageNSO.m; sourceTree = "<group>"; };
 		3AEE0189209F3BC600AE260E /* DirectionsVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DirectionsVC.h; sourceTree = "<group>"; };
 		3AEE018A209F3BC600AE260E /* DirectionsVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DirectionsVC.m; sourceTree = "<group>"; };
 		3AEE018D20A0B05700AE260E /* AnnotationMK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AnnotationMK.h; sourceTree = "<group>"; };
@@ -157,6 +166,8 @@
 				3AFE356F209E4ADA00C46180 /* ScheduleCell.m */,
 				3A9F73B320A3784400D61666 /* PaymentListCell.h */,
 				3A9F73B420A3784400D61666 /* PaymentListCell.m */,
+				3AB915ED20CD9BE4001A08A9 /* ImageCollectionCell.h */,
+				3AB915EE20CD9BE4001A08A9 /* ImageCollectionCell.m */,
 			);
 			path = TableViewCells;
 			sourceTree = "<group>";
@@ -242,6 +253,8 @@
 				3A9F73AB20A36A1D00D61666 /* PaymentDataEntryVC.m */,
 				3AAF154620A8AD9800F8DE0C /* InfoVC.h */,
 				3AAF154720A8AD9800F8DE0C /* InfoVC.m */,
+				3AB915EA20CD972F001A08A9 /* ImagePickerVC.h */,
+				3AB915EB20CD972F001A08A9 /* ImagePickerVC.m */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -273,6 +286,8 @@
 				3A9F73AE20A3747300D61666 /* PaymentNSO.m */,
 				3A9EA18420AE17DF0052CC4F /* ScheduleBackgroundView.h */,
 				3A9EA18520AE17DF0052CC4F /* ScheduleBackgroundView.m */,
+				3AB915F020CDB3E5001A08A9 /* ImageNSO.h */,
+				3AB915F120CDB3E5001A08A9 /* ImageNSO.m */,
 			);
 			path = GenericObjects;
 			sourceTree = "<group>";
@@ -379,6 +394,7 @@
 				3AFE356D209E462500C46180 /* ScheduleVC.m in Sources */,
 				3A224CCF209A178700075457 /* ToolBoxNSO.m in Sources */,
 				3A9F73AC20A36A1D00D61666 /* PaymentDataEntryVC.m in Sources */,
+				3AB915EC20CD972F001A08A9 /* ImagePickerVC.m in Sources */,
 				3A374F0A2093754200E5A652 /* Dal.m in Sources */,
 				3A374EF420936A9600E5A652 /* main.m in Sources */,
 				3A9EA18620AE17DF0052CC4F /* ScheduleBackgroundView.m in Sources */,
@@ -386,6 +402,8 @@
 				3A224CC92097950600075457 /* ActivityDataEntryVC.m in Sources */,
 				3A374F1E2093939400E5A652 /* LocatorVC.m in Sources */,
 				3A224CA62094338D00075457 /* PoiImageCell.m in Sources */,
+				3AB915F220CDB3E5001A08A9 /* ImageNSO.m in Sources */,
+				3AB915EF20CD9BE4001A08A9 /* ImageCollectionCell.m in Sources */,
 				3AEE018F20A0B05700AE260E /* AnnotationMK.m in Sources */,
 				3A374F12209386F700E5A652 /* PoiListCell.m in Sources */,
 				3A224CAF2094946800075457 /* PoiImageNSO.m in Sources */,
@@ -550,7 +568,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = DREW.travelme;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -567,7 +585,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = DREW.travelme;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

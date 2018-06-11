@@ -18,5 +18,5 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelLocalAmtEst;
 @property (weak, nonatomic) IBOutlet UILabel *LabelHomeCurrencyCodeEst;
 @property (weak, nonatomic) IBOutlet UILabel *LabelLocalCurrencyCodeEst;
-
+@property (nonatomic) NSNumber *homeAmount;
 @end

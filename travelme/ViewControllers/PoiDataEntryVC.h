@@ -14,12 +14,14 @@
 #import "PoiImageCell.h"
 #import "PoiImageNSO.h"
 #import "PoiNSO.h"
+#import "ImagePickerVC.h"
+#import "ImageNSO.h"
 
 
 @protocol PoiDataEntryDelegate <NSObject>
 @end
 
-@interface PoiDataEntryVC : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource>
+@interface PoiDataEntryVC : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource, ImagePickerDelegate>
 
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;
 @property (nonatomic) NSString *Title;
@@ -33,6 +35,7 @@
 @property (weak, nonatomic) IBOutlet UICollectionView *CollectionViewPoiImages;
 @property (strong, nonatomic) PoiNSO *PointOfInterest;
 @property (strong, nonatomic) NSArray *TypeItems;
+@property (strong, nonatomic) NSArray *TypeLabelItems;
 @property (weak, nonatomic) IBOutlet UITextView *TextViewNotes;
 // only used on preview controller
 @property (weak, nonatomic) IBOutlet MKMapView *MapView;

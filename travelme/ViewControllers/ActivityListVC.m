@@ -75,7 +75,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     27/05/2018
+ last modified:     28/05/2018
  remarks:
  */
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -88,12 +88,15 @@
         cell.VisualViewBlur.hidden = true;
         cell.VisualViewBlurBehindImage.hidden = true;
         cell.ImageBlurBackground.hidden = true;
+        
     } else {
         cell.activity = [self.activityitems objectAtIndex:indexPath.row];
         if (self.SegmentState.selectedSegmentIndex==1) {
             
             if (cell.activity.legendref== [NSNumber numberWithInt:2]) {
                 cell.LabelActivityLegend.backgroundColor = [UIColor colorWithRed:86.0f/255.0f green:215.0f/255.0f blue:43.0f/255.0f alpha:1.0];
+                cell.VisualViewBlur.hidden = true;
+                cell.ButtonDelete.hidden = false;
             } else if (cell.activity.activitystate== [NSNumber numberWithInt:0]) {
                 // show blurred image of activity!
                 cell.ButtonDelete.hidden = true;
@@ -115,11 +118,50 @@
             cell.VisualViewBlur.hidden = true;
             cell.ButtonDelete.hidden = false;
         }
+
+        NSArray *TypeItems = @[@"Cat-Accomodation",
+                               @"Cat-Airport",
+                               @"Cat-Astronaut",
+                               @"Cat-Beer",
+                               @"Cat-Bike",
+                               @"Cat-Bridge",
+                               @"Cat-CarHire",
+                               @"Cat-Casino",
+                               @"Cat-Church",
+                               @"Cat-City",
+                               @"Cat-Club",
+                               @"Cat-Concert",
+                               @"Cat-FoodWine",
+                               @"Cat-Historic",
+                               @"Cat-House",
+                               @"Cat-Lake",
+                               @"Cat-Lighthouse",
+                               @"Cat-Misc",
+                               @"Cat-Monument",
+                               @"Cat-Museum",
+                               @"Cat-Nature",
+                               @"Cat-Office",
+                               @"Cat-Restaurant",
+                               @"Cat-Scenary",
+                               @"Cat-Sea",
+                               @"Cat-Ship",
+                               @"Cat-Shopping",
+                               @"Cat-Ski",
+                               @"Cat-Sports",
+                               @"Cat-Theatre",
+                               @"Cat-ThemePark",
+                               @"Cat-Train",
+                               @"Cat-Trek",
+                               @"Cat-Venue",
+                               @"Cat-Zoo"
+                               ];
         
-        //cell.ViewAction.hidden = !self.editmode;
-        //cell.ViewBackground.hidden = false;
+        cell.ImageViewTypeOfPoi.image = [UIImage imageNamed:[TypeItems objectAtIndex:[cell.activity.poi.categoryid integerValue]]];
+        
+        
+        
         cell.LabelName.text = cell.activity.name;
-        cell.LabelActivityLegend.layer.cornerRadius = 10;
+        cell.LabelActivityLegend.layer.cornerRadius = 5;
         cell.LabelActivityLegend.layer.masksToBounds = YES;
         NSDateFormatter *dtformatter = [[NSDateFormatter alloc] init];
         [dtformatter setDateFormat:@"dd MMM HH:mm"];
@@ -181,6 +223,7 @@
 
 }
 
+
 /*
  created date:      30/04/2018
  last modified:     30/04/2018
@@ -197,6 +240,7 @@
     }
     return size;
 }
+
 
 
 /*
@@ -249,13 +293,14 @@
     [self LoadActivityData :[NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex]];
 }
 
+
+
 - (IBAction)SwitchEditModeChanged:(id)sender {
     self.editmode = !self.editmode;
-    
-    
+
+    [self.CollectionViewActivities performBatchUpdates:^{ } completion:^(BOOL finished) { }];
     
     [self.CollectionViewActivities reloadData];
-    [self.CollectionViewActivities layoutSubviews];
 }
 
 

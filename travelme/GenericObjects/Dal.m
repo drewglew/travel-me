@@ -264,24 +264,28 @@
 
 /*
  created date:      28/04/2018
- last modified:     06/05/2018
+ last modified:     03/06/2018
  remarks:           TODO add new way of inserting parms
  */
 -(bool) UpdatePoiItem :(PoiNSO*) Poi {
     bool retVal=true;
-        sqlite3_stmt *statement;
+    
+    sqlite3_stmt *stmt = NULL;
+    sqlite3_prepare_v2(_DB, "UPDATE poi SET name = ?, categoryid = ?, privatenotes = ? WHERE key=?", -1, &stmt, nil);
+    
+    sqlite3_bind_text(stmt, 1, Poi.name==nil?"":[Poi.name UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt, 2, [Poi.categoryid intValue]);
+    sqlite3_bind_text(stmt, 3, Poi.privatenotes==nil?"":[Poi.privatenotes UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 4, Poi.key==nil?"":[Poi.key UTF8String], -1, SQLITE_TRANSIENT);
 
-        NSString *updateSQL = [NSString stringWithFormat:@"UPDATE poi SET name = '%@', categoryid = %@, privatenotes = '%@' WHERE key='%@'", Poi.name, Poi.categoryid, Poi.privatenotes, Poi.key];
-        
-        const char *update_statement = [updateSQL UTF8String];
-        sqlite3_prepare_v2(_DB, update_statement, -1, &statement, NULL);
-        if (sqlite3_step(statement) != SQLITE_DONE) {
-            NSLog(@"Failed to update record(s) inside poi table");
-            retVal = false;
-        }
-        [self InsertImages :Poi];
-        [self UpdatePoiImages :Poi];
-        sqlite3_finalize(statement);
+    
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+        NSLog(@"Failed to update record(s) inside poi table");
+        retVal = false;
+    }
+    [self InsertImages :Poi];
+    [self UpdatePoiImages :Poi];
+    sqlite3_finalize(stmt);
     
     return retVal;
 }
@@ -741,7 +745,7 @@
 
 /*
  created date:      01/05/2018
- last modified:     12/05/2018
+ last modified:     28/05/2018
  remarks:           state 1 = idea; state 2 = actual  - TODO add new way of inserting parms
  */
 -(NSMutableArray*) GetActivityListContentForState :(NSString*) RequiredProjectKey :(NSNumber*) RequiredState {
@@ -753,12 +757,12 @@
 
         if ([RequiredState intValue] == 0) {
             /* Ideas */
-            selectSQL = [NSString stringWithFormat:@"SELECT projectkey, poikey, key, name, notes, totalprice, startdt, enddt, state, (select count(1) from activity data where data.key=act.key group by data.key) FROM activity act WHERE projectkey='%@' AND state=0 ORDER BY startdt", RequiredProjectKey];
+            selectSQL = [NSString stringWithFormat:@"SELECT act.projectkey, act.poikey, act.key, act.name, act.notes, act.totalprice, act.startdt, act.enddt, act.state, (select count(1) from activity data where data.key=act.key group by data.key), poi.categoryid FROM activity act, poi WHERE act.projectkey='%@' AND act.state=0 AND act.poikey = poi.key ORDER BY act.startdt", RequiredProjectKey];
         }
         else
         {
             
-            selectSQL = [NSString stringWithFormat:@"SELECT projectkey, poikey, act.key, name, notes, totalprice, startdt, enddt, act.state, (select count(1) from activity ds where ds.key=act.key group by ds.key) FROM activity act, (select max(state) as maxstate, key from activity group by key) data where act.key=data.key and act.state=data.maxstate and projectkey='%@' ORDER BY act.state desc, startdt", RequiredProjectKey];
+            selectSQL = [NSString stringWithFormat:@"SELECT act.projectkey, act.poikey, act.key, act.name, act.notes, act.totalprice, act.startdt, act.enddt, act.state, (SELECT COUNT(1) FROM activity ds WHERE ds.key=act.key GROUP BY ds.key), poi.categoryid FROM activity act, poi, (SELECT MAX(state) AS maxstate, key FROM activity GROUP BY key) data WHERE act.key=data.key AND act.state=data.maxstate AND act.projectkey='%@' AND act.poikey = poi.key ORDER BY act.state desc, act.startdt", RequiredProjectKey];
             
         }
         
@@ -781,7 +785,7 @@
                 activity.enddt = [activity GetDtFromString :[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 7)]];
                 activity.activitystate = [NSNumber numberWithInt:sqlite3_column_int(statement, 8)];
                 activity.legendref = [NSNumber numberWithInt:sqlite3_column_int(statement, 9)];
-                //activity.poi = [self loadPoiImageData :activity.poi.key];
+                activity.poi.categoryid = [NSNumber numberWithInt:sqlite3_column_int(statement, 10)];
                 [activitydata addObject:activity];
             }
         }

@@ -71,8 +71,11 @@
 
 /*
  created date:      14/05/2018
- last modified:     16/05/2018
- remarks:
+ last modified:     09/06/2018
+ remarks:   We should only add planned payments to activities that are planned.
+            Additionally we should be able to add payments that are not attached to an activity.
+            For example: Petrol payment.
+            A single photo on each payment should be possible to hold the receipt.
  */
 - (IBAction)ButtonActionPressed:(id)sender {
     
@@ -90,11 +93,17 @@
     
     NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
+
     
+    NSDate *today = [NSDate date];
+    if (self.DatePickerPaymentDt.date > today) {
+        self.DatePickerPaymentDt.date = today;
+    }
     
     self.Payment.description = self.TextFieldDescription.text;
     self.Payment.status = [NSNumber numberWithLong:self.SegmentPaymentType.selectedSegmentIndex];
 
+    /* estimated payment */
     if (self.Payment.status == [NSNumber numberWithLong:0] ) {
 
         self.Payment.amt_est = [f numberFromString:self.TextFieldAmt.text];
@@ -185,9 +194,10 @@
  remarks:
  */
 - (NSNumber*)GetExchangeRates:(PaymentNSO*)payment {
-   
+    
     NSString *AccessKey = @"";
     NSString *DateValue = self.Payment.date_act;
+    
     if (self.Payment.status==[NSNumber numberWithLong:0]) {
         DateValue = self.Payment.date_est;
     }
