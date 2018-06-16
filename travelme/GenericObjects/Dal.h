@@ -45,6 +45,7 @@
 -(NSMutableArray*) GetActivitySchedule :(NSString *) ProjectKey :(NSNumber*) RequiredState;
 -(NSMutableArray*) GetPaymentListContent :(ProjectNSO*) Project :(ActivityNSO *) Activity;
 -(NSMutableArray*) GetProjectCountries :(NSString*) RequiredProjectKey;
+-(CountryNSO *) GetCountryByCode :(NSString*) CountryCode;
 -(NSNumber*) GetExchangeRate :(NSString *) LocalCurrencyCode :(NSString *) PaymentDt;
 -(NSMutableArray *)GetImagesForSelectedPoi :(NSString *) RequiredKey;
 -(bool) InsertExchangeRate :(NSString*) LocalCurrencyCode :(NSString*) DateValue :(NSNumber*) Rate;

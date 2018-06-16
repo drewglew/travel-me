@@ -20,8 +20,8 @@
 
 /*
  created date:      28/04/2018
- last modified:     10/06/2018
- remarks:
+ last modified:     11/06/2018
+ remarks: TODO - split load existing data into 2 - map data and images.
  */
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -39,97 +39,17 @@
             self.CollectionViewPoiImages.scrollEnabled = true;
         }
         [self LoadExistingData];
-        
     }
+    [self LoadMapData];
+
     self.CollectionViewPoiImages.dataSource = self;
     self.CollectionViewPoiImages.delegate = self;
     // Do any additional setup after loading the view.
 
-    
-
-    
     self.PickerType.delegate = self;
     self.PickerType.dataSource = self;
     
-
-    self.TypeItems = @[@"Cat-Accomodation",
-                       @"Cat-Airport",
-                       @"Cat-Astronaut",
-                       @"Cat-Beer",
-                       @"Cat-Bike",
-                       @"Cat-Bridge",
-                       @"Cat-CarHire",
-                       @"Cat-Casino",
-                       @"Cat-Church",
-                       @"Cat-City",
-                       @"Cat-Club",
-                       @"Cat-Concert",
-                       @"Cat-FoodWine",
-                       @"Cat-Historic",
-                       @"Cat-House",
-                       @"Cat-Lake",
-                       @"Cat-Lighthouse",
-                       @"Cat-Misc",
-                       @"Cat-Monument",
-                       @"Cat-Museum",
-                       @"Cat-Nature",
-                       @"Cat-Office",
-                       @"Cat-Restaurant",
-                       @"Cat-Scenary",
-                       @"Cat-Sea",
-                       @"Cat-Ship",
-                       @"Cat-Shopping",
-                       @"Cat-Ski",
-                       @"Cat-Sports",
-                       @"Cat-Theatre",
-                       @"Cat-ThemePark",
-                       @"Cat-Train",
-                       @"Cat-Trek",
-                       @"Cat-Venue",
-                       @"Cat-Zoo"
-                     ];
-
-    self.TypeLabelItems  = @[
-                             @"Accomodation",
-                               @"Airport",
-                               @"Astronaut",
-                               @"Beer",
-                               @"Bicycle",
-                               @"Bridge",
-                               @"Car Hire",
-                               @"Casino",
-                               @"Church",
-                               @"City",
-                               @"Club",
-                               @"Concert",
-                               @"Food and Wine",
-                               @"Historic",
-                               @"House",
-                               @"Lake",
-                               @"Lighthouse",
-                               @"Miscellaneous",
-                               @"Monument/Statue",
-                               @"Museum",
-                               @"Nature",
-                               @"Office",
-                               @"Restaurant",
-                               @"Scenery",
-                               @"Coast",
-                               @"Ship",
-                               @"Shopping",
-                               @"Skiing",
-                               @"Sports",
-                               @"Theatre",
-                               @"Theme Park",
-                               @"Train",
-                               @"Trekking",
-                               @"Venue",
-                               @"Zoo"
-                               ];
-    
-    self.LabelPoi.text = [self GetPoiLabelWithType:[NSNumber numberWithLong:[self.PointOfInterest.categoryid integerValue]]];
-    
-    [self.PickerType selectRow:[self.PointOfInterest.categoryid integerValue] inComponent:0 animated:YES];
+    [self LoadTypePicker];
 
     self.TextFieldTitle.layer.cornerRadius=8.0f;
     self.TextFieldTitle.layer.masksToBounds=YES;
@@ -169,13 +89,145 @@
     return 70;
 }
 
+
 /*
- created date:      28/04/2018
- last modified:     21/05/2018
+ created date:      11/06/2018
+ last modified:     16/06/2018
  remarks:
  */
--(void) LoadExistingData {
+-(void) LoadTypePicker {
+    self.TypeItems = @[@"Cat-Accomodation",
+                       @"Cat-Airport",
+                       @"Cat-Astronaut",
+                       @"Cat-Beer",
+                       @"Cat-Bike",
+                       @"Cat-Bridge",
+                       @"Cat-CarHire",
+                       @"Cat-Casino",
+                       @"Cat-Church",
+                       @"Cat-City",
+                       @"Cat-Club",
+                       @"Cat-Concert",
+                       @"Cat-FoodWine",
+                       @"Cat-Historic",
+                       @"Cat-House",
+                       @"Cat-Lake",
+                       @"Cat-Lighthouse",
+                       @"Cat-Misc",
+                       @"Cat-Monument",
+                       @"Cat-Museum",
+                       @"Cat-Nature",
+                       @"Cat-Office",
+                       @"Cat-Restaurant",
+                       @"Cat-Scenary",
+                       @"Cat-Sea",
+                       @"Cat-Ship",
+                       @"Cat-Shopping",
+                       @"Cat-Ski",
+                       @"Cat-Sports",
+                       @"Cat-Theatre",
+                       @"Cat-ThemePark",
+                       @"Cat-Train",
+                       @"Cat-Trek",
+                       @"Cat-Venue",
+                       @"Cat-Zoo"
+                       ];
     
+    self.TypeLabelItems  = @[
+                             @"Accomodation",
+                             @"Airport",
+                             @"Astronaut",
+                             @"Beer",
+                             @"Bicycle",
+                             @"Bridge",
+                             @"Car Hire",
+                             @"Casino",
+                             @"Church",
+                             @"City",
+                             @"Club",
+                             @"Concert",
+                             @"Food and Wine",
+                             @"Historic",
+                             @"House",
+                             @"Lake",
+                             @"Lighthouse",
+                             @"Miscellaneous",
+                             @"Monument/Statue",
+                             @"Museum",
+                             @"Nature",
+                             @"Office",
+                             @"Restaurant",
+                             @"Scenery",
+                             @"Coast",
+                             @"Ship",
+                             @"Shopping",
+                             @"Skiing",
+                             @"Sports",
+                             @"Theatre",
+                             @"Theme Park",
+                             @"Train",
+                             @"Trekking",
+                             @"Venue",
+                             @"Zoo"
+                             ];
+    
+    self.TypeDistanceItems  = @[
+                             @50,
+                             @500,
+                             @100000,
+                             @50,
+                             @50,
+                             @300,
+                             @100,
+                             @500,
+                             @200,
+                             @10000,
+                             @250,
+                             @250,
+                             @100,
+                             @500,
+                             @100,
+                             @500,
+                             @500,
+                             @10000,
+                             @1000,
+                             @1000,
+                             @10000,
+                             @250,
+                             @250,
+                             @5000,
+                             @5000,
+                             @1000,
+                             @250,
+                             @5000,
+                             @250,
+                             @150,
+                             @500,
+                             @150,
+                             @10000,
+                             @150,
+                             @1000
+                             ];
+    
+    
+    
+    
+    self.LabelPoi.text = [self GetPoiLabelWithType:[NSNumber numberWithLong:[self.PointOfInterest.categoryid integerValue]]];
+    
+    if (self.newitem) {
+        self.PointOfInterest.categoryid = [NSNumber numberWithInteger:0];
+    }
+
+    [self.PickerType selectRow:[self.PointOfInterest.categoryid integerValue] inComponent:0 animated:YES];
+
+}
+
+/*
+ created date:      11/06/2018
+ last modified:     11/06/2018
+ remarks:
+ */
+-(void) LoadMapData {
     /* set map */
     self.MapView.delegate = self;
     MKPointAnnotation *anno = [[MKPointAnnotation alloc] init];
@@ -192,8 +244,15 @@
     [self.MapView setRegion:adjustedRegion animated:YES];
     [self.MapView addAnnotation:anno];
     [self.MapView selectAnnotation:anno animated:YES];
-    
-    
+}
+
+/*
+ created date:      28/04/2018
+ last modified:     11/06/2018
+ remarks:
+ */
+-(void) LoadExistingData {
+
     /* load images from file - TODO make sure we locate them all */
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *imagesDirectory = [paths objectAtIndex:0];
@@ -378,8 +437,10 @@
                                                                   ImagePickerVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ImagePickerViewController"];
                                                                   controller.delegate = self;
                                                                   controller.PointOfInterest = self.PointOfInterest;
-                                                                  controller.ImageSize = CGSizeMake(self.TextViewNotes.frame.size.width, self.TextViewNotes.frame.size.width);
                                                                   
+                                                                  controller.distance = [self.TypeDistanceItems objectAtIndex:[self.PickerType selectedRowInComponent:0]];
+                                                                  
+                                                                  controller.ImageSize = CGSizeMake(self.TextViewNotes.frame.size.width * 2, self.TextViewNotes.frame.size.width * 2);
                                                                   [controller setModalPresentationStyle:UIModalPresentationFullScreen];
                                                                   [self presentViewController:controller animated:YES completion:nil];
                                                                   
@@ -410,7 +471,7 @@
                                         fetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
                                         PHFetchResult *fetchResult = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeImage options:fetchOptions];
                                         PHAsset *lastAsset = [fetchResult lastObject];
-                                        CGSize size = CGSizeMake(self.TextViewNotes.frame.size.width, self.TextViewNotes.frame.size.width);
+                                        CGSize size = CGSizeMake(self.TextViewNotes.frame.size.width * 2, self.TextViewNotes.frame.size.width * 2);
                                         
                                         [[PHImageManager defaultManager] requestImageForAsset:lastAsset
                                             targetSize:size
@@ -420,7 +481,7 @@
                                                                                                                   
                                                 dispatch_async(dispatch_get_main_queue(), ^{
                                                                                                                      
-                                                    CGSize size = CGSizeMake(self.TextViewNotes.frame.size.width, self.TextViewNotes.frame.size.width);
+                                                    CGSize size = CGSizeMake(self.TextViewNotes.frame.size.width * 2, self.TextViewNotes.frame.size.width * 2);
 
                                                     if (self.imagestate==1) {
                                                         PoiImageNSO *img = [[PoiImageNSO alloc] init];
@@ -556,12 +617,11 @@
 
 /*
  created date:      28/04/2018
- last modified:     26/05/2018
+ last modified:     11/06/2018
  remarks:
  */
 - (IBAction)ActionButtonPressed:(id)sender {
-    
-    
+
     if (self.newitem) {
         /* manage the images if any exist */
         if (self.PointOfInterest.Images.count>0) {
@@ -587,8 +647,12 @@
         self.PointOfInterest.privatenotes = self.TextViewNotes.text;
         self.PointOfInterest.categoryid = [NSNumber numberWithLong:[self.PickerType selectedRowInComponent:0]];
         [AppDelegateDef.Db InsertPoiItem :self.PointOfInterest];
+        
+        if (self.fromproject) {
+            [self.delegate didCreatePoiFromProject :self.PointOfInterest.name];
+        }
         [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
-    
+     
     } else {
         self.PointOfInterest.name = self.TextFieldTitle.text;
         self.PointOfInterest.privatenotes = self.TextViewNotes.text;
@@ -629,6 +693,7 @@
                 counter++;
             }
         }
+
         [AppDelegateDef.Db UpdatePoiItem :self.PointOfInterest];
         [self dismissViewControllerAnimated:YES completion:Nil];
     }
@@ -640,7 +705,6 @@
  */
 - (IBAction)UpdatePoiItemPressed:(id)sender {
 
-    
 }
 
 /*
@@ -709,6 +773,7 @@
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
     
     self.LabelPoi.text = [self GetPoiLabelWithType:[NSNumber numberWithInteger:row]];
+    self.PointOfInterest.categoryid = [NSNumber numberWithLong:[self.PickerType selectedRowInComponent:0]];
     
 }
 /*
@@ -787,6 +852,23 @@
 }
 
 
+
+/*
+ created date:      13/06/2018
+ last modified:     16/06/2018
+ remarks:           segue controls .
+ */
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+
+    if([segue.identifier isEqualToString:@"WikiGenerator"]){
+        WikiVC *controller = (WikiVC *)segue.destinationViewController;
+        controller.delegate = self;
+        controller.PointOfInterest = self.PointOfInterest;
+        controller.gsradius = [self.TypeDistanceItems objectAtIndex:[self.PickerType selectedRowInComponent:0]];
+    } 
+}
+
+
 /*
  created date:      23/05/2018
  last modified:     23/05/2018
@@ -817,6 +899,9 @@
     }
 }
 
+- (void)didCreatePoiFromProject :(NSString*)Key {
+    
+}
 
 
 @end

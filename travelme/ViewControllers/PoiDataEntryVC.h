@@ -16,12 +16,14 @@
 #import "PoiNSO.h"
 #import "ImagePickerVC.h"
 #import "ImageNSO.h"
+#import "WikiVC.h"
 
 
 @protocol PoiDataEntryDelegate <NSObject>
+- (void)didCreatePoiFromProject :(NSString*)Key;
 @end
 
-@interface PoiDataEntryVC : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource, ImagePickerDelegate>
+@interface PoiDataEntryVC : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource, ImagePickerDelegate, WikiGeneratorDelegate>
 
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;
 @property (nonatomic) NSString *Title;
@@ -30,12 +32,14 @@
 @property (assign) bool newitem;
 @property (assign) bool imagesupdated;
 @property (assign) bool readonlyitem;
+@property (assign) bool fromproject;
 @property (assign) int imagestate;
 @property (weak, nonatomic) IBOutlet UITextField *TextFieldTitle;
 @property (weak, nonatomic) IBOutlet UICollectionView *CollectionViewPoiImages;
 @property (strong, nonatomic) PoiNSO *PointOfInterest;
 @property (strong, nonatomic) NSArray *TypeItems;
 @property (strong, nonatomic) NSArray *TypeLabelItems;
+@property (strong, nonatomic) NSArray *TypeDistanceItems;
 @property (weak, nonatomic) IBOutlet UITextView *TextViewNotes;
 // only used on preview controller
 @property (weak, nonatomic) IBOutlet MKMapView *MapView;

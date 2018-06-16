@@ -48,13 +48,29 @@
     
     NSURL *fileImageURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"Images" isDirectory:YES];
     
+    NSURL *fileWikiDocsURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"WikiDocs" isDirectory:YES];
+    
+    
     _databasePath = [[NSString alloc] initWithString:[fileURL path]];
 
     NSFileManager *filemgr = [NSFileManager defaultManager];
     const char *dbpath = [_databasePath UTF8String];
+    
+    
+    
+    
+    
+    
+    
+    
     if([filemgr fileExistsAtPath:_databasePath] ==  NO) {
         if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
             [self CreateDb];
+            
+            
+            
+            
+            
             [self LoadCountryData];
         }
         return true;
@@ -76,7 +92,11 @@
                 [filemgr createDirectoryAtURL:fileImageURL
                 withIntermediateDirectories:YES attributes:nil error:&err];
             }
-
+            if ([fileWikiDocsURL checkResourceIsReachableAndReturnError:&err] == NO) {
+                NSLog(@"No folder exists for WikiDocs");
+                [filemgr createDirectoryAtURL:fileWikiDocsURL
+                  withIntermediateDirectories:YES attributes:nil error:&err];
+            }
             NSLocale *theLocale = [NSLocale currentLocale];
             NSString *currencyCode = [theLocale objectForKey:NSLocaleCurrencyCode];
             NSLog(@"Currency Code : %@",currencyCode);
@@ -102,7 +122,7 @@
 
 /*
  created date:      27/04/2018
- last modified:     08/05/2018
+ last modified:     14/06/2018
  remarks:           Create a new database with model.  We need to remove Country table, but there are still
  some code attached to it.
  */
@@ -118,7 +138,7 @@
         }
 
         /* COUNTRY table */
-        sql_statement = "CREATE TABLE country (countrycode TEXT PRIMARY KEY, name TEXT, currency TEXT, capital TEXT, lat DOUBLE, lon DOUBLE)";
+        sql_statement = "CREATE TABLE country (countrycode TEXT PRIMARY KEY, name TEXT, currency TEXT, language TEXT, capital TEXT, lat DOUBLE, lon DOUBLE)";
 
         if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
             NSLog(@"failed to create country table");
@@ -185,7 +205,7 @@
 
 /*
  created date:      08/05/2018
- last modified:     08/05/2018
+ last modified:     14/06/2018
  remarks:
  */
 -(bool)LoadCountryData {
@@ -203,11 +223,20 @@
                 CurrencyCode = [currency objectForKey:@"code"];
                 break;
             }
+            NSArray *Languages = [country objectForKey:@"languages"];
+            NSString *LanguageCode = @"";
+            if (Languages.count>0) {
+                for (NSDictionary *language in Languages) {
+                    LanguageCode = [language objectForKey:@"iso639_1"];
+                    break;
+                }
+            }
+            
             if (LatLng.count==2) {
                 double Lat = [[LatLng objectAtIndex:0] doubleValue];
                 double Lon = [[LatLng objectAtIndex:1] doubleValue];
-            
-                [self InsertCountry :CountryCode  :Name :CurrencyCode :Capital :[NSNumber numberWithDouble:Lat] :[NSNumber numberWithDouble:Lon]];
+                
+                [self InsertCountry :CountryCode  :Name :CurrencyCode :LanguageCode :Capital :[NSNumber numberWithDouble:Lat] :[NSNumber numberWithDouble:Lon]];
             } else {
                 NSLog(@"Skipping %@ as no coordinates attached", Name);
             }
@@ -236,21 +265,22 @@
 
 /*
  created date:      27/04/2018
- last modified:     08/05/2018
+ last modified:     14/06/2018
  remarks:
  */
--(bool)InsertCountry :(NSString*)CountryCode :(NSString*)Name :(NSString*)CurrencyCode :(NSString*)Capital :(NSNumber*) Lat :(NSNumber*) Lon {
+-(bool)InsertCountry :(NSString*)CountryCode :(NSString*)Name :(NSString*)CurrencyCode :(NSString*)Language :(NSString*)Capital :(NSNumber*) Lat :(NSNumber*) Lon {
     bool retVal=true;
 
     sqlite3_stmt *stmt = NULL;
-    sqlite3_prepare_v2(_DB, "INSERT INTO country (countrycode, name, currency, capital, lon, lat) VALUES (?,?,?,?,?,?)", -1, &stmt, nil);
+    sqlite3_prepare_v2(_DB, "INSERT INTO country (countrycode, name, currency, language, capital, lon, lat) VALUES (?,?,?,?,?,?,?)", -1, &stmt, nil);
     
     sqlite3_bind_text(stmt, 1, CountryCode==nil?"":[CountryCode UTF8String], -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, 2, Name==nil?"":[Name UTF8String], -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, 3, CurrencyCode==nil?"":[CurrencyCode UTF8String], -1, SQLITE_TRANSIENT);
-    sqlite3_bind_text(stmt, 4, Capital==nil?"":[Capital UTF8String], -1, SQLITE_TRANSIENT);
-    sqlite3_bind_double(stmt, 5, [Lat doubleValue]);
-    sqlite3_bind_double(stmt, 6, [Lon doubleValue]);
+    sqlite3_bind_text(stmt, 4, Language==nil?"":[Language UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 5, Capital==nil?"":[Capital UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_double(stmt, 6, [Lat doubleValue]);
+    sqlite3_bind_double(stmt, 7, [Lon doubleValue]);
     
     if (sqlite3_step(stmt) != SQLITE_DONE) {
         NSLog(@"Failed to insert new record %@ inside country table", Name);
@@ -261,6 +291,9 @@
     sqlite3_finalize(stmt);
     return retVal;
 }
+
+
+
 
 /*
  created date:      28/04/2018
@@ -551,7 +584,8 @@
                 poi.lon = [NSNumber numberWithDouble:sqlite3_column_double(statement, 12)];
                 poi.connectedactivitycount = [NSNumber numberWithInt:sqlite3_column_int(statement, 13)];
                 poi.Images = [NSMutableArray arrayWithArray:[self GetImagesForSelectedPoi:poi.key]];
-                poi.country = [self GetCountryByCode:poi.countrycode].name;
+                CountryNSO *country = [self GetCountryByCode:poi.countrycode];
+                poi.country = country.name;
                 poi.searchstring = [NSString stringWithFormat:@"%@|%@|%@|%@|%@|%@|%@",poi.name,poi.administrativearea,poi.subadministrativearea,poi.postcode,poi.locality,poi.sublocality,poi.country];
                 [poidata addObject:poi];
             }
@@ -563,14 +597,14 @@
 
 
 /*
- created date:      07/07/2018
- last modified:     07/07/2018
+ created date:      07/05/2018
+ last modified:     14/06/2018
  remarks:           TODO add new way of inserting parms
  */
 -(CountryNSO *) GetCountryByCode :(NSString*) CountryCode {
     sqlite3_stmt *statement;
     CountryNSO *country = [[CountryNSO alloc] init];
-    NSString *selectSQL = [NSString stringWithFormat:@"SELECT name, currency, capital, lon, lat FROM country WHERE countrycode='%@' LIMIT 1", CountryCode];
+    NSString *selectSQL = [NSString stringWithFormat:@"SELECT name, currency, language, capital, lon, lat FROM country WHERE countrycode='%@' LIMIT 1", CountryCode];
     const char *select_statement = [selectSQL UTF8String];
     
     if (sqlite3_prepare_v2(_DB, select_statement, -1, &statement, NULL) == SQLITE_OK)
@@ -579,9 +613,10 @@
         {
             country.name = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 0)];
             country.currency = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 1)];
-            country.capital = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 2)];
-            country.lat = [NSNumber numberWithDouble:sqlite3_column_double(statement, 3)];
-            country.lon = [NSNumber numberWithDouble:sqlite3_column_double(statement, 4)];
+            country.language = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 2)];
+            country.capital = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 3)];
+            country.lat = [NSNumber numberWithDouble:sqlite3_column_double(statement, 4)];
+            country.lon = [NSNumber numberWithDouble:sqlite3_column_double(statement, 5)];
         }
     }
     sqlite3_finalize(statement);

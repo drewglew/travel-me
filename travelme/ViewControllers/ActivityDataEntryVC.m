@@ -176,7 +176,7 @@
 
 /*
  created date:      03/05/2018
- last modified:     03/05/2018
+ last modified:     11/06/2018
  remarks:           segue controls .
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -187,6 +187,7 @@
         controller.PointOfInterest = self.Activity.poi;
         controller.newitem = false;
         controller.readonlyitem = true;
+        controller.fromproject = false;
     } else if ([segue.identifier isEqualToString:@"ShowDateRangePicker"]){
         DatePickerRangeVC *controller = (DatePickerRangeVC *)segue.destinationViewController;
         controller.delegate = self;
@@ -278,7 +279,7 @@
  */
 - (IBAction)ButtonMorePressed:(id)sender {
     [self.view layoutIfNeeded];
-    if (self.ButtonViewHeightConstraint.constant==120) {
+    if (self.ButtonViewHeightConstraint.constant==125) {
         [UIView animateWithDuration:1.0 animations:^{
             self.ButtonViewHeightConstraint.constant=0;
             self.ButtonMore.transform = CGAffineTransformMakeRotation(M_PI);
@@ -289,7 +290,7 @@
         
     } else {
         [UIView animateWithDuration:1.0 animations:^{
-            self.ButtonViewHeightConstraint.constant=120;
+            self.ButtonViewHeightConstraint.constant=125;
             self.ButtonMore.transform = CGAffineTransformMakeRotation(-2*M_PI);
             [self.view layoutIfNeeded];
         } completion:^(BOOL finished) {

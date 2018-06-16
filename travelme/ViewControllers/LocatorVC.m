@@ -32,6 +32,8 @@ MKLocalSearchResponse *results;
     self.SearchBar.delegate = self;
     self.TableViewSearchResult.delegate = self;
     
+    [self startUserLocationSearch];
+    
     UILongPressGestureRecognizer* mapLongPressAddAnnotation = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(AddAnnotationToMap:)];
     [mapLongPressAddAnnotation setMinimumPressDuration:0.5];
     [self.MapView addGestureRecognizer:mapLongPressAddAnnotation];    // Do any additional setup after loading the view.
@@ -49,6 +51,70 @@ MKLocalSearchResponse *results;
 -(void) viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
 
+}
+
+/*
+ created date:      11/05/2018
+ last modified:     11/05/2018
+ remarks:
+ */
+-(void)startUserLocationSearch{
+    
+    self.locationManager = [[CLLocationManager alloc]init];
+    self.locationManager.delegate = self;
+    self.locationManager.distanceFilter = kCLDistanceFilterNone;
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+    
+    if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+        [self.locationManager requestWhenInUseAuthorization];
+    }
+    [self.locationManager startUpdatingLocation];
+}
+/*
+ created date:      06/05/2018
+ last modified:     11/06/2018
+ remarks:
+ */
+-(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations{
+    
+    [self.locationManager stopUpdatingLocation];
+    
+    CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
+    
+    [geoCoder reverseGeocodeLocation: [[CLLocation alloc] initWithLatitude:self.locationManager.location.coordinate.latitude longitude:self.locationManager.location.coordinate.longitude] completionHandler:^(NSArray *placemarks, NSError *error) {
+        if (error) {
+            NSLog(@"%@", [NSString stringWithFormat:@"%@", error.localizedDescription]);
+        } else {
+            AnnotationMK *anno = [[AnnotationMK alloc] init];
+            if ([placemarks count]>0) {
+                CLPlacemark *placemark = [placemarks firstObject];
+                anno.coordinate = placemark.location.coordinate;
+                anno.title = placemark.name;
+                NSString *AdminArea = placemark.subAdministrativeArea;
+                if ([AdminArea isEqualToString:@""] || AdminArea == NULL) {
+                    AdminArea = placemark.administrativeArea;
+                }
+                
+                anno.subtitle = [NSString stringWithFormat:@"%@, %@", AdminArea, placemark.ISOcountryCode ];
+                
+                anno.Country = placemark.country;
+                anno.SubLocality = placemark.subLocality;
+                anno.Locality = placemark.locality;
+                anno.PostCode = placemark.postalCode;
+                anno.CountryCode = placemark.ISOcountryCode;
+                anno.FullThoroughFare = [NSString stringWithFormat:@"%@, %@", placemark.thoroughfare, placemark.subThoroughfare];
+
+                [self.MapView addAnnotation:anno];
+                [self.MapView setCenterCoordinate:anno.coordinate animated:YES];
+                [self.MapView selectAnnotation:anno animated:true];
+                
+            } else {
+                anno.title = @"Unknown Place";
+            }
+            [self.MapView addAnnotation:anno];
+            [self.MapView selectAnnotation:anno animated:true];
+        }
+    }];
 }
 
 
@@ -97,46 +163,6 @@ MKLocalSearchResponse *results;
                     [self.MapView selectAnnotation:anno animated:true];
                     
                     
-                    /* new block */
-                    /*
-                    MKLocalSearchRequest *request = [[MKLocalSearchRequest alloc] init];
-                    request.region = self.MapView.region;
-                    request.naturalLanguageQuery = self.SearchBar.text; // or business name
-                    MKLocalSearch *localSearch = [[MKLocalSearch alloc] initWithRequest:request];
-                    [localSearch startWithCompletionHandler:^(MKLocalSearchResponse *response, NSError *error) {
-                        // do something with the results / error
-                        NSMutableArray *annotations = [NSMutableArray array];
-                        
-                        [response.mapItems enumerateObjectsUsingBlock:^(MKMapItem *item, NSUInteger idx, BOOL *stop) {
-
-                            bool found = false;
-                            
-                            for (id<MKAnnotation>annotation in self.MapView.annotations)
-                            {
-                                if (annotation.coordinate.latitude == item.placemark.coordinate.latitude &&
-                                    annotation.coordinate.longitude == item.placemark.coordinate.longitude)
-                                {
-                                    found = true;
-                                   
-                                }
-                            }
-                            if (!found) {
-                                
-                                //AnnotationMK *anno = [[AnnotationMK alloc] init];
-                                
-                                
-                                
-                                
-                                
-                                [annotations addObject:item.placemark];
-                            }
-                        }];
-                        
-                        [self.MapView addAnnotations:annotations];
-                        NSLog(@"%@",response);
-                    }];
-                     */
-                    /* new block */
                     
                 } else {
                     anno.title = @"Unknown Place";
@@ -391,44 +417,32 @@ MKLocalSearchResponse *results;
         controller.PointOfInterest = self.PointOfInterest;
         controller.newitem = true;
         controller.readonlyitem = false;
+        controller.fromproject = self.fromproject;
     } else if([segue.identifier isEqualToString:@"ShowPoiWithoutMapData"]){
         PoiDataEntryVC *controller = (PoiDataEntryVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.PointOfInterest = self.PointOfInterest;
         controller.newitem = true;
         controller.readonlyitem = false;
+        controller.fromproject = self.fromproject;
     }
+}
+
+/*
+ created date:      11/06/2018
+ last modified:     11/06/2018
+ remarks:
+ */
+- (void)didCreatePoiFromProject :(NSString*)Key {
+    [self.delegate didCreatePoiFromProjectPassThru:Key];
+    [self dismissViewControllerAnimated:YES completion:Nil];
 }
 /*
--(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
-    
-    
-    float lon= // longitude you want to compare to your current postion
-    float lat=//your latitude you want to compare to your current position
-    float rad=//radius , if you give this 100m, then it checks the given points are within the 100m from you are not
-    
-    CLLocation *centerLocation = [[CLLocation alloc] initWithLatitude:lat
-                                                            longitude:lon];
-    
-    CLLocation *lastLocation=[locations lastObject];
-    
-    //display current lat and lon in text fields
-    currentLat.text=[NSString stringWithFormat:@"%f",lastLocation.coordinate.latitude];
-    currentLon.text=[NSString stringWithFormat:@"%f",lastLocation.coordinate.longitude];
-    
-    CLLocationDistance distance = [lastLocation distanceFromLocation:centerLocation];
-    
-    if (distance<=rad) {
-        
-        // you are within the radius
-    }
-    
-    CLLocationAccuracy accuracy = [lastLocation horizontalAccuracy];
-    if(accuracy <=10) {   //accuracy in metres
-        
-        [manager stopUpdatingLocation];
-    }
+ created date:      1/06/2018
+ last modified:     11/06/2018
+ remarks: Leave empty
+ */
+- (void)didCreatePoiFromProjectPassThru :(NSString*)Key {
 }
-*/
 
 @end

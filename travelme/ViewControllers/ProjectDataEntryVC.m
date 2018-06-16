@@ -30,7 +30,6 @@
             UIImage *btnImage = [UIImage imageNamed:@"Delete"];
             [self.ButtonAction setImage:btnImage forState:UIControlStateNormal];
             [self.ButtonAction setTitle:@"" forState:UIControlStateNormal];
-            //[self.ButtonAction setBackgroundColor:[UIColor clearColor]];
             
             self.ButtonEditImage.hidden = true;
             self.LabelInfo.hidden = false;

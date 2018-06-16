@@ -46,6 +46,8 @@
 		3AB915EC20CD972F001A08A9 /* ImagePickerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB915EB20CD972F001A08A9 /* ImagePickerVC.m */; };
 		3AB915EF20CD9BE4001A08A9 /* ImageCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB915EE20CD9BE4001A08A9 /* ImageCollectionCell.m */; };
 		3AB915F220CDB3E5001A08A9 /* ImageNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB915F120CDB3E5001A08A9 /* ImageNSO.m */; };
+		3AB915F520D1917B001A08A9 /* WikiVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB915F420D1917B001A08A9 /* WikiVC.m */; };
+		3AB915F720D1979F001A08A9 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AB915F620D1979F001A08A9 /* WebKit.framework */; };
 		3AEE018B209F3BC700AE260E /* DirectionsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEE018A209F3BC600AE260E /* DirectionsVC.m */; };
 		3AEE018F20A0B05700AE260E /* AnnotationMK.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEE018E20A0B05700AE260E /* AnnotationMK.m */; };
 		3AEE019220A0CBB100AE260E /* CountryNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEE019120A0CBB100AE260E /* CountryNSO.m */; };
@@ -128,6 +130,9 @@
 		3AB915EE20CD9BE4001A08A9 /* ImageCollectionCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageCollectionCell.m; sourceTree = "<group>"; };
 		3AB915F020CDB3E5001A08A9 /* ImageNSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageNSO.h; sourceTree = "<group>"; };
 		3AB915F120CDB3E5001A08A9 /* ImageNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageNSO.m; sourceTree = "<group>"; };
+		3AB915F320D1917B001A08A9 /* WikiVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WikiVC.h; sourceTree = "<group>"; };
+		3AB915F420D1917B001A08A9 /* WikiVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WikiVC.m; sourceTree = "<group>"; };
+		3AB915F620D1979F001A08A9 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		3AEE0189209F3BC600AE260E /* DirectionsVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DirectionsVC.h; sourceTree = "<group>"; };
 		3AEE018A209F3BC600AE260E /* DirectionsVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DirectionsVC.m; sourceTree = "<group>"; };
 		3AEE018D20A0B05700AE260E /* AnnotationMK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AnnotationMK.h; sourceTree = "<group>"; };
@@ -147,6 +152,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3AB915F720D1979F001A08A9 /* WebKit.framework in Frameworks */,
 				3A81B509209D80B8005CABDA /* Photos.framework in Frameworks */,
 				3A374F0F2093764C00E5A652 /* libsqlite3.tbd in Frameworks */,
 			);
@@ -255,6 +261,8 @@
 				3AAF154720A8AD9800F8DE0C /* InfoVC.m */,
 				3AB915EA20CD972F001A08A9 /* ImagePickerVC.h */,
 				3AB915EB20CD972F001A08A9 /* ImagePickerVC.m */,
+				3AB915F320D1917B001A08A9 /* WikiVC.h */,
+				3AB915F420D1917B001A08A9 /* WikiVC.m */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -295,6 +303,7 @@
 		3A374F0B2093762E00E5A652 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3AB915F620D1979F001A08A9 /* WebKit.framework */,
 				3A81B508209D80B8005CABDA /* Photos.framework */,
 				3A374F0E2093764B00E5A652 /* libsqlite3.tbd */,
 				3A374F0C2093762F00E5A652 /* libsqlite3.0.tbd */,
@@ -403,6 +412,7 @@
 				3A374F1E2093939400E5A652 /* LocatorVC.m in Sources */,
 				3A224CA62094338D00075457 /* PoiImageCell.m in Sources */,
 				3AB915F220CDB3E5001A08A9 /* ImageNSO.m in Sources */,
+				3AB915F520D1917B001A08A9 /* WikiVC.m in Sources */,
 				3AB915EF20CD9BE4001A08A9 /* ImageCollectionCell.m in Sources */,
 				3AEE018F20A0B05700AE260E /* AnnotationMK.m in Sources */,
 				3A374F12209386F700E5A652 /* PoiListCell.m in Sources */,

@@ -13,18 +13,22 @@
 #import "PoiImageNSO.h"
 #import "SearchResultListCell.h"
 #import "AnnotationMK.h"
+#import "ProjectNSO.h"
 
 @protocol LocatorDelegate <NSObject>
+- (void)didCreatePoiFromProjectPassThru :(NSString*)Key;
 @end
 
-@interface LocatorVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, MKMapViewDelegate> {
+@interface LocatorVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, MKMapViewDelegate, CLLocationManagerDelegate> {
     MKMapView *MapView;
 }
 @property (weak, nonatomic) IBOutlet MKMapView *MapView;
 @property (weak, nonatomic) IBOutlet UISearchBar *SearchBar;
 @property (strong, nonatomic) PoiNSO *PointOfInterest;
 @property (strong, nonatomic) PoiNSO *TempPoi;
+@property (assign) bool fromproject;
 @property (nonatomic, weak) id <LocatorDelegate> delegate;
 @property (weak, nonatomic) IBOutlet UITableView *TableViewSearchResult;
+@property (strong, nonatomic)  CLLocationManager *locationManager;
 
 @end

@@ -44,17 +44,22 @@
     
     self.poiitems = [[NSMutableArray alloc] init];
     self.poifiltereditems = [[NSMutableArray alloc] init];
-    // Do any additional setup after loading the view.
+    
+    if (self.Project != nil) {
+        [self LoadPoiData];
+    }
     
 }
 /*
- created date:      30/04/2018
+ created date:      11/06/2018
  last modified:     30/04/2018
  remarks:
  */
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self LoadPoiData];
+     if (self.Project == nil) {
+         [self LoadPoiData];
+     }
 }
 
 
@@ -323,7 +328,6 @@
 }
 
 
-
 /*
  created date:      30/04/2018
  last modified:     03/05/2018
@@ -337,14 +341,20 @@
 
 /*
  created date:      30/04/2018
- last modified:     30/04/2018
- remarks:           segue controls .
+ last modified:     11/06/2018
+ remarks:           segue controls.  We need to work here next - get selection Project==null
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     
     if([segue.identifier isEqualToString:@"ShowPoiLocator"]){
         LocatorVC *controller = (LocatorVC *)segue.destinationViewController;
         controller.delegate = self;
+        if (self.Project == nil) {
+            controller.fromproject = false;
+        }
+        else {
+            controller.fromproject = true;
+        }
     }
 }
 
@@ -366,5 +376,27 @@
 - (IBAction)SegmentPoiFilterChanged:(id)sender {
     [self LoadPoiData];
 }
+
+/*
+ created date:      11/06/2018
+ last modified:     11/06/2018
+ remarks:  Called when new Poi item has been created.
+ */
+- (void)didCreatePoiFromProjectPassThru :(NSString*)Key {
+    self.SegmentPoiFilterList.selectedSegmentIndex = 1;
+
+    [self.SearchBarPoi setText:Key];
+    [self LoadPoiData];
+    [self searchBar:_SearchBarPoi textDidChange:Key];
+    
+
+}
+
+
+
+- (void)didCreatePoiFromProject:(NSString *)Key {
+    
+}
+
 
 @end

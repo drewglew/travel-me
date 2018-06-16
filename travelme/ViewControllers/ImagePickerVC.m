@@ -8,14 +8,11 @@
 
 /*
  created date:      10/06/2018
- last modified:     10/06/2018
+ last modified:     11/06/2018
  remarks:           TODO - send array of images back to the calling viewcontroller.
  */
 
 #import "ImagePickerVC.h"
-#define CLCOORDINATE_EPSILON 0.005f
-#define CLCOORDINATES_EQUAL2( coord1, coord2 ) (fabs(coord1.latitude - coord2.latitude) < CLCOORDINATE_EPSILON && fabs(coord1.longitude - coord2.longitude) < CLCOORDINATE_EPSILON)
-
 
 @interface ImagePickerVC ()
 
@@ -32,13 +29,19 @@
 
 -(void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    [self LoadImageData];
+    
+    self.LabelPoiName.text = [NSString stringWithFormat:@"Photos nearby %@",self.PointOfInterest.name];
+    queueThread = [[NSThread alloc] initWithTarget:self
+                                                   selector:@selector( LoadImageData )
+                                                     object:nil ];
+    
+    [queueThread start ];
 }
 
 /*
  created date:      10/06/2018
- last modified:     10/06/2018
- remarks:
+ last modified:     11/06/2018
+ remarks:  This runs inside its own thread
  */
 -(void) LoadImageData {
 
@@ -52,12 +55,20 @@
     options.resizeMode   = PHImageRequestOptionsResizeModeExact;
     options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
     options.synchronous = YES;
-    //options.isNetworkAccessAllowed = true;
     options.networkAccessAllowed = YES;
     
+    CLLocation *PoiLocation = [[CLLocation alloc] initWithLatitude:PoiCoord.latitude longitude:PoiCoord.longitude];
+    
+    
+    
+    
     for (PHAsset *item in result) {
-        Coord = item.location.coordinate;
-        if(CLCOORDINATES_EQUAL2( Coord, PoiCoord)) {
+        
+        CLLocation *location = [[CLLocation alloc] initWithLatitude:item.location.coordinate.latitude longitude:item.location.coordinate.longitude];
+        
+        double distance = [location distanceFromLocation:PoiLocation];
+        
+        if (distance< [self.distance doubleValue]) {
 
             NSLog(@"COORDINATES: %f , %f",Coord.latitude, Coord.longitude);
             NSLog(@"DATE: %@", item.creationDate);
@@ -75,16 +86,26 @@
                     
                 }
             }];
-            [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
-            [self.LabelPhotoCounter setText:[NSString stringWithFormat:@"%lu photos found", (unsigned long)self.imageitems.count]];
+            
+            if([[NSThread currentThread] isCancelled])
+                break;
+            
+            dispatch_async(dispatch_get_main_queue(), ^(){
+                [self.LabelPhotoCounter setText:[NSString stringWithFormat:@"%lu photos found", (unsigned long)self.imageitems.count]];
+            });
+            
+            
         }
         
     }
     NSLog(@"number of results:=%lu", (unsigned long)self.imageitems.count);
+    dispatch_async(dispatch_get_main_queue(), ^(){
+        self.ButtonStopSearching.hidden = true;
     
-    self.LabelWaiting.hidden = true;
-    self.ActivityLoading.hidden = true;
-    [self.ImageCollectionView reloadData];
+        self.LabelWaiting.hidden = true;
+        self.ActivityLoading.hidden = true;
+        [self.ImageCollectionView reloadData];
+    });
 }
 
 
@@ -164,13 +185,30 @@
     [self dismissViewControllerAnimated:YES completion:Nil];
 }
 
+- (IBAction)StopSearchingPressed:(id)sender {
+    [queueThread cancel];
+    queueThread = nil;
+    
+    NSPredicate *pred = [NSPredicate predicateWithFormat:@"Image!=NULL"];
+    self.imageitems = [NSMutableArray arrayWithArray:[self.imageitems filteredArrayUsingPredicate:pred]];
+    
+    
+    
+    self.ButtonStopSearching.hidden = true;
+    
+    self.LabelWaiting.hidden = true;
+    self.ActivityLoading.hidden = true;
+    [self.ImageCollectionView reloadData];
+    
+}
 
 /*
  created date:      10/06/2018
- last modified:     10/06/2018
+ last modified:     11/06/2018
  remarks:
  */
 - (IBAction)BackPressed:(id)sender {
+
     
     [self dismissViewControllerAnimated:YES completion:Nil];
     

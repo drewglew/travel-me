@@ -13,6 +13,7 @@
 @property (nonatomic) NSString *code;
 @property (nonatomic) NSString *name;
 @property (nonatomic) NSString *currency;
+@property (nonatomic) NSString *language;
 @property (nonatomic) NSString *capital;
 @property (nonatomic) NSNumber *lon;
 @property (nonatomic) NSNumber *lat;
