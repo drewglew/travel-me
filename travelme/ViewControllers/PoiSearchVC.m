@@ -29,7 +29,7 @@
     [super viewDidLoad];
     self.SearchBarPoi.delegate = self;
     self.TableViewSearchPoiItems.delegate = self;
-    self.TableViewSearchPoiItems.rowHeight = 66;
+    self.TableViewSearchPoiItems.rowHeight = 100;
     
     if (self.Project == nil) {
         // we are arriving directly from the menu
@@ -48,7 +48,8 @@
     if (self.Project != nil) {
         [self LoadPoiData];
     }
-   
+
+    
     
 }
 /*

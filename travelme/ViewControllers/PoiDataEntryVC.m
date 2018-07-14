@@ -10,7 +10,6 @@
 #define CLCOORDINATE_EPSILON 0.005f
 #define CLCOORDINATES_EQUAL2( coord1, coord2 ) (fabs(coord1.latitude - coord2.latitude) < CLCOORDINATE_EPSILON && fabs(coord1.longitude - coord2.longitude) < CLCOORDINATE_EPSILON)
 
-
 @interface PoiDataEntryVC () <PoiDataEntryDelegate>
 
 @end
@@ -20,7 +19,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     11/06/2018
+ last modified:     14/07/2018
  remarks: TODO - split load existing data into 2 - map data and images.
  */
 - (void)viewDidLoad {
@@ -38,27 +37,13 @@
 
             self.CollectionViewPoiImages.scrollEnabled = true;
         }
-        
-        //NSFileManager *fileManager = [NSFileManager defaultManager];
-        
-        //NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        //NSString *documentDirectory = [paths objectAtIndex:0];
-        
-        //NSString *wikiDataFilePath = [documentDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/WikiDocs/%@.pdf",self.PointOfInterest.key]];
 
-        //if ([fileManager fileExistsAtPath:wikiDataFilePath]){
-            // if Wiki Files does not exist show the inverted icon.
-        //    [self.ButtonWiki setImage:[UIImage imageNamed:@"WikiFilled"] forState:UIControlStateNormal];
-            
-            
-        //}
-        
         [self LoadExistingData];
+        self.ImagePicture.frame = CGRectMake(0, 0, self.ScrollViewImage.frame.size.width, self.ScrollViewImage.frame.size.height);
+        self.ScrollViewImage.delegate = self;
     }
     
     [self LoadTypePicker];
-    
-    // [self.PickerType selectRow:[self.PointOfInterest.categoryid integerValue] inComponent:0 animated:YES];
     
     self.PickerType.delegate = self;
     self.PickerType.dataSource = self;
@@ -71,10 +56,6 @@
     self.CollectionViewPoiImages.delegate = self;
     // Do any additional setup after loading the view.
 
-
-    
-    
-
     self.TextFieldTitle.layer.cornerRadius=8.0f;
     self.TextFieldTitle.layer.masksToBounds=YES;
     self.TextFieldTitle.layer.borderColor=[[UIColor colorWithRed:246.0f/255.0f green:247.0f/255.0f blue:235.0f/255.0f alpha:1.0]CGColor];
@@ -85,6 +66,9 @@
     self.TextViewNotes.layer.borderColor=[[UIColor colorWithRed:246.0f/255.0f green:247.0f/255.0f blue:235.0f/255.0f alpha:1.0]CGColor];
     self.TextViewNotes.layer.borderWidth= 1.0f;
     
+    [self addDoneToolBarToKeyboard:self.TextViewNotes];
+    self.TextFieldTitle.delegate = self;
+    self.TextViewNotes.delegate = self;
 }
 
 
@@ -96,7 +80,6 @@
     }
 }
 
-
 - (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
 {
     return 1;
@@ -106,8 +89,6 @@
 {
     return self.TypeItems.count;
 }
-
-
 
 - (UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(UIView *)view
 {
@@ -122,7 +103,6 @@
 {
     return 70;
 }
-
 
 /*
  created date:      11/06/2018
@@ -251,8 +231,6 @@
     if (self.newitem) {
         self.PointOfInterest.categoryid = [NSNumber numberWithInteger:0];
     }
-
-   
 }
 
 /*
@@ -280,54 +258,33 @@
     [self.MapView addAnnotation:anno];
     [self.MapView selectAnnotation:anno animated:YES];
 
-    
-    
     MKCircle *myCircle = [MKCircle circleWithCenterCoordinate:coord radius:[radius doubleValue]];
     [self.MapView addOverlay:myCircle];
     
 }
 
-- (MKOverlayRenderer *) mapView:(MKMapView *)mapView rendererForOverlay:(id)overlay
-{ if([overlay isKindOfClass:[MKCircle class]])
-{
-    MKCircleRenderer* aRenderer = [[MKCircleRenderer
-                                    alloc]initWithCircle:(MKCircle *)overlay];
-    
-    aRenderer.fillColor = [[UIColor orangeColor] colorWithAlphaComponent:0.25];
-    aRenderer.strokeColor = [[UIColor orangeColor] colorWithAlphaComponent:0.9];
-    aRenderer.lineWidth = 2;
-    aRenderer.lineDashPattern = @[@2, @5];
-    aRenderer.alpha = 0.5;
-    
-    return aRenderer;
-}
-else
-{
-    return nil;
-}
-}
 /*
-- (MKAnnotationView *)mapView:(MKMapView *)theMapView viewForAnnotation:(id <MKAnnotation>)annotation
-{
-    static NSString *SFAnnotationIdentifier = @"SFAnnotationIdentifier";
-    MKPinAnnotationView *pinView =
-    (MKPinAnnotationView *)[self.MapView dequeueReusableAnnotationViewWithIdentifier:SFAnnotationIdentifier];
-    if (!pinView)
+ created date:      14/07/2018
+ last modified:     14/07/2018
+ remarks: this method handles the map circle that is placed as overlay onto map
+ */
+- (MKOverlayRenderer *) mapView:(MKMapView *)mapView rendererForOverlay:(id)overlay {
+    if([overlay isKindOfClass:[MKCircle class]])
     {
-        MKAnnotationView *annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation
-                                                                         reuseIdentifier:SFAnnotationIdentifier];
-        UIImage *flagImage = [UIImage imageNamed:self.TypeItems[[self.PickerType selectedRowInComponent:0]]];
-        
-        annotationView.image = flagImage;
-        return annotationView;
+        MKCircleRenderer* aRenderer = [[MKCircleRenderer
+                                        alloc]initWithCircle:(MKCircle *)overlay];
+        aRenderer.fillColor = [[UIColor orangeColor] colorWithAlphaComponent:0.25];
+        aRenderer.strokeColor = [[UIColor orangeColor] colorWithAlphaComponent:0.9];
+        aRenderer.lineWidth = 2;
+        aRenderer.lineDashPattern = @[@2, @5];
+        aRenderer.alpha = 0.5;
+        return aRenderer;
     }
     else
     {
-        pinView.annotation = annotation;
+        return nil;
     }
-    return pinView;
 }
-*/
 
 /*
  created date:      28/04/2018
@@ -354,14 +311,9 @@ else
         }
         ImageIndex ++;
     }
-
     /* Text fields and Segment */
     self.TextViewNotes.text = self.PointOfInterest.privatenotes;
-  //  [self.PickerType selectRow:[self.PointOfInterest.categoryid intValue] inComponent:0 animated:YES];
     self.TextFieldTitle.text = self.PointOfInterest.name;
-
-    
-    
 }
 
 
@@ -376,11 +328,11 @@ else
  remarks:
  */
 - (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    if (self.readonlyitem) {
-        return self.PointOfInterest.Images.count;
-    } else {
+    //if (self.readonlyitem) {
+    //    return self.PointOfInterest.Images.count;
+    //} else {
         return self.PointOfInterest.Images.count + 1;
-    }
+    //}
 }
 
 /*
@@ -400,7 +352,6 @@ else
     }
     return cell;
 }
-
 
 /*
  created date:      28/04/2018
@@ -446,8 +397,6 @@ else
     PHFetchResult *allPhotos = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeImage options:fetchOptions];
     return allPhotos;
 }
-
-
 
 /*
  created date:      28/04/2018
@@ -636,8 +585,6 @@ else
     [alert addAction:cancelAction];
     
     [self presentViewController:alert animated:YES completion:nil];
-    
-    
 }
 
 /*
@@ -645,7 +592,6 @@ else
  last modified:     02/05/2018
  remarks:
  */
-
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     
     /* obtain the image from the camera */
@@ -702,7 +648,6 @@ else
  last modified:     28/04/2018
  remarks:
  */
-
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
     [picker dismissViewControllerAnimated:YES completion:NULL];
 }
@@ -726,9 +671,6 @@ else
 - (IBAction)BackPressed:(id)sender {
     [self dismissViewControllerAnimated:YES completion:Nil];
 }
-
-
-
 
 /*
  created date:      28/04/2018
@@ -813,6 +755,7 @@ else
         [self dismissViewControllerAnimated:YES completion:Nil];
     }
 }
+
 /*
  created date:      28/04/2018
  last modified:     21/05/2018
@@ -833,7 +776,7 @@ else
     if (segment.selectedSegmentIndex==0) {
         self.MapView.hidden=true;
         self.CollectionViewPoiImages.hidden=true;
-        self.ImagePicture.hidden=true;
+        self.ScrollViewImage.hidden=true;
         self.SwitchViewPhotoOptions.hidden=true;
         self.ViewBlurImageOptionPanel.hidden=true;
         self.LabelPrivateNotes.hidden=false;
@@ -843,11 +786,10 @@ else
         self.ImageViewKey.hidden=false;
         self.LabelPoi.hidden=false;
         
-
     } else if (segment.selectedSegmentIndex==1) {
         self.MapView.hidden=false;
         self.CollectionViewPoiImages.hidden=true;
-        self.ImagePicture.hidden=true;
+        self.ScrollViewImage.hidden=true;
         self.SwitchViewPhotoOptions.hidden=true;
         self.ViewBlurImageOptionPanel.hidden=true;
         self.LabelPrivateNotes.hidden=true;
@@ -860,12 +802,13 @@ else
     } else {
         self.MapView.hidden=true;
         if (self.PointOfInterest.Images.count > 0 && !self.readonlyitem) {
-            //self.ViewBlurHeightConstraint.constant = 0;
+        //if (self.PointOfInterest.Images.count > 0 ) {
+            self.ViewBlurHeightConstraint.constant = 0;
             self.ViewBlurImageOptionPanel.hidden=false;
             self.SwitchViewPhotoOptions.hidden=false;
         }
         self.CollectionViewPoiImages.hidden=false;
-        self.ImagePicture.hidden=false;
+        self.ScrollViewImage.hidden=false;
         self.LabelPrivateNotes.hidden=true;
         self.TextViewNotes.hidden=true;
         self.PickerType.hidden=true;
@@ -881,13 +824,16 @@ else
     NSString *LabelText;
     
     LabelText = [NSString stringWithFormat:@"Point Of Interest - %@",[self.TypeLabelItems objectAtIndex:[PoiType integerValue]]];
-    
     return LabelText;
 }
 
+/*
+ created date:      14/07/2018
+ last modified:     14/07/2018
+ remarks:
+ */
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
-    
-    
+
     self.LabelPoi.text = [self GetPoiLabelWithType:[NSNumber numberWithInteger:row]];
     self.PointOfInterest.categoryid = [NSNumber numberWithLong:[self.PickerType selectedRowInComponent:0]];
 
@@ -909,6 +855,7 @@ else
     [self.MapView addOverlay:myCircle];
     
 }
+
 /*
  created date:      21/05/2018
  last modified:     21/05/2018
@@ -984,8 +931,6 @@ else
 
 }
 
-
-
 /*
  created date:      13/06/2018
  last modified:     16/06/2018
@@ -1002,7 +947,6 @@ else
         controller.gsradius = [self.TypeDistanceItems objectAtIndex:[self.PickerType selectedRowInComponent:0]];
     } 
 }
-
 
 /*
  created date:      23/05/2018
@@ -1041,11 +985,60 @@ else
  */
 - (void)updatePoiFromWikiActvity :(PoiNSO*)PointOfInterest {
     self.PointOfInterest = PointOfInterest;
-  //  [self.ButtonWiki setImage:[UIImage imageNamed:@"WikiFilled"] forState:UIControlStateNormal];
 }
 
 - (void)didCreatePoiFromProject :(NSString*)Key {
+}
+
+/* Delegate methods for ScrollView */
+- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
+    return [self.ScrollViewImage viewWithTag:5];
+}
+
+- (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale {
+}
+
+-(void)addDoneToolBarToKeyboard:(UITextView *)textView
+{
+    UIToolbar* doneToolbar = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, 320, 50)];
+    doneToolbar.barStyle = UIBarStyleDefault;
+    doneToolbar.items = [NSArray arrayWithObjects:
+                         [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
+                         [[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(doneButtonClickedDismissKeyboard)],
+                         nil];
+    [doneToolbar sizeToFit];
+    textView.inputAccessoryView = doneToolbar;
+}
+
+//remember to set your text view delegate
+//but if you only have 1 text view in your view controller
+//you can simply change currentTextField to the name of your text view
+//and ignore this textViewDidBeginEditing delegate method
+- (void)textViewDidBeginEditing:(UITextView *)textView
+{
+    self.TextViewNotes = textView;
+}
+
+-(void)doneButtonClickedDismissKeyboard
+{
+    [self.TextViewNotes resignFirstResponder];
+}
+
+- (IBAction)TitleEditingDidEnd:(id)sender {
+     //[self.TextFieldTitle resignFirstResponder];
     
+}
+
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
+{
+    return YES;
+}
+
+// It is important for you to hide the keyboard
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [textField resignFirstResponder];
+    return YES;
 }
 
 

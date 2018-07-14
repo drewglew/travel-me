@@ -50,6 +50,10 @@
     self.TextViewNotes.layer.borderColor=[[UIColor colorWithRed:246.0f/255.0f green:247.0f/255.0f blue:235.0f/255.0f alpha:1.0]CGColor];
     self.TextViewNotes.layer.borderWidth= 1.0f;
     
+    [self addDoneToolBarToKeyboard:self.TextViewNotes];
+    self.TextViewNotes.delegate = self;
+    self.TextFieldName.delegate = self;
+    
 }
 
 /*
@@ -280,6 +284,29 @@
     [self.TextFieldName endEditing:YES];
 }
 
+-(void)addDoneToolBarToKeyboard:(UITextView *)textView
+{
+    UIToolbar* doneToolbar = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, 320, 50)];
+    doneToolbar.barStyle = UIBarStyleDefault;
+    doneToolbar.items = [NSArray arrayWithObjects:
+                         [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
+                         [[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(doneButtonClickedDismissKeyboard)],
+                         nil];
+    [doneToolbar sizeToFit];
+    textView.inputAccessoryView = doneToolbar;
+}
+
+- (void)textViewDidBeginEditing:(UITextView *)textView
+{
+    self.TextViewNotes = textView;
+}
+
+-(void)doneButtonClickedDismissKeyboard
+{
+    [self.TextViewNotes resignFirstResponder];
+}
+
+
 /*
  created date:      29/04/2018
  last modified:     29/04/2018
@@ -287,6 +314,18 @@
  */
 - (IBAction)BackPressed:(id)sender {
     [self dismissViewControllerAnimated:YES completion:Nil];
+}
+
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
+{
+    return YES;
+}
+
+// It is important for you to hide the keyboard
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [textField resignFirstResponder];
+    return YES;
 }
 
 @end

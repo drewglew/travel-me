@@ -23,7 +23,7 @@
 - (void)didCreatePoiFromProject :(NSString*)Key;
 @end
 
-@interface PoiDataEntryVC : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource, ImagePickerDelegate, WikiGeneratorDelegate>
+@interface PoiDataEntryVC : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource, ImagePickerDelegate, WikiGeneratorDelegate, UIScrollViewDelegate, UITextViewDelegate,UITextFieldDelegate>
 
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;
 @property (nonatomic) NSString *Title;
@@ -55,7 +55,8 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *ViewBlurHeightConstraint;
 @property (weak, nonatomic) IBOutlet UISwitch *SwitchViewPhotoOptions;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonWiki;
-
+@property CGPoint translation;
+@property (weak, nonatomic) IBOutlet UIScrollView *ScrollViewImage;
 
 
 @end

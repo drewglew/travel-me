@@ -14,7 +14,7 @@
 @protocol ProjectDataEntryDelegate <NSObject>
 @end
 
-@interface ProjectDataEntryVC : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+@interface ProjectDataEntryVC : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate,UITextFieldDelegate>
 
 @property (strong, nonatomic) ProjectNSO *Project;
 @property (weak, nonatomic) IBOutlet UIView *ViewProjectImage;
