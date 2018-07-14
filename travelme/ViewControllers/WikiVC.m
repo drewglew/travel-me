@@ -51,7 +51,7 @@
 
 /*
  created date:      13/06/2018
- last modified:     13/07/2018
+ last modified:     14/07/2018
  remarks:  search by name first?  if nothing found then by closest location?
  */
 -(bool)SearchWikiDocByLocation :(NSString *)wikiPathName :(NSString *)language {
@@ -82,7 +82,8 @@
 
                 titleText = [[item valueForKey:@"title"] stringByReplacingOccurrencesOfString:@" " withString:@"_"];
 
-                self.PointOfInterest.wikititle = titleText;
+                self.PointOfInterest.wikititle =  [NSString stringWithFormat:@"%@~%@",language,titleText];
+                
                 [self.delegate updatePoiFromWikiActvity :self.PointOfInterest];
                 
                 [self MakeWikiFile:titleText :wikiPathName :language];
@@ -188,7 +189,7 @@ NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
 
 /*
  created date:      16/06/2018
- last modified:     13/07/2018
+ last modified:     14/07/2018
  remarks:
  */
 - (IBAction)UpdateWikiPageByTitlePressed:(id)sender {
@@ -217,7 +218,8 @@ NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
     
     NSString *TitleText = [self.PointOfInterest.name stringByReplacingOccurrencesOfString:@" " withString:@"_"];
 
-    self.PointOfInterest.wikititle = TitleText;
+    self.PointOfInterest.wikititle = [NSString stringWithFormat:@"%@~%@",Country.language,TitleText];
+    
     [self.delegate updatePoiFromWikiActvity :self.PointOfInterest];
 
     [self MakeWikiFile :TitleText :wikiDataFilePath :Country.language];

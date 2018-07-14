@@ -101,6 +101,45 @@
  */
 -(void) LoadPoiData {
 
+    NSArray *TypeDistanceItems  = @[
+                                @40, // accomodation
+                                @500, // airport
+                                @100000, // asctronaut
+                                @50, // beer
+                                @50, // bicyle
+                                @300, //bridge
+                                @100, // car hire
+                                @500, // casino
+                                @200, // church
+                                @2000, // city
+                                @250, // club
+                                @250, // concert
+                                @50, // food and drink
+                                @400, // historic
+                                @20, // house
+                                @500, // lake
+                                @250, // lighthouse
+                                @10000, // metropolis
+                                @10000, // misc
+                                @1000, // monument
+                                @1000, // museum
+                                @10000, // nature
+                                @250, // office
+                                @150, // restuarnat
+                                @5000, // scenary
+                                @5000, // coast
+                                @1000, // ship
+                                @250, // shopping
+                                @5000, // skiing
+                                @250, // sports
+                                @150, // theatre
+                                @500, // theme park
+                                @150, // train
+                                @10000, // trekking
+                                @150, // venue
+                                @1000 // zoo
+                                ];
+    
     /* set map */
     self.PoiMapView.delegate = self;
 
@@ -112,8 +151,12 @@
     
     anno.coordinate = coord;
 
+    NSNumber *radius = [TypeDistanceItems objectAtIndex:[self.Activity.poi.categoryid unsignedLongValue]];
+    
     [self.PoiMapView setCenterCoordinate:coord animated:YES];
-    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(coord, 500, 500);
+    
+    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(coord, [radius doubleValue] * 2.2, [radius doubleValue] * 2.2);
+    
     MKCoordinateRegion adjustedRegion = [self.PoiMapView regionThatFits:viewRegion];
     [self.PoiMapView setRegion:adjustedRegion animated:YES];
     [self.PoiMapView addAnnotation:anno];
@@ -126,7 +169,41 @@
     } else {
         self.ImageViewPoi.image = [UIImage imageNamed:@"Poi"];
     }
+    
+    MKCircle *myCircle = [MKCircle circleWithCenterCoordinate:coord radius:[radius doubleValue]];
+    [self.PoiMapView addOverlay:myCircle];
+    
+    
 }
+
+
+- (MKOverlayRenderer *) mapView:(MKMapView *)mapView rendererForOverlay:(id)overlay
+{ if([overlay isKindOfClass:[MKCircle class]])
+{
+    MKCircleRenderer* aRenderer = [[MKCircleRenderer
+                                    alloc]initWithCircle:(MKCircle *)overlay];
+    
+    aRenderer.fillColor = [[UIColor orangeColor] colorWithAlphaComponent:0.25];
+    aRenderer.strokeColor = [[UIColor orangeColor] colorWithAlphaComponent:0.9];
+    aRenderer.lineWidth = 2;
+    aRenderer.lineDashPattern = @[@2, @5];
+    aRenderer.alpha = 0.5;
+    
+    return aRenderer;
+}
+else
+{
+    return nil;
+}
+}
+
+
+
+
+
+
+
+
 
 
 /*

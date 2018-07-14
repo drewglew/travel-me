@@ -35,37 +35,45 @@
             self.TextFieldTitle.enabled = false;
             [self.TextViewNotes setEditable:false];
             self.PointOfInterest.Images = [NSMutableArray arrayWithArray:[AppDelegateDef.Db GetImagesForSelectedPoi:self.PointOfInterest.key]];
-            
-            //[self.CollectionViewPoiImages setUserInteractionEnabled:false];
+
             self.CollectionViewPoiImages.scrollEnabled = true;
         }
         
-        NSFileManager *fileManager = [NSFileManager defaultManager];
+        //NSFileManager *fileManager = [NSFileManager defaultManager];
         
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *documentDirectory = [paths objectAtIndex:0];
+        //NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        //NSString *documentDirectory = [paths objectAtIndex:0];
         
-        NSString *wikiDataFilePath = [documentDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/WikiDocs/%@.pdf",self.PointOfInterest.key]];
+        //NSString *wikiDataFilePath = [documentDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/WikiDocs/%@.pdf",self.PointOfInterest.key]];
 
-        if ([fileManager fileExistsAtPath:wikiDataFilePath]){
+        //if ([fileManager fileExistsAtPath:wikiDataFilePath]){
             // if Wiki Files does not exist show the inverted icon.
-            [self.ButtonWiki setImage:[UIImage imageNamed:@"WikiFilled"] forState:UIControlStateNormal];
+        //    [self.ButtonWiki setImage:[UIImage imageNamed:@"WikiFilled"] forState:UIControlStateNormal];
             
             
-        }
+        //}
         
         [self LoadExistingData];
     }
+    
+    [self LoadTypePicker];
+    
+    // [self.PickerType selectRow:[self.PointOfInterest.categoryid integerValue] inComponent:0 animated:YES];
+    
+    self.PickerType.delegate = self;
+    self.PickerType.dataSource = self;
+    
+    [self.PickerType selectRow:[self.PointOfInterest.categoryid longValue] inComponent:0 animated:YES];
+    
     [self LoadMapData];
 
     self.CollectionViewPoiImages.dataSource = self;
     self.CollectionViewPoiImages.delegate = self;
     // Do any additional setup after loading the view.
 
-    self.PickerType.delegate = self;
-    self.PickerType.dataSource = self;
+
     
-    [self LoadTypePicker];
+    
 
     self.TextFieldTitle.layer.cornerRadius=8.0f;
     self.TextFieldTitle.layer.masksToBounds=YES;
@@ -78,6 +86,16 @@
     self.TextViewNotes.layer.borderWidth= 1.0f;
     
 }
+
+
+-(void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    if (![self.PointOfInterest.wikititle isEqualToString:@""]) {
+        [self.ButtonWiki setImage:[UIImage imageNamed:@"WikiFilled"] forState:UIControlStateNormal];
+    }
+}
+
 
 - (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
 {
@@ -190,42 +208,42 @@
                              ];
     
     self.TypeDistanceItems  = @[
-                             @50,
-                             @500,
-                             @100000,
-                             @50,
-                             @50,
-                             @300,
-                             @100,
-                             @500,
-                             @200,
-                             @2000,
-                             @250,
-                             @250,
-                             @100,
-                             @500,
-                             @100,
-                             @500,
-                             @500,
-                             @10000,
-                             @10000,
-                             @1000,
-                             @1000,
-                             @10000,
-                             @250,
-                             @250,
-                             @5000,
-                             @5000,
-                             @1000,
-                             @250,
-                             @5000,
-                             @250,
-                             @150,
-                             @500,
-                             @150,
-                             @10000,
-                             @150,
-                             @1000
+                             @40, // accomodation
+                             @500, // airport
+                             @100000, // asctronaut
+                             @50, // beer
+                             @50, // bicyle
+                             @300, //bridge
+                             @100, // car hire
+                             @500, // casino
+                             @200, // church
+                             @2000, // city
+                             @250, // club
+                             @250, // concert
+                             @50, // food and drink
+                             @400, // historic
+                             @20, // house
+                             @500, // lake
+                             @250, // lighthouse
+                             @10000, // metropolis
+                             @10000, // misc
+                             @1000, // monument
+                             @1000, // museum
+                             @10000, // nature
+                             @250, // office
+                             @150, // restuarnat
+                             @5000, // scenary
+                             @5000, // coast
+                             @1000, // ship
+                             @250, // shopping
+                             @5000, // skiing
+                             @250, // sports
+                             @150, // theatre
+                             @500, // theme park
+                             @150, // train
+                             @10000, // trekking
+                             @150, // venue
+                             @1000 // zoo
                              ];
 
     self.LabelPoi.text = [self GetPoiLabelWithType:[NSNumber numberWithLong:[self.PointOfInterest.categoryid integerValue]]];
@@ -234,8 +252,7 @@
         self.PointOfInterest.categoryid = [NSNumber numberWithInteger:0];
     }
 
-    [self.PickerType selectRow:[self.PointOfInterest.categoryid integerValue] inComponent:0 animated:YES];
-
+   
 }
 
 /*
@@ -249,18 +266,68 @@
     MKPointAnnotation *anno = [[MKPointAnnotation alloc] init];
     anno.title = self.PointOfInterest.name;
     anno.subtitle = [NSString stringWithFormat:@"%@", self.PointOfInterest.administrativearea];
-    
+
     CLLocationCoordinate2D coord = CLLocationCoordinate2DMake([self.PointOfInterest.lat doubleValue], [self.PointOfInterest.lon doubleValue]);
     
     anno.coordinate = coord;
     
+    NSNumber *radius = [self.TypeDistanceItems objectAtIndex:[self.PickerType selectedRowInComponent:0]];
+    
     [self.MapView setCenterCoordinate:coord animated:YES];
-    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(coord, 500, 500);
+    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(coord, [radius doubleValue] * 2.1, [radius doubleValue] * 2.1);
     MKCoordinateRegion adjustedRegion = [self.MapView regionThatFits:viewRegion];
     [self.MapView setRegion:adjustedRegion animated:YES];
     [self.MapView addAnnotation:anno];
     [self.MapView selectAnnotation:anno animated:YES];
+
+    
+    
+    MKCircle *myCircle = [MKCircle circleWithCenterCoordinate:coord radius:[radius doubleValue]];
+    [self.MapView addOverlay:myCircle];
+    
 }
+
+- (MKOverlayRenderer *) mapView:(MKMapView *)mapView rendererForOverlay:(id)overlay
+{ if([overlay isKindOfClass:[MKCircle class]])
+{
+    MKCircleRenderer* aRenderer = [[MKCircleRenderer
+                                    alloc]initWithCircle:(MKCircle *)overlay];
+    
+    aRenderer.fillColor = [[UIColor orangeColor] colorWithAlphaComponent:0.25];
+    aRenderer.strokeColor = [[UIColor orangeColor] colorWithAlphaComponent:0.9];
+    aRenderer.lineWidth = 2;
+    aRenderer.lineDashPattern = @[@2, @5];
+    aRenderer.alpha = 0.5;
+    
+    return aRenderer;
+}
+else
+{
+    return nil;
+}
+}
+/*
+- (MKAnnotationView *)mapView:(MKMapView *)theMapView viewForAnnotation:(id <MKAnnotation>)annotation
+{
+    static NSString *SFAnnotationIdentifier = @"SFAnnotationIdentifier";
+    MKPinAnnotationView *pinView =
+    (MKPinAnnotationView *)[self.MapView dequeueReusableAnnotationViewWithIdentifier:SFAnnotationIdentifier];
+    if (!pinView)
+    {
+        MKAnnotationView *annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation
+                                                                         reuseIdentifier:SFAnnotationIdentifier];
+        UIImage *flagImage = [UIImage imageNamed:self.TypeItems[[self.PickerType selectedRowInComponent:0]]];
+        
+        annotationView.image = flagImage;
+        return annotationView;
+    }
+    else
+    {
+        pinView.annotation = annotation;
+    }
+    return pinView;
+}
+*/
 
 /*
  created date:      28/04/2018
@@ -290,8 +357,11 @@
 
     /* Text fields and Segment */
     self.TextViewNotes.text = self.PointOfInterest.privatenotes;
-    [self.PickerType selectRow:[self.PointOfInterest.categoryid integerValue] inComponent:0 animated:YES];
+  //  [self.PickerType selectRow:[self.PointOfInterest.categoryid intValue] inComponent:0 animated:YES];
     self.TextFieldTitle.text = self.PointOfInterest.name;
+
+    
+    
 }
 
 
@@ -381,7 +451,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     13/07/2018
+ last modified:     14/07/2018
  remarks:
  */
 -(void)InsertPoiImage {
@@ -397,7 +467,7 @@
     NSString *cameraOption = @"Take a photo with the camera";
     NSString *photorollOption = @"Choose a photo from camera roll";
     NSString *photoCloseToPoiOption = @"Choose own photos nearby";
-    NSString *photoFromWikiOption = @"Choose photos from Wiki page";
+    NSString *photoFromWikiOption = @"Choose photos from web";
     NSString *lastphotoOption = @"Select last photo taken";
     
     UIAlertAction *cameraAction = [UIAlertAction actionWithTitle:cameraOption
@@ -817,11 +887,26 @@
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
     
-    //(UIImage)[pickerView viewForRow:row forComponent:component];
-    
     
     self.LabelPoi.text = [self GetPoiLabelWithType:[NSNumber numberWithInteger:row]];
     self.PointOfInterest.categoryid = [NSNumber numberWithLong:[self.PickerType selectedRowInComponent:0]];
+
+    for (id<MKOverlay> overlay in self.MapView.overlays)
+    {
+        [self.MapView removeOverlay:overlay];
+    }
+    
+    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake([self.PointOfInterest.lat doubleValue], [self.PointOfInterest.lon doubleValue]);
+  
+    NSNumber *radius = [self.TypeDistanceItems objectAtIndex:[self.PickerType selectedRowInComponent:0]];
+    
+    [self.MapView setCenterCoordinate:coord animated:NO];
+    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(coord, [radius doubleValue] * 2.1, [radius doubleValue] * 2.1);
+    MKCoordinateRegion adjustedRegion = [self.MapView regionThatFits:viewRegion];
+    [self.MapView setRegion:adjustedRegion animated:NO];
+    
+    MKCircle *myCircle = [MKCircle circleWithCenterCoordinate:coord radius:[radius doubleValue]];
+    [self.MapView addOverlay:myCircle];
     
 }
 /*
@@ -956,8 +1041,8 @@
  */
 - (void)updatePoiFromWikiActvity :(PoiNSO*)PointOfInterest {
     self.PointOfInterest = PointOfInterest;
+  //  [self.ButtonWiki setImage:[UIImage imageNamed:@"WikiFilled"] forState:UIControlStateNormal];
 }
-
 
 - (void)didCreatePoiFromProject :(NSString*)Key {
     

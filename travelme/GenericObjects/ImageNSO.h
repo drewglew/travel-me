@@ -13,5 +13,6 @@
 @interface ImageNSO : NSObject
 @property (nonatomic) UIImage *Image;
 @property (nonatomic) NSDate *creationdate;
+@property (nonatomic) NSString *WikiDescription;
 @property (assign) bool selected;
 @end

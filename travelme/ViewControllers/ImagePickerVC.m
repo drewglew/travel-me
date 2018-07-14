@@ -27,7 +27,7 @@
     if (!self.wikiimages) {
         self.LabelPoiName.text = [NSString stringWithFormat:@"Photos nearby %@",self.PointOfInterest.name];
     } else {
-        self.LabelPoiName.text = [NSString stringWithFormat:@"Wiki photos of %@",self.PointOfInterest.name];
+        self.LabelPoiName.text = [NSString stringWithFormat:@"Web Photos of %@",self.PointOfInterest.name];
     }
     // Do any additional setup after loading the view.
 }
@@ -44,21 +44,19 @@
 /*
  created date:      10/06/2018
  last modified:     14/07/2018
- remarks:  This runs inside its own thread
+ remarks:  This runs inside its own thread - one of the most complex methods in the application.
  */
 -(void) LoadImageData {
 
-    
-    CLLocationCoordinate2D PoiCoord = CLLocationCoordinate2DMake([self.PointOfInterest.lat doubleValue], [self.PointOfInterest.lon doubleValue]);
-    
-    CLLocationCoordinate2D Coord;
-    
-    CLLocation *PoiLocation = [[CLLocation alloc] initWithLatitude:PoiCoord.latitude longitude:PoiCoord.longitude];
-    int MaxNumberOfPhotos = 200;
-    int PhotoCounter = 0;
-    
-    
+
     if (!self.wikiimages) {
+        CLLocationCoordinate2D PoiCoord = CLLocationCoordinate2DMake([self.PointOfInterest.lat doubleValue], [self.PointOfInterest.lon doubleValue]);
+        CLLocationCoordinate2D Coord;
+        
+        CLLocation *PoiLocation = [[CLLocation alloc] initWithLatitude:PoiCoord.latitude longitude:PoiCoord.longitude];
+        int MaxNumberOfPhotos = 200;
+        int PhotoCounter = 0;
+        
         
         PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
         fetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:false]];
@@ -93,6 +91,9 @@
                             imageitem.selected = false;
                             //img = image;
                             [self.imageitems addObject:imageitem];
+                            dispatch_async(dispatch_get_main_queue(), ^(){
+                                 [self.ImageCollectionView reloadData];
+                            });
                             
                         }
                     }];
@@ -112,131 +113,139 @@
         dispatch_async(dispatch_get_main_queue(), ^(){
             self.ButtonStopSearching.hidden = true;
             
-            self.LabelWaiting.hidden = true;
             self.ActivityLoading.hidden = true;
             [self.ImageCollectionView reloadData];
         });
     } else {
-          /*
+            /*
              Obtain Wiki data based on name.
              https://en.wikipedia.org/api/rest_v1/page/media/Göteborg
              */
-        
-            NSString *language = @"en";
-        
-            NSString *url = [NSString stringWithFormat:@"https://%@.wikipedia.org/api/rest_v1/page/media/%@",language, self.PointOfInterest.wikititle];
+            NSArray *parms = [self.PointOfInterest.wikititle componentsSeparatedByString:@"~"];
+            NSString *url = [NSString stringWithFormat:@"https://%@.wikipedia.org/api/rest_v1/page/media/%@",[parms objectAtIndex:0] , [parms objectAtIndex:1]];
             
             url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
             [self fetchFromWikiApiMediaByTitle:url withDictionary:^(NSDictionary *data) {
-                
+
                 NSDictionary *items = [data objectForKey:@"items"];
+                dispatch_async(dispatch_get_main_queue(), ^(){
+                    [self.LabelPhotoCounter setText:[NSString stringWithFormat:@"Checking %lu Web Assets", (unsigned long)items.count]];
+                });
+                __block int AssetCounter = 0;
                 
                 /* we can process all later, but am only interested in the closest wiki entry */
                 for (NSDictionary *item in items) {
-                    
                     int MaxNumberOfPhotos = 200;
-                    int PhotoCounter = 0;
+
+                    NSDictionary *DescriptionItem = [item objectForKey:@"description"];
                     
-                    NSLog(@"%@",item);
+                    /* no more than 200 photos! */
+                    if (self.imageitems.count < MaxNumberOfPhotos) {
                     
-                    //NSDictionary *ThumbnailItem = [item objectForKey:@"thumbnail"];
-                    NSDictionary *OriginalItem = [item objectForKey:@"original"];
-                    //NSDictionary *DescriptionItem = [item objectForKey:@"description"];
-                    
-                    if ([[OriginalItem valueForKey:@"mime"] isEqualToString:@"image/svg"] || ([[OriginalItem valueForKey:@"width"] longValue] > 2500 || [[OriginalItem valueForKey:@"height"] longValue] > 2500) ) {
-                        
-                        NSDictionary *ThumbnailItem = [item objectForKey:@"thumbnail"];
-                        
-                        [self downloadImageFrom:[NSURL URLWithString:[ThumbnailItem valueForKey:@"source"]] completion:^(UIImage *image) {
-                            
-                            NSLog(@"%@",[OriginalItem valueForKey:@"source"]);
-                            
-                            
-                            if (image!=nil) {
-                                
-                                ImageNSO *imageitem = [[ImageNSO alloc] init];
-                                
-                                imageitem.Image = image;
-                                imageitem.selected = false;
-                                [self.imageitems addObject:imageitem];
-                                
-                                [self.ImageCollectionView reloadData];
-                                
-                            }
-                            /*
-                             dispatch_async(dispatch_get_main_queue(), ^(){
-                             [self.LabelPhotoCounter setText:[NSString stringWithFormat:@"%lu photos found", (unsigned long)self.imageitems.count]];
-                             });
-                             */
-                            
-                            
-                        }];
-                        
-                        PhotoCounter++;
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                    } else  if ([[OriginalItem valueForKey:@"mime"] isEqualToString:@"image/jpeg"] || [[OriginalItem valueForKey:@"mime"] isEqualToString:@"image/png"]) {
-                        
+                        NSDictionary *OriginalItem = [item objectForKey:@"original"];
                        
-                        [self downloadImageFrom:[NSURL URLWithString:[OriginalItem valueForKey:@"source"]] completion:^(UIImage *image) {
-                            
-                            NSLog(@"%@",[OriginalItem valueForKey:@"source"]);
-                            
-                            
-                            if (image!=nil) {
-                            
-                            ImageNSO *imageitem = [[ImageNSO alloc] init];
 
-                            imageitem.Image = image;
-                            imageitem.selected = false;
-                            [self.imageitems addObject:imageitem];
+                        /* check type & size of original photo asset if it is larger than 3000x3000 or it is of svg type we use the thumbnail image instead */
+                        if ([[OriginalItem valueForKey:@"mime"] isEqualToString:@"image/svg+xml"] || ([[OriginalItem valueForKey:@"width"] longValue] > 3000 || [[OriginalItem valueForKey:@"height"] longValue] > 3000) ) {
                             
-                            [self.ImageCollectionView reloadData];
+                            NSDictionary *ThumbnailItem = [item objectForKey:@"thumbnail"];
+                            
+                            [self downloadImageFrom:[NSURL URLWithString:[ThumbnailItem valueForKey:@"source"]] completion:^(UIImage *image) {
+
+                                AssetCounter ++;
                                 
-                            }
-                            /*
-                            dispatch_async(dispatch_get_main_queue(), ^(){
-                                [self.LabelPhotoCounter setText:[NSString stringWithFormat:@"%lu photos found", (unsigned long)self.imageitems.count]];
-                            });
-                            */
-                            
-                            
-                        }];
+                                
+                                if (image!=nil) {
+                                    ImageNSO *imageitem = [[ImageNSO alloc] init];
+                                    if (image.size.height > image.size.width) {
+                                        CGRect aRect = CGRectMake(0,(image.size.height / 2) - (image.size.width / 2), image.size.width, image.size.width);
+                                        CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], aRect);
+                                        image = [UIImage imageWithCGImage:imageRef];
+                                        CGImageRelease(imageRef);
+                                    } else if (image.size.height < image.size.width) {
+                                        CGRect aRect = CGRectMake((image.size.width / 2) - (image.size.height / 2), 0, image.size.height, image.size.height);
+                                        CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], aRect);
+                                        image = [UIImage imageWithCGImage:imageRef];
+                                        CGImageRelease(imageRef);
+                                    }
+                                    imageitem.Image = [ToolBoxNSO imageWithImage:image scaledToSize:self.ImageSize];
+                                    if (DescriptionItem.count>0) {
+                                        imageitem.WikiDescription = [DescriptionItem objectForKey:@"text"];
+                                    }
+                                    imageitem.selected = false;
+                                    [self.imageitems addObject:imageitem];
+                                    // keep the collection view updated with the new image
+                                    [self.ImageCollectionView reloadData];
+                                    
+                                }
+                                
+                                dispatch_async(dispatch_get_main_queue(), ^(){
+                                    [self.LabelPhotoCounter setText:[NSString stringWithFormat:@"%lu photos found inside %lu Web Assets", (unsigned long)self.imageitems.count,(unsigned long)items.count]];
+                                     if (AssetCounter==items.count) {
+                                         self.ButtonStopSearching.hidden = true;
+                                         
+                                         self.ActivityLoading.hidden = true;
+                                     }
+                                 });
 
-                        PhotoCounter++;
+                            }];
                         
+                        /* ok if mine type is an image we can handle load it in */
+                        } else if ([[OriginalItem valueForKey:@"mime"] isEqualToString:@"image/jpeg"] || [[OriginalItem valueForKey:@"mime"] isEqualToString:@"image/png"]) {
+
+                            [self downloadImageFrom:[NSURL URLWithString:[OriginalItem valueForKey:@"source"]] completion:^(UIImage *image) {
+                                AssetCounter ++;
+                                if (image!=nil) {
+                                    ImageNSO *imageitem = [[ImageNSO alloc] init];
+                                    
+                                    if (image.size.height > image.size.width) {
+                                        CGRect aRect = CGRectMake(0,(image.size.height / 2) - (image.size.width / 2), image.size.width, image.size.width);
+                                        CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], aRect);
+                                        image = [UIImage imageWithCGImage:imageRef];
+                                        CGImageRelease(imageRef);
+                                    } else if (image.size.height < image.size.width) {
+                                        CGRect aRect = CGRectMake((image.size.width / 2) - (image.size.height / 2), 0, image.size.height, image.size.height);
+                                        CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], aRect);
+                                        image = [UIImage imageWithCGImage:imageRef];
+                                        CGImageRelease(imageRef);
+                                    }
+                                    
+                                    imageitem.Image = [ToolBoxNSO imageWithImage:image scaledToSize:self.ImageSize];
+                                    if (DescriptionItem.count>0) {
+                                        imageitem.WikiDescription = [DescriptionItem objectForKey:@"text"];
+                                    } else {
+                                        imageitem.WikiDescription = @"No description available";
+                                    }
+                                    imageitem.selected = false;
+                                    [self.imageitems addObject:imageitem];
+                                     // keep the collection view updated with the new image
+                                    [self.ImageCollectionView reloadData];
+                                }
+                                
+                                dispatch_async(dispatch_get_main_queue(), ^(){
+                                    [self.LabelPhotoCounter setText:[NSString stringWithFormat:@"%lu photos found inside %lu Web Assets", (unsigned long)self.imageitems.count,(unsigned long)items.count]];
+                                    
+                                    if (AssetCounter==items.count) {
+                                        self.ButtonStopSearching.hidden = true;
+                                        self.ActivityLoading.hidden = true;
+                                    }
+                                });
+
+                            }];
+                        } else {
+                            AssetCounter ++;
+                            if (AssetCounter==items.count) {
+                                self.ButtonStopSearching.hidden = true;
+                                self.ActivityLoading.hidden = true;
+                            }
+                        }
                     }
                     
                     if([[NSThread currentThread] isCancelled])
                         break;
-                    /*
-                     https://en.wikipedia.org/api/rest_v1/page/pdf/Berlin_Alexanderplatz_station
-                     */
-                    //break;
- 
                 }
-                
-                NSLog(@"number of results:=%lu", (unsigned long)self.imageitems.count);
-                dispatch_async(dispatch_get_main_queue(), ^(){
-                    self.ButtonStopSearching.hidden = true;
-                    
-                    self.LabelWaiting.hidden = true;
-                    self.ActivityLoading.hidden = true;
-                    
-                });
-                
-                
             }];
-
-        
     }
-        
-
 }
 
 /*
@@ -323,9 +332,15 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     ImageNSO *img = [self.imageitems objectAtIndex:indexPath.row];
     img.selected = !img.selected;
-    NSDateFormatter *dtformatter = [[NSDateFormatter alloc] init];
-    [dtformatter setDateFormat:@"EEE MMM dd YYYY, HH:mm"];
-    [self.LabelPhotoCounter setText:[NSString stringWithFormat:@"Photo taken %@", [dtformatter stringFromDate:img.creationdate]]];
+    
+    if (!self.wikiimages) {
+        NSDateFormatter *dtformatter = [[NSDateFormatter alloc] init];
+        [dtformatter setDateFormat:@"EEE MMM dd YYYY, HH:mm"];
+        [self.LabelPhotoCounter setText:[NSString stringWithFormat:@"Photo taken %@", [dtformatter stringFromDate:img.creationdate]]];
+    } else {
+        [self.LabelPhotoCounter setText:[NSString stringWithFormat:@"%@", img.WikiDescription]];
+    }
+    
     [self.ImageCollectionView reloadData];
 }
 
@@ -374,8 +389,7 @@
     
     
     self.ButtonStopSearching.hidden = true;
-    
-    self.LabelWaiting.hidden = true;
+
     self.ActivityLoading.hidden = true;
     [self.ImageCollectionView reloadData];
     

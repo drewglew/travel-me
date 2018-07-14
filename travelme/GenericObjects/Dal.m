@@ -348,8 +348,8 @@
     sqlite3_bind_text(stmt, 1, Poi.name==nil?"":[Poi.name UTF8String], -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(stmt, 2, [Poi.categoryid intValue]);
     sqlite3_bind_text(stmt, 3, Poi.privatenotes==nil?"":[Poi.privatenotes UTF8String], -1, SQLITE_TRANSIENT);
-    sqlite3_bind_text(stmt, 3, Poi.wikititle==nil?"":[Poi.wikititle UTF8String], -1, SQLITE_TRANSIENT);
-    sqlite3_bind_text(stmt, 4, Poi.key==nil?"":[Poi.key UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 4, Poi.wikititle==nil?"":[Poi.wikititle UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 5, Poi.key==nil?"":[Poi.key UTF8String], -1, SQLITE_TRANSIENT);
 
     
     if (sqlite3_step(stmt) != SQLITE_DONE) {
