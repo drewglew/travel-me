@@ -18,7 +18,9 @@
 @interface ProjectListVC : UIViewController <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, ActivityListDelegate, ProjectDataEntryDelegate>
 @property (weak, nonatomic) IBOutlet UICollectionView *CollectionViewProjects;
 @property (strong, nonatomic) NSMutableArray *projectitems;
+@property (strong, nonatomic) NSMutableArray *filteredprojectitems;
 @property (assign) bool editmode;
 @property (nonatomic, weak) id <ProjectListDelegate> delegate;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentFilterProjects;
 
 @end

@@ -38,8 +38,30 @@
 }
 
 /*
+ created date:      23/06/2018
+ last modified:     23/06/2018
+ remarks:
+ */
+-(BOOL)checkColumnExists :(NSString*) column :(NSString*) table
+{
+    BOOL columnExists = NO;
+    
+    sqlite3_stmt *selectStmt;
+    
+    NSString *sqlStatement = [NSString stringWithFormat:@"select %@ from %@", column, table];
+    
+    const char *statement = [sqlStatement UTF8String];
+    
+    if(sqlite3_prepare_v2(_DB, statement, -1, &selectStmt, NULL) == SQLITE_OK)
+        columnExists = YES;
+    
+    return columnExists;
+}
+
+
+/*
  created date:      27/04/2018
- last modified:     07/05/2018
+ last modified:     13/07/2018
  remarks:           Create a new database with model.
  */
 -(bool)InitDb :(NSString*) databaseName {
@@ -50,27 +72,14 @@
     
     NSURL *fileWikiDocsURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"WikiDocs" isDirectory:YES];
     
-    
     _databasePath = [[NSString alloc] initWithString:[fileURL path]];
 
     NSFileManager *filemgr = [NSFileManager defaultManager];
     const char *dbpath = [_databasePath UTF8String];
     
-    
-    
-    
-    
-    
-    
-    
     if([filemgr fileExistsAtPath:_databasePath] ==  NO) {
         if (sqlite3_open(dbpath, &_DB) == SQLITE_OK) {
             [self CreateDb];
-            
-            
-            
-            
-            
             [self LoadCountryData];
         }
         return true;
@@ -97,6 +106,36 @@
                 [filemgr createDirectoryAtURL:fileWikiDocsURL
                   withIntermediateDirectories:YES attributes:nil error:&err];
             }
+            /* check any updates to the db since the last version */
+            if (![self checkColumnExists:@"language" :@"country"] ) {
+                char *errorMessage;
+
+                const char *sql_statement = "DELETE FROM country";
+                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                    NSLog(@"failed to delete all content from country table");
+                }
+                
+                sql_statement = "ALTER TABLE country ADD COLUMN language TEXT;";
+                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                    NSLog(@"failed to alter table new column");
+                }
+                
+                [self LoadCountryData];
+            }
+            
+            /* check any updates to the db since the last version */
+            if (![self checkColumnExists:@"wikititle" :@"poi"] ) {
+                char *errorMessage;
+                const char *sql_statement = "ALTER TABLE poi ADD COLUMN wikititle TEXT;";
+                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                    NSLog(@"failed to alter table new column");
+                }
+                sql_statement = "UPDATE poi set wikititle='';";
+                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                    NSLog(@"failed to update wikititle in poi column");
+                }
+            }
+
             NSLocale *theLocale = [NSLocale currentLocale];
             NSString *currencyCode = [theLocale objectForKey:NSLocaleCurrencyCode];
             NSLog(@"Currency Code : %@",currencyCode);
@@ -122,7 +161,7 @@
 
 /*
  created date:      27/04/2018
- last modified:     14/06/2018
+ last modified:     13/07/2018
  remarks:           Create a new database with model.  We need to remove Country table, but there are still
  some code attached to it.
  */
@@ -146,7 +185,7 @@
         }
   
         /* POI table */
-        sql_statement = "CREATE TABLE poi (key TEXT PRIMARY KEY, name TEXT, administrativearea TEXT, subadministrativearea TEXT, fullthoroughfare TEXT, countrycode TEXT, locality TEXT, sublocality TEXT, postcode TEXT, categoryid INTEGER, privatenotes TEXT, lat DOUBLE, lon DOUBLE)";
+        sql_statement = "CREATE TABLE poi (key TEXT PRIMARY KEY, name TEXT, administrativearea TEXT, subadministrativearea TEXT, fullthoroughfare TEXT, countrycode TEXT, locality TEXT, sublocality TEXT, postcode TEXT, categoryid INTEGER, privatenotes TEXT, lat DOUBLE, lon DOUBLE, wikititle TEXT)";
             
         if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
             NSLog(@"failed to create poi table");
@@ -304,11 +343,12 @@
     bool retVal=true;
     
     sqlite3_stmt *stmt = NULL;
-    sqlite3_prepare_v2(_DB, "UPDATE poi SET name = ?, categoryid = ?, privatenotes = ? WHERE key=?", -1, &stmt, nil);
+    sqlite3_prepare_v2(_DB, "UPDATE poi SET name = ?, categoryid = ?, privatenotes = ?, wikititle = ? WHERE key=?", -1, &stmt, nil);
     
     sqlite3_bind_text(stmt, 1, Poi.name==nil?"":[Poi.name UTF8String], -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(stmt, 2, [Poi.categoryid intValue]);
     sqlite3_bind_text(stmt, 3, Poi.privatenotes==nil?"":[Poi.privatenotes UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 3, Poi.wikititle==nil?"":[Poi.wikititle UTF8String], -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, 4, Poi.key==nil?"":[Poi.key UTF8String], -1, SQLITE_TRANSIENT);
 
     
@@ -439,7 +479,7 @@
         Poi.key = [[NSUUID UUID] UUIDString];
 
         sqlite3_stmt *stmt = NULL;
-        sqlite3_prepare_v2(_DB, "INSERT INTO poi (key, name, administrativearea, subadministrativearea, fullthoroughfare, countrycode, locality, sublocality, postcode, categoryid, privatenotes, lat, lon) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", -1, &stmt, nil);
+        sqlite3_prepare_v2(_DB, "INSERT INTO poi (key, name, administrativearea, subadministrativearea, fullthoroughfare, countrycode, locality, sublocality, postcode, categoryid, privatenotes, lat, lon, wikititle) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", -1, &stmt, nil);
     
         sqlite3_bind_text(stmt, 1, [Poi.key UTF8String], -1, SQLITE_TRANSIENT);
         sqlite3_bind_text(stmt, 2, [Poi.name UTF8String], -1, SQLITE_TRANSIENT);
@@ -455,7 +495,7 @@
         sqlite3_bind_text(stmt, 11, [Poi.privatenotes UTF8String], -1, SQLITE_TRANSIENT);
         sqlite3_bind_double(stmt, 12, [Poi.lat doubleValue]);
         sqlite3_bind_double(stmt, 13, [Poi.lon doubleValue]);
-    
+        sqlite3_bind_text(stmt, 14, Poi.wikititle==nil?"":[Poi.wikititle UTF8String], -1, SQLITE_TRANSIENT);
 
         if (sqlite3_step(stmt) != SQLITE_DONE) {
             NSLog(@"Failed to insert new record inside poi table");
@@ -538,7 +578,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     14/05/2018
+ last modified:     13/07/2018
  remarks:           TODO add new way of inserting parms
  */
 -(NSMutableArray*) GetPoiContent :(NSString*) RequiredKey :(NSArray*) Countries :(NSString*) FilterOption {
@@ -559,7 +599,7 @@
             whereClause = @"WHERE";
             whereClause = [NSString stringWithFormat:@"%@ %@ IN (%@)", whereClause, @"countrycode", [Countries componentsJoinedByString:@ ","]];
         }
-        NSString *selectSQL = [NSString stringWithFormat:@"SELECT key,name,fullthoroughfare,administrativearea,subadministrativearea,countrycode,locality,sublocality,postcode,categoryid,privatenotes,lat,lon,(select count(*) as counter from activity a where a.poikey=p.key) as sumofactivities FROM poi p %@ ORDER BY name", whereClause];
+        NSString *selectSQL = [NSString stringWithFormat:@"SELECT key,name,fullthoroughfare,administrativearea,subadministrativearea,countrycode,locality,sublocality,postcode,categoryid,privatenotes,lat,lon,wikititle,(select count(*) as counter from activity a where a.poikey=p.key) as sumofactivities FROM poi p %@ ORDER BY name", whereClause];
         sqlite3_stmt *statement;
         const char *select_statement = [selectSQL UTF8String];
     
@@ -582,7 +622,8 @@
                 poi.privatenotes = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 10)];
                 poi.lat = [NSNumber numberWithDouble:sqlite3_column_double(statement, 11)];
                 poi.lon = [NSNumber numberWithDouble:sqlite3_column_double(statement, 12)];
-                poi.connectedactivitycount = [NSNumber numberWithInt:sqlite3_column_int(statement, 13)];
+                poi.wikititle = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 13)];
+                poi.connectedactivitycount = [NSNumber numberWithInt:sqlite3_column_int(statement, 14)];
                 poi.Images = [NSMutableArray arrayWithArray:[self GetImagesForSelectedPoi:poi.key]];
                 CountryNSO *country = [self GetCountryByCode:poi.countrycode];
                 poi.country = country.name;

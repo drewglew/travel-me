@@ -24,7 +24,7 @@
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     
-    [self.DatePickerPaymentDt setValue:[UIColor colorWithRed:246.0f/255.0f green:247.0f/255.0f blue:235.0f/255.0f alpha:1.0] forKey:@"textColor"];
+    [self.DatePickerPaymentDt setValue:[UIColor colorWithRed:11.0f/255.0f green:110.0f/255.0f blue:79.0f/255.0f alpha:1.0] forKey:@"textColor"];
     
     if (self.newitem) {
         /* get the expected currency code from the country of the point of interest.*/

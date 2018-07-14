@@ -107,12 +107,14 @@
 
 /*
  created date:      09/06/2018
- last modified:     10/06/2018
+ last modified:     23/06/2018
  remarks:           table view with sections.
  */
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
     
     NSArray *temp = self.paymentsections[section];
+    
+    
     
     double actrate=0, plannedrate=0;
     double actamt=0, plannedamt=0;
@@ -132,21 +134,18 @@
             plannedamt +=  ([item.amt_est doubleValue] / 100) * actrate;
         }
     }
-    
 
-    
-    
     UIView* footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 64)];
     
     // 2. Set a custom background color and a border
-    footerView.backgroundColor = [UIColor colorWithRed:254.0f/255.0f green:195.0f/255.0f blue:9.0f/255.0f alpha:1.0];
+    footerView.backgroundColor = [UIColor colorWithRed:11.0f/255.0f green:110.0f/255.0f blue:79.0f/255.0f alpha:1.0];
 
     // 3. Add a label
     UILabel* actualSummaryLabel = [[UILabel alloc] init];
     actualSummaryLabel.frame = CGRectMake(10, 5, tableView.frame.size.width - 200, 20);
     
     actualSummaryLabel.backgroundColor = [UIColor clearColor];
-    actualSummaryLabel.textColor = [UIColor colorWithRed:42.0f/255.0f green:45.0f/255.0f blue:52.0f/255.0f alpha:1.0];
+    actualSummaryLabel.textColor = [UIColor colorWithRed:230.0f/255.0f green:235.0f/255.0f blue:224.0f/255.0f alpha:1.0];
     actualSummaryLabel.font = [UIFont boldSystemFontOfSize:17.0];
     actualSummaryLabel.text = @"Actual Payments";
     actualSummaryLabel.textAlignment = NSTextAlignmentLeft;
@@ -159,13 +158,12 @@
      10 spacer
      100 width of amount
      */
-    
-    
+
     // 3. Add a label
     UILabel* actualSummaryAmtLabel = [[UILabel alloc] init];
     actualSummaryAmtLabel.frame = CGRectMake(tableView.frame.size.width - 160, 5, 100, 20);
     actualSummaryAmtLabel.backgroundColor = [UIColor clearColor];
-    actualSummaryAmtLabel.textColor = [UIColor colorWithRed:42.0f/255.0f green:45.0f/255.0f blue:52.0f/255.0f alpha:1.0];
+    actualSummaryAmtLabel.textColor = [UIColor colorWithRed:230.0f/255.0f green:235.0f/255.0f blue:224.0f/255.0f alpha:1.0];
     actualSummaryAmtLabel.font = [UIFont boldSystemFontOfSize:17.0];
     actualSummaryAmtLabel.text = [NSString stringWithFormat:@"%.2f",actamt];
     actualSummaryAmtLabel.textAlignment = NSTextAlignmentRight;
@@ -175,19 +173,17 @@
     UILabel* actualSummaryCurrLabel = [[UILabel alloc] init];
     actualSummaryCurrLabel.frame = CGRectMake(tableView.frame.size.width - 50, 5, 40, 20);
     actualSummaryCurrLabel.backgroundColor = [UIColor clearColor];
-    actualSummaryCurrLabel.textColor = [UIColor colorWithRed:42.0f/255.0f green:45.0f/255.0f blue:52.0f/255.0f alpha:1.0];
+    actualSummaryCurrLabel.textColor = [UIColor colorWithRed:230.0f/255.0f green:235.0f/255.0f blue:224.0f/255.0f alpha:1.0];
     actualSummaryCurrLabel.font = [UIFont systemFontOfSize:17 weight:UIFontWeightThin];
-    actualSummaryCurrLabel.text = [NSString stringWithFormat:@"%@",@"GBP"];
+    actualSummaryCurrLabel.text = [NSString stringWithFormat:@"%@",[AppDelegateDef HomeCurrencyCode]];
     actualSummaryCurrLabel.textAlignment = NSTextAlignmentRight;
     
     [footerView addSubview:actualSummaryCurrLabel];
 
-    
-
     UILabel* plannedSummaryLabel = [[UILabel alloc] init];
     plannedSummaryLabel.frame = CGRectMake(10, 26, tableView.frame.size.width - 200, 20);
     plannedSummaryLabel.backgroundColor = [UIColor clearColor];
-    plannedSummaryLabel.textColor = [UIColor colorWithRed:42.0f/255.0f green:45.0f/255.0f blue:52.0f/255.0f alpha:1.0];
+    plannedSummaryLabel.textColor = [UIColor colorWithRed:230.0f/255.0f green:235.0f/255.0f blue:224.0f/255.0f alpha:1.0];
     plannedSummaryLabel.font = [UIFont systemFontOfSize:17 weight:UIFontWeightThin];
     plannedSummaryLabel.text = @"Planned Payments";
     plannedSummaryLabel.textAlignment = NSTextAlignmentLeft;
@@ -197,7 +193,7 @@
     UILabel* plannedSummaryAmtLabel = [[UILabel alloc] init];
     plannedSummaryAmtLabel.frame = CGRectMake(tableView.frame.size.width - 160, 26, 100, 20);
     plannedSummaryAmtLabel.backgroundColor = [UIColor clearColor];
-    plannedSummaryAmtLabel.textColor = [UIColor colorWithRed:42.0f/255.0f green:45.0f/255.0f blue:52.0f/255.0f alpha:1.0];
+    plannedSummaryAmtLabel.textColor = [UIColor colorWithRed:230.0f/255.0f green:235.0f/255.0f blue:224.0f/255.0f alpha:1.0];
     plannedSummaryLabel.font = [UIFont systemFontOfSize:17 weight:UIFontWeightThin];
     plannedSummaryAmtLabel.text = [NSString stringWithFormat:@"%.2f",plannedamt];
     plannedSummaryAmtLabel.textAlignment = NSTextAlignmentRight;
@@ -209,23 +205,13 @@
     UILabel* plannedSummaryCurrLabel = [[UILabel alloc] init];
     plannedSummaryCurrLabel.frame = CGRectMake(tableView.frame.size.width - 50, 26, 40, 20);
     plannedSummaryCurrLabel.backgroundColor = [UIColor clearColor];
-    plannedSummaryCurrLabel.textColor = [UIColor colorWithRed:42.0f/255.0f green:45.0f/255.0f blue:52.0f/255.0f alpha:1.0];
+    plannedSummaryCurrLabel.textColor = [UIColor colorWithRed:230.0f/255.0f green:235.0f/255.0f blue:224.0f/255.0f alpha:1.0];
     plannedSummaryCurrLabel.font = [UIFont systemFontOfSize:17 weight:UIFontWeightThin];
-    plannedSummaryCurrLabel.text = [NSString stringWithFormat:@"%@",@"GBP"];
+    plannedSummaryCurrLabel.text = [NSString stringWithFormat:@"%@",[AppDelegateDef HomeCurrencyCode]];
     plannedSummaryCurrLabel.textAlignment = NSTextAlignmentRight;
     
     [footerView addSubview:plannedSummaryCurrLabel];
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     // 5. Finally return
     return footerView;
 }
@@ -297,11 +283,24 @@
         cell.LabelHomeAmtEst.text = [NSString stringWithFormat:@"%.2f",homeamt];
         cell.LabelHomeCurrencyCodeEst.text = [AppDelegateDef HomeCurrencyCode];
     }
-    
-    
-    
 
     return cell;
+}
+
+/*
+ created date:      22/06/2018
+ last modified:     22/06/2018
+ remarks:
+ */
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section
+{
+    // Background color
+    view.tintColor = [UIColor colorWithRed:114.0f/255.0f green:24.0f/255.0f blue:23.0f/255.0f alpha:1.0];
+    
+    // Text Color
+    UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
+    [header.textLabel setTextColor:[UIColor colorWithRed:230.0f/255.0f green:235.0f/255.0f blue:224.0f/255.0f alpha:1.0]];
+     
 }
 
 

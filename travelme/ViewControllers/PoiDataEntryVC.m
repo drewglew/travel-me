@@ -28,6 +28,7 @@
     if (self.newitem) {
         if (![self.PointOfInterest.name isEqualToString:@""]) {
             self.TextFieldTitle.text = self.PointOfInterest.name;
+            self.ButtonWiki.hidden = true;
         }
     } else {
         if (self.readonlyitem) {
@@ -38,6 +39,21 @@
             //[self.CollectionViewPoiImages setUserInteractionEnabled:false];
             self.CollectionViewPoiImages.scrollEnabled = true;
         }
+        
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentDirectory = [paths objectAtIndex:0];
+        
+        NSString *wikiDataFilePath = [documentDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/WikiDocs/%@.pdf",self.PointOfInterest.key]];
+
+        if ([fileManager fileExistsAtPath:wikiDataFilePath]){
+            // if Wiki Files does not exist show the inverted icon.
+            [self.ButtonWiki setImage:[UIImage imageNamed:@"WikiFilled"] forState:UIControlStateNormal];
+            
+            
+        }
+        
         [self LoadExistingData];
     }
     [self LoadMapData];
@@ -113,6 +129,7 @@
                        @"Cat-House",
                        @"Cat-Lake",
                        @"Cat-Lighthouse",
+                       @"Cat-Metropolis",
                        @"Cat-Misc",
                        @"Cat-Monument",
                        @"Cat-Museum",
@@ -151,6 +168,7 @@
                              @"House",
                              @"Lake",
                              @"Lighthouse",
+                             @"Metropolis",
                              @"Miscellaneous",
                              @"Monument/Statue",
                              @"Museum",
@@ -181,14 +199,15 @@
                              @100,
                              @500,
                              @200,
+                             @2000,
+                             @250,
+                             @250,
+                             @100,
+                             @500,
+                             @100,
+                             @500,
+                             @500,
                              @10000,
-                             @250,
-                             @250,
-                             @100,
-                             @500,
-                             @100,
-                             @500,
-                             @500,
                              @10000,
                              @1000,
                              @1000,
@@ -208,10 +227,7 @@
                              @150,
                              @1000
                              ];
-    
-    
-    
-    
+
     self.LabelPoi.text = [self GetPoiLabelWithType:[NSNumber numberWithLong:[self.PointOfInterest.categoryid integerValue]]];
     
     if (self.newitem) {
@@ -365,7 +381,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     10/06/2018
+ last modified:     13/07/2018
  remarks:
  */
 -(void)InsertPoiImage {
@@ -381,6 +397,7 @@
     NSString *cameraOption = @"Take a photo with the camera";
     NSString *photorollOption = @"Choose a photo from camera roll";
     NSString *photoCloseToPoiOption = @"Choose own photos nearby";
+    NSString *photoFromWikiOption = @"Choose photos from Wiki page";
     NSString *lastphotoOption = @"Select last photo taken";
     
     UIAlertAction *cameraAction = [UIAlertAction actionWithTitle:cameraOption
@@ -430,6 +447,9 @@
                                                               }];
     
     
+    
+    
+    
     UIAlertAction *photosCloseToPoiAction = [UIAlertAction actionWithTitle:photoCloseToPoiOption
                                                               style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
                                                                   
@@ -440,10 +460,32 @@
                                                                   
                                                                   controller.distance = [self.TypeDistanceItems objectAtIndex:[self.PickerType selectedRowInComponent:0]];
                                                                   
+                                                                  controller.wikiimages = false;
+                                                                  
                                                                   controller.ImageSize = CGSizeMake(self.TextViewNotes.frame.size.width * 2, self.TextViewNotes.frame.size.width * 2);
                                                                   [controller setModalPresentationStyle:UIModalPresentationFullScreen];
                                                                   [self presentViewController:controller animated:YES completion:nil];
                                                                   
+                                                              }];
+    
+    
+    
+    
+    UIAlertAction *photoWikiAction = [UIAlertAction actionWithTitle:photoFromWikiOption
+                                                              style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+                                                                  
+                                                                  UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+                                                                  ImagePickerVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ImagePickerViewController"];
+                                                                  controller.delegate = self;
+                                                                  controller.PointOfInterest = self.PointOfInterest;
+                                                                  
+                                                                  controller.distance = [self.TypeDistanceItems objectAtIndex:[self.PickerType selectedRowInComponent:0]];
+                                                                  
+                                                                  controller.wikiimages = true;
+                                                                  
+                                                                  controller.ImageSize = CGSizeMake(self.TextViewNotes.frame.size.width * 2, self.TextViewNotes.frame.size.width * 2);
+                                                                  [controller setModalPresentationStyle:UIModalPresentationFullScreen];
+                                                                  [self presentViewController:controller animated:YES completion:nil];
                                                               }];
     
     
@@ -517,6 +559,9 @@
     [alert addAction:cameraAction];
     [alert addAction:photorollAction];
     [alert addAction:photosCloseToPoiAction];
+    if (![self.PointOfInterest.wikititle isEqualToString:@""]) {
+        [alert addAction:photoWikiAction];
+    }
     [alert addAction:lastphotoAction];
     [alert addAction:cancelAction];
     
@@ -772,6 +817,9 @@
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
     
+    //(UIImage)[pickerView viewForRow:row forComponent:component];
+    
+    
     self.LabelPoi.text = [self GetPoiLabelWithType:[NSNumber numberWithInteger:row]];
     self.PointOfInterest.categoryid = [NSNumber numberWithLong:[self.PickerType selectedRowInComponent:0]];
     
@@ -863,7 +911,9 @@
     if([segue.identifier isEqualToString:@"WikiGenerator"]){
         WikiVC *controller = (WikiVC *)segue.destinationViewController;
         controller.delegate = self;
+        
         controller.PointOfInterest = self.PointOfInterest;
+        controller.PointOfInterest.name = self.TextFieldTitle.text;
         controller.gsradius = [self.TypeDistanceItems objectAtIndex:[self.PickerType selectedRowInComponent:0]];
     } 
 }
@@ -899,9 +949,21 @@
     }
 }
 
+/*
+ created date:      13/07/2018
+ last modified:     13/07/2018
+ remarks:
+ */
+- (void)updatePoiFromWikiActvity :(PoiNSO*)PointOfInterest {
+    self.PointOfInterest = PointOfInterest;
+}
+
+
 - (void)didCreatePoiFromProject :(NSString*)Key {
     
 }
+
+
 
 
 @end

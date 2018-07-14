@@ -14,10 +14,14 @@
 #import "CountryNSO.h"
 
 @protocol WikiGeneratorDelegate <NSObject>
+- (void)updatePoiFromWikiActvity :(PoiNSO*)PointOfInterest;
 @end
+
 @interface WikiVC : UIViewController
 @property (weak, nonatomic) IBOutlet WKWebView *webView;
 @property (strong, nonatomic) PoiNSO *PointOfInterest;
 @property (nonatomic, weak) id <WikiGeneratorDelegate> delegate;
 @property (nonatomic) NSNumber *gsradius;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentLanguageOption;
+
 @end

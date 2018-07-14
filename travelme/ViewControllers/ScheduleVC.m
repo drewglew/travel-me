@@ -62,7 +62,7 @@
         schedule.poi = activity.poi;
     }
     
-    self.LabelItemCounter.text = [NSString stringWithFormat:@"Nbr of Items:%lu",(unsigned long)self.scheduleitems.count];
+    self.LabelItemCounter.text = [NSString stringWithFormat:@"%lu Items",(unsigned long)self.scheduleitems.count];
     
     [self.TableViewScheduleItems reloadData];
 }
@@ -306,6 +306,8 @@
     [self.TableViewScheduleItems reloadData];
     self.ButtonDeleteIdeas.hidden = true;
 }
+
+
 
 
 

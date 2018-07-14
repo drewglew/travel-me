@@ -75,7 +75,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     28/05/2018
+ last modified:     24/06/2018
  remarks:
  */
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -94,7 +94,7 @@
         if (self.SegmentState.selectedSegmentIndex==1) {
             
             if (cell.activity.legendref== [NSNumber numberWithInt:2]) {
-                cell.LabelActivityLegend.backgroundColor = [UIColor colorWithRed:86.0f/255.0f green:215.0f/255.0f blue:43.0f/255.0f alpha:1.0];
+                cell.LabelActivityLegend.backgroundColor = [UIColor colorWithRed:250.0f/255.0f green:159.0f/255.0f blue:66.0f/255.0f alpha:1.0];
                 cell.VisualViewBlur.hidden = true;
                 cell.ButtonDelete.hidden = false;
             } else if (cell.activity.activitystate== [NSNumber numberWithInt:0]) {
@@ -102,18 +102,18 @@
                 cell.ButtonDelete.hidden = true;
                 cell.VisualViewBlur.hidden = false;
                 // only on ideas..
-                cell.LabelActivityLegend.backgroundColor = [UIColor colorWithRed:251.0f/255.0f green:0.0f/255.0f blue:85.0f/255.0f alpha:1.0];
+                cell.LabelActivityLegend.backgroundColor = [UIColor colorWithRed:114.0f/255.0f green:24.0f/255.0f blue:23.0f/255.0f alpha:1.0];
             } else {
                 // only on actual.
                 cell.ButtonDelete.hidden = false;
                 cell.VisualViewBlur.hidden = true;
-                cell.LabelActivityLegend.backgroundColor = [UIColor colorWithRed:29.0f/255.0f green:155.0f/255.0f blue:246.0f/255.0f alpha:1.0];
+                cell.LabelActivityLegend.backgroundColor = [UIColor colorWithRed:43.0f/255.0f green:65.0f/255.0f blue:98.0f/255.0f alpha:1.0];
             }
         } else {
             if (cell.activity.legendref== [NSNumber numberWithInt:2]) {
-                cell.LabelActivityLegend.backgroundColor = [UIColor colorWithRed:86.0f/255.0f green:215.0f/255.0f blue:43.0f/255.0f alpha:1.0];
+                cell.LabelActivityLegend.backgroundColor = [UIColor colorWithRed:250.0f/255.0f green:159.0f/255.0f blue:66.0f/255.0f alpha:1.0];
             } else if (cell.activity.legendref== [NSNumber numberWithInt:1]) {
-                cell.LabelActivityLegend.backgroundColor = [UIColor colorWithRed:251.0f/255.0f green:0.0f/255.0f blue:85.0f/255.0f alpha:1.0];
+                cell.LabelActivityLegend.backgroundColor = [UIColor colorWithRed:114.0f/255.0f green:24.0f/255.0f blue:23.0f/255.0f alpha:1.0];
             }
             cell.VisualViewBlur.hidden = true;
             cell.ButtonDelete.hidden = false;
@@ -136,6 +136,7 @@
                                @"Cat-House",
                                @"Cat-Lake",
                                @"Cat-Lighthouse",
+                               @"Cat-Metropolis",
                                @"Cat-Misc",
                                @"Cat-Monument",
                                @"Cat-Museum",
@@ -157,9 +158,7 @@
                                ];
         
         cell.ImageViewTypeOfPoi.image = [UIImage imageNamed:[TypeItems objectAtIndex:[cell.activity.poi.categoryid integerValue]]];
-        
-        
-        
+
         cell.LabelName.text = cell.activity.name;
         cell.LabelActivityLegend.layer.cornerRadius = 5;
         cell.LabelActivityLegend.layer.masksToBounds = YES;

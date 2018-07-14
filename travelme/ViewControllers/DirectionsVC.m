@@ -30,8 +30,10 @@
     /* if coming from activity window we need to find our current position
      which in turn once found will goto processMultiRouting method. */
     if (self.Route.count==1) {
+        self.ButtonOpenMap.hidden = false;
         [self startUserLocationSearch];
     } else {
+         self.ButtonOpenMap.hidden = true;
         [self processMultiRouting];
     }
 }
@@ -244,6 +246,22 @@
     
 }
  */
+
+/*
+ created date:      16/06/2018
+ last modified:     16/06/2018
+ remarks:           not used
+ */
+- (IBAction)OpenMapsPressed:(id)sender {
+    
+    PoiNSO *poi = [self.Route lastObject];
+    NSString* directionsURL = [NSString stringWithFormat:@"http://maps.apple.com/?saddr=%f,%f&daddr=%@,%@",self.locationManager.location.coordinate.latitude, self.locationManager.location.coordinate.longitude, poi.lat, poi.lon];
+    if ([[UIApplication sharedApplication] respondsToSelector:@selector(openURL:options:completionHandler:)]) {
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString: directionsURL] options:@{} completionHandler:^(BOOL success) {}];
+    }
+}
+
+
 
 
 @end

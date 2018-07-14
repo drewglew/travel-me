@@ -16,7 +16,7 @@
 
 /*
  created date:      13/06/2018
- last modified:     15/06/2018
+ last modified:     16/06/2018
  remarks:
  */
 - (void)viewDidLoad {
@@ -31,11 +31,12 @@
     
     NSLocale *theLocale = [NSLocale currentLocale];
     NSString *countryCode = [theLocale objectForKey:NSLocaleCountryCode];
-    CountryNSO *homecountry = [AppDelegateDef.Db GetCountryByCode:countryCode];
+    CountryNSO *HomeCountry = [AppDelegateDef.Db GetCountryByCode:countryCode];
 
     if (![fileManager fileExistsAtPath:wikiDataFilePath]){
         /* generate a PDF of WikiPage */
-        [self CreateWikiDocument :wikiDataFilePath :homecountry.language];
+        NSString *TitleText = [self.PointOfInterest.name stringByReplacingOccurrencesOfString:@" " withString:@"_"];
+        [self MakeWikiFile :TitleText :wikiDataFilePath :HomeCountry.language];
     } else {
         /* present the WikiPage that is saved already */
         NSURL *targetURL = [NSURL fileURLWithPath:wikiDataFilePath];
@@ -48,18 +49,12 @@
     // Do any additional setup after loading the view.
 }
 
-
-
-
-
-
-
 /*
  created date:      13/06/2018
- last modified:     15/06/2018
+ last modified:     13/07/2018
  remarks:  search by name first?  if nothing found then by closest location?
  */
--(bool)CreateWikiDocument :(NSString *)wikiPathName :(NSString *)language {
+-(bool)SearchWikiDocByLocation :(NSString *)wikiPathName :(NSString *)language {
     bool RetValue = false;
     
     /*
@@ -70,9 +65,6 @@
      https://en.wikipedia.org/w/api.php?action=query&titles=Göteborg&redirects&format=jsonfm&formatversion=2
      */
 
-    
-    
-    
     NSString *url = [NSString stringWithFormat:@"https://%@.wikipedia.org/w/api.php?action=query&list=geosearch&gsprop=type|name|dim|country|region|globe&gsradius=%@&gscoord=%@|%@&format=json&redirects",language, self.gsradius, self.PointOfInterest.lat, self.PointOfInterest.lon];
     
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
@@ -87,44 +79,50 @@
             
             /* we can process all later, but am only interested in the closest wiki entry */
             for (NSDictionary *item in geosearch) {
-             
-                // manage type?
-                
+
                 titleText = [[item valueForKey:@"title"] stringByReplacingOccurrencesOfString:@" " withString:@"_"];
 
+                self.PointOfInterest.wikititle = titleText;
+                [self.delegate updatePoiFromWikiActvity :self.PointOfInterest];
+                
+                [self MakeWikiFile:titleText :wikiPathName :language];
+                
                 /*
                  https://en.wikipedia.org/api/rest_v1/page/pdf/Berlin_Alexanderplatz_station
                  */
-                
-                
-                NSString *urlstring = [NSString stringWithFormat:@"https://%@.wikipedia.org/api/rest_v1/page/pdf/%@",language,titleText];
-                NSURL *url = [NSURL URLWithString:[urlstring stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
-                
-                NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
-                                                      dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                                                          
-                                                      [data writeToFile:wikiPathName options:NSDataWritingAtomic error:&error];
-                                                          
-                                                      dispatch_async(dispatch_get_main_queue(), ^(void){
-                                                          
-                                                          [self.webView loadData:data MIMEType:@"application/pdf" characterEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@""]];
-                                                          
-                                                          self.webView.hidden=false;
-                                                      
-                                                      });
-                                                          
-                                                      }];
-                
-                [downloadTask resume];
                 break;
                 
             }
-            
-            
-        
     }];
 
     return RetValue;
+}
+
+/*
+ created date:      16/06/2018
+ last modified:     16/06/2018
+ remarks:  search by name first?  if nothing found then by closest location?
+ */
+-(void) MakeWikiFile :(NSString*)Title :(NSString *)wikiPathName :(NSString *)language {
+NSString *urlstring = [NSString stringWithFormat:@"https://%@.wikipedia.org/api/rest_v1/page/pdf/%@",language,Title];
+NSURL *url = [NSURL URLWithString:[urlstring stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+
+NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
+                                      dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                                          
+                                          [data writeToFile:wikiPathName options:NSDataWritingAtomic error:&error];
+                                          
+                                          dispatch_async(dispatch_get_main_queue(), ^(void){
+                                              
+                                              [self.webView loadData:data MIMEType:@"application/pdf" characterEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@""]];
+                                              
+                                              self.webView.hidden=false;
+                                              
+                                          });
+                                          
+                                      }];
+
+        [downloadTask resume];
 }
 
 
@@ -156,7 +154,7 @@
 
 /*
  created date:      15/06/2018
- last modified:     15/06/2018
+ last modified:     20/06/2018
  remarks:
  */
 - (IBAction)UpdateWikiPagePressed:(id)sender {
@@ -167,15 +165,73 @@
     
     NSString *wikiDataFilePath = [documentDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/WikiDocs/%@.pdf",self.PointOfInterest.key]];
     
-    CountryNSO *localcountry = [AppDelegateDef.Db GetCountryByCode:self.PointOfInterest.countrycode];
+    NSError *error = nil;
+    [fileManager removeItemAtPath:wikiDataFilePath error:&error];
+    
+    CountryNSO *Country;
+    if (self.SegmentLanguageOption.selectedSegmentIndex == 0) {
+        
+        NSLocale *theLocale = [NSLocale currentLocale];
+        NSString *countryCode = [theLocale objectForKey:NSLocaleCountryCode];
+        Country = [AppDelegateDef.Db GetCountryByCode:countryCode];
+    }
+    else if (self.SegmentLanguageOption.selectedSegmentIndex == 1) {
+        Country = [AppDelegateDef.Db GetCountryByCode:self.PointOfInterest.countrycode];
+    } else {
+        Country = [AppDelegateDef.Db GetCountryByCode:@"en"];
+    }
     
     if (![fileManager fileExistsAtPath:wikiDataFilePath]){
-        [self CreateWikiDocument :wikiDataFilePath  :localcountry.language];
+        [self SearchWikiDocByLocation :wikiDataFilePath  :Country.language];
     }
 }
 
+/*
+ created date:      16/06/2018
+ last modified:     13/07/2018
+ remarks:
+ */
+- (IBAction)UpdateWikiPageByTitlePressed:(id)sender {
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentDirectory = [paths objectAtIndex:0];
+    
+    NSString *wikiDataFilePath = [documentDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/WikiDocs/%@.pdf",self.PointOfInterest.key]];
+    
+    NSError *error = nil;
+    [fileManager removeItemAtPath:wikiDataFilePath error:&error];
+    
+    CountryNSO *Country;
+    if (self.SegmentLanguageOption.selectedSegmentIndex == 0) {
+    
+        NSLocale *theLocale = [NSLocale currentLocale];
+        NSString *countryCode = [theLocale objectForKey:NSLocaleCountryCode];
+        Country = [AppDelegateDef.Db GetCountryByCode:countryCode];
+    } else if (self.SegmentLanguageOption.selectedSegmentIndex == 1) {
+        Country = [AppDelegateDef.Db GetCountryByCode:self.PointOfInterest.countrycode];
+    } else {
+        Country = [AppDelegateDef.Db GetCountryByCode:@"GB"];
+    }
+    
+    NSString *TitleText = [self.PointOfInterest.name stringByReplacingOccurrencesOfString:@" " withString:@"_"];
+
+    self.PointOfInterest.wikititle = TitleText;
+    [self.delegate updatePoiFromWikiActvity :self.PointOfInterest];
+
+    [self MakeWikiFile :TitleText :wikiDataFilePath :Country.language];
+
+}
 
 
+/*
+ created date:      13/07/2018
+ last modified:     13/07/2018
+ remarks:
+ */
+- (void)updatePoiFromWikiActvity :(PoiNSO*)PointOfInterest {
+}
 
 /*
  created date:      13/06/2018

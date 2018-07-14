@@ -32,5 +32,6 @@
 @property (strong, nonatomic) ActivityNSO *Activity;
 @property (strong, nonatomic) ProjectNSO *Project;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentPoiFilterList;
+- (IBAction)ButtonOpenAppleMaps:(id)sender;
 
 @end

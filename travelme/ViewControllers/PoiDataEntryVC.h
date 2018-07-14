@@ -54,6 +54,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *ButtonKey;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *ViewBlurHeightConstraint;
 @property (weak, nonatomic) IBOutlet UISwitch *SwitchViewPhotoOptions;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonWiki;
 
 
 

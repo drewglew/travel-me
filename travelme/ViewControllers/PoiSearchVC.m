@@ -29,7 +29,7 @@
     [super viewDidLoad];
     self.SearchBarPoi.delegate = self;
     self.TableViewSearchPoiItems.delegate = self;
-    self.TableViewSearchPoiItems.rowHeight = 100;
+    self.TableViewSearchPoiItems.rowHeight = 66;
     
     if (self.Project == nil) {
         // we are arriving directly from the menu
@@ -48,6 +48,7 @@
     if (self.Project != nil) {
         [self LoadPoiData];
     }
+   
     
 }
 /*
@@ -146,6 +147,13 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.poifiltereditems.count;
 }
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+
+    return 56;
+}
+
 
 /*
  created date:      30/04/2018
@@ -399,4 +407,6 @@
 }
 
 
+- (IBAction)ButtonOpenAppleMaps:(id)sender {
+}
 @end

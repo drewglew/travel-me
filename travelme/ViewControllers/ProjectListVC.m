@@ -34,18 +34,18 @@
 
 /*
  created date:      29/04/2018
- last modified:     29/04/2018
+ last modified:     24/06/2018
  remarks:
  */
 -(void) LoadProjectData {
     self.projectitems = [AppDelegateDef.Db GetProjectContent :nil];
     [self LoadSupportingData];
-    [self.CollectionViewProjects reloadData];
+    [self FilterProjectCollectionView];
 }
 
 /*
  created date:      29/04/2018
- last modified:     29/04/2018
+ last modified:     24/06/2018
  remarks:
  */
 -(void) LoadSupportingData {
@@ -57,16 +57,6 @@
         NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
         project.Image = [UIImage imageWithData:pngData];
     }
-    /* 2. Get Number of activities & maybe (duration of activities) */
-    for (ProjectNSO *project in self.projectitems) {
-            /* later we need to get first activity start dt and last activities end dt in project */
-        
-    }
-    /* 3. Get total cost */
-    for (ProjectNSO *project in self.projectitems) {
-        /* later we need to get sum of all costs from actitities */
-        
-    }
 }
 
 
@@ -76,7 +66,7 @@
  remarks:
  */
 - (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return self.projectitems.count + 1;;
+    return self.filteredprojectitems.count + 1;;
 }
 
 /*
@@ -88,13 +78,13 @@
     
     ProjectListCell *cell=[collectionView dequeueReusableCellWithReuseIdentifier:@"projectCellId" forIndexPath:indexPath];
     
-    NSInteger NumberOfItems = self.projectitems.count + 1;
+    NSInteger NumberOfItems = self.filteredprojectitems.count + 1;
     if (indexPath.row == NumberOfItems -1) {
         cell.ImageViewProject.image = [UIImage imageNamed:@"AddItem"];
         cell.isNewAccessor = true;
         cell.VisualEffectsViewBlur.hidden = true;
     } else {
-        ProjectNSO *project = [self.projectitems objectAtIndex:indexPath.row];
+        ProjectNSO *project = [self.filteredprojectitems objectAtIndex:indexPath.row];
         if (project.Image == nil) {
             cell.ImageViewProject.image = [UIImage imageNamed:@"Project"];
         } else {
@@ -167,7 +157,7 @@
  */
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     
-    NSInteger NumberOfItems = self.projectitems.count + 1;
+    NSInteger NumberOfItems = self.filteredprojectitems.count + 1;
     
     if (indexPath.row == NumberOfItems -1) {
         /* insert new project item */
@@ -177,7 +167,7 @@
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         ActivityListVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ActivityListViewController"];
         controller.delegate = self;
-        controller.Project = [self.projectitems objectAtIndex:indexPath.row];
+        controller.Project = [self.filteredprojectitems objectAtIndex:indexPath.row];
         [controller setModalPresentationStyle:UIModalPresentationFullScreen];
         [self presentViewController:controller animated:YES completion:nil];
         
@@ -243,7 +233,7 @@
                 if([cellView isKindOfClass:[ProjectListCell class]]) {
                     ProjectListCell *cell = (ProjectListCell*)cellView;
                     NSIndexPath *indexPath = [self.CollectionViewProjects indexPathForCell:cell];
-                    controller.Project = [self.projectitems objectAtIndex:indexPath.row];
+                    controller.Project = [self.filteredprojectitems objectAtIndex:indexPath.row];
                 }
             }
          }
@@ -260,7 +250,7 @@
                 if([cellView isKindOfClass:[ProjectListCell class]]) {
                     ProjectListCell *cell = (ProjectListCell*)cellView;
                     NSIndexPath *indexPath = [self.CollectionViewProjects indexPathForCell:cell];
-                    controller.Project = [self.projectitems objectAtIndex:indexPath.row];
+                    controller.Project = [self.filteredprojectitems objectAtIndex:indexPath.row];
                 }
             }
         }
@@ -275,7 +265,60 @@
         controller.deleteitem = false;
     }
 }
+/*
+ created date:      24/06/2018
+ last modified:     24/06/2018
+ remarks:
+ */
+- (IBAction)SegmentFilteredChanged:(id)sender {
+    NSLog(@"%@",[NSNumber numberWithInteger:self.SegmentFilterProjects.selectedSegmentIndex]);
+    [self FilterProjectCollectionView];
+}
+/*
+ created date:      24/06/2018
+ last modified:     24/06/2018
+ remarks:
+ */
+-(void)FilterProjectCollectionView {
+    if (self.SegmentFilterProjects.selectedSegmentIndex == 0) {
+        NSLog(@"All - %d",0);
+        self.filteredprojectitems = [[NSMutableArray alloc] initWithArray:self.projectitems];
 
+    } else if (self.SegmentFilterProjects.selectedSegmentIndex == 1) {
+        NSLog(@"Past - %d",1);
+        NSDate* currentDate = [NSDate date];
+        self.filteredprojectitems = [[NSMutableArray alloc] init];
+        
+        for (ProjectNSO *project in self.projectitems) {
+            if([currentDate compare: project.enddt] == NSOrderedDescending ) {
+                [self.filteredprojectitems addObject:project];
+            }
+        }
+        
+    } else if (self.SegmentFilterProjects.selectedSegmentIndex == 2) {
+        NSLog(@"Future - %d",2);
+        NSDate* currentDate = [NSDate date];
+        self.filteredprojectitems = [[NSMutableArray alloc] init];
+        
+        for (ProjectNSO *project in self.projectitems) {
+            if([currentDate compare: project.startdt] == NSOrderedAscending ) {
+                [self.filteredprojectitems addObject:project];
+            }
+        }
+        
+    } else {
+        NSDate* currentDate = [NSDate date];
+        self.filteredprojectitems = [[NSMutableArray alloc] init];
+        
+        for (ProjectNSO *project in self.projectitems) {
+            if ([currentDate compare: project.startdt] == NSOrderedDescending && [currentDate compare: project.enddt] == NSOrderedAscending) {
+                [self.filteredprojectitems addObject:project];
+            }
+        }
+        
+    }
+    [self.CollectionViewProjects reloadData];
+}
 
 
 @end

@@ -23,6 +23,7 @@
 @property (nonatomic) NSString *locality;
 @property (nonatomic) NSString *sublocality;
 @property (nonatomic) NSString *postcode;
+@property (nonatomic) NSString *wikititle;
 @property (nonatomic) NSString *searchstring;
 @property (nonatomic) NSNumber *lat;
 @property (nonatomic) NSNumber *lon;

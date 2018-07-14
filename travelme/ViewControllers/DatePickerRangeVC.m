@@ -20,8 +20,8 @@
     self.DatePickerStart.date = self.Activity.startdt;
     self.DatePickerEnd.date = self.Activity.enddt;
     
-    [self.DatePickerStart setValue:[UIColor colorWithRed:246.0f/255.0f green:247.0f/255.0f blue:235.0f/255.0f alpha:1.0] forKey:@"textColor"];
-    [self.DatePickerEnd setValue:[UIColor colorWithRed:246.0f/255.0f green:247.0f/255.0f blue:235.0f/255.0f alpha:1.0] forKey:@"textColor"];
+    [self.DatePickerStart setValue:[UIColor colorWithRed:11.0f/255.0f green:110.0f/255.0f blue:79.0f/255.0f alpha:1.0] forKey:@"textColor"];
+    [self.DatePickerEnd setValue:[UIColor colorWithRed:11.0f/255.0f green:110.0f/255.0f blue:79.0f/255.0f alpha:1.0] forKey:@"textColor"];
     
 
 
@@ -36,6 +36,7 @@
     if (self.DatePickerStart.date > self.DatePickerEnd.date) {
         self.ButtonAcceptDates.alpha = 0.5f;
         self.ButtonAcceptDates.enabled = false;
+        self.DatePickerEnd.date = self.DatePickerStart.date;
     } else {
         self.ButtonAcceptDates.alpha = 1.0f;
         self.ButtonAcceptDates.enabled = true;
@@ -47,6 +48,7 @@
     if (self.DatePickerStart.date > self.DatePickerEnd.date) {
         self.ButtonAcceptDates.alpha = 0.5f;
         self.ButtonAcceptDates.enabled = false;
+         self.DatePickerStart.date = self.DatePickerEnd.date;
     } else {
         self.ButtonAcceptDates.alpha = 1.0f;
         self.ButtonAcceptDates.enabled = true;
