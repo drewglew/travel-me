@@ -144,6 +144,7 @@ MKLocalSearchResponse *results;
                     CLPlacemark *placemark = [placemarks firstObject];
                     anno.coordinate = placemark.location.coordinate;
                     anno.title = placemark.name;
+                    
                     NSString *AdminArea = placemark.subAdministrativeArea;
                     if ([AdminArea isEqualToString:@""] || AdminArea == NULL) {
                         AdminArea = placemark.administrativeArea;
@@ -418,6 +419,7 @@ MKLocalSearchResponse *results;
         controller.newitem = true;
         controller.readonlyitem = false;
         controller.fromproject = self.fromproject;
+        controller.fromnearby = false;
     } else if([segue.identifier isEqualToString:@"ShowPoiWithoutMapData"]){
         PoiDataEntryVC *controller = (PoiDataEntryVC *)segue.destinationViewController;
         controller.delegate = self;
@@ -425,6 +427,7 @@ MKLocalSearchResponse *results;
         controller.newitem = true;
         controller.readonlyitem = false;
         controller.fromproject = self.fromproject;
+        controller.fromnearby = false;
     }
 }
 
@@ -435,6 +438,7 @@ MKLocalSearchResponse *results;
  */
 - (void)didCreatePoiFromProject :(NSString*)Key {
     [self.delegate didCreatePoiFromProjectPassThru:Key];
+    [self.delegate didUpdatePoi:true];
     [self dismissViewControllerAnimated:YES completion:Nil];
 }
 /*
@@ -444,5 +448,15 @@ MKLocalSearchResponse *results;
  */
 - (void)didCreatePoiFromProjectPassThru :(NSString*)Key {
 }
+
+/*
+ created date:      15/07/2018
+ last modified:     15/07/2018
+ remarks:
+ */
+- (void)didUpdatePoi :(bool)IsUpdated {
+    
+}
+
 
 @end

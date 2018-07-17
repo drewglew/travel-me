@@ -27,8 +27,11 @@
     if (self.newitem) {
         if (![self.PointOfInterest.name isEqualToString:@""]) {
             self.TextFieldTitle.text = self.PointOfInterest.name;
+            self.TextViewNotes.text = self.PointOfInterest.privatenotes;
             self.ButtonWiki.hidden = true;
         }
+        
+        
     } else {
         if (self.readonlyitem) {
             self.TextFieldTitle.enabled = false;
@@ -39,9 +42,11 @@
         }
 
         [self LoadExistingData];
-        self.ImagePicture.frame = CGRectMake(0, 0, self.ScrollViewImage.frame.size.width, self.ScrollViewImage.frame.size.height);
-        self.ScrollViewImage.delegate = self;
+        
     }
+    
+    self.ImagePicture.frame = CGRectMake(0, 0, self.ScrollViewImage.frame.size.width, self.ScrollViewImage.frame.size.height);
+    self.ScrollViewImage.delegate = self;
     
     [self LoadTypePicker];
     
@@ -241,6 +246,9 @@
 -(void) LoadMapData {
     /* set map */
     self.MapView.delegate = self;
+
+    [self.MapView setShowsPointsOfInterest :YES];
+
     MKPointAnnotation *anno = [[MKPointAnnotation alloc] init];
     anno.title = self.PointOfInterest.name;
     anno.subtitle = [NSString stringWithFormat:@"%@", self.PointOfInterest.administrativearea];
@@ -353,6 +361,7 @@
     return cell;
 }
 
+
 /*
  created date:      28/04/2018
  last modified:     21/05/2018
@@ -380,6 +389,10 @@
                 UIImage *btnImage = [UIImage imageNamed:@"Key"];
                 [self.ButtonKey setImage:btnImage forState:UIControlStateNormal];
             }
+            [self.ImagePicture setImage:item.Image];
+        }
+        else {
+            PoiImageNSO *item = [self.PointOfInterest.Images objectAtIndex:indexPath.row];
             [self.ImagePicture setImage:item.Image];
         }
     }
@@ -663,14 +676,6 @@
 }
 
 
-/*
- created date:      28/04/2018
- last modified:     28/04/2018
- remarks:
- */
-- (IBAction)BackPressed:(id)sender {
-    [self dismissViewControllerAnimated:YES completion:Nil];
-}
 
 /*
  created date:      28/04/2018
@@ -707,9 +712,14 @@
         
         if (self.fromproject) {
             [self.delegate didCreatePoiFromProject :self.PointOfInterest.name];
+            [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+        } else if (self.fromnearby) {
+             [self.delegate didUpdatePoi:true];
+             [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+        } else {
+            [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
         }
-        [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
-     
+
     } else {
         self.PointOfInterest.name = self.TextFieldTitle.text;
         self.PointOfInterest.privatenotes = self.TextViewNotes.text;
@@ -752,6 +762,7 @@
         }
 
         [AppDelegateDef.Db UpdatePoiItem :self.PointOfInterest];
+        [self.delegate didUpdatePoi:true];
         [self dismissViewControllerAnimated:YES completion:Nil];
     }
 }
@@ -990,6 +1001,9 @@
 - (void)didCreatePoiFromProject :(NSString*)Key {
 }
 
+- (void)didCreatePoiFromNearby {
+}
+
 /* Delegate methods for ScrollView */
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
     return [self.ScrollViewImage viewWithTag:5];
@@ -1039,6 +1053,24 @@
 {
     [textField resignFirstResponder];
     return YES;
+}
+
+/*
+ created date:      15/07/2018
+ last modified:     15/07/2018
+ remarks:
+ */
+- (void)didUpdatePoi :(bool)IsUpdated {
+    
+}
+
+/*
+ created date:      28/04/2018
+ last modified:     15/07/2018
+ remarks:
+ */
+- (IBAction)BackPressed:(id)sender {
+    [self dismissViewControllerAnimated:YES completion:Nil];
 }
 
 

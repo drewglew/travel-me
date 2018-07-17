@@ -179,7 +179,7 @@ NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
     else if (self.SegmentLanguageOption.selectedSegmentIndex == 1) {
         Country = [AppDelegateDef.Db GetCountryByCode:self.PointOfInterest.countrycode];
     } else {
-        Country = [AppDelegateDef.Db GetCountryByCode:@"en"];
+        Country = [AppDelegateDef.Db GetCountryByCode:@"UK"];
     }
     
     if (![fileManager fileExistsAtPath:wikiDataFilePath]){

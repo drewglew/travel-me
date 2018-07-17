@@ -32,5 +32,4 @@
 @property (weak, nonatomic) IBOutlet UIView *ViewAction;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonRouting;
-
 @end

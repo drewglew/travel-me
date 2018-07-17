@@ -14,11 +14,13 @@
 #import "ActivityDataEntryVC.h"
 #import "ProjectNSO.h"
 #import "LocatorVC.h"
+#import "NearbyListingVC.h"
 
 @protocol PoiSearchDelegate <NSObject>
+
 @end
 
-@interface PoiSearchVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, ActivityDelegate, LocatorDelegate, PoiDataEntryDelegate>
+@interface PoiSearchVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, ActivityDelegate, LocatorDelegate, PoiDataEntryDelegate, NearbyListingDelegate>
 @property (weak, nonatomic) IBOutlet UISearchBar *SearchBarPoi;
 @property (weak, nonatomic) IBOutlet UITableView *TableViewSearchPoiItems;
 @property (strong, nonatomic) NSMutableArray *poiitems;

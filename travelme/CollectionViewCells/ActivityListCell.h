@@ -20,6 +20,8 @@
 @property (weak, nonatomic) IBOutlet UIVisualEffectView *VisualViewBlurBehindImage;
 @property (weak, nonatomic) IBOutlet UILabel *LabelActivityLegend;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewTypeOfPoi;
+@property (weak, nonatomic) IBOutlet UIView *ViewActiveItem;
+@property (weak, nonatomic) IBOutlet UIView *ViewActiveBadge;
 
 
 

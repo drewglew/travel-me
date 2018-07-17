@@ -170,7 +170,7 @@
                                     }
                                     imageitem.Image = [ToolBoxNSO imageWithImage:image scaledToSize:self.ImageSize];
                                     if (DescriptionItem.count>0) {
-                                        imageitem.WikiDescription = [DescriptionItem objectForKey:@"text"];
+                                        imageitem.Description = [DescriptionItem objectForKey:@"text"];
                                     }
                                     imageitem.selected = false;
                                     [self.imageitems addObject:imageitem];
@@ -212,9 +212,9 @@
                                     
                                     imageitem.Image = [ToolBoxNSO imageWithImage:image scaledToSize:self.ImageSize];
                                     if (DescriptionItem.count>0) {
-                                        imageitem.WikiDescription = [DescriptionItem objectForKey:@"text"];
+                                        imageitem.Description = [DescriptionItem objectForKey:@"text"];
                                     } else {
-                                        imageitem.WikiDescription = @"No description available";
+                                        imageitem.Description = @"No description available";
                                     }
                                     imageitem.selected = false;
                                     [self.imageitems addObject:imageitem];
@@ -338,7 +338,7 @@
         [dtformatter setDateFormat:@"EEE MMM dd YYYY, HH:mm"];
         [self.LabelPhotoCounter setText:[NSString stringWithFormat:@"Photo taken %@", [dtformatter stringFromDate:img.creationdate]]];
     } else {
-        [self.LabelPhotoCounter setText:[NSString stringWithFormat:@"%@", img.WikiDescription]];
+        [self.LabelPhotoCounter setText:[NSString stringWithFormat:@"%@", img.Description]];
     }
     
     [self.ImageCollectionView reloadData];

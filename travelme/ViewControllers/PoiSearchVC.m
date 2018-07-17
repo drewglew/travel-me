@@ -44,12 +44,8 @@
     
     self.poiitems = [[NSMutableArray alloc] init];
     self.poifiltereditems = [[NSMutableArray alloc] init];
-    
-    if (self.Project != nil) {
-        [self LoadPoiData];
-    }
 
-    
+    [self LoadPoiData];
     
 }
 /*
@@ -59,9 +55,9 @@
  */
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-     if (self.Project == nil) {
-         [self LoadPoiData];
-     }
+//     if (self.Project == nil) {
+//         [self LoadPoiData];
+//     }
 }
 
 
@@ -120,9 +116,10 @@
             NSError *err;
             
             pngData = [NSData dataWithContentsOfURL:imagefile options:NSDataReadingMappedIfSafe error:&err];
-           
-            KeyImageItem.Image = [UIImage imageWithData:pngData];
-
+            
+            UIImage *image =[UIImage imageWithData:pngData];
+            CGSize size = CGSizeMake(self.TableViewSearchPoiItems.frame.size.width , self.TableViewSearchPoiItems.rowHeight); // set the width and height
+            KeyImageItem.Image = [self resizeImage:image imageSize:size];
         }
     }
  
@@ -130,6 +127,24 @@
     [self.poifiltereditems addObjectsFromArray: self.poiitems];
     [self.TableViewSearchPoiItems reloadData];
 }
+
+/*
+ created date:      15/07/2018
+ last modified:     15/07/2018
+ remarks:
+ */
+
+-(UIImage *)resizeImage:(UIImage *)image imageSize:(CGSize)size
+{
+    UIGraphicsBeginImageContext(size);
+    [image drawInRect:CGRectMake(0,0,size.width,size.height)];
+    UIImage* newImage = UIGraphicsGetImageFromCurrentImageContext();
+    // here is the scaled image which has been changed to the size specified
+    UIGraphicsEndImageContext();
+    return newImage;
+}
+
+
 
 /*
  created date:      30/04/2018
@@ -147,12 +162,6 @@
  */
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.poifiltereditems.count;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-
-    return 56;
 }
 
 
@@ -350,7 +359,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     11/06/2018
+ last modified:     16/07/2018
  remarks:           segue controls.  We need to work here next - get selection Project==null
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -364,7 +373,26 @@
         else {
             controller.fromproject = true;
         }
+    } else if([segue.identifier isEqualToString:@"ShowNearby"]){
+        NearbyListingVC *controller = (NearbyListingVC *)segue.destinationViewController;
+        controller.delegate = self;
+        
+        if ([sender isKindOfClass: [UIButton class]]) {
+            UIView * cellView=(UIView*)sender;
+            while ((cellView= [cellView superview])) {
+                if([cellView isKindOfClass:[PoiListCell class]]) {
+                    PoiListCell *cell = (PoiListCell*)cellView;
+                    NSIndexPath *indexPath = [self.TableViewSearchPoiItems indexPathForCell:cell];
+                    controller.PointOfInterest = [self.poifiltereditems objectAtIndex:indexPath.row];
+                }
+            }
+        }
+    } else if([segue.identifier isEqualToString:@"ShowNearbyMe"]){
+        NearbyListingVC *controller = (NearbyListingVC *)segue.destinationViewController;
+        controller.delegate = self;
+        controller.PointOfInterest = nil;
     }
+    
 }
 
 
@@ -410,4 +438,17 @@
 
 - (IBAction)ButtonOpenAppleMaps:(id)sender {
 }
+
+/*
+ created date:      15/07/2018
+ last modified:     15/07/2018
+ remarks:
+ */
+- (void)didUpdatePoi :(bool)IsUpdated {
+    [self LoadPoiData];
+}
+
+
+
+
 @end

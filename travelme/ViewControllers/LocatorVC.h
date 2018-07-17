@@ -17,6 +17,7 @@
 
 @protocol LocatorDelegate <NSObject>
 - (void)didCreatePoiFromProjectPassThru :(NSString*)Key;
+- (void)didUpdatePoi :(bool)IsUpdated;
 @end
 
 @interface LocatorVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, MKMapViewDelegate, CLLocationManagerDelegate> {

@@ -31,6 +31,8 @@
             self.ImageViewPoi.image = img.Image;
         }
         self.LabelTitle.text = [NSString stringWithFormat:@"Activity: %@", self.Activity.name];
+        self.ViewTripAmount.hidden = true;
+        
     } else {
         if (self.Project.Image.size.height==0) {
             self.ImageViewPoi.image = [UIImage imageNamed:@"Project"];
@@ -40,6 +42,7 @@
         NSLog(@"image size: %f",self.Project.Image.size.height );
         self.LabelTitle.text = [NSString stringWithFormat:@"Project: %@", self.Project.name];
         self.ButtonAction.hidden = true;
+        self.ViewTripAmount.hidden = false;
     }
     
     self.TableViewPayment.rowHeight = 100;
@@ -59,7 +62,7 @@
 
 /*
  created date:      09/05/2018
- last modified:     16/05/2018
+ last modified:     15/07/2018
  remarks:
  */
 -(void) LoadPaymentData {
@@ -75,10 +78,52 @@
         [self.paymentsections addObject:rows];
     }
 
+    
+    
+    /* work out trip price rate */
+    
+    if (self.Project != nil) {
+        
+        /* get total days as fraction */
+        NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        NSDateComponents *components = [gregorianCalendar components:NSCalendarUnitHour
+                                                            fromDate:self.Project.startdt
+                                                              toDate:self.Project.enddt
+                                                             options:0];
+        
+        long Days = [components hour]/24;
+        long RemainingHours = [components hour]%24;
+        double TotalDays = Days + (double)RemainingHours/24.0f;
+        /* now get home currency actual paid amount */
+        double actrate=0, actamt=0;
+        for (PaymentNSO *item in self.paymentitems) {
+            actrate = [item.rate_act doubleValue] / 10000;
+            if ([item.rate_act intValue]==1) {
+                actamt += ([item.amt_act doubleValue] / 100);
+            } else {
+                actamt +=  ([item.amt_act doubleValue] / 100) * actrate;
+            }
+        }
+        /* simply calculate trip rate */
+        double TripRate = 0;
+        if (actamt!=0) {
+            TripRate = actamt / TotalDays;
+        }
+        
+        self.LabelTripAmount.text = [NSString stringWithFormat:@"%.2f\n%@",TripRate,[AppDelegateDef HomeCurrencyCode]];
+        
+        
+        self.ViewTripAmount.layer.cornerRadius = self.ViewTripAmount.bounds.size.width/2;
+        
+    }
+    
     [self.TableViewPayment reloadData];
 }
 
-
+- (NSInteger)minutesBetween:(NSDate *)firstDate and:(NSDate *)secondDate {
+    NSTimeInterval interval = [secondDate timeIntervalSinceDate:firstDate];
+    return (int)interval / 60;
+}
 
 /*
  created date:      08/05/2018
@@ -113,9 +158,7 @@
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
     
     NSArray *temp = self.paymentsections[section];
-    
-    
-    
+
     double actrate=0, plannedrate=0;
     double actamt=0, plannedamt=0;
     

@@ -88,6 +88,7 @@
         cell.VisualViewBlur.hidden = true;
         cell.VisualViewBlurBehindImage.hidden = true;
         cell.ImageBlurBackground.hidden = true;
+        cell.ViewActiveBadge.hidden = true;
         
     } else {
         cell.activity = [self.activityitems objectAtIndex:indexPath.row];
@@ -109,14 +110,33 @@
                 cell.VisualViewBlur.hidden = true;
                 cell.LabelActivityLegend.backgroundColor = [UIColor colorWithRed:43.0f/255.0f green:65.0f/255.0f blue:98.0f/255.0f alpha:1.0];
             }
+            
+            if (cell.activity.startdt == cell.activity.enddt) {
+                cell.ViewActiveItem.backgroundColor = [UIColor colorWithRed:252.0f/255.0f green:33.0f/255.0f blue:37.0f/255.0f alpha:1.0];
+                
+                cell.ViewActiveBadge.layer.cornerRadius = 35;
+                cell.ViewActiveBadge.layer.masksToBounds = YES;
+                cell.ViewActiveBadge.transform = CGAffineTransformMakeRotation(.34906585);
+                
+                cell.ViewActiveBadge.hidden = false;
+            } else {
+                 cell.ViewActiveItem.backgroundColor = [UIColor colorWithRed:255.0f/255.0f green:255.0f/255.0f blue:255.0f/255.0f alpha:1.0];
+                cell.ViewActiveBadge.hidden = true;
+            }
+ 
         } else {
             if (cell.activity.legendref== [NSNumber numberWithInt:2]) {
                 cell.LabelActivityLegend.backgroundColor = [UIColor colorWithRed:250.0f/255.0f green:159.0f/255.0f blue:66.0f/255.0f alpha:1.0];
+                
             } else if (cell.activity.legendref== [NSNumber numberWithInt:1]) {
                 cell.LabelActivityLegend.backgroundColor = [UIColor colorWithRed:114.0f/255.0f green:24.0f/255.0f blue:23.0f/255.0f alpha:1.0];
             }
             cell.VisualViewBlur.hidden = true;
             cell.ButtonDelete.hidden = false;
+            
+            cell.ViewActiveItem.backgroundColor = [UIColor colorWithRed:255.0f/255.0f green:255.0f/255.0f blue:255.0f/255.0f alpha:1.0];
+            cell.ViewActiveBadge.hidden = true;
+            
         }
 
         NSArray *TypeItems = @[@"Cat-Accomodation",
@@ -301,6 +321,7 @@
     
     [self.CollectionViewActivities reloadData];
 }
+
 
 
 /*

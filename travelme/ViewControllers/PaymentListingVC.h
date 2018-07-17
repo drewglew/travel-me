@@ -30,5 +30,8 @@
 @property (nonatomic, weak) id <PaymentListingDelegate> delegate;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewPoi;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonAction;
+@property (weak, nonatomic) IBOutlet UILabel *LabelTripPrice;
+@property (weak, nonatomic) IBOutlet UILabel *LabelTripAmount;
+@property (weak, nonatomic) IBOutlet UIView *ViewTripAmount;
 
 @end

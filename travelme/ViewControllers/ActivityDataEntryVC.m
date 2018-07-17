@@ -423,4 +423,14 @@ else
     return YES;
 }
 
+/*
+ created date:      15/07/2018
+ last modified:     15/07/2018
+ remarks:
+ */
+- (void)didUpdatePoi :(bool)IsUpdated {
+    //[self LoadPoiData];
+}
+
+
 @end

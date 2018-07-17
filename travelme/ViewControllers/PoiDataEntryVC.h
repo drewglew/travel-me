@@ -18,9 +18,9 @@
 #import "ImageNSO.h"
 #import "WikiVC.h"
 
-
 @protocol PoiDataEntryDelegate <NSObject>
 - (void)didCreatePoiFromProject :(NSString*)Key;
+- (void)didUpdatePoi :(bool)IsUpdated;
 @end
 
 @interface PoiDataEntryVC : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource, ImagePickerDelegate, WikiGeneratorDelegate, UIScrollViewDelegate, UITextViewDelegate,UITextFieldDelegate>
@@ -33,6 +33,7 @@
 @property (assign) bool imagesupdated;
 @property (assign) bool readonlyitem;
 @property (assign) bool fromproject;
+@property (assign) bool fromnearby;
 @property (assign) int imagestate;
 @property (weak, nonatomic) IBOutlet UITextField *TextFieldTitle;
 @property (weak, nonatomic) IBOutlet UICollectionView *CollectionViewPoiImages;
