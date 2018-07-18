@@ -24,13 +24,17 @@
  */
 - (void)viewDidLoad {
     [super viewDidLoad];
-    if (self.newitem) {
+    if (self.newitem && !self.fromnearby) {
         if (![self.PointOfInterest.name isEqualToString:@""]) {
             self.TextFieldTitle.text = self.PointOfInterest.name;
             self.TextViewNotes.text = self.PointOfInterest.privatenotes;
             self.ButtonWiki.hidden = true;
         }
         
+    } else if (self.fromnearby) {
+        self.ButtonWiki.hidden = false;
+        self.TextFieldTitle.text = self.PointOfInterest.name;
+        self.TextViewNotes.text = self.PointOfInterest.privatenotes;
         
     } else {
         if (self.readonlyitem) {
@@ -717,6 +721,7 @@
              [self.delegate didUpdatePoi:true];
              [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
         } else {
+            [self.delegate didUpdatePoi:true];
             [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
         }
 

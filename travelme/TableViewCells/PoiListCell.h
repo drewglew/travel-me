@@ -17,5 +17,6 @@
 
 
 @property (strong, nonatomic) PoiNSO *poi;
+@property (weak, nonatomic) IBOutlet UIImageView *ImageCategory;
 
 @end

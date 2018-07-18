@@ -61,7 +61,7 @@
 
 /*
  created date:      27/04/2018
- last modified:     13/07/2018
+ last modified:     17/07/2018
  remarks:           Create a new database with model.
  */
 -(bool)InitDb :(NSString*) databaseName {
@@ -135,7 +135,42 @@
                     NSLog(@"failed to update wikititle in poi column");
                 }
             }
-
+            /*
+            if (![self checkColumnExists:@"flagged" :@"poi"] ) {
+                char *errorMessage;
+                const char *sql_statement = "ALTER TABLE poi ADD COLUMN flagged INTEGER;";
+                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                    NSLog(@"failed to alter table new column");
+                }
+                sql_statement = "UPDATE poi set flagged=0;";
+                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                    NSLog(@"failed to update wikititle in poi column");
+                }
+            }
+            if (![self checkColumnExists:@"created_dt" :@"poi"] ) {
+                char *errorMessage;
+                const char *sql_statement = "ALTER TABLE poi ADD COLUMN created_dt TEXT;";
+                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                    NSLog(@"failed to alter table new column");
+                }
+                sql_statement = "UPDATE poi set created_dt='';";
+                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                    NSLog(@"failed to update created_dt in poi column");
+                }
+            }
+            if (![self checkColumnExists:@"modified_dt" :@"poi"] ) {
+                char *errorMessage;
+                const char *sql_statement = "ALTER TABLE poi ADD COLUMN modified_dt TEXT;";
+                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                    NSLog(@"failed to alter table new column");
+                }
+                sql_statement = "UPDATE poi set modified_dt='';";
+                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                    NSLog(@"failed to update modified_dt in poi column");
+                }
+            }
+            */
+            
             NSLocale *theLocale = [NSLocale currentLocale];
             NSString *currencyCode = [theLocale objectForKey:NSLocaleCurrencyCode];
             NSLog(@"Currency Code : %@",currencyCode);

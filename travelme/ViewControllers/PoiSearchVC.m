@@ -22,7 +22,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     14/05/2018
+ last modified:     17/07/2018
  remarks:
  */
 - (void)viewDidLoad {
@@ -45,6 +45,44 @@
     self.poiitems = [[NSMutableArray alloc] init];
     self.poifiltereditems = [[NSMutableArray alloc] init];
 
+    self.TypeItems = @[@"Cat-Accomodation",
+                       @"Cat-Airport",
+                       @"Cat-Astronaut",
+                       @"Cat-Beer",
+                       @"Cat-Bike",
+                       @"Cat-Bridge",
+                       @"Cat-CarHire",
+                       @"Cat-Casino",
+                       @"Cat-Church",
+                       @"Cat-City",
+                       @"Cat-Club",
+                       @"Cat-Concert",
+                       @"Cat-FoodWine",
+                       @"Cat-Historic",
+                       @"Cat-House",
+                       @"Cat-Lake",
+                       @"Cat-Lighthouse",
+                       @"Cat-Metropolis",
+                       @"Cat-Misc",
+                       @"Cat-Monument",
+                       @"Cat-Museum",
+                       @"Cat-Nature",
+                       @"Cat-Office",
+                       @"Cat-Restaurant",
+                       @"Cat-Scenary",
+                       @"Cat-Sea",
+                       @"Cat-Ship",
+                       @"Cat-Shopping",
+                       @"Cat-Ski",
+                       @"Cat-Sports",
+                       @"Cat-Theatre",
+                       @"Cat-ThemePark",
+                       @"Cat-Train",
+                       @"Cat-Trek",
+                       @"Cat-Venue",
+                       @"Cat-Zoo"
+                       ];
+    
     [self LoadPoiData];
     
 }
@@ -75,6 +113,7 @@
     //[self.SearchBarPoi resignFirstResponder];
     [self.poifiltereditems removeAllObjects];
     [self.poifiltereditems addObjectsFromArray: self.poiitems];
+    [self.LabelCounter setText:[NSString stringWithFormat:@"%lu Items", (unsigned long)self.poifiltereditems.count]];
     [self.TableViewSearchPoiItems reloadData];
 }
 
@@ -107,7 +146,7 @@
     for (PoiNSO *poi in self.poiitems) {
         
         if (poi.Images.count > 0) {
-             NSPredicate *predicate = [NSPredicate predicateWithFormat:@"KeyImage == %@", [NSNumber numberWithInt:1]];
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"KeyImage == %@", [NSNumber numberWithInt:1]];
             NSArray *filteredArray = [poi.Images filteredArrayUsingPredicate:predicate];
             PoiImageNSO *KeyImageItem = [filteredArray firstObject];
 
@@ -125,6 +164,7 @@
  
     [self.poifiltereditems removeAllObjects];
     [self.poifiltereditems addObjectsFromArray: self.poiitems];
+    [self.LabelCounter setText:[NSString stringWithFormat:@"%lu Items", (unsigned long)self.poifiltereditems.count]];
     [self.TableViewSearchPoiItems reloadData];
 }
 
@@ -193,6 +233,9 @@
     cell.poi = poi;
     cell.Name.text = poi.name;
     cell.AdministrativeArea.text = poi.administrativearea;
+    
+    cell.ImageCategory.image = [UIImage imageNamed:[self.TypeItems objectAtIndex:[cell.poi.categoryid integerValue]]];
+    
     
     if (poi.Images.count==0) {
         [cell.PoiKeyImage setImage:[UIImage imageNamed:@"Poi"]];
@@ -304,6 +347,7 @@
         }
             
     }
+    [self.LabelCounter setText:[NSString stringWithFormat:@"%lu Items", (unsigned long)self.poifiltereditems.count]];
 }
 /*
  created date:      30/04/2018

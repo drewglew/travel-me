@@ -133,11 +133,7 @@
             
             poi.wikititle = [NSString stringWithFormat:@"%@~%@",language,[[item valueForKey:@"title"] stringByReplacingOccurrencesOfString:@" " withString:@"_"]];
             poi.title = [item valueForKey:@"title"];
-            
-            
-            
             poi.dist = [item valueForKey:@"dist"];
-            
             poi.Coordinates = CLLocationCoordinate2DMake([[item valueForKey:@"lat"] doubleValue], [[item valueForKey:@"lon"] doubleValue]);
             
             [self.nearbyitems addObject:poi];

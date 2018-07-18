@@ -75,7 +75,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     24/06/2018
+ last modified:     18/07/2018
  remarks:
  */
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -112,13 +112,14 @@
             }
             
             if (cell.activity.startdt == cell.activity.enddt) {
-                cell.ViewActiveItem.backgroundColor = [UIColor colorWithRed:252.0f/255.0f green:33.0f/255.0f blue:37.0f/255.0f alpha:1.0];
-                
-                cell.ViewActiveBadge.layer.cornerRadius = 35;
-                cell.ViewActiveBadge.layer.masksToBounds = YES;
-                cell.ViewActiveBadge.transform = CGAffineTransformMakeRotation(.34906585);
-                
-                cell.ViewActiveBadge.hidden = false;
+                // only show badge when activity is Actual.
+                if (cell.activity.activitystate== [NSNumber numberWithInt:1]) {
+                    cell.ViewActiveBadge.layer.cornerRadius = 35;
+                    cell.ViewActiveBadge.layer.masksToBounds = YES;
+                    cell.ViewActiveBadge.transform = CGAffineTransformMakeRotation(.34906585);
+                    cell.ViewActiveItem.backgroundColor = [UIColor colorWithRed:252.0f/255.0f green:33.0f/255.0f blue:37.0f/255.0f alpha:1.0];
+                    cell.ViewActiveBadge.hidden = false;
+                }
             } else {
                  cell.ViewActiveItem.backgroundColor = [UIColor colorWithRed:255.0f/255.0f green:255.0f/255.0f blue:255.0f/255.0f alpha:1.0];
                 cell.ViewActiveBadge.hidden = true;

@@ -114,6 +114,7 @@
         
         
         self.ViewTripAmount.layer.cornerRadius = self.ViewTripAmount.bounds.size.width/2;
+        self.ViewTripAmount.transform = CGAffineTransformMakeRotation(.17);
         
     }
     

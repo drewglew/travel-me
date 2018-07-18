@@ -14,5 +14,6 @@
 @interface MenuVC : UIViewController
 @property (weak, nonatomic) IBOutlet UIButton *ButtonProject;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonPoi;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonInfo;
 
 @end

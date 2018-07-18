@@ -447,15 +447,16 @@ MKLocalSearchResponse *results;
  remarks: Leave empty
  */
 - (void)didCreatePoiFromProjectPassThru :(NSString*)Key {
+    
 }
 
 /*
  created date:      15/07/2018
- last modified:     15/07/2018
+ last modified:     18/07/2018
  remarks:
  */
 - (void)didUpdatePoi :(bool)IsUpdated {
-    
+    [self.delegate didUpdatePoi:true];
 }
 
 

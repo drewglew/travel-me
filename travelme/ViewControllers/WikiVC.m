@@ -27,6 +27,13 @@
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentDirectory = [paths objectAtIndex:0];
     
+    /*
+    NSArray *parms = [self.PointOfInterest.wikititle componentsSeparatedByString:@"~"];
+    NSString *url = [NSString stringWithFormat:@"https://%@.wikipedia.org/api/rest_v1/page/media/%@",[parms objectAtIndex:0] , [parms objectAtIndex:1]];
+    
+    (self.PointOfInterest.wikititle)
+    */
+    
     NSString *wikiDataFilePath = [documentDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/WikiDocs/%@.pdf",self.PointOfInterest.key]];
     
     NSLocale *theLocale = [NSLocale currentLocale];
@@ -101,19 +108,23 @@
 
 /*
  created date:      16/06/2018
- last modified:     16/06/2018
+ last modified:     18/07/2018
  remarks:  search by name first?  if nothing found then by closest location?
  */
 -(void) MakeWikiFile :(NSString*)Title :(NSString *)wikiPathName :(NSString *)language {
 NSString *urlstring = [NSString stringWithFormat:@"https://%@.wikipedia.org/api/rest_v1/page/pdf/%@",language,Title];
 NSURL *url = [NSURL URLWithString:[urlstring stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
-
+    
 NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
                                       dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
                                           
                                           [data writeToFile:wikiPathName options:NSDataWritingAtomic error:&error];
                                           
                                           dispatch_async(dispatch_get_main_queue(), ^(void){
+                                              
+                                              self.PointOfInterest.wikititle =  [NSString stringWithFormat:@"%@~%@",language,Title];
+                                              
+                                              [self.delegate updatePoiFromWikiActvity :self.PointOfInterest];
                                               
                                               [self.webView loadData:data MIMEType:@"application/pdf" characterEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@""]];
                                               

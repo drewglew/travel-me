@@ -38,8 +38,24 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self.ButtonPoi.imageView setContentMode:UIViewContentModeScaleAspectFit];
-    [self.ButtonProject.imageView setContentMode:UIViewContentModeScaleAspectFit];
+   // [self.ButtonPoi.imageView setContentMode:UIViewContentModeScaleAspectFit];
+   // [self.ButtonProject.imageView setContentMode:UIViewContentModeScaleAspectFit];
+    
+    self.ButtonInfo.layer.borderWidth=1;
+    self.ButtonInfo.layer.cornerRadius = 10; // this value vary as per your desire
+    self.ButtonInfo.clipsToBounds = YES;
+    
+    self.ButtonProject.layer.borderWidth=1;
+    self.ButtonProject.layer.cornerRadius = 10; // this value vary as per your desire
+    self.ButtonProject.clipsToBounds = YES;
+    
+    self.ButtonPoi.layer.borderWidth=1;
+    self.ButtonPoi.layer.cornerRadius = 10; // this value vary as per your desire
+    self.ButtonPoi.clipsToBounds = YES;
+    
+    
+    
+    
 }
 
 /*
