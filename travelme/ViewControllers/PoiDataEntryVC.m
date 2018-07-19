@@ -19,7 +19,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     14/07/2018
+ last modified:     19/07/2018
  remarks: TODO - split load existing data into 2 - map data and images.
  */
 - (void)viewDidLoad {
@@ -71,6 +71,9 @@
     self.TextViewNotes.layer.masksToBounds=YES;
     self.TextViewNotes.layer.borderColor=[[UIColor colorWithRed:246.0f/255.0f green:247.0f/255.0f blue:235.0f/255.0f alpha:1.0]CGColor];
     self.TextViewNotes.layer.borderWidth= 1.0f;
+    // heigtht of option blurred view is 60; view is 4 less; to make a circle we need half the remainder.
+    self.ViewSelectedKey.layer.cornerRadius=28;
+    self.ViewSelectedKey.layer.masksToBounds=YES;
     
     [self addDoneToolBarToKeyboard:self.TextViewNotes];
     self.TextFieldTitle.delegate = self;
@@ -273,14 +276,11 @@
     [self.MapView addAnnotation:anno];
     [self.MapView selectAnnotation:anno animated:YES];
 
-    //self.CircleRange = [MKCircle circleWithCenterCoordinate:coord radius:[radius doubleValue]];
-    //[self.MapView addOverlay:self.CircleRange];
-    
 }
 
 /*
  created date:      14/07/2018
- last modified:     14/07/2018
+ last modified:     19/07/2018
  remarks: this method handles the map circle that is placed as overlay onto map
  */
 - (MKOverlayRenderer *) mapView:(MKMapView *)mapView rendererForOverlay:(id)overlay {
@@ -288,11 +288,8 @@
     {
         MKCircleRenderer* aRenderer = [[MKCircleRenderer
                                         alloc]initWithCircle:(MKCircle *)overlay];
-        //aRenderer.fillColor = [[UIColor orangeColor] colorWithAlphaComponent:0.25];
         aRenderer.strokeColor = [[UIColor orangeColor] colorWithAlphaComponent:0.9];
         aRenderer.lineWidth = 2;
-        //aRenderer.lineDashPattern = @[@2, @5];
-        //aRenderer.alpha = 0.5;
         return aRenderer;
     }
     else
@@ -303,7 +300,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     11/06/2018
+ last modified:     19/07/2018
  remarks:
  */
 -(void) LoadExistingData {
@@ -319,8 +316,7 @@
         if (imageitem.KeyImage) {
             self.SelectedImageReference = imageitem.ImageFileReference;
             self.SelectedImageIndex = [NSNumber numberWithLong:ImageIndex];;
-            UIImage *btnImage = [UIImage imageNamed:@"Key"];
-            [self.ButtonKey setImage:btnImage forState:UIControlStateNormal];
+            self.ViewSelectedKey.hidden = false;
             [self.ImagePicture setImage:imageitem.Image];
             [self.ImageViewKey setImage:imageitem.Image];
         }
@@ -371,7 +367,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     21/05/2018
+ last modified:     19/07/2018
  remarks:
  */
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -390,11 +386,9 @@
             self.SelectedImageReference = item.ImageFileReference;
             self.SelectedImageIndex = [NSNumber numberWithLong:indexPath.row];
             if (item.KeyImage==0) {
-                UIImage *btnImage = [UIImage imageNamed:@"Key-Off"];
-                [self.ButtonKey setImage:btnImage forState:UIControlStateNormal];
+                self.ViewSelectedKey.hidden = true;
             } else {
-                UIImage *btnImage = [UIImage imageNamed:@"Key"];
-                [self.ButtonKey setImage:btnImage forState:UIControlStateNormal];
+                self.ViewSelectedKey.hidden = false;
             }
             [self.ImagePicture setImage:item.Image];
         }
@@ -891,7 +885,7 @@
 
 /*
  created date:      21/05/2018
- last modified:     23/05/2018
+ last modified:     19/07/2018
  remarks:
  */
 - (IBAction)ButtonImageKeyPressed:(id)sender {
@@ -905,14 +899,12 @@
         for (PoiImageNSO *item in self.PointOfInterest.Images) {
             if ([item.ImageFileReference isEqualToString:self.SelectedImageReference]) {
                 if (item.KeyImage==0) {
-                    UIImage *btnImage = [UIImage imageNamed:@"Key"];
-                    [self.ButtonKey setImage:btnImage forState:UIControlStateNormal];
+                    self.ViewSelectedKey.hidden = false;
                     item.KeyImage = 1;
                     KeyImageEnabled = true;
                     item.UpdateImage = true;
                 } else {
-                    UIImage *btnImage = [UIImage imageNamed:@"Key-Off"];
-                    [self.ButtonKey setImage:btnImage forState:UIControlStateNormal];
+                    self.ViewSelectedKey.hidden = true;
                     item.KeyImage = 0;
                     item.UpdateImage = true;
                 }
@@ -975,7 +967,7 @@
 
 /*
  created date:      23/05/2018
- last modified:     23/05/2018
+ last modified:     19/07/2018
  remarks:
  */
 - (IBAction)ButtonImageEditPressed:(id)sender {
@@ -985,12 +977,15 @@
 
 - (IBAction)SwitchViewPhotoOptionsChanged:(id)sender {
     [self.view layoutIfNeeded];
+    bool showkeyview = self.ViewSelectedKey.hidden;
+    self.ViewSelectedKey.hidden = true;
     if (self.ViewBlurHeightConstraint.constant==60) {
+        
         [UIView animateWithDuration:0.5 animations:^{
             self.ViewBlurHeightConstraint.constant=0;
             [self.view layoutIfNeeded];
         } completion:^(BOOL finished) {
-            
+            self.ViewSelectedKey.hidden = showkeyview;
         }];
         
     } else {
@@ -998,7 +993,7 @@
             self.ViewBlurHeightConstraint.constant=60;
             [self.view layoutIfNeeded];
         } completion:^(BOOL finished) {
-            
+            self.ViewSelectedKey.hidden = showkeyview;
         }];
     }
 }

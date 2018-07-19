@@ -54,6 +54,9 @@
 @property (weak, nonatomic) IBOutlet UIPickerView *PickerType;
 @property (weak, nonatomic) IBOutlet UIVisualEffectView *ViewBlurImageOptionPanel;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonKey;
+@property (weak, nonatomic) IBOutlet UIView *ViewSelectedKey;
+
+
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *ViewBlurHeightConstraint;
 @property (weak, nonatomic) IBOutlet UISwitch *SwitchViewPhotoOptions;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonWiki;

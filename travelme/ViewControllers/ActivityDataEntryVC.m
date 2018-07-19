@@ -180,34 +180,20 @@
 }
 
 
-- (MKOverlayRenderer *) mapView:(MKMapView *)mapView rendererForOverlay:(id)overlay
-{ if([overlay isKindOfClass:[MKCircle class]])
-{
-    MKCircleRenderer* aRenderer = [[MKCircleRenderer
-                                    alloc]initWithCircle:(MKCircle *)overlay];
-    
-    aRenderer.fillColor = [[UIColor orangeColor] colorWithAlphaComponent:0.25];
-    aRenderer.strokeColor = [[UIColor orangeColor] colorWithAlphaComponent:0.9];
-    aRenderer.lineWidth = 2;
-    aRenderer.lineDashPattern = @[@2, @5];
-    aRenderer.alpha = 0.5;
-    
-    return aRenderer;
+- (MKOverlayRenderer *) mapView:(MKMapView *)mapView rendererForOverlay:(id)overlay {
+    if([overlay isKindOfClass:[MKCircle class]])
+    {
+        MKCircleRenderer* aRenderer = [[MKCircleRenderer
+                                        alloc]initWithCircle:(MKCircle *)overlay];
+        aRenderer.strokeColor = [[UIColor orangeColor] colorWithAlphaComponent:0.9];
+        aRenderer.lineWidth = 1;
+        return aRenderer;
+    }
+    else
+    {
+        return nil;
+    }
 }
-else
-{
-    return nil;
-}
-}
-
-
-
-
-
-
-
-
-
 
 /*
  created date:      01/05/2018

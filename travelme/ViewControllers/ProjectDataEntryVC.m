@@ -17,7 +17,7 @@
 
 /*
  created date:      29/04/2018
- last modified:     29/04/2018
+ last modified:     20/07/2018
  remarks:
  */
 - (void)viewDidLoad {
@@ -27,7 +27,7 @@
         if (self.deleteitem) {
             [self.ButtonAction setTitle:@"Del" forState:UIControlStateNormal];
             
-            UIImage *btnImage = [UIImage imageNamed:@"Delete"];
+            UIImage *btnImage = [UIImage imageNamed:@"DeleteRed"];
             [self.ButtonAction setImage:btnImage forState:UIControlStateNormal];
             [self.ButtonAction setTitle:@"" forState:UIControlStateNormal];
             
