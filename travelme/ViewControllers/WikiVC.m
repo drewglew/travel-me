@@ -16,7 +16,7 @@
 
 /*
  created date:      13/06/2018
- last modified:     16/06/2018
+ last modified:     19/07/2018
  remarks:
  */
 - (void)viewDidLoad {
@@ -42,8 +42,12 @@
 
     if (![fileManager fileExistsAtPath:wikiDataFilePath]){
         /* generate a PDF of WikiPage */
-        NSString *TitleText = [self.PointOfInterest.name stringByReplacingOccurrencesOfString:@" " withString:@"_"];
-        [self MakeWikiFile :TitleText :wikiDataFilePath :HomeCountry.language];
+       if ([self checkInternet]) {
+            NSString *TitleText = [self.PointOfInterest.name stringByReplacingOccurrencesOfString:@" " withString:@"_"];
+            [self MakeWikiFile :TitleText :wikiDataFilePath :HomeCountry.language];
+        } else {
+            NSLog(@"Device is not connected to the Internet");
+        }
     } else {
         /* present the WikiPage that is saved already */
         NSURL *targetURL = [NSURL fileURLWithPath:wikiDataFilePath];
@@ -88,11 +92,8 @@
             for (NSDictionary *item in geosearch) {
 
                 titleText = [[item valueForKey:@"title"] stringByReplacingOccurrencesOfString:@" " withString:@"_"];
-
                 self.PointOfInterest.wikititle =  [NSString stringWithFormat:@"%@~%@",language,titleText];
-                
                 [self.delegate updatePoiFromWikiActvity :self.PointOfInterest];
-                
                 [self MakeWikiFile:titleText :wikiPathName :language];
                 
                 /*
@@ -118,20 +119,28 @@ NSURL *url = [NSURL URLWithString:[urlstring stringByAddingPercentEncodingWithAl
 NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
                                       dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
                                           
-                                          [data writeToFile:wikiPathName options:NSDataWritingAtomic error:&error];
-                                          
-                                          dispatch_async(dispatch_get_main_queue(), ^(void){
+                                          if ([[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]) {
+                                              NSLog(@"error");
+                                              self.PointOfInterest.wikititle=@"";
+                                              dispatch_async(dispatch_get_main_queue(), ^(void){
+                                                   self.webView.hidden = true;
+                                              });
+                                          } else {
+                                            
+                                              [data writeToFile:wikiPathName options:NSDataWritingAtomic error:&error];
                                               
-                                              self.PointOfInterest.wikititle =  [NSString stringWithFormat:@"%@~%@",language,Title];
-                                              
-                                              [self.delegate updatePoiFromWikiActvity :self.PointOfInterest];
-                                              
-                                              [self.webView loadData:data MIMEType:@"application/pdf" characterEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@""]];
-                                              
-                                              self.webView.hidden=false;
-                                              
-                                          });
-                                          
+                                              dispatch_async(dispatch_get_main_queue(), ^(void){
+                                                  
+                                                  self.PointOfInterest.wikititle =  [NSString stringWithFormat:@"%@~%@",language,Title];
+                                                  
+                                                  [self.delegate updatePoiFromWikiActvity :self.PointOfInterest];
+                                                  
+                                                  [self.webView loadData:data MIMEType:@"application/pdf" characterEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@""]];
+                                                  
+                                                  self.webView.hidden=false;
+                                                  
+                                              });
+                                          }
                                       }];
 
         [downloadTask resume];
@@ -170,72 +179,100 @@ NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
  remarks:
  */
 - (IBAction)UpdateWikiPagePressed:(id)sender {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
     
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentDirectory = [paths objectAtIndex:0];
-    
-    NSString *wikiDataFilePath = [documentDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/WikiDocs/%@.pdf",self.PointOfInterest.key]];
-    
-    NSError *error = nil;
-    [fileManager removeItemAtPath:wikiDataFilePath error:&error];
-    
-    CountryNSO *Country;
-    if (self.SegmentLanguageOption.selectedSegmentIndex == 0) {
+    if ([self checkInternet]) {
         
-        NSLocale *theLocale = [NSLocale currentLocale];
-        NSString *countryCode = [theLocale objectForKey:NSLocaleCountryCode];
-        Country = [AppDelegateDef.Db GetCountryByCode:countryCode];
-    }
-    else if (self.SegmentLanguageOption.selectedSegmentIndex == 1) {
-        Country = [AppDelegateDef.Db GetCountryByCode:self.PointOfInterest.countrycode];
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentDirectory = [paths objectAtIndex:0];
+        
+        NSString *wikiDataFilePath = [documentDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/WikiDocs/%@.pdf",self.PointOfInterest.key]];
+        
+        NSError *error = nil;
+        [fileManager removeItemAtPath:wikiDataFilePath error:&error];
+        
+        CountryNSO *Country;
+        if (self.SegmentLanguageOption.selectedSegmentIndex == 0) {
+            
+            NSLocale *theLocale = [NSLocale currentLocale];
+            NSString *countryCode = [theLocale objectForKey:NSLocaleCountryCode];
+            Country = [AppDelegateDef.Db GetCountryByCode:countryCode];
+        }
+        else if (self.SegmentLanguageOption.selectedSegmentIndex == 1) {
+            Country = [AppDelegateDef.Db GetCountryByCode:self.PointOfInterest.countrycode];
+        } else {
+            Country = [AppDelegateDef.Db GetCountryByCode:@"UK"];
+        }
+        
+        if (![fileManager fileExistsAtPath:wikiDataFilePath]){
+            [self SearchWikiDocByLocation :wikiDataFilePath  :Country.language];
+        }
     } else {
-        Country = [AppDelegateDef.Db GetCountryByCode:@"UK"];
+        NSLog(@"Device is not connected to the Internet");
     }
     
-    if (![fileManager fileExistsAtPath:wikiDataFilePath]){
-        [self SearchWikiDocByLocation :wikiDataFilePath  :Country.language];
-    }
 }
 
 /*
  created date:      16/06/2018
- last modified:     14/07/2018
+ last modified:     19/07/2018
  remarks:
  */
 - (IBAction)UpdateWikiPageByTitlePressed:(id)sender {
     
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentDirectory = [paths objectAtIndex:0];
-    
-    NSString *wikiDataFilePath = [documentDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/WikiDocs/%@.pdf",self.PointOfInterest.key]];
-    
-    NSError *error = nil;
-    [fileManager removeItemAtPath:wikiDataFilePath error:&error];
-    
-    CountryNSO *Country;
-    if (self.SegmentLanguageOption.selectedSegmentIndex == 0) {
-    
-        NSLocale *theLocale = [NSLocale currentLocale];
-        NSString *countryCode = [theLocale objectForKey:NSLocaleCountryCode];
-        Country = [AppDelegateDef.Db GetCountryByCode:countryCode];
-    } else if (self.SegmentLanguageOption.selectedSegmentIndex == 1) {
-        Country = [AppDelegateDef.Db GetCountryByCode:self.PointOfInterest.countrycode];
+    if ([self checkInternet]) {
+        
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentDirectory = [paths objectAtIndex:0];
+        
+        NSString *wikiDataFilePath = [documentDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/WikiDocs/%@.pdf",self.PointOfInterest.key]];
+        
+        NSError *error = nil;
+        [fileManager removeItemAtPath:wikiDataFilePath error:&error];
+        
+        CountryNSO *Country;
+        if (self.SegmentLanguageOption.selectedSegmentIndex == 0) {
+        
+            NSLocale *theLocale = [NSLocale currentLocale];
+            NSString *countryCode = [theLocale objectForKey:NSLocaleCountryCode];
+            Country = [AppDelegateDef.Db GetCountryByCode:countryCode];
+        } else if (self.SegmentLanguageOption.selectedSegmentIndex == 1) {
+            Country = [AppDelegateDef.Db GetCountryByCode:self.PointOfInterest.countrycode];
+        } else {
+            Country = [AppDelegateDef.Db GetCountryByCode:@"GB"];
+        }
+        
+        NSString *TitleText = [self.PointOfInterest.name stringByReplacingOccurrencesOfString:@" " withString:@"_"];
+
+        self.PointOfInterest.wikititle = [NSString stringWithFormat:@"%@~%@",Country.language,TitleText];
+        
+        [self.delegate updatePoiFromWikiActvity :self.PointOfInterest];
+
+        [self MakeWikiFile :TitleText :wikiDataFilePath :Country.language];
     } else {
-        Country = [AppDelegateDef.Db GetCountryByCode:@"GB"];
+        NSLog(@"Device is not connected to the Internet");
     }
     
-    NSString *TitleText = [self.PointOfInterest.name stringByReplacingOccurrencesOfString:@" " withString:@"_"];
-
-    self.PointOfInterest.wikititle = [NSString stringWithFormat:@"%@~%@",Country.language,TitleText];
-    
-    [self.delegate updatePoiFromWikiActvity :self.PointOfInterest];
-
-    [self MakeWikiFile :TitleText :wikiDataFilePath :Country.language];
-
 }
+
+
+- (bool)checkInternet
+{
+    if ([[Reachability reachabilityForInternetConnection]currentReachabilityStatus]==NotReachable)
+    {
+        return false;
+    }
+    else
+    {
+        //connection available
+        return true;
+    }
+    
+}
+
 
 
 /*
@@ -244,6 +281,7 @@ NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
  remarks:
  */
 - (void)updatePoiFromWikiActvity :(PoiNSO*)PointOfInterest {
+    
 }
 
 /*
@@ -252,6 +290,7 @@ NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
  remarks:
  */
 - (IBAction)BackPressed:(id)sender {
+
     [self dismissViewControllerAnimated:YES completion:Nil];
 }
 

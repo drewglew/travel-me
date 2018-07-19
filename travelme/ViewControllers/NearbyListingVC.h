@@ -12,12 +12,13 @@
 #import "AppDelegate.h"
 #import "CountryNSO.h"
 #import "PoiDataEntryVC.h"
+#import "Reachability.h"
 
 @protocol NearbyListingDelegate <NSObject>
 - (void)didUpdatePoi :(bool)IsUpdated;
 @end
 
-@interface NearbyListingVC : UIViewController <UITableViewDelegate, CLLocationManagerDelegate, PoiDataEntryDelegate>
+@interface NearbyListingVC : UIViewController <UITableViewDelegate, CLLocationManagerDelegate, PoiDataEntryDelegate> 
 @property (weak, nonatomic) IBOutlet UITableView *TableViewNearbyPoi;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentWikiLanguageOption;
 @property (weak, nonatomic) IBOutlet UILabel *LabelNearby;

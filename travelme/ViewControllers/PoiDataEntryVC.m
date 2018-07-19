@@ -28,11 +28,8 @@
         if (![self.PointOfInterest.name isEqualToString:@""]) {
             self.TextFieldTitle.text = self.PointOfInterest.name;
             self.TextViewNotes.text = self.PointOfInterest.privatenotes;
-            self.ButtonWiki.hidden = true;
         }
-        
     } else if (self.fromnearby) {
-        self.ButtonWiki.hidden = false;
         self.TextFieldTitle.text = self.PointOfInterest.name;
         self.TextViewNotes.text = self.PointOfInterest.privatenotes;
         
@@ -80,12 +77,18 @@
     self.TextViewNotes.delegate = self;
 }
 
-
+/*
+ created date:      28/04/2018
+ last modified:     19/07/2018
+ remarks: TODO - split load existing data into 2 - map data and images.
+ */
 -(void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
     if (![self.PointOfInterest.wikititle isEqualToString:@""]) {
         [self.ButtonWiki setImage:[UIImage imageNamed:@"WikiFilled"] forState:UIControlStateNormal];
+    } else {
+       [self.ButtonWiki setImage:[UIImage imageNamed:@"Wiki"] forState:UIControlStateNormal];
     }
 }
 
@@ -199,7 +202,7 @@
     self.TypeDistanceItems  = @[
                              @40, // accomodation
                              @500, // airport
-                             @100000, // asctronaut
+                             @20000, // astronaut
                              @50, // beer
                              @50, // bicyle
                              @300, //bridge
@@ -270,8 +273,8 @@
     [self.MapView addAnnotation:anno];
     [self.MapView selectAnnotation:anno animated:YES];
 
-    MKCircle *myCircle = [MKCircle circleWithCenterCoordinate:coord radius:[radius doubleValue]];
-    [self.MapView addOverlay:myCircle];
+    //self.CircleRange = [MKCircle circleWithCenterCoordinate:coord radius:[radius doubleValue]];
+    //[self.MapView addOverlay:self.CircleRange];
     
 }
 
@@ -285,11 +288,11 @@
     {
         MKCircleRenderer* aRenderer = [[MKCircleRenderer
                                         alloc]initWithCircle:(MKCircle *)overlay];
-        aRenderer.fillColor = [[UIColor orangeColor] colorWithAlphaComponent:0.25];
+        //aRenderer.fillColor = [[UIColor orangeColor] colorWithAlphaComponent:0.25];
         aRenderer.strokeColor = [[UIColor orangeColor] colorWithAlphaComponent:0.9];
         aRenderer.lineWidth = 2;
-        aRenderer.lineDashPattern = @[@2, @5];
-        aRenderer.alpha = 0.5;
+        //aRenderer.lineDashPattern = @[@2, @5];
+        //aRenderer.alpha = 0.5;
         return aRenderer;
     }
     else
@@ -815,6 +818,27 @@
         self.ImageViewKey.hidden=true;
         self.LabelPoi.hidden=true;
         
+        for (id<MKOverlay> overlay in self.MapView.overlays)
+        {
+            [self.MapView removeOverlay:overlay];
+        }
+        
+        CLLocationCoordinate2D coord = CLLocationCoordinate2DMake([self.PointOfInterest.lat doubleValue], [self.PointOfInterest.lon doubleValue]);
+        
+        NSNumber *radius = [self.TypeDistanceItems objectAtIndex:[self.PickerType selectedRowInComponent:0]];
+        
+        [self.MapView setCenterCoordinate:coord animated:YES];
+        MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(coord, [radius doubleValue] * 2.1, [radius doubleValue] * 2.1);
+        MKCoordinateRegion adjustedRegion = [self.MapView regionThatFits:viewRegion];
+        [self.MapView setRegion:adjustedRegion animated:YES];
+        //100,000
+        
+        CLLocationDistance RadiusAmt = [radius doubleValue];
+        
+        self.CircleRange = [MKCircle circleWithCenterCoordinate:coord radius:RadiusAmt];
+        
+        [self.MapView addOverlay:self.CircleRange];
+        
     } else {
         self.MapView.hidden=true;
         if (self.PointOfInterest.Images.count > 0 && !self.readonlyitem) {
@@ -845,7 +869,7 @@
 
 /*
  created date:      14/07/2018
- last modified:     14/07/2018
+ last modified:     19/07/2018
  remarks:
  */
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
@@ -853,22 +877,7 @@
     self.LabelPoi.text = [self GetPoiLabelWithType:[NSNumber numberWithInteger:row]];
     self.PointOfInterest.categoryid = [NSNumber numberWithLong:[self.PickerType selectedRowInComponent:0]];
 
-    for (id<MKOverlay> overlay in self.MapView.overlays)
-    {
-        [self.MapView removeOverlay:overlay];
-    }
-    
-    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake([self.PointOfInterest.lat doubleValue], [self.PointOfInterest.lon doubleValue]);
-  
-    NSNumber *radius = [self.TypeDistanceItems objectAtIndex:[self.PickerType selectedRowInComponent:0]];
-    
-    [self.MapView setCenterCoordinate:coord animated:NO];
-    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(coord, [radius doubleValue] * 2.1, [radius doubleValue] * 2.1);
-    MKCoordinateRegion adjustedRegion = [self.MapView regionThatFits:viewRegion];
-    [self.MapView setRegion:adjustedRegion animated:NO];
-    
-    MKCircle *myCircle = [MKCircle circleWithCenterCoordinate:coord radius:[radius doubleValue]];
-    [self.MapView addOverlay:myCircle];
+
     
 }
 
@@ -1071,10 +1080,23 @@
 
 /*
  created date:      28/04/2018
- last modified:     15/07/2018
+ last modified:     19/07/2018
  remarks:
  */
 - (IBAction)BackPressed:(id)sender {
+    
+    if (self.newitem) {
+        // discard wikipage if it exists!
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentDirectory = [paths objectAtIndex:0];
+        
+        NSString *wikiDataFilePath = [documentDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/WikiDocs/%@.pdf",self.PointOfInterest.key]];
+        
+        NSError *error = nil;
+        [fileManager removeItemAtPath:wikiDataFilePath error:&error];
+    }
     [self dismissViewControllerAnimated:YES completion:Nil];
 }
 

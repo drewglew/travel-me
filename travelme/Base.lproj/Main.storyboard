@@ -27,7 +27,7 @@
                                     <constraint firstAttribute="height" constant="100" id="j9V-og-mBK"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="plan trips and experience them first hand here.  make use of the points of interest stored already to create activities. " textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="taX-I6-wi4">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="plan and experience them first hand here.  make use of the points of interest stored already to create activities. " textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="taX-I6-wi4">
                                 <rect key="frame" x="150" y="332" width="195" height="58"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
@@ -98,7 +98,7 @@
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="vq5-C5-lgn">
                                 <rect key="frame" x="150" y="552" width="195" height="58"/>
-                                <string key="text">this option allows you to create points of interest anywhere in the world.  stock up on these so you can access offline if needed.</string>
+                                <string key="text">this allows you to create points of interest anywhere in the world.  stock up on these so they can be accessed offline if needed.</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -208,19 +208,19 @@
                                     <action selector="BackPressed:" destination="1WG-sA-iYL" eventType="touchUpInside" id="PEj-mc-hdq"/>
                                 </connections>
                             </button>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="Yj0-45-53q">
-                                <rect key="frame" x="10" y="87" width="355" height="160"/>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Yj0-45-53q">
+                                <rect key="frame" x="10" y="72" width="355" height="180"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="160" id="AMy-KT-Vlw"/>
+                                    <constraint firstAttribute="height" constant="180" id="AMy-KT-Vlw"/>
                                 </constraints>
-                                <string key="text">Application to help with your travel planning.    Use it whichever way works for you! You may plan as well as log real events.    Check distances and Points Of Interest.  Comment on them and keep those treasured memories.  Additionally estimate costs and log actual payments too.</string>
+                                <mutableString key="text">Application to assist with your travel planning, be it on vacation or business.   Use it whichever way works for you! You may plan as well as log real events.   Check distances and Points Of Interest.  Comment on them and keep those treasured memories. Additionally estimate costs and log actual payments too.    NO DATA COLLECTED IS KNOWINGLY SHARED BY THE DEVELOPER.</mutableString>
                                 <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" type="system" weight="thin" pointSize="12"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="trippo" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7ng-1i-wp1">
-                                <rect key="frame" x="10" y="25" width="355" height="42"/>
+                                <rect key="frame" x="10" y="20" width="355" height="42"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="42" id="60I-Fe-0tR"/>
                                 </constraints>
@@ -228,17 +228,17 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="credits" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dw4-DV-trC">
-                                <rect key="frame" x="10" y="257" width="355" height="42"/>
+                                <rect key="frame" x="10" y="262" width="355" height="42"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="42" id="V4r-vC-gH0"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="thin" pointSize="40"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="FYQ-UZ-Smw">
-                                <rect key="frame" x="10" y="319" width="355" height="268"/>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FYQ-UZ-Smw">
+                                <rect key="frame" x="10" y="314" width="355" height="273"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <mutableString key="text">Idea, Coding &amp; Design  Andrew Glew  Icon Design https://icons8.com
+                                <mutableString key="text">Idea, Coding &amp; Design  Andrew Glew  Icon Design https://icons8.com  Exchange Rates https://free.currencyconverterapi.com
 
 Wikipedia - superb API providing access to data that matters.    Thanks to: My wife and daughter; understanding me so I can focus on my 'obsession'.  Additionally Malene &amp; Eveline; providing great feedback &amp; helping out with testing.</mutableString>
                                 <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -253,26 +253,38 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                     <constraint firstAttribute="height" constant="50" id="u5i-OM-vir"/>
                                 </constraints>
                             </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Version 1.3.2" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h7F-vk-Nu2">
+                                <rect key="frame" x="203" y="622" width="100" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="BVs-9J-DNq"/>
+                                    <constraint firstAttribute="width" constant="100" id="Q8B-IX-pqb"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="thin" pointSize="12"/>
+                                <color key="textColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="FYQ-UZ-Smw" firstAttribute="leading" secondItem="L3j-K1-02O" secondAttribute="leading" constant="10" id="8MA-hW-yR5"/>
-                            <constraint firstItem="FYQ-UZ-Smw" firstAttribute="top" secondItem="Dw4-DV-trC" secondAttribute="bottom" constant="20" id="CSU-6M-Cyo"/>
+                            <constraint firstItem="FYQ-UZ-Smw" firstAttribute="top" secondItem="Dw4-DV-trC" secondAttribute="bottom" constant="10" id="CSU-6M-Cyo"/>
                             <constraint firstItem="L3j-K1-02O" firstAttribute="bottom" secondItem="ekb-2j-rYr" secondAttribute="bottom" constant="10" id="Elp-zl-UXm"/>
+                            <constraint firstItem="ekb-2j-rYr" firstAttribute="leading" secondItem="h7F-vk-Nu2" secondAttribute="trailing" constant="12" id="FIH-kX-kgd"/>
                             <constraint firstItem="7ng-1i-wp1" firstAttribute="leading" secondItem="L3j-K1-02O" secondAttribute="leading" constant="10" id="J2u-RN-9Wq"/>
                             <constraint firstItem="42V-5v-YkH" firstAttribute="leading" secondItem="L3j-K1-02O" secondAttribute="leading" constant="10" id="JSM-Bg-bKj"/>
                             <constraint firstItem="L3j-K1-02O" firstAttribute="trailing" secondItem="FYQ-UZ-Smw" secondAttribute="trailing" constant="10" id="N12-Ke-StA"/>
                             <constraint firstItem="L3j-K1-02O" firstAttribute="trailing" secondItem="ekb-2j-rYr" secondAttribute="trailing" constant="10" id="RWE-VE-0bX"/>
-                            <constraint firstItem="7ng-1i-wp1" firstAttribute="top" secondItem="L3j-K1-02O" secondAttribute="top" constant="5" id="RgZ-ZV-KiD"/>
+                            <constraint firstItem="7ng-1i-wp1" firstAttribute="top" secondItem="L3j-K1-02O" secondAttribute="top" id="RgZ-ZV-KiD"/>
                             <constraint firstItem="Dw4-DV-trC" firstAttribute="leading" secondItem="L3j-K1-02O" secondAttribute="leading" constant="10" id="VpU-Wp-jXv"/>
                             <constraint firstItem="42V-5v-YkH" firstAttribute="top" secondItem="FYQ-UZ-Smw" secondAttribute="bottom" constant="20" id="X1a-uo-MMF"/>
                             <constraint firstItem="L3j-K1-02O" firstAttribute="trailing" secondItem="Yj0-45-53q" secondAttribute="trailing" constant="10" id="bFS-PZ-cxt"/>
-                            <constraint firstItem="Yj0-45-53q" firstAttribute="top" secondItem="7ng-1i-wp1" secondAttribute="bottom" constant="20" id="bVI-4m-R2I"/>
+                            <constraint firstItem="Yj0-45-53q" firstAttribute="top" secondItem="7ng-1i-wp1" secondAttribute="bottom" constant="10" id="bVI-4m-R2I"/>
                             <constraint firstItem="L3j-K1-02O" firstAttribute="trailing" secondItem="Dw4-DV-trC" secondAttribute="trailing" constant="10" id="fyd-Nk-apV"/>
                             <constraint firstItem="L3j-K1-02O" firstAttribute="bottom" secondItem="42V-5v-YkH" secondAttribute="bottom" constant="10" id="mRW-XT-262"/>
                             <constraint firstItem="Dw4-DV-trC" firstAttribute="top" secondItem="Yj0-45-53q" secondAttribute="bottom" constant="10" id="phh-FG-aEE"/>
                             <constraint firstItem="Yj0-45-53q" firstAttribute="leading" secondItem="L3j-K1-02O" secondAttribute="leading" constant="10" id="vYb-4Q-wei"/>
                             <constraint firstItem="L3j-K1-02O" firstAttribute="trailing" secondItem="7ng-1i-wp1" secondAttribute="trailing" constant="10" id="wq8-nQ-e5e"/>
+                            <constraint firstItem="L3j-K1-02O" firstAttribute="bottom" secondItem="h7F-vk-Nu2" secondAttribute="bottom" constant="24" id="ziJ-70-EnY"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="L3j-K1-02O"/>
                     </view>
@@ -541,7 +553,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="110"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Points Of Interest Nearby" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eZJ-Ku-eOB">
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Nearby me" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eZJ-Ku-eOB">
                                             <rect key="frame" x="10" y="0.0" width="355" height="62"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="62" id="x7G-Ea-YgE"/>
@@ -2768,10 +2780,10 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="search nearby me" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7No-Ie-WEV">
-                                        <rect key="frame" x="45" y="30" width="250" height="25"/>
+                                        <rect key="frame" x="45" y="25" width="250" height="35"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="250" id="6lk-xw-qdZ"/>
-                                            <constraint firstAttribute="height" constant="25" id="8wi-X0-c4M"/>
+                                            <constraint firstAttribute="height" constant="35" id="8wi-X0-c4M"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" weight="thin" pointSize="28"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

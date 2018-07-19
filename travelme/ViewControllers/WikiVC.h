@@ -12,6 +12,7 @@
 #import "PoiNSO.h"
 #import "AppDelegate.h"
 #import "CountryNSO.h"
+#import "Reachability.h"
 
 @protocol WikiGeneratorDelegate <NSObject>
 - (void)updatePoiFromWikiActvity :(PoiNSO*)PointOfInterest;

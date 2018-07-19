@@ -272,6 +272,7 @@
         PoiDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"PoiDataEntryId"];
         controller.delegate = self;
         controller.PointOfInterest = Poi;
+        
         controller.newitem = false;
         [controller setModalPresentationStyle:UIModalPresentationFullScreen];
         [self presentViewController:controller animated:YES completion:nil];

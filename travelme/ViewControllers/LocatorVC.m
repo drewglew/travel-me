@@ -405,7 +405,7 @@ MKLocalSearchResponse *results;
 
 /*
  created date:      28/04/2018
- last modified:     28/04/2018
+ last modified:     19/07/2018
  remarks:           segue controls .
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -417,6 +417,7 @@ MKLocalSearchResponse *results;
         controller.delegate = self;
         controller.PointOfInterest = self.PointOfInterest;
         controller.newitem = true;
+        controller.PointOfInterest.wikititle = @"";
         controller.readonlyitem = false;
         controller.fromproject = self.fromproject;
         controller.fromnearby = false;

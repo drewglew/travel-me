@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3A12B8DA21010680006B621D /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A12B8D921010680006B621D /* SystemConfiguration.framework */; };
+		3A12B8DD21010BF4006B621D /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A12B8DC21010BF4006B621D /* Reachability.m */; };
 		3A224CA62094338D00075457 /* PoiImageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CA52094338D00075457 /* PoiImageCell.m */; };
 		3A224CAC2094736200075457 /* SearchResultListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CAB2094736200075457 /* SearchResultListCell.m */; };
 		3A224CAF2094946800075457 /* PoiImageNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CAE2094946800075457 /* PoiImageNSO.m */; };
@@ -60,6 +62,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3A12B8D921010680006B621D /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		3A12B8DB21010BF4006B621D /* Reachability.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		3A12B8DC21010BF4006B621D /* Reachability.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		3A224CA42094338D00075457 /* PoiImageCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PoiImageCell.h; sourceTree = "<group>"; };
 		3A224CA52094338D00075457 /* PoiImageCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PoiImageCell.m; sourceTree = "<group>"; };
 		3A224CAA2094736200075457 /* SearchResultListCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SearchResultListCell.h; sourceTree = "<group>"; };
@@ -161,6 +166,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A12B8DA21010680006B621D /* SystemConfiguration.framework in Frameworks */,
 				3AB915F720D1979F001A08A9 /* WebKit.framework in Frameworks */,
 				3A81B509209D80B8005CABDA /* Photos.framework in Frameworks */,
 				3A374F0F2093764C00E5A652 /* libsqlite3.tbd in Frameworks */,
@@ -311,6 +317,8 @@
 				3A9EA18520AE17DF0052CC4F /* ScheduleBackgroundView.m */,
 				3AB915F020CDB3E5001A08A9 /* ImageNSO.h */,
 				3AB915F120CDB3E5001A08A9 /* ImageNSO.m */,
+				3A12B8DB21010BF4006B621D /* Reachability.h */,
+				3A12B8DC21010BF4006B621D /* Reachability.m */,
 			);
 			path = GenericObjects;
 			sourceTree = "<group>";
@@ -318,6 +326,7 @@
 		3A374F0B2093762E00E5A652 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3A12B8D921010680006B621D /* SystemConfiguration.framework */,
 				3AB915F620D1979F001A08A9 /* WebKit.framework */,
 				3A81B508209D80B8005CABDA /* Photos.framework */,
 				3A374F0E2093764B00E5A652 /* libsqlite3.tbd */,
@@ -435,6 +444,7 @@
 				3AAB60C220FCFCE800A22047 /* NearbyPoiCell.m in Sources */,
 				3A374F12209386F700E5A652 /* PoiListCell.m in Sources */,
 				3A224CAF2094946800075457 /* PoiImageNSO.m in Sources */,
+				3A12B8DD21010BF4006B621D /* Reachability.m in Sources */,
 				3A9F73AF20A3747300D61666 /* PaymentNSO.m in Sources */,
 				3AFE3573209E504F00C46180 /* ScheduleNSO.m in Sources */,
 				3A224CB72095E5D900075457 /* ProjectListCell.m in Sources */,

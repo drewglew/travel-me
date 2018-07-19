@@ -17,16 +17,22 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    
-    if (self.PointOfInterest==nil) {
-        NSLog(@"Get Location");
-        [self startUserLocationSearch];
-    } else {
-        
-        self.LabelNearby.text = [NSString stringWithFormat:@"Nearby %@",self.PointOfInterest.name];
-    
-        [self LoadNearbyPoiItemsData];
+    if ([self checkInternet]) {
+        if (self.PointOfInterest==nil) {
+            NSLog(@"Get Location");
+            [self startUserLocationSearch];
+        } else {
+            
+            self.LabelNearby.text = [NSString stringWithFormat:@"Nearby %@",self.PointOfInterest.name];
+            
+            [self LoadNearbyPoiItemsData];
+        }
     }
+    else
+        NSLog(@"Device is not connected to the Internet");
+    
+    
+   
     self.TableViewNearbyPoi.delegate = self;
     self.TableViewNearbyPoi.rowHeight = 77;
     // Do any additional setup after loading the view.
@@ -218,96 +224,97 @@
 
 /*
  created date:      16/07/2018
- last modified:     17/07/2018
+ last modified:     19/07/2018
  remarks:
  */
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    static NSString *IDENTIFIER = @"NearbyCellId";
     
-    NearbyPoiCell *cell = [tableView dequeueReusableCellWithIdentifier:IDENTIFIER];
-    if (cell == nil) {
-        cell = [[NearbyPoiCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:IDENTIFIER];
-    }
-    
-    NearbyPoiNSO *Nearby = [self.nearbyitems objectAtIndex:indexPath.row];
-    
-    self.PointOfInterest = [[PoiNSO alloc] init];
-    self.PointOfInterest.Images = [[NSMutableArray alloc] init];
-    self.PointOfInterest.Coordinates = Nearby.Coordinates;
-    self.PointOfInterest.lat = [NSNumber numberWithDouble:Nearby.Coordinates.latitude];
-    self.PointOfInterest.lon = [NSNumber numberWithDouble:Nearby.Coordinates.longitude];
-    self.PointOfInterest.wikititle = Nearby.wikititle;
-    
-    CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
-    
-    [geoCoder reverseGeocodeLocation: [[CLLocation alloc] initWithLatitude:Nearby.Coordinates.latitude longitude:Nearby.Coordinates.longitude] completionHandler:^(NSArray *placemarks, NSError *error) {
-        if (error) {
-            NSLog(@"%@", [NSString stringWithFormat:@"%@", error.localizedDescription]);
-        } else {
-            if ([placemarks count]>0) {
-                CLPlacemark *placemark = [placemarks firstObject];
-                
-                NSString *AdminArea = placemark.subAdministrativeArea;
-                if ([AdminArea isEqualToString:@""] || AdminArea == NULL) {
-                    AdminArea = placemark.administrativeArea;
-                }
-                self.PointOfInterest.administrativearea = [NSString stringWithFormat:@"%@, %@", AdminArea,placemark.ISOcountryCode];
-                self.PointOfInterest.country = placemark.country;
-                self.PointOfInterest.sublocality = placemark.subLocality;
-                self.PointOfInterest.locality = placemark.locality;
-                self.PointOfInterest.postcode = placemark.postalCode;
-                self.PointOfInterest.countrycode = placemark.ISOcountryCode;
-                self.PointOfInterest.fullthoroughfare = [NSString stringWithFormat:@"%@, %@", placemark.thoroughfare, placemark.subThoroughfare];
-                
-            }
-            self.PointOfInterest.name = Nearby.title;
-
-            
-            /*
-             Obtain Wiki records based on coordinates & local language.  (radius is in meters, we should use same range as type used to search photos)
-             https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=Chichester
-            */
-            
-            NSArray *parms = [self.PointOfInterest.wikititle componentsSeparatedByString:@"~"];
-
-            NSString *url = [NSString stringWithFormat:@"https://%@.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=%@",[parms objectAtIndex:0],[parms objectAtIndex:1]];
-            
-            url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-            
-            
-            /* get data */
-            
-            [self fetchFromWikiApi:url withDictionary:^(NSDictionary *data) {
-                
-                NSDictionary *query = [data objectForKey:@"query"];
-                NSDictionary *pages =  [query objectForKey:@"pages"];
-                NSArray *keys = [pages allKeys];
-                NSDictionary *item =  [pages objectForKey:[keys firstObject]];
-                self.PointOfInterest.privatenotes = [item objectForKey:@"extract"];
-                
-                dispatch_async(dispatch_get_main_queue(), ^(){
-                    
-                    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-                    
-                    PoiDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"PoiDataEntryId"];
-                    
-                    controller.delegate = self;
-                    controller.PointOfInterest = self.PointOfInterest;
-                    controller.newitem = true;
-                    controller.readonlyitem = false;
-                    controller.fromproject = false;
-                    controller.fromnearby = true;
-                    
-                    [controller setModalPresentationStyle:UIModalPresentationFullScreen];
-                    [self presentViewController:controller animated:YES completion:nil];
-                });
-                
-            }];
-   
+    if ([self checkInternet]) {
+        static NSString *IDENTIFIER = @"NearbyCellId";
+        
+        NearbyPoiCell *cell = [tableView dequeueReusableCellWithIdentifier:IDENTIFIER];
+        if (cell == nil) {
+            cell = [[NearbyPoiCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:IDENTIFIER];
         }
-    }];
-    
+        
+        NearbyPoiNSO *Nearby = [self.nearbyitems objectAtIndex:indexPath.row];
+        
+        self.PointOfInterest = [[PoiNSO alloc] init];
+        self.PointOfInterest.key = [[NSUUID UUID] UUIDString];
+        self.PointOfInterest.Images = [[NSMutableArray alloc] init];
+        self.PointOfInterest.Coordinates = Nearby.Coordinates;
+        self.PointOfInterest.lat = [NSNumber numberWithDouble:Nearby.Coordinates.latitude];
+        self.PointOfInterest.lon = [NSNumber numberWithDouble:Nearby.Coordinates.longitude];
+        self.PointOfInterest.wikititle = Nearby.wikititle;
+        
+        CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
+        
+        [geoCoder reverseGeocodeLocation: [[CLLocation alloc] initWithLatitude:Nearby.Coordinates.latitude longitude:Nearby.Coordinates.longitude] completionHandler:^(NSArray *placemarks, NSError *error) {
+            if (error) {
+                NSLog(@"%@", [NSString stringWithFormat:@"%@", error.localizedDescription]);
+            } else {
+                if ([placemarks count]>0) {
+                    CLPlacemark *placemark = [placemarks firstObject];
+                    
+                    NSString *AdminArea = placemark.subAdministrativeArea;
+                    if ([AdminArea isEqualToString:@""] || AdminArea == NULL) {
+                        AdminArea = placemark.administrativeArea;
+                    }
+                    self.PointOfInterest.administrativearea = [NSString stringWithFormat:@"%@, %@", AdminArea,placemark.ISOcountryCode];
+                    self.PointOfInterest.country = placemark.country;
+                    self.PointOfInterest.sublocality = placemark.subLocality;
+                    self.PointOfInterest.locality = placemark.locality;
+                    self.PointOfInterest.postcode = placemark.postalCode;
+                    self.PointOfInterest.countrycode = placemark.ISOcountryCode;
+                    self.PointOfInterest.fullthoroughfare = [NSString stringWithFormat:@"%@, %@", placemark.thoroughfare, placemark.subThoroughfare];
+                    
+                }
+                self.PointOfInterest.name = Nearby.title;
+
+                /*
+                 Obtain Wiki records based on coordinates & local language.  (radius is in meters, we should use same range as type used to search photos)
+                 https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=Chichester
+                */
+                
+                NSArray *parms = [self.PointOfInterest.wikititle componentsSeparatedByString:@"~"];
+
+                NSString *url = [NSString stringWithFormat:@"https://%@.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=%@",[parms objectAtIndex:0],[parms objectAtIndex:1]];
+                
+                url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+                /* get data */
+                [self fetchFromWikiApi:url withDictionary:^(NSDictionary *data) {
+                    
+                    NSDictionary *query = [data objectForKey:@"query"];
+                    NSDictionary *pages =  [query objectForKey:@"pages"];
+                    NSArray *keys = [pages allKeys];
+                    NSDictionary *item =  [pages objectForKey:[keys firstObject]];
+                    self.PointOfInterest.privatenotes = [item objectForKey:@"extract"];
+                    
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^(){
+                        
+                        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+                        
+                        PoiDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"PoiDataEntryId"];
+                        
+                        controller.delegate = self;
+                        controller.PointOfInterest = self.PointOfInterest;
+                        controller.newitem = true;
+                        controller.readonlyitem = false;
+                        controller.fromproject = false;
+                        controller.fromnearby = true;
+                        
+                        [controller setModalPresentationStyle:UIModalPresentationFullScreen];
+                        [self presentViewController:controller animated:YES completion:nil];
+                    });
+                    
+                }];
+       
+            }
+        }];
+    }
 }
 
 - (UIView*)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
@@ -354,7 +361,27 @@
  */
 - (IBAction)SegmentLanguageChanged:(id)sender {
     
+    if ([self checkInternet]) {
        [self LoadNearbyPoiItemsData];
+    }
+}
+
+/*
+ created date:      19/07/2018
+ last modified:     19/07/2018
+ remarks:
+ */
+- (bool)checkInternet
+{
+    if ([[Reachability reachabilityForInternetConnection]currentReachabilityStatus]==NotReachable)
+    {
+        return false;
+    }
+    else
+    {
+        //connection available
+        return true;
+    }
     
 }
 

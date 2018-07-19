@@ -44,6 +44,7 @@
 @property (weak, nonatomic) IBOutlet UITextView *TextViewNotes;
 // only used on preview controller
 @property (weak, nonatomic) IBOutlet MKMapView *MapView;
+@property (strong, nonatomic) MKCircle *CircleRange;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentDetailOption;
 @property (weak, nonatomic) IBOutlet UIImageView *ImagePicture;
 @property (weak, nonatomic) IBOutlet UILabel *LabelPrivateNotes;
