@@ -133,14 +133,14 @@
 {
     UIView *pickerCustomView = [UIView new];
     UIImageView *myIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:self.TypeItems[row]]];
-    [myIcon setFrame:CGRectMake(0, 5, 60, 60)];
+    [myIcon setFrame:CGRectMake(5, 5, 30, 30)];
     [pickerCustomView addSubview:myIcon];
     return pickerCustomView;
 }
 
 - (CGFloat)pickerView:(UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component
 {
-    return 70;
+    return 40;
 }
 
 /*

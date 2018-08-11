@@ -38,6 +38,10 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelCounter;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonNew;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonFilter;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonResetFilter;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentCountries;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *FilterOptionHeightConstraint;
 
 @property (strong, nonatomic) NSArray *TypeItems;
 

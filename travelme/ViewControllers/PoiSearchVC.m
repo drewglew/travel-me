@@ -22,7 +22,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     08/08/2018
+ last modified:     12/08/2018
  remarks:
  */
 - (void)viewDidLoad {
@@ -46,6 +46,10 @@
     self.ButtonNew.clipsToBounds = YES;
     self.ButtonBack.layer.cornerRadius = 25;
     self.ButtonBack.clipsToBounds = YES;
+    self.ButtonResetFilter.layer.cornerRadius = 25;
+    self.ButtonResetFilter.clipsToBounds = YES;
+    self.ButtonFilter.layer.cornerRadius = 25;
+    self.ButtonFilter.clipsToBounds = YES;
     
     self.poiitems = [[NSMutableArray alloc] init];
     self.poifiltereditems = [[NSMutableArray alloc] init];
@@ -505,6 +509,46 @@
  */
 - (void)didUpdatePoi :(bool)IsUpdated {
     [self LoadPoiData];
+}
+
+/*
+ created date:      12/08/2018
+ last modified:     12/08/2018
+ remarks:
+ */
+- (IBAction)FilterResetPressed:(id)sender {
+}
+
+/*
+ created date:      12/08/2018
+ last modified:     12/08/2018
+ remarks:
+ */
+- (IBAction)FilterPressed:(id)sender {
+    
+    [self.view layoutIfNeeded];
+    if (self.FilterOptionHeightConstraint.constant==70) {
+        [UIView animateWithDuration:1.0 animations:^{
+            self.FilterOptionHeightConstraint.constant=300;
+            self.ButtonResetFilter.hidden = false;
+            //self.ButtonMore.transform = CGAffineTransformMakeRotation(M_PI);
+            [self.view layoutIfNeeded];
+        } completion:^(BOOL finished) {
+            
+        }];
+        
+    } else {
+        [UIView animateWithDuration:1.0 animations:^{
+            self.FilterOptionHeightConstraint.constant=70;
+            self.ButtonResetFilter.hidden = true;
+            //self.ButtonMore.transform = CGAffineTransformMakeRotation(-2*M_PI);
+            [self.view layoutIfNeeded];
+        } completion:^(BOOL finished) {
+            
+        }];
+        
+    }
+    
 }
 
 
