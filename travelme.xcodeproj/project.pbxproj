@@ -36,6 +36,8 @@
 		3A374F152093877F00E5A652 /* PoiNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F142093877F00E5A652 /* PoiNSO.m */; };
 		3A374F1E2093939400E5A652 /* LocatorVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F1D2093939400E5A652 /* LocatorVC.m */; };
 		3A374F212093D55500E5A652 /* PoiDataEntryVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F202093D55500E5A652 /* PoiDataEntryVC.m */; };
+		3A58B4C0211F534E00699008 /* TypeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A58B4BF211F534E00699008 /* TypeCell.m */; };
+		3A58B4C3211F547100699008 /* TypeNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A58B4C2211F547100699008 /* TypeNSO.m */; };
 		3A81B509209D80B8005CABDA /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A81B508209D80B8005CABDA /* Photos.framework */; };
 		3A81B50C209D90CA005CABDA /* AlphaView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A81B50B209D90CA005CABDA /* AlphaView.m */; };
 		3A9EA18620AE17DF0052CC4F /* ScheduleBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9EA18520AE17DF0052CC4F /* ScheduleBackgroundView.m */; };
@@ -118,6 +120,10 @@
 		3A374F1D2093939400E5A652 /* LocatorVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LocatorVC.m; sourceTree = "<group>"; };
 		3A374F1F2093D55500E5A652 /* PoiDataEntryVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PoiDataEntryVC.h; sourceTree = "<group>"; };
 		3A374F202093D55500E5A652 /* PoiDataEntryVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PoiDataEntryVC.m; sourceTree = "<group>"; };
+		3A58B4BE211F534E00699008 /* TypeCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TypeCell.h; sourceTree = "<group>"; };
+		3A58B4BF211F534E00699008 /* TypeCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TypeCell.m; sourceTree = "<group>"; };
+		3A58B4C1211F547100699008 /* TypeNSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TypeNSO.h; sourceTree = "<group>"; };
+		3A58B4C2211F547100699008 /* TypeNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TypeNSO.m; sourceTree = "<group>"; };
 		3A81B508209D80B8005CABDA /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		3A81B50A209D90CA005CABDA /* AlphaView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AlphaView.h; sourceTree = "<group>"; };
 		3A81B50B209D90CA005CABDA /* AlphaView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AlphaView.m; sourceTree = "<group>"; };
@@ -207,6 +213,8 @@
 				3A224CA52094338D00075457 /* PoiImageCell.m */,
 				3A224CBE2096E2C700075457 /* ActivityListCell.h */,
 				3A224CBF2096E2C700075457 /* ActivityListCell.m */,
+				3A58B4BE211F534E00699008 /* TypeCell.h */,
+				3A58B4BF211F534E00699008 /* TypeCell.m */,
 			);
 			path = CollectionViewCells;
 			sourceTree = "<group>";
@@ -324,6 +332,8 @@
 				3AB915F120CDB3E5001A08A9 /* ImageNSO.m */,
 				3A12B8DB21010BF4006B621D /* Reachability.h */,
 				3A12B8DC21010BF4006B621D /* Reachability.m */,
+				3A58B4C1211F547100699008 /* TypeNSO.h */,
+				3A58B4C2211F547100699008 /* TypeNSO.m */,
 			);
 			path = GenericObjects;
 			sourceTree = "<group>";
@@ -428,6 +438,7 @@
 				3A224CC62097792800075457 /* PoiSearchVC.m in Sources */,
 				3A374F032093735300E5A652 /* ProjectListVC.m in Sources */,
 				3AEE019220A0CBB100AE260E /* CountryNSO.m in Sources */,
+				3A58B4C3211F547100699008 /* TypeNSO.m in Sources */,
 				3AAB60BF20FCF8C300A22047 /* NearbyListingVC.m in Sources */,
 				3A374F152093877F00E5A652 /* PoiNSO.m in Sources */,
 				3AFE356D209E462500C46180 /* ScheduleVC.m in Sources */,
@@ -445,6 +456,7 @@
 				3A224CA62094338D00075457 /* PoiImageCell.m in Sources */,
 				3AB915F220CDB3E5001A08A9 /* ImageNSO.m in Sources */,
 				3AB915F520D1917B001A08A9 /* WikiVC.m in Sources */,
+				3A58B4C0211F534E00699008 /* TypeCell.m in Sources */,
 				3AB915EF20CD9BE4001A08A9 /* ImageCollectionCell.m in Sources */,
 				3AEE018F20A0B05700AE260E /* AnnotationMK.m in Sources */,
 				3AAB60C220FCFCE800A22047 /* NearbyPoiCell.m in Sources */,

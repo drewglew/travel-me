@@ -31,13 +31,17 @@
     self.TableViewSearchPoiItems.delegate = self;
     self.TableViewSearchPoiItems.rowHeight = 100;
     
+    self.SegmentCountries.selectedSegmentIndex=1;
     if (self.Project == nil) {
         // we are arriving directly from the menu
-        [self.SegmentPoiFilterList setTitle:@"Unused" forSegmentAtIndex:0];
+        // [self.SegmentPoiFilterList setTitle:@"Unused" forSegmentAtIndex:0];
+        self.SegmentCountries.selectedSegmentIndex=1;
+        self.SegmentCountries.enabled = false;
         
     } else {
         // project is available
-        [self.SegmentPoiFilterList setTitle:@"Project Countries" forSegmentAtIndex:0];
+        // [self.SegmentPoiFilterList setTitle:@"Project Countries" forSegmentAtIndex:0];
+        
         self.countries = [AppDelegateDef.Db GetProjectCountries :self.Project.key];
         
     }
@@ -94,14 +98,53 @@
     
     [self LoadPoiData];
     
-    //[self.SearchBarPoi setImage:[UIImage imageNamed:@"SearchWhite"] forSearchBarIcon:UISearchBarIconSearch state:UIControlStateNormal];
-    
-    //self.SearchBarPoi.  backgroundColor = [UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0];
-
-    
-
+    [self RefreshPoiFilteredData :true];
+   
+    UILongPressGestureRecognizer *lpgr
+    = [[UILongPressGestureRecognizer alloc]
+       initWithTarget:self action:@selector(handleLongPress:)];
+    lpgr.delegate = self;
+    lpgr.delaysTouchesBegan = YES;
+    [self.CollectionViewTypes addGestureRecognizer:lpgr];
     
 }
+
+/*
+ created date:      12/08/2018
+ last modified:     12/08/2018
+ remarks:
+ */
+-(void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer
+{
+    if (gestureRecognizer.state != UIGestureRecognizerStateEnded) {
+        return;
+    }
+    CGPoint p = [gestureRecognizer locationInView:self.CollectionViewTypes];
+    
+    NSIndexPath *indexPath = [self.CollectionViewTypes indexPathForItemAtPoint:p];
+    if (indexPath == nil){
+        NSLog(@"couldn't find index path");
+    } else {
+        
+        TypeNSO *type = [self.PoiTypes objectAtIndex:indexPath.row];
+        
+        NSNumber *categoryid = type.categoryid;
+        
+        for (TypeNSO *type in self.PoiTypes) {
+            if (type.categoryid == categoryid) {
+                type.selected = true;
+            } else {
+                type.selected = false;
+            }
+        }
+        
+        [self RefreshPoiFilteredData:false];
+     
+    }
+}
+
+
+
 /*
  created date:      11/06/2018
  last modified:     10/08/2018
@@ -124,40 +167,95 @@
 
 /*
  created date:      03/05/2018
- last modified:     03/05/2018
+ last modified:     12/08/2018
  remarks:
  */
--(void)RefreshPoiFilteredData {
+-(void)RefreshPoiFilteredData :(bool) UpdateTypes {
     //[self.SearchBarPoi resignFirstResponder];
     [self.poifiltereditems removeAllObjects];
-    [self.poifiltereditems addObjectsFromArray: self.poiitems];
+    
+    NSArray <PoiNSO*> *tempPoi;
+    NSPredicate *usabilityPredicate;
+    
+    if (self.SegmentPoiFilterList.selectedSegmentIndex == 0) {
+        NSLog(@"unused");
+        usabilityPredicate = [NSPredicate predicateWithFormat:@"connectedactivitycount = 0"];
+    } else if (self.SegmentPoiFilterList.selectedSegmentIndex == 2) {
+        NSLog(@"used");
+        usabilityPredicate = [NSPredicate predicateWithFormat:@"connectedactivitycount > 0"];
+    } else {
+        usabilityPredicate = [NSPredicate predicateWithFormat:@"connectedactivitycount >= 0"];
+    }
+    tempPoi = [self.poiitems filteredArrayUsingPredicate:usabilityPredicate];
+
+    if (self.Project != nil && self.SegmentCountries.selectedSegmentIndex == 0) {
+        NSSet *projectcountries = [NSSet setWithArray:self.countries];
+        tempPoi = [tempPoi filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"countrycode IN %@",projectcountries]];
+    }
+    
+    
+    
+    if (UpdateTypes) {
+        
+        [self.poifiltereditems addObjectsFromArray: tempPoi];
+        
+        NSCountedSet* countedSet = [[NSCountedSet alloc] init];
+        
+        for (PoiNSO* poi in self.poifiltereditems) {
+            [countedSet addObject:poi.categoryid];
+        }
+        
+        self.PoiTypes = [[NSMutableArray alloc] init];
+        
+        for (id item in countedSet)
+        {
+            TypeNSO *type = [[TypeNSO alloc] init];
+            type.occurances = [NSNumber numberWithInteger:[countedSet countForObject:item]];
+            type.categoryid = item;
+            u_long number = [item unsignedLongValue];
+            type.imagename = [self.TypeItems objectAtIndex: number];
+            type.selected = true;
+            [self.PoiTypes addObject:type];
+        }
+    
+    } else {
+        // here we filter on existing types instead..
+        
+        
+        
+        NSMutableArray *types = [[NSMutableArray alloc] init];
+        for (TypeNSO *type in self.PoiTypes) {
+            if (type.selected) {
+                [types addObject:type.categoryid];
+            }
+        }
+        
+        NSSet *typeset = [[NSSet alloc] initWithArray:types];
+        
+        tempPoi = [tempPoi filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"categoryid IN %@",typeset]];
+        
+        [self.poifiltereditems addObjectsFromArray: tempPoi];
+    }
+   
+    
     [self.LabelCounter setText:[NSString stringWithFormat:@"%lu Items", (unsigned long)self.poifiltereditems.count]];
+    
     [self.TableViewSearchPoiItems reloadData];
+    
+    [self.CollectionViewTypes reloadData];
+    
 }
 
 
 /*
  created date:      30/04/2018
- last modified:     21/05/2018
+ last modified:     12/08/2018
  remarks:
  */
 -(void) LoadPoiData {
-    
-    if (self.Project == nil) {
-        self.poiitems = [AppDelegateDef.Db GetPoiContent :nil :nil :nil];
-        if (self.SegmentPoiFilterList.selectedSegmentIndex == 0) {
-            self.poiitems = [AppDelegateDef.Db GetPoiContent :nil :nil :@"unused"];
-        } else {
-            self.poiitems = [AppDelegateDef.Db GetPoiContent :nil :nil :nil];
-        }
-    } else {
-        if (self.SegmentPoiFilterList.selectedSegmentIndex == 0) {
-            self.poiitems = [AppDelegateDef.Db GetPoiContent :nil :self.countries :nil];
-        } else {
-            self.poiitems = [AppDelegateDef.Db GetPoiContent :nil :nil :nil];
-        }
-    }
-        
+
+    self.poiitems = [AppDelegateDef.Db GetPoiData :nil];
+
     NSURL *url = [self applicationDocumentsDirectory];
 
     NSData *pngData;
@@ -179,12 +277,11 @@
             KeyImageItem.Image = [self resizeImage:image imageSize:size];
         }
     }
- 
-    [self.poifiltereditems removeAllObjects];
-    [self.poifiltereditems addObjectsFromArray: self.poiitems];
-    [self.LabelCounter setText:[NSString stringWithFormat:@"%lu Items", (unsigned long)self.poifiltereditems.count]];
-    [self.TableViewSearchPoiItems reloadData];
+
 }
+
+
+
 
 /*
  created date:      15/07/2018
@@ -235,11 +332,6 @@
 
     
     if (cell == nil) {
-        
-        /*
-         *   Actually create a new cell (with an identifier so that it can be dequeued).
-         */
-        
         cell = [[PoiListCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"SearchPoiCellId"];
         
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -391,13 +483,13 @@
 /*
  created date:      30/04/2018
  last modified:     30/04/2018
- remarks:
+ remarks:           TODO merge the search with the filter.  how best to do?
  */
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
     NSLog(@"Text change - %d",self.isSearching);
     
     if ([searchText length] ==0) {
-        [self RefreshPoiFilteredData];
+        [self RefreshPoiFilteredData :false];
         self.isSearching = NO;
     } else {
         //Remove all objects first.
@@ -415,7 +507,7 @@
  remarks:
  */
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
-    [self RefreshPoiFilteredData];
+    [self RefreshPoiFilteredData :true];
 }
 
 
@@ -474,8 +566,62 @@
  remarks:
  */
 - (IBAction)SegmentPoiFilterChanged:(id)sender {
-    [self LoadPoiData];
+    //[self LoadPoiData];
+    [self RefreshPoiFilteredData :true];
 }
+
+/*
+ created date:      12/08/2018
+ last modified:     12/08/2018
+ remarks:
+ */
+- (IBAction)SegmentPoiCountriesFilterChanged:(id)sender {
+    
+    [self RefreshPoiFilteredData :true];
+    
+}
+
+
+
+
+/*
+ created date:      12/08/2018
+ last modified:     12/08/2018
+ remarks:
+ */
+- (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return self.PoiTypes.count;
+}
+
+/*
+ created date:      12/08/2018
+ last modified:     12/08/2018
+ remarks:
+ */
+- (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    
+    TypeCell *cell=[collectionView dequeueReusableCellWithReuseIdentifier:@"TypeCellId" forIndexPath:indexPath];
+    TypeNSO *item = [self.PoiTypes objectAtIndex:indexPath.row];
+    [cell.TypeImageView setImage:[UIImage imageNamed:item.imagename]];
+    cell.LabelOccurances.text = [NSString stringWithFormat:@"%@", item.occurances];
+    cell.selected = item.selected;
+    cell.ImageViewChecked.hidden = !item.selected;
+    return cell;
+}
+
+
+/*
+ created date:      12/08/2018
+ last modified:     12/08/2018
+ remarks:
+ */
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    /* add the insert method if found to be last cell */
+    TypeNSO *item = [self.PoiTypes objectAtIndex:indexPath.row];
+    item.selected = !item.selected;
+    [self RefreshPoiFilteredData :false];
+}
+
 
 /*
  created date:      11/06/2018
@@ -514,9 +660,15 @@
 /*
  created date:      12/08/2018
  last modified:     12/08/2018
- remarks:
+ remarks:           Only sets all category filters to selected
  */
 - (IBAction)FilterResetPressed:(id)sender {
+    
+    for (TypeNSO *type in self.PoiTypes) {
+        type.selected = true;
+    }
+    [self RefreshPoiFilteredData:false];
+    
 }
 
 /*
@@ -528,8 +680,8 @@
     
     [self.view layoutIfNeeded];
     if (self.FilterOptionHeightConstraint.constant==70) {
-        [UIView animateWithDuration:1.0 animations:^{
-            self.FilterOptionHeightConstraint.constant=300;
+        [UIView animateWithDuration:0.75 animations:^{
+            self.FilterOptionHeightConstraint.constant=420;
             self.ButtonResetFilter.hidden = false;
             //self.ButtonMore.transform = CGAffineTransformMakeRotation(M_PI);
             [self.view layoutIfNeeded];
@@ -538,7 +690,7 @@
         }];
         
     } else {
-        [UIView animateWithDuration:1.0 animations:^{
+        [UIView animateWithDuration:0.75 animations:^{
             self.FilterOptionHeightConstraint.constant=70;
             self.ButtonResetFilter.hidden = true;
             //self.ButtonMore.transform = CGAffineTransformMakeRotation(-2*M_PI);

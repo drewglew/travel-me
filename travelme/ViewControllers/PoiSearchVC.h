@@ -15,12 +15,14 @@
 #import "ProjectNSO.h"
 #import "LocatorVC.h"
 #import "NearbyListingVC.h"
+#import "TypeNSO.h"
+#import "TypeCell.h"
 
 @protocol PoiSearchDelegate <NSObject>
 
 @end
 
-@interface PoiSearchVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, ActivityDelegate, LocatorDelegate, PoiDataEntryDelegate, NearbyListingDelegate>
+@interface PoiSearchVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, ActivityDelegate, LocatorDelegate, PoiDataEntryDelegate, NearbyListingDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UIGestureRecognizerDelegate>
 @property (weak, nonatomic) IBOutlet UISearchBar *SearchBarPoi;
 @property (weak, nonatomic) IBOutlet UITableView *TableViewSearchPoiItems;
 @property (strong, nonatomic) NSMutableArray *poiitems;
@@ -44,5 +46,7 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *FilterOptionHeightConstraint;
 
 @property (strong, nonatomic) NSArray *TypeItems;
+@property (strong, nonatomic) NSMutableArray *PoiTypes;
+@property (weak, nonatomic) IBOutlet UICollectionView *CollectionViewTypes;
 
 @end

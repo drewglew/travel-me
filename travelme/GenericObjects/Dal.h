@@ -39,6 +39,7 @@
 -(bool) DeleteActivity :(ActivityNSO*) Activity :(NSString*) ProjectKey;
 
 -(NSMutableArray*) GetPoiContent :(NSString*) RequiredKey :(NSArray*) Countries :(NSString*) FilterOption;
+-(NSMutableArray*) GetPoiData :(NSString*) RequiredKey;
 -(NSMutableArray*) GetProjectContent :(NSString*) RequiredKey;
 -(NSMutableArray*) GetActivityContent :(NSString*) RequiredKey;
 -(NSMutableArray*) GetActivityListContentForState :(NSString*) RequiredProjectKey :(NSNumber*) RequiredState;

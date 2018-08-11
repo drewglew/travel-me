@@ -624,6 +624,49 @@
 }
 
 
+/*
+ created date:      12/08/2018
+ last modified:     12/08/2018
+ remarks:           TODO add new way of inserting parms
+ */
+-(NSMutableArray*) GetPoiData :(NSString*) RequiredKey {
+    NSMutableArray *poidata  = [[NSMutableArray alloc] init];
+    
+    NSString *selectSQL = [NSString stringWithFormat:@"SELECT key,name,fullthoroughfare,administrativearea,subadministrativearea,countrycode,locality,sublocality,postcode,categoryid,privatenotes,lat,lon,wikititle,(select count(*) as counter from activity a where a.poikey=p.key) as sumofactivities FROM poi p ORDER BY name"];
+    sqlite3_stmt *statement;
+    const char *select_statement = [selectSQL UTF8String];
+    
+    if (sqlite3_prepare_v2(_DB, select_statement, -1, &statement, NULL) == SQLITE_OK)
+    {
+        while (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            PoiNSO *poi = [self LoadPoiImageData :[NSString stringWithUTF8String:(char*)sqlite3_column_text(statement, 0)]];
+            poi.name = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 1)];
+            poi.fullthoroughfare = [NSString stringWithFormat:@"%s",(const char*)sqlite3_column_text(statement, 2)];
+            poi.administrativearea = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 3)];
+            poi.subadministrativearea = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 4)];
+            poi.countrycode = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 5)];
+            poi.locality = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 6)];
+            poi.sublocality = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 7)];
+            poi.postcode = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 8)];
+            poi.categoryid = [NSNumber numberWithInt:sqlite3_column_int(statement, 9)];
+            poi.privatenotes = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 10)];
+            poi.lat = [NSNumber numberWithDouble:sqlite3_column_double(statement, 11)];
+            poi.lon = [NSNumber numberWithDouble:sqlite3_column_double(statement, 12)];
+            poi.wikititle = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 13)];
+            poi.connectedactivitycount = [NSNumber numberWithInt:sqlite3_column_int(statement, 14)];
+            poi.Images = [NSMutableArray arrayWithArray:[self GetImagesForSelectedPoi:poi.key]];
+            CountryNSO *country = [self GetCountryByCode:poi.countrycode];
+            poi.country = country.name;
+            poi.searchstring = [NSString stringWithFormat:@"%@|%@|%@|%@|%@|%@|%@",poi.name,poi.administrativearea,poi.subadministrativearea,poi.postcode,poi.locality,poi.sublocality,poi.country];
+            
+            [poidata addObject:poi];
+        }
+    }
+    sqlite3_finalize(statement);
+    
+    return poidata;
+}
 
 
 
@@ -650,12 +693,13 @@
             whereClause = @"WHERE";
             whereClause = [NSString stringWithFormat:@"%@ %@ IN (%@)", whereClause, @"countrycode", [Countries componentsJoinedByString:@ ","]];
         }
+    
+    
+    
         NSString *selectSQL = [NSString stringWithFormat:@"SELECT key,name,fullthoroughfare,administrativearea,subadministrativearea,countrycode,locality,sublocality,postcode,categoryid,privatenotes,lat,lon,wikititle,(select count(*) as counter from activity a where a.poikey=p.key) as sumofactivities FROM poi p %@ ORDER BY name", whereClause];
         sqlite3_stmt *statement;
         const char *select_statement = [selectSQL UTF8String];
-    
-    
-    
+
         if (sqlite3_prepare_v2(_DB, select_statement, -1, &statement, NULL) == SQLITE_OK)
         {
             while (sqlite3_step(statement) == SQLITE_ROW)
@@ -1274,7 +1318,7 @@
     {
         while (sqlite3_step(statement) == SQLITE_ROW)
         {
-            NSString *country = [NSString stringWithFormat:@"'%@'",[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 0)]];
+            NSString *country = [NSString stringWithFormat:@"%@",[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 0)]];
             [countries addObject:country];
         }
     }
