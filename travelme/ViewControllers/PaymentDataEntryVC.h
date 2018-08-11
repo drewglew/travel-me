@@ -10,11 +10,13 @@
 #import "ActivityNSO.h"
 #import "PaymentNSO.h"
 #import "AppDelegate.h"
+#import "CurrencyPickerVC.h"
+#import "Reachability.h"
 
 @protocol PaymentDetailDelegate <NSObject>
 @end
 
-@interface PaymentDataEntryVC : UIViewController
+@interface PaymentDataEntryVC : UIViewController <UITextFieldDelegate, CurrencyPickerDelegate>
 @property (weak, nonatomic) IBOutlet UITextField *TextFieldDescription;
 @property (weak, nonatomic) IBOutlet UITextField *TextFieldAmt;
 @property (weak, nonatomic) IBOutlet UITextField *TextFieldCurrency;
@@ -26,5 +28,10 @@
 @property (assign) bool newitem;
 @property (nonatomic, weak) id <PaymentDetailDelegate> delegate;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentPaymentType;
+@property(nonatomic, retain) NSDate *date;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonHomeCurrency;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonLocalCurrency;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonCancel;
+
 
 @end

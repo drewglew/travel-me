@@ -16,7 +16,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     30/04/2018
+ last modified:     09/08/2018
  remarks:           segue controls .
  */
 - (void)viewDidLoad {
@@ -24,7 +24,19 @@
     self.CollectionViewActivities.delegate = self;
     self.LabelProject.text =  [NSString stringWithFormat:@"Activities for %@", self.Project.name];
     self.editmode = false;
-    // Do any additional setup after loading the view. 
+    // Do any additional setup after loading the view.
+    
+    self.ButtonBack.layer.cornerRadius = 25;
+    self.ButtonBack.clipsToBounds = YES;
+    
+    self.ButtonPayment.layer.cornerRadius = 25;
+    self.ButtonPayment.clipsToBounds = YES;
+    self.ButtonPayment.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
+    self.ButtonRouting.layer.cornerRadius = 25;
+    self.ButtonRouting.clipsToBounds = YES;
+    self.ButtonRouting.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
 }
 
 /*
@@ -306,6 +318,7 @@
         PaymentListingVC *controller = (PaymentListingVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.Project = self.Project;
+        controller.activitystate = [NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex];
     }
 }
 

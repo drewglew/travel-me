@@ -41,6 +41,10 @@
 @property (weak, nonatomic) IBOutlet UIButton *ButtonCheckInOut;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *ButtonViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonMore;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonDirections;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonPayment;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonDateRange;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonCancel;
 
 
 

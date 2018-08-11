@@ -15,7 +15,7 @@
 @implementation PaymentDataEntryVC
 /*
  created date:      14/05/2018
- last modified:     16/05/2018
+ last modified:     09/08/2018
  remarks:
  */
 - (void)viewDidLoad {
@@ -28,10 +28,14 @@
     
     if (self.newitem) {
         /* get the expected currency code from the country of the point of interest.*/
-        NSDictionary *components = [NSDictionary dictionaryWithObject:self.Activity.poi.countrycode forKey:NSLocaleCountryCode];
-        NSString *localeIdent = [NSLocale localeIdentifierFromComponents:components];
-        NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:localeIdent];
-        self.TextFieldCurrency.text = [locale objectForKey: NSLocaleCurrencyCode];
+        if (self.Activity.poi == nil) {
+            // do nothing.
+        } else {
+            NSDictionary *components = [NSDictionary dictionaryWithObject:self.Activity.poi.countrycode forKey:NSLocaleCountryCode];
+            NSString *localeIdent = [NSLocale localeIdentifierFromComponents:components];
+            NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:localeIdent];
+            self.TextFieldCurrency.text = [locale objectForKey: NSLocaleCurrencyCode];
+        }
     } else {
 
         self.TextFieldCurrency.text = self.Payment.localcurrencycode;
@@ -53,8 +57,19 @@
         }
         self.DatePickerPaymentDt.date = date;
     }
-    self.LabelTitle.text = self.Activity.name;
+    if (self.Activity != NULL) {
+        self.LabelTitle.text = self.Activity.name;
+    }
+    self.TextFieldCurrency.delegate = self;
     
+    self.ButtonAction.layer.cornerRadius = 25;
+    self.ButtonAction.clipsToBounds = YES;
+    self.ButtonCancel.layer.cornerRadius = 25;
+    self.ButtonCancel.clipsToBounds = YES;
+    self.ButtonHomeCurrency.layer.cornerRadius = 25;
+    self.ButtonHomeCurrency.clipsToBounds = YES;
+    self.ButtonLocalCurrency.layer.cornerRadius = 25;
+    self.ButtonLocalCurrency.clipsToBounds = YES;
 }
 
 /*
@@ -71,7 +86,7 @@
 
 /*
  created date:      14/05/2018
- last modified:     09/06/2018
+ last modified:     08/08/2018
  remarks:   We should only add planned payments to activities that are planned.
             Additionally we should be able to add payments that are not attached to an activity.
             For example: Petrol payment.
@@ -94,10 +109,16 @@
     NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
 
-    
     NSDate *today = [NSDate date];
-    if (self.DatePickerPaymentDt.date > today) {
-        self.DatePickerPaymentDt.date = today;
+    
+    switch ([self.DatePickerPaymentDt.date  compare:today]) {
+        case NSOrderedAscending:
+            break;
+        case NSOrderedDescending:
+            self.DatePickerPaymentDt.date = today;
+            break;
+        case NSOrderedSame:
+            break;
     }
     
     self.Payment.description = self.TextFieldDescription.text;
@@ -127,10 +148,15 @@
         self.Payment.dt_act = self.DatePickerPaymentDt.date;
         self.Payment.date_act = [dateFormatter stringFromDate:self.Payment.dt_act];
         self.Payment.amt_act = [NSNumber numberWithDouble:temp];
-        if (self.newitem) {
+        
+        if (self.newitem && self.Activity.activitystate == [NSNumber numberWithInteger:0]) {
             self.Payment.dt_est = self.Payment.dt_act;
             self.Payment.date_est = self.Payment.date_act;
             self.Payment.amt_est = self.Payment.amt_act;
+        } else if (self.newitem) {
+            self.Payment.amt_est = [NSNumber numberWithInt:0];
+            self.Payment.dt_est = self.Payment.dt_act;
+            self.Payment.date_est = self.Payment.date_act;
         }
     }
 
@@ -152,13 +178,18 @@
         self.Payment.rate_act = self.Payment.rate_est;
     }
     
-    /*
-     we need to add payment record to database
-     */
-    if (self.newitem) {
-        [AppDelegateDef.Db InsertPayment:self.Payment :self.Activity];
+    if (self.Payment.rate_est == [NSNumber numberWithInt:-1] || self.Payment.rate_act == [NSNumber numberWithInt:-1]) {
+        // do nothing. later apply some error message perhaps.
     } else {
-         [AppDelegateDef.Db UpdatePaymentItem:self.Payment];
+    
+        /*
+         we need to add payment record to database
+         */
+        if (self.newitem) {
+            [AppDelegateDef.Db InsertPayment:self.Payment :self.Activity];
+        } else {
+             [AppDelegateDef.Db UpdatePaymentItem:self.Payment];
+        }
     }
     [self dismissViewControllerAnimated:YES completion:Nil];
 }
@@ -195,32 +226,63 @@
  */
 - (NSNumber*)GetExchangeRates:(PaymentNSO*)payment {
     
-    NSString *AccessKey = @"";
-    NSString *DateValue = self.Payment.date_act;
-    
-    if (self.Payment.status==[NSNumber numberWithLong:0]) {
-        DateValue = self.Payment.date_est;
-    }
-    
-    NSNumber *ExchangeRate = [AppDelegateDef.Db GetExchangeRate:payment.localcurrencycode :DateValue];
-    
-    if (ExchangeRate == [NSNumber numberWithInt:0]) {
-    
-        NSString *url = [NSString stringWithFormat:@"https://free.currencyconverterapi.com/api/v5/convert?q=%@_%@&compact=ultra&date=%@&apikey=%@", payment.localcurrencycode, payment.homecurrencycode, DateValue, AccessKey];
+   
+        
+        NSString *AccessKey = @"";
+        NSString *DateValue = self.Payment.date_act;
+        
+        if (self.Payment.status==[NSNumber numberWithLong:0]) {
+            DateValue = self.Payment.date_est;
+        }
+        
+        NSNumber *ExchangeRate = [AppDelegateDef.Db GetExchangeRate:payment.localcurrencycode :DateValue];
+        
+        if (ExchangeRate == [NSNumber numberWithInt:0]) {
+        
+            if ([self checkInternet]) {
+                NSString *url = [NSString stringWithFormat:@"https://free.currencyconverterapi.com/api/v5/convert?q=%@_%@&compact=ultra&date=%@&apikey=%@", payment.localcurrencycode, payment.homecurrencycode, DateValue, AccessKey];
 
-        [self fetchFromExchangeRateApi:url withDictionary:^(NSDictionary *data) {
+                [self fetchFromExchangeRateApi:url withDictionary:^(NSDictionary *data) {
+
+                    dispatch_async(dispatch_get_main_queue(), ^(void){
+                        
+                        if ([data objectForKey:@"status"]==[NSNumber numberWithLong:400]) {
+                            NSLog(@"Cannot locate currency with code %@", payment.localcurrencycode);
+                        } else {
+                        
+                            NSDictionary *LocalToHome = [data objectForKey:[NSString stringWithFormat:@"%@_%@", payment.localcurrencycode, payment.homecurrencycode]];
+                            NSNumber *LocalToHomeRate = [LocalToHome valueForKey:DateValue];
+                            [AppDelegateDef.Db InsertExchangeRate:payment.localcurrencycode :DateValue :LocalToHomeRate];
+                        }
+                    });
+                }];
+                return 0;
+            } else {
+                NSLog(@"Device is not connected to the Internet");
+                return [NSNumber numberWithInt:-1];
+            }
+            
+        } else {
+            return ExchangeRate;
+        }
         
-            dispatch_async(dispatch_get_main_queue(), ^(void){
-                NSDictionary *LocalToHome = [data objectForKey:[NSString stringWithFormat:@"%@_%@", payment.localcurrencycode, payment.homecurrencycode]];
-                NSNumber *LocalToHomeRate = [LocalToHome valueForKey:DateValue];
-                 [AppDelegateDef.Db InsertExchangeRate:payment.localcurrencycode :DateValue :LocalToHomeRate];
-            });
-        }];
-        return 0;
-        
-    } else {
-        return ExchangeRate;
+    
+    
+}
+
+/*
+ created date:      08/08/2018
+ last modified:     08/08/2018
+ remarks:           segue controls .
+ */
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    
+    if([segue.identifier isEqualToString:@"ShowCurrencies"]){
+        CurrencyPickerVC *controller = (CurrencyPickerVC *)segue.destinationViewController;
+        controller.delegate = self;
+        controller.SelectedCurrencyCode = self.TextFieldCurrency.text;
     }
+    
 }
 
 
@@ -247,6 +309,54 @@
 
 - (IBAction)SegmentStatusChanged:(id)sender {
     
+}
+
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
+{
+    [self performSegueWithIdentifier:@"ShowCurrencies" sender:self.TextFieldCurrency];
+    return NO;
+}
+
+/*
+ created date:      08/08/2018
+ last modified:     08/08/2018
+ remarks:
+ */
+- (void)didPickCurrency :(NSString*)CurrencyCode {
+    self.TextFieldCurrency.text = CurrencyCode;
+    
+}
+
+
+- (bool)checkInternet
+{
+    if ([[Reachability reachabilityForInternetConnection]currentReachabilityStatus]==NotReachable)
+    {
+        return false;
+    }
+    else
+    {
+        //connection available
+        return true;
+    }
+    
+}
+
+- (IBAction)ButtonHomePressed:(id)sender {
+    
+    self.TextFieldCurrency.text = [AppDelegateDef HomeCurrencyCode];
+    
+}
+
+- (IBAction)ButtonLocalPressed:(id)sender {
+    if (self.Activity.poi == nil) {
+        // do nothing.
+    } else {
+        NSDictionary *components = [NSDictionary dictionaryWithObject:self.Activity.poi.countrycode forKey:NSLocaleCountryCode];
+        NSString *localeIdent = [NSLocale localeIdentifierFromComponents:components];
+        NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:localeIdent];
+        self.TextFieldCurrency.text = [locale objectForKey: NSLocaleCurrencyCode];
+    }
 }
 
 

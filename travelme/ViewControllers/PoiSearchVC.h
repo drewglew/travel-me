@@ -34,8 +34,11 @@
 @property (strong, nonatomic) ActivityNSO *Activity;
 @property (strong, nonatomic) ProjectNSO *Project;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentPoiFilterList;
-- (IBAction)ButtonOpenAppleMaps:(id)sender;
+
 @property (weak, nonatomic) IBOutlet UILabel *LabelCounter;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonNew;
+
 @property (strong, nonatomic) NSArray *TypeItems;
 
 @end

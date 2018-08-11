@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3A082776211B4EBE00363BB7 /* CurrencyPickerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A082775211B4EBE00363BB7 /* CurrencyPickerVC.m */; };
 		3A12B8DA21010680006B621D /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A12B8D921010680006B621D /* SystemConfiguration.framework */; };
 		3A12B8DD21010BF4006B621D /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A12B8DC21010BF4006B621D /* Reachability.m */; };
 		3A224CA62094338D00075457 /* PoiImageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CA52094338D00075457 /* PoiImageCell.m */; };
@@ -62,6 +63,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3A082774211B4EBE00363BB7 /* CurrencyPickerVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurrencyPickerVC.h; sourceTree = "<group>"; };
+		3A082775211B4EBE00363BB7 /* CurrencyPickerVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CurrencyPickerVC.m; sourceTree = "<group>"; };
 		3A12B8D921010680006B621D /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		3A12B8DB21010BF4006B621D /* Reachability.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		3A12B8DC21010BF4006B621D /* Reachability.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
@@ -232,8 +235,8 @@
 				3A9F73A420A1FFC900D61666 /* JSON data */,
 				3A224CB12095917300075457 /* CollectionViewCells */,
 				3A224CB02095916000075457 /* TableViewCells */,
-				3A374F072093738F00E5A652 /* GenericObjects */,
 				3A374EFD209372E700E5A652 /* ViewControllers */,
+				3A374F072093738F00E5A652 /* GenericObjects */,
 				3A374EE420936A9300E5A652 /* AppDelegate.h */,
 				3A374EE520936A9300E5A652 /* AppDelegate.m */,
 				3A374EEA20936A9300E5A652 /* Main.storyboard */,
@@ -274,6 +277,8 @@
 				3A9F73A820A2444A00D61666 /* PaymentListingVC.m */,
 				3A9F73AA20A36A1D00D61666 /* PaymentDataEntryVC.h */,
 				3A9F73AB20A36A1D00D61666 /* PaymentDataEntryVC.m */,
+				3A082774211B4EBE00363BB7 /* CurrencyPickerVC.h */,
+				3A082775211B4EBE00363BB7 /* CurrencyPickerVC.m */,
 				3AAF154620A8AD9800F8DE0C /* InfoVC.h */,
 				3AAF154720A8AD9800F8DE0C /* InfoVC.m */,
 				3AB915EA20CD972F001A08A9 /* ImagePickerVC.h */,
@@ -434,6 +439,7 @@
 				3A9EA18620AE17DF0052CC4F /* ScheduleBackgroundView.m in Sources */,
 				3A224CAC2094736200075457 /* SearchResultListCell.m in Sources */,
 				3AAB60C520FCFEA600A22047 /* NearbyPoiNSO.m in Sources */,
+				3A082776211B4EBE00363BB7 /* CurrencyPickerVC.m in Sources */,
 				3A224CC92097950600075457 /* ActivityDataEntryVC.m in Sources */,
 				3A374F1E2093939400E5A652 /* LocatorVC.m in Sources */,
 				3A224CA62094338D00075457 /* PoiImageCell.m in Sources */,

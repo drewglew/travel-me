@@ -22,7 +22,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     17/07/2018
+ last modified:     08/08/2018
  remarks:
  */
 - (void)viewDidLoad {
@@ -41,6 +41,11 @@
         self.countries = [AppDelegateDef.Db GetProjectCountries :self.Project.key];
         
     }
+    
+    self.ButtonNew.layer.cornerRadius = 25;
+    self.ButtonNew.clipsToBounds = YES;
+    self.ButtonBack.layer.cornerRadius = 25;
+    self.ButtonBack.clipsToBounds = YES;
     
     self.poiitems = [[NSMutableArray alloc] init];
     self.poifiltereditems = [[NSMutableArray alloc] init];
@@ -85,10 +90,17 @@
     
     [self LoadPoiData];
     
+    //[self.SearchBarPoi setImage:[UIImage imageNamed:@"SearchWhite"] forSearchBarIcon:UISearchBarIconSearch state:UIControlStateNormal];
+    
+    //self.SearchBarPoi.  backgroundColor = [UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0];
+
+    
+
+    
 }
 /*
  created date:      11/06/2018
- last modified:     30/04/2018
+ last modified:     10/08/2018
  remarks:
  */
 -(void)viewWillAppear:(BOOL)animated {
@@ -96,6 +108,8 @@
 //     if (self.Project == nil) {
 //         [self LoadPoiData];
 //     }
+    [UISearchBar appearance].tintColor = [UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0]; [[UITextField appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setDefaultTextAttributes:@{NSForegroundColorAttributeName: [UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0]}];
+    
 }
 
 
@@ -496,4 +510,8 @@
 
 
 
+- (IBAction)ButtonWiki:(id)sender {
+}
+- (IBAction)ButtonUpdate:(id)sender {
+}
 @end

@@ -199,11 +199,15 @@
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="42V-5v-YkH">
                                 <rect key="frame" x="10" y="607" width="50" height="50"/>
+                                <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="1rR-ue-ztG"/>
                                     <constraint firstAttribute="width" constant="50" id="9Lj-jF-gem"/>
                                 </constraints>
-                                <state key="normal" image="Back"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <state key="normal" title="Back">
+                                    <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
                                 <connections>
                                     <action selector="BackPressed:" destination="1WG-sA-iYL" eventType="touchUpInside" id="PEj-mc-hdq"/>
                                 </connections>
@@ -214,7 +218,7 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="180" id="AMy-KT-Vlw"/>
                                 </constraints>
-                                <mutableString key="text">Application to assist with your travel planning, be it on vacation or business.   Use it whichever way works for you! You may plan as well as log real events.   Check distances and Points Of Interest.  Comment on them and keep those treasured memories. Additionally estimate costs and log actual payments too.    NO DATA COLLECTED IS KNOWINGLY SHARED BY THE DEVELOPER.</mutableString>
+                                <string key="text">Application to assist with your travel planning, be it on vacation or business.   Use it whichever way works for you! You may plan as well as log real events.   Check distances and Points Of Interest.  Comment on them and keep those treasured memories. Additionally estimate costs and log actual payments too.    NO DATA COLLECTED IS KNOWINGLY SHARED BY THE DEVELOPER.</string>
                                 <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" type="system" weight="thin" pointSize="12"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -238,9 +242,9 @@
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FYQ-UZ-Smw">
                                 <rect key="frame" x="10" y="314" width="355" height="273"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <mutableString key="text">Idea, Coding &amp; Design  Andrew Glew  Icon Design https://icons8.com  Exchange Rates https://free.currencyconverterapi.com
+                                <string key="text">Idea, Coding &amp; Design  Andrew Glew  Icon Design https://icons8.com  Exchange Rates https://free.currencyconverterapi.com
 
-Wikipedia - superb API providing access to data that matters.    Thanks to: My wife and daughter; understanding me so I can focus on my 'obsession'.  Additionally Malene &amp; Eveline; providing great feedback &amp; helping out with testing.</mutableString>
+Wikipedia - superb API providing access to data that matters.    Thanks to: My wife and daughter; understanding me so I can focus on my 'obsession'.  Additionally Malene &amp; Eveline; providing great feedback &amp; helping out with testing.</string>
                                 <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" type="system" weight="thin" pointSize="12"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -253,14 +257,14 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                     <constraint firstAttribute="height" constant="50" id="u5i-OM-vir"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Version 1.3.3" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h7F-vk-Nu2">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Version 1.4.1" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h7F-vk-Nu2">
                                 <rect key="frame" x="203" y="622" width="100" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="BVs-9J-DNq"/>
                                     <constraint firstAttribute="width" constant="100" id="Q8B-IX-pqb"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="thin" pointSize="12"/>
-                                <color key="textColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" red="0.3911445140838623" green="0.96193152666091919" blue="0.0051822378300130367" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
@@ -301,24 +305,42 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="jGg-t3-3xs">
+                                <rect key="frame" x="5" y="25" width="365" height="150"/>
+                                <color key="backgroundColor" name="systemRedColor" catalog="System" colorSpace="catalog"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="150" id="biY-tl-ecR"/>
+                                </constraints>
+                                <string key="text">Warning - No Internet connectivity!    You may still add limited information about your current location and include inside a trip.  Later on, when you have web access you can update any remaining details.  </string>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Globe" translatesAutoresizingMaskIntoConstraints="NO" id="Qxy-mE-vno" userLabel="Globe">
+                                <rect key="frame" x="10" y="192" width="355" height="355"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="Qxy-mE-vno" secondAttribute="height" multiplier="1:1" id="ITu-mK-Z8t"/>
+                                </constraints>
+                            </imageView>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="mutedStandard" pitchEnabled="NO" showsUserLocation="YES" showsScale="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0Jo-L5-7EQ">
-                                <rect key="frame" x="0.0" y="76" width="375" height="591"/>
+                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </mapView>
-                            <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="be6-Iq-CS9">
+                            <searchBar contentMode="redraw" searchBarStyle="minimal" translatesAutoresizingMaskIntoConstraints="NO" id="be6-Iq-CS9">
                                 <rect key="frame" x="0.0" y="20" width="375" height="56"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="56" id="F0f-hr-tp2"/>
                                 </constraints>
-                                <color key="barTintColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="barTintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <textInputTraits key="textInputTraits"/>
                             </searchBar>
                             <tableView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="pu9-8R-cLJ">
-                                <rect key="frame" x="0.0" y="76" width="375" height="200"/>
+                                <rect key="frame" x="0.0" y="76" width="375" height="350"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="200" id="Bfd-9c-gqz"/>
+                                    <constraint firstAttribute="height" constant="350" id="Bfd-9c-gqz"/>
                                 </constraints>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="SearchResultsCell" rowHeight="68" id="rgg-yz-VOi" customClass="SearchResultListCell">
@@ -375,29 +397,16 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="70"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Kb-U0-y3v">
-                                            <rect key="frame" x="185" y="20" width="40" height="40"/>
-                                            <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="40" id="PQs-Gs-CXs"/>
-                                                <constraint firstAttribute="width" constant="40" id="qQF-Ik-6CZ"/>
-                                            </constraints>
-                                            <state key="normal" title="Skip">
-                                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            </state>
-                                            <connections>
-                                                <action selector="SkipMapDataPressed:" destination="5m3-wy-tbn" eventType="touchUpInside" id="IMa-v5-S8F"/>
-                                            </connections>
-                                        </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bv1-M6-Qit">
                                             <rect key="frame" x="245" y="10" width="50" height="50"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="50" id="Td4-SW-Vnr"/>
                                                 <constraint firstAttribute="width" constant="50" id="YgD-at-EIQ"/>
                                             </constraints>
-                                            <state key="normal" image="Clear">
-                                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <state key="normal" title="Clear">
+                                                <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
                                             </state>
                                             <connections>
                                                 <action selector="ClearAnnotationsOnMapPressed:" destination="5m3-wy-tbn" eventType="touchUpInside" id="eGp-ev-LzC"/>
@@ -405,13 +414,14 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uh9-Rx-lma" userLabel="Next">
                                             <rect key="frame" x="315" y="10" width="50" height="50"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="50" id="Q6R-Wi-G9w"/>
                                                 <constraint firstAttribute="height" constant="50" id="eZu-fk-rpz"/>
                                             </constraints>
-                                            <state key="normal" image="Next">
-                                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <state key="normal" title="Next">
+                                                <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
                                             </state>
                                             <connections>
                                                 <action selector="UseMapDataPressed:" destination="5m3-wy-tbn" eventType="touchUpInside" id="8OF-kH-iSQ"/>
@@ -420,24 +430,41 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dFI-XP-ugO">
                                             <rect key="frame" x="10" y="10" width="50" height="50"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="50" id="AS7-XJ-sSF"/>
                                                 <constraint firstAttribute="width" constant="50" id="s6o-zF-nFL"/>
                                             </constraints>
-                                            <state key="normal" image="Back">
-                                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <state key="normal" title="Back">
+                                                <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
                                             </state>
                                             <connections>
                                                 <action selector="BackPressed:" destination="5m3-wy-tbn" eventType="touchUpInside" id="lHW-io-tW6"/>
                                             </connections>
                                         </button>
+                                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Kb-U0-y3v">
+                                            <rect key="frame" x="315" y="10" width="50" height="50"/>
+                                            <color key="backgroundColor" red="0.8980392157" green="0.34509803919999998" blue="0.070588235289999995" alpha="1" colorSpace="calibratedRGB"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="50" id="PQs-Gs-CXs"/>
+                                                <constraint firstAttribute="width" constant="50" id="qQF-Ik-6CZ"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <state key="normal" title="Next">
+                                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="SkipMapDataPressed:" destination="5m3-wy-tbn" eventType="touchUpInside" id="IMa-v5-S8F"/>
+                                                <segue destination="8lT-sr-xUS" kind="show" identifier="ShowPoiWithoutMapData" id="YS2-Z3-oGI"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                     <constraints>
                                         <constraint firstAttribute="bottom" secondItem="dFI-XP-ugO" secondAttribute="bottom" constant="10" id="2ce-40-oBt"/>
+                                        <constraint firstAttribute="trailing" secondItem="0Kb-U0-y3v" secondAttribute="trailing" constant="10" id="8Kw-ge-b83"/>
                                         <constraint firstAttribute="bottom" secondItem="0Kb-U0-y3v" secondAttribute="bottom" constant="10" id="Hdm-fV-9fN"/>
                                         <constraint firstItem="dFI-XP-ugO" firstAttribute="leading" secondItem="tGU-SF-mhs" secondAttribute="leading" constant="10" id="LHC-YS-cqc"/>
-                                        <constraint firstItem="bv1-M6-Qit" firstAttribute="leading" secondItem="0Kb-U0-y3v" secondAttribute="trailing" constant="20" id="S5q-Gq-t6G"/>
                                         <constraint firstAttribute="bottom" secondItem="bv1-M6-Qit" secondAttribute="bottom" constant="10" id="fvn-0n-LuU"/>
                                         <constraint firstAttribute="trailing" secondItem="Uh9-Rx-lma" secondAttribute="trailing" constant="10" id="qKJ-Oy-bTS"/>
                                         <constraint firstItem="Uh9-Rx-lma" firstAttribute="leading" secondItem="bv1-M6-Qit" secondAttribute="trailing" constant="20" id="rxa-0Y-dW4"/>
@@ -448,28 +475,41 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                 <constraints>
                                     <constraint firstAttribute="height" constant="70" id="xAH-bT-Pyo"/>
                                 </constraints>
-                                <blurEffect style="light"/>
+                                <blurEffect style="dark"/>
                             </visualEffectView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="Tdl-hs-Dfa" firstAttribute="bottom" secondItem="0Jo-L5-7EQ" secondAttribute="bottom" id="2IR-rl-gVB"/>
+                            <constraint firstItem="Tdl-hs-Dfa" firstAttribute="trailing" secondItem="jGg-t3-3xs" secondAttribute="trailing" constant="5" id="38o-97-fzB"/>
+                            <constraint firstItem="uAg-X8-sXg" firstAttribute="top" secondItem="Qxy-mE-vno" secondAttribute="bottom" constant="50" id="4Xa-qk-rYI"/>
                             <constraint firstItem="Tdl-hs-Dfa" firstAttribute="trailing" secondItem="0Jo-L5-7EQ" secondAttribute="trailing" id="GQk-CW-Hk5"/>
                             <constraint firstItem="uAg-X8-sXg" firstAttribute="bottom" secondItem="Tdl-hs-Dfa" secondAttribute="bottom" id="Gx0-JI-RFA"/>
                             <constraint firstItem="uAg-X8-sXg" firstAttribute="leading" secondItem="Tdl-hs-Dfa" secondAttribute="leading" id="KlD-jy-xRl"/>
                             <constraint firstItem="pu9-8R-cLJ" firstAttribute="leading" secondItem="Tdl-hs-Dfa" secondAttribute="leading" id="Rel-iD-hdD"/>
-                            <constraint firstItem="0Jo-L5-7EQ" firstAttribute="top" secondItem="be6-Iq-CS9" secondAttribute="bottom" id="Zw6-Km-EJK"/>
+                            <constraint firstItem="0Jo-L5-7EQ" firstAttribute="top" secondItem="Tdl-hs-Dfa" secondAttribute="top" id="Vrx-yv-8gZ"/>
+                            <constraint firstItem="jGg-t3-3xs" firstAttribute="top" secondItem="Tdl-hs-Dfa" secondAttribute="top" constant="5" id="dXF-5T-Hxd"/>
                             <constraint firstItem="pu9-8R-cLJ" firstAttribute="trailing" secondItem="Tdl-hs-Dfa" secondAttribute="trailing" id="gwN-Lb-agm"/>
+                            <constraint firstItem="Qxy-mE-vno" firstAttribute="leading" secondItem="Tdl-hs-Dfa" secondAttribute="leading" constant="10" id="iQX-aM-myS"/>
                             <constraint firstItem="be6-Iq-CS9" firstAttribute="trailing" secondItem="Tdl-hs-Dfa" secondAttribute="trailing" id="nqq-I3-ga4"/>
                             <constraint firstItem="pu9-8R-cLJ" firstAttribute="top" secondItem="be6-Iq-CS9" secondAttribute="bottom" id="ocd-mt-ZYX"/>
                             <constraint firstItem="Tdl-hs-Dfa" firstAttribute="trailing" secondItem="uAg-X8-sXg" secondAttribute="trailing" id="p4x-WK-Q2D"/>
                             <constraint firstItem="be6-Iq-CS9" firstAttribute="leading" secondItem="Tdl-hs-Dfa" secondAttribute="leading" id="v1y-0M-IoA"/>
                             <constraint firstItem="0Jo-L5-7EQ" firstAttribute="leading" secondItem="Tdl-hs-Dfa" secondAttribute="leading" id="vH6-iR-l2U"/>
+                            <constraint firstItem="Tdl-hs-Dfa" firstAttribute="trailing" secondItem="Qxy-mE-vno" secondAttribute="trailing" constant="10" id="vTs-Ac-LqQ"/>
+                            <constraint firstItem="Qxy-mE-vno" firstAttribute="centerX" secondItem="kp6-HI-6ez" secondAttribute="centerX" id="xRZ-5r-seH"/>
                             <constraint firstItem="be6-Iq-CS9" firstAttribute="top" secondItem="Tdl-hs-Dfa" secondAttribute="top" id="yCm-rk-xhH"/>
+                            <constraint firstItem="jGg-t3-3xs" firstAttribute="leading" secondItem="Tdl-hs-Dfa" secondAttribute="leading" constant="5" id="zWi-ku-jOd"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Tdl-hs-Dfa"/>
                     </view>
                     <connections>
+                        <outlet property="ButtonBack" destination="dFI-XP-ugO" id="TZf-cK-lLJ"/>
+                        <outlet property="ButtonClear" destination="bv1-M6-Qit" id="VLN-zi-gAa"/>
+                        <outlet property="ButtonNext" destination="Uh9-Rx-lma" id="EOq-rB-nW7"/>
+                        <outlet property="ButtonSkip" destination="0Kb-U0-y3v" id="b04-lh-Xni"/>
+                        <outlet property="ImageViewGlobe" destination="Qxy-mE-vno" id="TH3-su-ud8"/>
+                        <outlet property="LabelWarningNoInet" destination="jGg-t3-3xs" id="Fbb-eX-0XT"/>
                         <outlet property="MapView" destination="0Jo-L5-7EQ" id="d9d-Se-WHw"/>
                         <outlet property="SearchBar" destination="be6-Iq-CS9" id="Xji-o6-PM7"/>
                         <outlet property="TableViewSearchResult" destination="pu9-8R-cLJ" id="PpB-pm-PzW"/>
@@ -477,7 +517,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2I6-Ep-tej" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="374" y="1173"/>
+            <point key="canvasLocation" x="373.60000000000002" y="1172.5637181409297"/>
         </scene>
         <!--Nearby ListingVC-->
         <scene sceneID="1tV-lU-5we">
@@ -559,7 +599,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                                 <constraint firstAttribute="height" constant="62" id="x7G-Ea-YgE"/>
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="22"/>
-                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="textColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Vdz-28-bRS">
@@ -572,7 +612,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                                 <segment title="Local"/>
                                                 <segment title="English"/>
                                             </segments>
-                                            <color key="tintColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="tintColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <connections>
                                                 <action selector="SegmentLanguageChanged:" destination="yXg-UB-z1g" eventType="valueChanged" id="bFE-vN-21x"/>
                                             </connections>
@@ -590,7 +630,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                 <constraints>
                                     <constraint firstAttribute="height" constant="110" id="zlb-rS-e0r"/>
                                 </constraints>
-                                <blurEffect style="light"/>
+                                <blurEffect style="dark"/>
                             </visualEffectView>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lHG-vd-7vs">
                                 <rect key="frame" x="0.0" y="597" width="375" height="70"/>
@@ -600,11 +640,15 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZHK-8Y-1Zh">
                                             <rect key="frame" x="10" y="10" width="50" height="50"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="50" id="My7-O1-hQC"/>
                                                 <constraint firstAttribute="height" constant="50" id="PIk-Ew-yVu"/>
                                             </constraints>
-                                            <state key="normal" image="Back"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <state key="normal" title="Back">
+                                                <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                            </state>
                                             <connections>
                                                 <action selector="BackPressed:" destination="yXg-UB-z1g" eventType="touchUpInside" id="9M8-sh-FNi"/>
                                             </connections>
@@ -618,7 +662,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                 <constraints>
                                     <constraint firstAttribute="height" constant="70" id="4mv-Pq-awo"/>
                                 </constraints>
-                                <blurEffect style="light"/>
+                                <blurEffect style="dark"/>
                             </visualEffectView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -778,20 +822,49 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                             </mapView>
                             <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oV1-pA-ilZ">
                                 <rect key="frame" x="5" y="0.0" width="60" height="667"/>
-                                <color key="backgroundColor" name="keyboardFocusIndicatorColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="60" id="jJo-ni-iFr"/>
                                 </constraints>
                             </pickerView>
+                            <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iFf-0T-4aB">
+                                <rect key="frame" x="0.0" y="560" width="375" height="107"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="VGF-rF-MRO">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="107"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gn9-Uq-sQc">
+                                            <rect key="frame" x="106" y="47" width="50" height="50"/>
+                                            <color key="backgroundColor" red="0.8980392157" green="0.34509803919999998" blue="0.070588235289999995" alpha="1" colorSpace="calibratedRGB"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="50" id="6O2-WB-kQf"/>
+                                                <constraint firstAttribute="height" constant="50" id="k23-oY-86l"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <state key="normal" title="Geo">
+                                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="GeoButtonPressed:" destination="8lT-sr-xUS" eventType="touchUpInside" id="c0d-jh-FJp"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="bottom" secondItem="Gn9-Uq-sQc" secondAttribute="bottom" constant="10" id="0fI-g3-KAh"/>
+                                    </constraints>
+                                </view>
+                                <blurEffect style="dark"/>
+                            </visualEffectView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UdR-HC-M0a">
                                 <rect key="frame" x="10" y="607" width="50" height="50"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="YD6-BL-F5V"/>
                                     <constraint firstAttribute="height" constant="50" id="d5M-Cj-yak"/>
                                 </constraints>
-                                <state key="normal" image="Back">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <state key="normal" title="Cancel">
+                                    <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
                                 <connections>
                                     <action selector="BackPressed:" destination="8lT-sr-xUS" eventType="touchUpInside" id="bOx-je-jBC"/>
@@ -807,7 +880,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                     <segment title="Map"/>
                                     <segment title="Photos"/>
                                 </segments>
-                                <color key="tintColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="tintColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <connections>
                                     <action selector="SegmentOptionChanged:" destination="8lT-sr-xUS" eventType="valueChanged" id="wJT-En-4Tr"/>
                                 </connections>
@@ -920,20 +993,21 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                             </visualEffectView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aB7-OJ-z64">
                                 <rect key="frame" x="315" y="607" width="50" height="50"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="1eZ-bV-dYl"/>
                                     <constraint firstAttribute="height" constant="50" id="iAr-iS-jjc"/>
                                 </constraints>
-                                <state key="normal" image="Update">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <state key="normal" title="Update">
+                                    <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
                                 <connections>
                                     <action selector="ActionButtonPressed:" destination="8lT-sr-xUS" eventType="touchUpInside" id="gox-Kp-bgw"/>
                                 </connections>
                             </button>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" keyboardDismissMode="onDrag" translatesAutoresizingMaskIntoConstraints="NO" id="KmR-lf-hx8">
-                                <rect key="frame" x="70" y="174" width="300" height="386"/>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" showsHorizontalScrollIndicator="NO" keyboardDismissMode="onDrag" translatesAutoresizingMaskIntoConstraints="NO" id="KmR-lf-hx8">
+                                <rect key="frame" x="70" y="174" width="300" height="378"/>
                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.059999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -958,7 +1032,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                 <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="NEq-vb-iQN">
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Point Of Interest Name" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="NEq-vb-iQN">
                                 <rect key="frame" x="70" y="72" width="300" height="30"/>
                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.059999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -973,15 +1047,16 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                             </imageView>
                             <switch hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="bjp-Nb-yVl">
                                 <rect key="frame" x="176" y="617" width="51" height="31"/>
-                                <color key="tintColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
-                                <color key="onTintColor" red="0.60784313729999995" green="0.75686274509999996" blue="0.73725490199999999" alpha="1" colorSpace="calibratedRGB"/>
-                                <color key="thumbTintColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="tintColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="onTintColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="0.24981271399999999" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="thumbTintColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <connections>
                                     <action selector="SwitchViewPhotoOptionsChanged:" destination="8lT-sr-xUS" eventType="valueChanged" id="7KE-ZR-hfY"/>
                                 </connections>
                             </switch>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ILy-HN-PIt">
                                 <rect key="frame" x="245" y="607" width="50" height="50"/>
+                                <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="YEK-Jl-kiY"/>
                                     <constraint firstAttribute="width" constant="50" id="zPK-QV-m4s"/>
@@ -1003,13 +1078,15 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                             <constraint firstItem="aB7-OJ-z64" firstAttribute="leading" secondItem="ILy-HN-PIt" secondAttribute="trailing" constant="20" id="4mP-Ea-Vm3"/>
                             <constraint firstItem="7L2-3f-anA" firstAttribute="trailing" secondItem="KmR-lf-hx8" secondAttribute="trailing" constant="5" id="627-Vk-WF2"/>
                             <constraint firstItem="7L2-3f-anA" firstAttribute="trailing" secondItem="m0a-e6-gok" secondAttribute="trailing" constant="10" id="8BX-9O-tgS"/>
-                            <constraint firstItem="m0a-e6-gok" firstAttribute="top" secondItem="KmR-lf-hx8" secondAttribute="bottom" constant="10" id="ABk-r8-tLQ"/>
+                            <constraint firstItem="m0a-e6-gok" firstAttribute="top" secondItem="KmR-lf-hx8" secondAttribute="bottom" constant="15" id="ABk-r8-tLQ"/>
                             <constraint firstItem="7L2-3f-anA" firstAttribute="leading" secondItem="oV1-pA-ilZ" secondAttribute="leading" constant="-5" id="AdS-hF-4yv"/>
+                            <constraint firstItem="iFf-0T-4aB" firstAttribute="leading" secondItem="7L2-3f-anA" secondAttribute="leading" id="BaU-8F-fsP"/>
                             <constraint firstItem="84m-0U-or5" firstAttribute="leading" secondItem="Qlf-7s-aY9" secondAttribute="trailing" constant="5" id="BnG-g8-bWF"/>
                             <constraint firstItem="sQu-Qh-XBe" firstAttribute="leading" secondItem="7L2-3f-anA" secondAttribute="leading" constant="10" id="EyL-pF-DqT"/>
                             <constraint firstItem="7L2-3f-anA" firstAttribute="bottom" secondItem="ILy-HN-PIt" secondAttribute="bottom" constant="10" id="F7H-Xm-IUI"/>
                             <constraint firstItem="9ai-pr-T2w" firstAttribute="top" secondItem="7L2-3f-anA" secondAttribute="top" id="FID-IV-2Ga"/>
                             <constraint firstItem="d2j-zI-SI5" firstAttribute="trailing" secondItem="7L2-3f-anA" secondAttribute="trailing" id="GPQ-xY-a9P"/>
+                            <constraint firstItem="iFf-0T-4aB" firstAttribute="trailing" secondItem="7L2-3f-anA" secondAttribute="trailing" id="MGm-zf-MJ4"/>
                             <constraint firstItem="ILy-HN-PIt" firstAttribute="leading" secondItem="bjp-Nb-yVl" secondAttribute="trailing" constant="20" id="Mri-tV-Gg1"/>
                             <constraint firstItem="oV1-pA-ilZ" firstAttribute="top" secondItem="JyS-HI-bx6" secondAttribute="top" id="MzY-xt-yiZ"/>
                             <constraint firstItem="7L2-3f-anA" firstAttribute="trailing" secondItem="nZe-fY-KVE" secondAttribute="trailing" constant="5" id="PNG-Vp-13p"/>
@@ -1021,16 +1098,19 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                             <constraint firstItem="d2j-zI-SI5" firstAttribute="leading" secondItem="7L2-3f-anA" secondAttribute="leading" id="Xza-BZ-6VC"/>
                             <constraint firstItem="d2j-zI-SI5" firstAttribute="top" secondItem="nZe-fY-KVE" secondAttribute="top" constant="-20" id="Ypb-ER-nMI"/>
                             <constraint firstItem="7L2-3f-anA" firstAttribute="trailing" secondItem="NEq-vb-iQN" secondAttribute="trailing" constant="5" id="Ysn-ec-IRY"/>
+                            <constraint firstItem="iFf-0T-4aB" firstAttribute="top" secondItem="m0a-e6-gok" secondAttribute="top" constant="-10" id="aZ5-gj-4y8"/>
                             <constraint firstItem="nZe-fY-KVE" firstAttribute="leading" secondItem="Qlf-7s-aY9" secondAttribute="trailing" constant="5" id="b4H-Yd-6Uz"/>
                             <constraint firstItem="m0a-e6-gok" firstAttribute="top" secondItem="sQu-Qh-XBe" secondAttribute="bottom" constant="10" id="bLi-kX-qWZ"/>
                             <constraint firstItem="7L2-3f-anA" firstAttribute="trailing" secondItem="aB7-OJ-z64" secondAttribute="trailing" constant="10" id="eFW-Tc-zEZ"/>
                             <constraint firstItem="LAb-cw-Ex0" firstAttribute="bottom" secondItem="d2j-zI-SI5" secondAttribute="bottom" id="eMH-98-Yxv"/>
                             <constraint firstItem="7L2-3f-anA" firstAttribute="bottom" secondItem="bjp-Nb-yVl" secondAttribute="bottom" constant="19" id="fLu-Ig-Ut2"/>
                             <constraint firstItem="7L2-3f-anA" firstAttribute="bottom" secondItem="oV1-pA-ilZ" secondAttribute="bottom" id="hi6-gD-Cbt"/>
+                            <constraint firstItem="bjp-Nb-yVl" firstAttribute="leading" secondItem="Gn9-Uq-sQc" secondAttribute="trailing" constant="20" id="k8x-Uq-tbW"/>
                             <constraint firstItem="d2j-zI-SI5" firstAttribute="top" secondItem="7L2-3f-anA" secondAttribute="top" id="kwF-t4-TFB"/>
                             <constraint firstItem="UdR-HC-M0a" firstAttribute="leading" secondItem="7L2-3f-anA" secondAttribute="leading" constant="10" id="mRL-F5-Ei1"/>
                             <constraint firstItem="NEq-vb-iQN" firstAttribute="leading" secondItem="Qlf-7s-aY9" secondAttribute="trailing" constant="5" id="nWq-aF-QQm"/>
                             <constraint firstItem="m0a-e6-gok" firstAttribute="leading" secondItem="7L2-3f-anA" secondAttribute="leading" constant="10" id="nu4-cC-49p"/>
+                            <constraint firstItem="iFf-0T-4aB" firstAttribute="bottom" secondItem="7L2-3f-anA" secondAttribute="bottom" id="owA-Tz-H8d"/>
                             <constraint firstItem="KmR-lf-hx8" firstAttribute="leading" secondItem="Qlf-7s-aY9" secondAttribute="trailing" constant="5" id="pEr-1G-I6l"/>
                             <constraint firstItem="7L2-3f-anA" firstAttribute="bottom" secondItem="UdR-HC-M0a" secondAttribute="bottom" constant="10" id="r9t-c4-dZo"/>
                             <constraint firstItem="7L2-3f-anA" firstAttribute="trailing" secondItem="84m-0U-or5" secondAttribute="trailing" constant="5" id="tZc-Sc-z0f"/>
@@ -1041,8 +1121,11 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                         <viewLayoutGuide key="safeArea" id="7L2-3f-anA"/>
                     </view>
                     <connections>
+                        <outlet property="ButtonCancel" destination="UdR-HC-M0a" id="gJJ-ne-mf4"/>
+                        <outlet property="ButtonGeo" destination="Gn9-Uq-sQc" id="856-ye-Yhn"/>
                         <outlet property="ButtonKey" destination="1SU-ji-A3D" id="27E-vj-i8G"/>
-                        <outlet property="ButtonWiki" destination="ILy-HN-PIt" id="Yah-bq-FDn"/>
+                        <outlet property="ButtonUpdate" destination="aB7-OJ-z64" id="sYb-ID-LUF"/>
+                        <outlet property="ButtonWiki" destination="ILy-HN-PIt" id="Ogq-Hg-HUb"/>
                         <outlet property="CollectionViewPoiImages" destination="sQu-Qh-XBe" id="5SS-Ds-7jD"/>
                         <outlet property="ImagePicture" destination="NaN-Yg-ddC" id="YxP-Q5-4ra"/>
                         <outlet property="ImageViewKey" destination="Qlf-7s-aY9" id="JtE-po-Nyz"/>
@@ -1153,7 +1236,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                                 <constraint firstAttribute="height" constant="24" id="Gke-Tu-0WY"/>
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="22"/>
-                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="textColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
@@ -1166,7 +1249,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                 <constraints>
                                     <constraint firstAttribute="height" constant="62" id="Ixo-CG-i2o"/>
                                 </constraints>
-                                <blurEffect style="light"/>
+                                <blurEffect style="dark"/>
                             </visualEffectView>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="y3O-Vh-SWt">
                                 <rect key="frame" x="0.0" y="547" width="375" height="120"/>
@@ -1180,38 +1263,46 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                                 <constraint firstAttribute="height" constant="50" id="T5J-wY-g9Y"/>
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="textColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zpt-hO-AAg">
                                             <rect key="frame" x="315" y="60" width="50" height="50"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="50" id="AoG-ga-GrT"/>
                                                 <constraint firstAttribute="width" constant="50" id="PnQ-bW-CCg"/>
                                             </constraints>
-                                            <state key="normal" image="SimpleAdd"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <state key="normal" title="Select">
+                                                <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                            </state>
                                             <connections>
                                                 <action selector="AddSelectionPressed:" destination="9um-0h-1TE" eventType="touchUpInside" id="KpD-nB-5CO"/>
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n23-qK-QQz" userLabel="Back">
                                             <rect key="frame" x="10" y="60" width="50" height="50"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="50" id="3mf-eK-Ui8"/>
                                                 <constraint firstAttribute="height" constant="50" id="f07-R0-Vtj"/>
                                             </constraints>
-                                            <state key="normal" image="Back"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <state key="normal" title="Cancel">
+                                                <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                            </state>
                                             <connections>
                                                 <action selector="BackPressed:" destination="9um-0h-1TE" eventType="touchUpInside" id="SSb-fz-Ie2"/>
                                             </connections>
                                         </button>
                                         <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="qJ2-Dj-Blw">
                                             <rect key="frame" x="169" y="67" width="37" height="37"/>
-                                            <color key="color" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="color" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </activityIndicatorView>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="characterWrap" hasAttributedTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="975-rW-a4w">
                                             <rect key="frame" x="245" y="60" width="50" height="50"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="50" id="nJM-qT-Uh2"/>
                                                 <constraint firstAttribute="height" constant="50" id="zwU-Vk-z8r"/>
@@ -1241,7 +1332,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                 <constraints>
                                     <constraint firstAttribute="height" constant="120" id="z6R-Jj-B9w"/>
                                 </constraints>
-                                <blurEffect style="light"/>
+                                <blurEffect style="dark"/>
                             </visualEffectView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -1295,17 +1386,22 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dOR-w7-lGP">
                                             <rect key="frame" x="10" y="15" width="50" height="50"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="50" id="Gbs-Ig-QJI"/>
                                                 <constraint firstAttribute="width" constant="50" id="pY4-YI-685"/>
                                             </constraints>
-                                            <state key="normal" image="Back"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <state key="normal" title="Back">
+                                                <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                            </state>
                                             <connections>
                                                 <action selector="BackPressed:" destination="GBL-qb-FXE" eventType="touchUpInside" id="PRK-HW-KqN"/>
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BnN-93-y1w">
                                             <rect key="frame" x="245" y="15" width="50" height="50"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="50" id="gHk-HJ-rYD"/>
                                                 <constraint firstAttribute="height" constant="50" id="kch-Ju-P5h"/>
@@ -1317,6 +1413,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XAy-Jq-fYR">
                                             <rect key="frame" x="315" y="15" width="50" height="50"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="50" id="H2r-ko-Gj2"/>
                                                 <constraint firstAttribute="width" constant="50" id="eNq-M6-OCk"/>
@@ -1333,7 +1430,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                                 <segment title="Local"/>
                                                 <segment title="Eng"/>
                                             </segments>
-                                            <color key="tintColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="tintColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </segmentedControl>
                                     </subviews>
                                     <constraints>
@@ -1352,7 +1449,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                 <constraints>
                                     <constraint firstAttribute="height" constant="75" id="qDs-W3-bHz"/>
                                 </constraints>
-                                <blurEffect style="light"/>
+                                <blurEffect style="dark"/>
                             </visualEffectView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -1368,6 +1465,9 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                         <viewLayoutGuide key="safeArea" id="L62-ta-RPI"/>
                     </view>
                     <connections>
+                        <outlet property="ButtonBack" destination="dOR-w7-lGP" id="cgr-ag-oHZ"/>
+                        <outlet property="ButtonSearchByLocation" destination="BnN-93-y1w" id="fYj-3g-00P"/>
+                        <outlet property="ButtonSearchByName" destination="XAy-Jq-fYR" id="M9T-3y-C2D"/>
                         <outlet property="SegmentLanguageOption" destination="hM9-RF-qwW" id="h12-p8-eVD"/>
                         <outlet property="webView" destination="Fgi-DT-PQs" id="X6j-IO-spF"/>
                     </connections>
@@ -1384,33 +1484,19 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0k7-MS-EM3">
-                                <rect key="frame" x="10" y="607" width="50" height="50"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nve-n8-YmL">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="102"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="16l-JL-4vD">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="102"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                </view>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="R3A-kc-x9Z"/>
-                                    <constraint firstAttribute="height" constant="50" id="eO1-Pz-byv"/>
+                                    <constraint firstAttribute="height" constant="102" id="RYe-E0-Atp"/>
                                 </constraints>
-                                <state key="normal" image="Back"/>
-                                <connections>
-                                    <action selector="BackPressed:" destination="IY3-lE-B7S" eventType="touchUpInside" id="StB-bI-yQX"/>
-                                    <action selector="BackPressed:" destination="Y6b-mI-6NA" eventType="touchUpInside" id="qID-Qc-IEW"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="d2g-2t-0aW">
-                                <rect key="frame" x="315" y="607" width="50" height="50"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="TJ8-IL-LDE"/>
-                                    <constraint firstAttribute="height" constant="50" id="yPF-Nw-0nh"/>
-                                </constraints>
-                                <state key="normal" image="SimpleAdd"/>
-                                <connections>
-                                    <segue destination="hyo-bf-CUh" kind="show" identifier="ShowNewPayment" id="CTO-hJ-Rfk"/>
-                                </connections>
-                            </button>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="h5U-Mr-yqd">
-                                <rect key="frame" x="0.0" y="100" width="375" height="497"/>
+                                <blurEffect style="dark"/>
+                            </visualEffectView>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="75" translatesAutoresizingMaskIntoConstraints="NO" id="h5U-Mr-yqd">
+                                <rect key="frame" x="0.0" y="100" width="375" height="567"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="PaymentCellId" rowHeight="99" id="Dkp-mR-tJI" customClass="PaymentListCell">
@@ -1551,13 +1637,65 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                     <outlet property="delegate" destination="IY3-lE-B7S" id="4Hh-z1-GIm"/>
                                 </connections>
                             </tableView>
+                            <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5Sk-5X-7xq">
+                                <rect key="frame" x="0.0" y="592" width="375" height="75"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="Wn6-3k-D5A">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="75"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0k7-MS-EM3">
+                                            <rect key="frame" x="10" y="15" width="50" height="50"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="50" id="R3A-kc-x9Z"/>
+                                                <constraint firstAttribute="height" constant="50" id="eO1-Pz-byv"/>
+                                                <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="50" id="mWh-rg-qWJ"/>
+                                                <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="50" id="vul-vV-Zd3"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <state key="normal" title="Back">
+                                                <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="BackPressed:" destination="IY3-lE-B7S" eventType="touchUpInside" id="StB-bI-yQX"/>
+                                                <action selector="BackPressed:" destination="Y6b-mI-6NA" eventType="touchUpInside" id="qID-Qc-IEW"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="d2g-2t-0aW">
+                                            <rect key="frame" x="315" y="15" width="50" height="50"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="50" id="TJ8-IL-LDE"/>
+                                                <constraint firstAttribute="height" constant="50" id="yPF-Nw-0nh"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <state key="normal" title="New">
+                                                <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                            </state>
+                                            <connections>
+                                                <segue destination="hyo-bf-CUh" kind="show" identifier="ShowNewPayment" id="CTO-hJ-Rfk"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="bottom" secondItem="d2g-2t-0aW" secondAttribute="bottom" constant="10" id="Fs1-HN-nR1"/>
+                                        <constraint firstAttribute="bottom" secondItem="0k7-MS-EM3" secondAttribute="bottom" constant="10" id="S1u-Gp-g7v"/>
+                                        <constraint firstItem="0k7-MS-EM3" firstAttribute="leading" secondItem="Wn6-3k-D5A" secondAttribute="leading" constant="10" id="cFI-W8-FDd"/>
+                                        <constraint firstAttribute="trailing" secondItem="d2g-2t-0aW" secondAttribute="trailing" constant="10" id="hyC-UQ-Rad"/>
+                                    </constraints>
+                                </view>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="75" id="G82-Xl-eMS"/>
+                                </constraints>
+                                <blurEffect style="dark"/>
+                            </visualEffectView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Activity - " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8vX-5a-OPS">
                                 <rect key="frame" x="80" y="40" width="275" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="x4u-Ty-QW5"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="22"/>
-                                <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                <color key="textColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="gBw-Sa-O8o">
@@ -1605,19 +1743,21 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="gBw-Sa-O8o" firstAttribute="top" secondItem="zNK-pS-aB3" secondAttribute="top" constant="10" id="3nD-4x-hEV"/>
-                            <constraint firstItem="zNK-pS-aB3" firstAttribute="bottom" secondItem="d2g-2t-0aW" secondAttribute="bottom" constant="10" id="AFm-BV-SsK"/>
+                            <constraint firstItem="zNK-pS-aB3" firstAttribute="bottom" secondItem="5Sk-5X-7xq" secondAttribute="bottom" id="AVz-MN-bw9"/>
+                            <constraint firstItem="Nve-n8-YmL" firstAttribute="leading" secondItem="zNK-pS-aB3" secondAttribute="leading" id="EtA-ie-H6i"/>
                             <constraint firstItem="h5U-Mr-yqd" firstAttribute="top" secondItem="gBw-Sa-O8o" secondAttribute="bottom" constant="20" id="GO5-Zo-74j"/>
-                            <constraint firstItem="0k7-MS-EM3" firstAttribute="top" secondItem="h5U-Mr-yqd" secondAttribute="bottom" constant="10" id="Imv-6S-6jK"/>
                             <constraint firstItem="zNK-pS-aB3" firstAttribute="trailing" secondItem="aa0-Op-S6y" secondAttribute="trailing" constant="5" id="Qwh-aI-R1S"/>
+                            <constraint firstItem="Nve-n8-YmL" firstAttribute="top" secondItem="IIb-QC-BQq" secondAttribute="top" id="UYh-rg-xUB"/>
+                            <constraint firstItem="Nve-n8-YmL" firstAttribute="trailing" secondItem="zNK-pS-aB3" secondAttribute="trailing" id="VNG-u4-n4Q"/>
                             <constraint firstItem="h5U-Mr-yqd" firstAttribute="leading" secondItem="zNK-pS-aB3" secondAttribute="leading" id="Wn2-3J-vqM"/>
-                            <constraint firstItem="zNK-pS-aB3" firstAttribute="trailing" secondItem="d2g-2t-0aW" secondAttribute="trailing" constant="10" id="Yfz-iz-597"/>
                             <constraint firstItem="gBw-Sa-O8o" firstAttribute="leading" secondItem="zNK-pS-aB3" secondAttribute="leading" constant="10" id="aLb-rK-Otc"/>
                             <constraint firstItem="zNK-pS-aB3" firstAttribute="trailing" secondItem="h5U-Mr-yqd" secondAttribute="trailing" id="ew6-SX-4dQ"/>
                             <constraint firstItem="h5U-Mr-yqd" firstAttribute="top" secondItem="aa0-Op-S6y" secondAttribute="bottom" constant="-42.5" id="iff-04-XHy"/>
+                            <constraint firstItem="zNK-pS-aB3" firstAttribute="bottom" secondItem="h5U-Mr-yqd" secondAttribute="bottom" id="ilj-Bp-4Lc"/>
                             <constraint firstItem="8vX-5a-OPS" firstAttribute="top" secondItem="zNK-pS-aB3" secondAttribute="top" constant="20" id="kgL-sA-1HQ"/>
-                            <constraint firstItem="0k7-MS-EM3" firstAttribute="leading" secondItem="zNK-pS-aB3" secondAttribute="leading" constant="10" id="lTK-ad-wHQ"/>
                             <constraint firstItem="8vX-5a-OPS" firstAttribute="leading" secondItem="gBw-Sa-O8o" secondAttribute="trailing" constant="20" id="r1f-bI-8Nb"/>
-                            <constraint firstItem="zNK-pS-aB3" firstAttribute="bottom" secondItem="0k7-MS-EM3" secondAttribute="bottom" constant="10" id="rnZ-Nx-KeE"/>
+                            <constraint firstItem="5Sk-5X-7xq" firstAttribute="leading" secondItem="zNK-pS-aB3" secondAttribute="leading" id="uru-RG-rlv"/>
+                            <constraint firstItem="zNK-pS-aB3" firstAttribute="trailing" secondItem="5Sk-5X-7xq" secondAttribute="trailing" id="wKi-qM-BrH"/>
                             <constraint firstItem="zNK-pS-aB3" firstAttribute="trailing" secondItem="8vX-5a-OPS" secondAttribute="trailing" constant="20" id="wgs-B6-Vca"/>
                             <constraint firstItem="aa0-Op-S6y" firstAttribute="top" secondItem="zNK-pS-aB3" secondAttribute="top" constant="10" id="xWc-za-VZi"/>
                         </constraints>
@@ -1625,6 +1765,8 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                     </view>
                     <connections>
                         <outlet property="ButtonAction" destination="d2g-2t-0aW" id="RVZ-xl-Vyy"/>
+                        <outlet property="ButtonBack" destination="0k7-MS-EM3" id="yCh-Hw-B8s"/>
+                        <outlet property="ButtonNew" destination="d2g-2t-0aW" id="XpD-cN-g6N"/>
                         <outlet property="ImageViewPoi" destination="gBw-Sa-O8o" id="9GY-qB-Hia"/>
                         <outlet property="LabelTitle" destination="8vX-5a-OPS" id="Rtt-GP-ehB"/>
                         <outlet property="LabelTripAmount" destination="SFW-AM-plt" id="mZz-iU-sW8"/>
@@ -1660,7 +1802,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                     <constraint firstAttribute="height" constant="22" id="V3p-vs-4yC"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="ultraLight" pointSize="17"/>
-                                <color key="textColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Amount:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="R0X-OY-hS1">
@@ -1669,7 +1811,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                     <constraint firstAttribute="height" constant="22" id="6bw-qk-vSv"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="ultraLight" pointSize="17"/>
-                                <color key="textColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Currency:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aaG-OV-gkB">
@@ -1678,7 +1820,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                     <constraint firstAttribute="height" constant="22" id="DDu-bb-gTD"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="ultraLight" pointSize="17"/>
-                                <color key="textColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Status:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bUd-sL-hKr">
@@ -1687,7 +1829,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                     <constraint firstAttribute="height" constant="22" id="FdM-lz-5Lc"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="ultraLight" pointSize="17"/>
-                                <color key="textColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="date" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="gg3-hH-Hp2">
@@ -1698,25 +1840,29 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                             </datePicker>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F9F-3K-Dsr">
                                 <rect key="frame" x="10" y="607" width="50" height="50"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="Jvz-G3-pp7"/>
                                     <constraint firstAttribute="height" constant="50" id="ya4-o2-bUm"/>
                                 </constraints>
-                                <state key="normal" image="Back"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <state key="normal" title="Cancel">
+                                    <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
                                 <connections>
                                     <action selector="BackPressed:" destination="hyo-bf-CUh" eventType="touchUpInside" id="hfA-Ss-MKa"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I2Y-dV-azn">
                                 <rect key="frame" x="315" y="607" width="50" height="50"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="em4-YY-XAP"/>
                                     <constraint firstAttribute="height" constant="50" id="taT-5D-EoU"/>
                                 </constraints>
-                                <state key="normal" image="Update">
-                                    <color key="titleColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <state key="normal" title="Update">
+                                    <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
                                 <connections>
                                     <action selector="ButtonActionPressed:" destination="hyo-bf-CUh" eventType="touchUpInside" id="6wi-Ue-uou"/>
@@ -1750,10 +1896,14 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                     <constraint firstAttribute="width" constant="200" id="Q0A-CH-w4q"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="ultraLight" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="allCharacters"/>
+                                <connections>
+                                    <segue destination="ac1-96-EBm" kind="show" identifier="ShowCurrencies" id="glV-3i-Ozj"/>
+                                </connections>
                             </textField>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="4Z8-6s-HQK">
                                 <rect key="frame" x="155" y="245" width="200" height="28"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="27" id="Bse-vk-EQW"/>
                                     <constraint firstAttribute="width" constant="200" id="Vnc-15-hhm"/>
@@ -1762,11 +1912,41 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                     <segment title="Planned"/>
                                     <segment title="Actual"/>
                                 </segments>
-                                <color key="tintColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="tintColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <connections>
                                     <action selector="SegmentStatusChanged:" destination="hyo-bf-CUh" eventType="valueChanged" id="DpL-Ld-wep"/>
                                 </connections>
                             </segmentedControl>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Trd-qY-gRb">
+                                <rect key="frame" x="245" y="607" width="50" height="50"/>
+                                <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="PhX-WW-gZg"/>
+                                    <constraint firstAttribute="height" constant="50" id="g8C-MK-bbo"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <state key="normal" title="Local">
+                                    <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="ButtonLocalPressed:" destination="hyo-bf-CUh" eventType="touchUpInside" id="0hQ-m7-Mga"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="D0X-Ai-GcR">
+                                <rect key="frame" x="175" y="607" width="50" height="50"/>
+                                <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="jd1-4s-1fl"/>
+                                    <constraint firstAttribute="height" constant="50" id="uvy-9d-l8U"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <state key="normal" title="Home">
+                                    <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="ButtonHomePressed:" destination="hyo-bf-CUh" eventType="touchUpInside" id="LhH-fq-X1Z"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -1775,12 +1955,14 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                             <constraint firstItem="bUd-sL-hKr" firstAttribute="top" secondItem="aaG-OV-gkB" secondAttribute="bottom" constant="40" id="7qp-iE-w6T"/>
                             <constraint firstItem="F9F-3K-Dsr" firstAttribute="top" secondItem="gg3-hH-Hp2" secondAttribute="bottom" constant="10" id="8KA-CU-B2O"/>
                             <constraint firstItem="gg3-hH-Hp2" firstAttribute="top" secondItem="bUd-sL-hKr" secondAttribute="bottom" constant="20" id="8Ph-hr-d2V"/>
+                            <constraint firstItem="I2Y-dV-azn" firstAttribute="leading" secondItem="Trd-qY-gRb" secondAttribute="trailing" constant="20" id="8je-st-eJq"/>
                             <constraint firstItem="rmR-d4-y9J" firstAttribute="trailing" secondItem="FRl-Xo-8eo" secondAttribute="trailing" constant="20" id="9Ch-UD-vlZ"/>
                             <constraint firstItem="4Z8-6s-HQK" firstAttribute="leading" secondItem="bUd-sL-hKr" secondAttribute="trailing" constant="20" id="AQf-NL-R1r"/>
                             <constraint firstItem="aaG-OV-gkB" firstAttribute="leading" secondItem="rmR-d4-y9J" secondAttribute="leading" constant="20" id="Auf-Do-w3j"/>
                             <constraint firstItem="rmR-d4-y9J" firstAttribute="bottom" secondItem="F9F-3K-Dsr" secondAttribute="bottom" constant="10" id="CUU-B1-m8e"/>
                             <constraint firstItem="Py8-Kw-Jal" firstAttribute="top" secondItem="ZEh-TA-cLi" secondAttribute="bottom" constant="12" id="DtI-GW-UMB"/>
                             <constraint firstItem="rmR-d4-y9J" firstAttribute="trailing" secondItem="Py8-Kw-Jal" secondAttribute="trailing" constant="20" id="Fid-vC-IVS"/>
+                            <constraint firstItem="Trd-qY-gRb" firstAttribute="leading" secondItem="D0X-Ai-GcR" secondAttribute="trailing" constant="20" id="GUB-tr-5YS"/>
                             <constraint firstItem="bUd-sL-hKr" firstAttribute="leading" secondItem="rmR-d4-y9J" secondAttribute="leading" constant="20" id="HeT-lc-Fm3"/>
                             <constraint firstItem="F9F-3K-Dsr" firstAttribute="leading" secondItem="rmR-d4-y9J" secondAttribute="leading" constant="10" id="LMi-XN-tz6"/>
                             <constraint firstItem="Py8-Kw-Jal" firstAttribute="leading" secondItem="aaG-OV-gkB" secondAttribute="trailing" constant="20" id="M70-cl-CZV"/>
@@ -1789,11 +1971,13 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                             <constraint firstItem="L6s-Dp-8rR" firstAttribute="top" secondItem="FRl-Xo-8eo" secondAttribute="bottom" constant="40" id="VqZ-bf-Ojp"/>
                             <constraint firstItem="ZEh-TA-cLi" firstAttribute="leading" secondItem="R0X-OY-hS1" secondAttribute="trailing" constant="20" id="d0L-cY-ZEi"/>
                             <constraint firstItem="4Z8-6s-HQK" firstAttribute="top" secondItem="Py8-Kw-Jal" secondAttribute="bottom" constant="33" id="dvO-1S-i8D"/>
+                            <constraint firstItem="rmR-d4-y9J" firstAttribute="bottom" secondItem="Trd-qY-gRb" secondAttribute="bottom" constant="10" id="dwD-w3-vA9"/>
                             <constraint firstItem="rmR-d4-y9J" firstAttribute="trailing" secondItem="I2Y-dV-azn" secondAttribute="trailing" constant="10" id="ehT-3y-lcQ"/>
                             <constraint firstItem="Iq0-rd-ALj" firstAttribute="leading" secondItem="L6s-Dp-8rR" secondAttribute="trailing" constant="20" id="eqQ-WP-E7r"/>
                             <constraint firstItem="ZEh-TA-cLi" firstAttribute="top" secondItem="Iq0-rd-ALj" secondAttribute="bottom" constant="12" id="fgn-VP-fqS"/>
                             <constraint firstItem="rmR-d4-y9J" firstAttribute="trailing" secondItem="Iq0-rd-ALj" secondAttribute="trailing" constant="20" id="gmL-0H-b0S"/>
                             <constraint firstItem="rmR-d4-y9J" firstAttribute="bottom" secondItem="I2Y-dV-azn" secondAttribute="bottom" constant="10" id="gmS-9o-sMs"/>
+                            <constraint firstItem="rmR-d4-y9J" firstAttribute="bottom" secondItem="D0X-Ai-GcR" secondAttribute="bottom" constant="10" id="i5x-O5-EQF"/>
                             <constraint firstItem="R0X-OY-hS1" firstAttribute="top" secondItem="L6s-Dp-8rR" secondAttribute="bottom" constant="20" id="m1j-s7-wgx"/>
                             <constraint firstItem="FRl-Xo-8eo" firstAttribute="top" secondItem="rmR-d4-y9J" secondAttribute="top" constant="20" id="oft-tC-sBd"/>
                             <constraint firstItem="aaG-OV-gkB" firstAttribute="top" secondItem="R0X-OY-hS1" secondAttribute="bottom" constant="20" id="oqZ-aP-YXj"/>
@@ -1806,6 +1990,9 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                     </view>
                     <connections>
                         <outlet property="ButtonAction" destination="I2Y-dV-azn" id="E9a-oe-g9j"/>
+                        <outlet property="ButtonCancel" destination="F9F-3K-Dsr" id="6HP-ZJ-G6n"/>
+                        <outlet property="ButtonHomeCurrency" destination="D0X-Ai-GcR" id="t4l-3c-rvQ"/>
+                        <outlet property="ButtonLocalCurrency" destination="Trd-qY-gRb" id="nKv-4C-bF2"/>
                         <outlet property="DatePickerPaymentDt" destination="gg3-hH-Hp2" id="Dhp-PD-r7H"/>
                         <outlet property="LabelTitle" destination="FRl-Xo-8eo" id="laK-5m-POS"/>
                         <outlet property="SegmentPaymentType" destination="4Z8-6s-HQK" id="o2O-uu-DXt"/>
@@ -1817,6 +2004,71 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zCC-5n-Mo6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="4948" y="903.59820089955031"/>
+        </scene>
+        <!--Currency PickerVC-->
+        <scene sceneID="BCW-ow-jDf">
+            <objects>
+                <viewController id="ac1-96-EBm" customClass="CurrencyPickerVC" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="k50-SJ-aHt">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Xv-Kl-O5U" userLabel="Back">
+                                <rect key="frame" x="10" y="607" width="50" height="50"/>
+                                <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="RMB-ri-Ude"/>
+                                    <constraint firstAttribute="width" constant="50" id="erq-Dg-xKA"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <state key="normal" title="Cancel">
+                                    <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="BackPressed:" destination="ac1-96-EBm" eventType="touchUpInside" id="xQ2-g5-uXE"/>
+                                </connections>
+                            </button>
+                            <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="I5M-MJ-yr9" userLabel="PickerCurrency">
+                                <rect key="frame" x="10" y="30" width="355" height="567"/>
+                            </pickerView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Edn-PL-N1U" userLabel="Select">
+                                <rect key="frame" x="315" y="607" width="50" height="50"/>
+                                <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="Xb7-z5-RiW"/>
+                                    <constraint firstAttribute="width" constant="50" id="c0f-5w-49W"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <state key="normal" title="Select">
+                                    <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="CurrencySelected:" destination="ac1-96-EBm" eventType="touchUpInside" id="BRf-KH-Kgz"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="QkH-Oe-Kke" firstAttribute="bottom" secondItem="2Xv-Kl-O5U" secondAttribute="bottom" constant="10" id="5VE-Bc-Sk4"/>
+                            <constraint firstItem="I5M-MJ-yr9" firstAttribute="leading" secondItem="QkH-Oe-Kke" secondAttribute="leading" constant="10" id="EOe-LW-hYf"/>
+                            <constraint firstItem="I5M-MJ-yr9" firstAttribute="trailing" secondItem="QkH-Oe-Kke" secondAttribute="trailing" constant="-10" id="Iro-av-YBB"/>
+                            <constraint firstItem="2Xv-Kl-O5U" firstAttribute="top" secondItem="I5M-MJ-yr9" secondAttribute="bottom" constant="10" id="UX1-Nr-LAX"/>
+                            <constraint firstItem="QkH-Oe-Kke" firstAttribute="bottom" secondItem="Edn-PL-N1U" secondAttribute="bottom" constant="10" id="mJC-nw-KXm"/>
+                            <constraint firstItem="I5M-MJ-yr9" firstAttribute="top" secondItem="QkH-Oe-Kke" secondAttribute="top" constant="10" id="nc9-PT-4CR"/>
+                            <constraint firstItem="QkH-Oe-Kke" firstAttribute="trailing" secondItem="Edn-PL-N1U" secondAttribute="trailing" constant="10" id="pu4-Rw-2el"/>
+                            <constraint firstItem="2Xv-Kl-O5U" firstAttribute="leading" secondItem="QkH-Oe-Kke" secondAttribute="leading" constant="10" id="uTr-hN-HDv"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="QkH-Oe-Kke"/>
+                    </view>
+                    <connections>
+                        <outlet property="ButtonCancel" destination="2Xv-Kl-O5U" id="yNY-JB-ZGN"/>
+                        <outlet property="ButtonSelect" destination="Edn-PL-N1U" id="WpF-is-4Ld"/>
+                        <outlet property="PickerCurrencies" destination="I5M-MJ-yr9" id="r07-nc-0sB"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="gtj-uh-aLt" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5673" y="904"/>
         </scene>
         <!--Project ListVC-->
         <scene sceneID="vcQ-gn-eRy">
@@ -1879,7 +2131,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                                                             <constraint firstAttribute="height" constant="35" id="Qxt-uc-DsT"/>
                                                                             <constraint firstAttribute="width" constant="35" id="zic-Z8-4bL"/>
                                                                         </constraints>
-                                                                        <state key="normal" image="EditLight"/>
+                                                                        <state key="normal" image="EditMode"/>
                                                                         <connections>
                                                                             <segue destination="Zbt-l0-Qeq" kind="show" identifier="ShowUpdateProject" id="0ng-Sg-LI3"/>
                                                                         </connections>
@@ -2008,9 +2260,9 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                         <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vv9-m2-rY6">
                                             <rect key="frame" x="316" y="56" width="51" height="31"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            <color key="tintColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
-                                            <color key="onTintColor" red="0.60784313729999995" green="0.75686274509999996" blue="0.73725490199999999" alpha="1" colorSpace="calibratedRGB"/>
-                                            <color key="thumbTintColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="tintColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="onTintColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="0.24981271399999999" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="thumbTintColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <connections>
                                                 <action selector="SwitchEditModePressed:" destination="ySu-A3-tYm" eventType="valueChanged" id="LgS-Zr-nsS"/>
                                             </connections>
@@ -2023,21 +2275,22 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                                 <segment title="Future"/>
                                                 <segment title="Now"/>
                                             </segments>
-                                            <color key="tintColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="tintColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <connections>
                                                 <action selector="SegmentFilteredChanged:" destination="ySu-A3-tYm" eventType="valueChanged" id="9LD-8t-tQ7"/>
                                             </connections>
                                         </segmentedControl>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="13h-kw-pJu">
                                             <rect key="frame" x="10" y="48" width="50" height="50"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="50" id="0ic-0R-OdI"/>
                                                 <constraint firstAttribute="width" constant="50" id="BsX-aF-1uO"/>
                                             </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <color key="tintColor" name="systemBlueColor" catalog="System" colorSpace="catalog"/>
-                                            <state key="normal" image="Back">
-                                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <state key="normal" title="Back">
+                                                <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
                                             </state>
                                             <connections>
                                                 <action selector="BackPressed:" destination="ySu-A3-tYm" eventType="touchUpInside" id="ZoK-7x-ywn"/>
@@ -2074,7 +2327,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                 <constraints>
                                     <constraint firstAttribute="height" constant="108" id="V8J-0y-iDr"/>
                                 </constraints>
-                                <blurEffect style="light"/>
+                                <blurEffect style="dark"/>
                             </visualEffectView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -2108,13 +2361,14 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t5D-NT-kqP">
                                 <rect key="frame" x="10" y="607" width="50" height="50"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="AwA-Gy-zm2"/>
                                     <constraint firstAttribute="width" constant="50" id="Oa4-9W-zd0"/>
                                 </constraints>
-                                <state key="normal" image="Back">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <state key="normal" title="Back">
+                                    <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
                                 <connections>
                                     <action selector="BackPressed:" destination="Zbt-l0-Qeq" eventType="touchUpInside" id="GPR-6D-rdg"/>
@@ -2189,13 +2443,14 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rjX-3b-Ox8">
                                 <rect key="frame" x="315" y="607" width="50" height="50"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="4Gy-j5-Kyv"/>
                                     <constraint firstAttribute="width" constant="50" id="gk3-TS-U2s"/>
                                 </constraints>
-                                <state key="normal" image="Update">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <state key="normal" title="Update">
+                                    <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
                                 <connections>
                                     <action selector="ProjectActionPressed:" destination="Zbt-l0-Qeq" eventType="touchUpInside" id="BjQ-Vs-UxC"/>
@@ -2310,7 +2565,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                                                             <constraint firstAttribute="height" constant="20" id="Bta-4t-e2o"/>
                                                                             <constraint firstAttribute="width" constant="20" id="rPq-eX-niM"/>
                                                                         </constraints>
-                                                                        <state key="normal" title="Button" image="DeleteRed"/>
+                                                                        <state key="normal" title="Button" image="Delete"/>
                                                                         <connections>
                                                                             <segue destination="KMV-wg-dT0" kind="show" identifier="ShowDeleteActivity" id="pnh-u7-Kbt"/>
                                                                         </connections>
@@ -2335,7 +2590,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                                                         <nil key="textColor"/>
                                                                         <nil key="highlightedColor"/>
                                                                     </label>
-                                                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Airport" translatesAutoresizingMaskIntoConstraints="NO" id="RUh-ug-Hh6" userLabel="TypeOfPoi">
+                                                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Cat-Astronaut" translatesAutoresizingMaskIntoConstraints="NO" id="RUh-ug-Hh6" userLabel="TypeOfPoi">
                                                                         <rect key="frame" x="5" y="151" width="20" height="20"/>
                                                                         <constraints>
                                                                             <constraint firstAttribute="width" constant="20" id="U6g-Be-kKc"/>
@@ -2473,7 +2728,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                                 <segment title="Ideas"/>
                                                 <segment title="Actual"/>
                                             </segments>
-                                            <color key="tintColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="tintColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <connections>
                                                 <action selector="ActivityStateChanged:" destination="hvs-bf-wxX" eventType="valueChanged" id="U5J-NY-dPb"/>
                                             </connections>
@@ -2492,19 +2747,19 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                                 <segue destination="qc5-Kk-QiN" kind="show" identifier="ShowNewActivity" id="45R-Pm-Hbo"/>
                                             </connections>
                                         </button>
-                                        <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="QvM-a5-jMf">
+                                        <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QvM-a5-jMf">
                                             <rect key="frame" x="316" y="58" width="51" height="31"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            <color key="tintColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
-                                            <color key="onTintColor" red="0.60784313729999995" green="0.75686274509999996" blue="0.73725490199999999" alpha="1" colorSpace="calibratedRGB"/>
-                                            <color key="thumbTintColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="tintColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="onTintColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="0.2498127140410959" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="thumbTintColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <connections>
                                                 <action selector="SwitchEditModeChanged:" destination="hvs-bf-wxX" eventType="valueChanged" id="v2a-cF-c8U"/>
                                             </connections>
                                         </switch>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Eqb-o0-au9">
                                             <rect key="frame" x="246" y="48" width="50" height="50"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="50" id="TpZ-66-vQG"/>
                                                 <constraint firstAttribute="height" constant="50" id="zWS-R0-jZe"/>
@@ -2519,14 +2774,15 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YEK-ko-2n0">
                                             <rect key="frame" x="10" y="48" width="50" height="50"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="50" id="RYF-Qj-aWL"/>
                                                 <constraint firstAttribute="width" constant="50" id="d2u-Qy-Z7k"/>
                                             </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <color key="tintColor" name="systemPinkColor" catalog="System" colorSpace="catalog"/>
-                                            <state key="normal" title="Back" image="Back">
-                                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <state key="normal" title="Back">
+                                                <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
                                             </state>
                                             <connections>
                                                 <action selector="BackPressed:" destination="hvs-bf-wxX" eventType="touchUpInside" id="c9G-pE-SJY"/>
@@ -2534,6 +2790,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FgC-36-3nK">
                                             <rect key="frame" x="176" y="48" width="50" height="50"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="50" id="BXx-n3-5My"/>
                                                 <constraint firstAttribute="width" constant="50" id="TPX-7K-nFL"/>
@@ -2565,7 +2822,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                 <constraints>
                                     <constraint firstAttribute="height" constant="108" id="Fij-1R-kPJ"/>
                                 </constraints>
-                                <blurEffect style="light"/>
+                                <blurEffect style="dark"/>
                             </visualEffectView>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="G1Y-ni-v9U">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="62"/>
@@ -2579,7 +2836,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                                 <constraint firstAttribute="height" constant="24" id="35V-Be-o7e"/>
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="22"/>
-                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="textColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
@@ -2593,7 +2850,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                 <constraints>
                                     <constraint firstAttribute="height" constant="62" id="TIa-Ak-vVS"/>
                                 </constraints>
-                                <blurEffect style="light"/>
+                                <blurEffect style="dark"/>
                             </visualEffectView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -2613,6 +2870,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                     </view>
                     <connections>
                         <outlet property="ButtonBack" destination="YEK-ko-2n0" id="VK4-bU-udN"/>
+                        <outlet property="ButtonPayment" destination="FgC-36-3nK" id="QbP-VT-MFF"/>
                         <outlet property="ButtonRouting" destination="Eqb-o0-au9" id="cFd-gN-wCi"/>
                         <outlet property="CollectionViewActivities" destination="G5E-en-2Sh" id="M5C-T3-nvu"/>
                         <outlet property="LabelProject" destination="X33-cs-Mt0" id="NSJ-RP-v67"/>
@@ -2631,6 +2889,17 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zct-hf-gHO">
+                                <rect key="frame" x="0.0" y="20" width="375" height="140"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="xXU-Q7-Lng">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="140"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                </view>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="140" id="pyY-01-bur"/>
+                                </constraints>
+                                <blurEffect style="dark"/>
+                            </visualEffectView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="1" sectionFooterHeight="70" translatesAutoresizingMaskIntoConstraints="NO" id="FME-yL-c6S">
                                 <rect key="frame" x="0.0" y="160" width="375" height="507"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -2643,7 +2912,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="83.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" alpha="0.10000000000000001" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Poi" translatesAutoresizingMaskIntoConstraints="NO" id="0K9-zY-2Zc">
+                                                <imageView userInteractionEnabled="NO" alpha="0.14999999999999999" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Poi" translatesAutoresizingMaskIntoConstraints="NO" id="0K9-zY-2Zc">
                                                     <rect key="frame" x="0.0" y="0.0" width="375" height="84"/>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DWO-6S-smE">
@@ -2718,13 +2987,14 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                     <outlet property="delegate" destination="qc5-Kk-QiN" id="Bg1-1p-tQU"/>
                                 </connections>
                             </tableView>
-                            <searchBar contentMode="redraw" placeholder="Point Of Interest" translatesAutoresizingMaskIntoConstraints="NO" id="ygy-Km-Yoh">
+                            <searchBar contentMode="redraw" searchBarStyle="minimal" placeholder="Point Of Interest" translatesAutoresizingMaskIntoConstraints="NO" id="ygy-Km-Yoh">
                                 <rect key="frame" x="0.0" y="20" width="375" height="56"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="56" id="Mww-gO-0pn"/>
                                 </constraints>
-                                <color key="barTintColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="tintColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="barTintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <textInputTraits key="textInputTraits"/>
                             </searchBar>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eOs-cQ-xBg">
@@ -2735,13 +3005,14 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8gp-gz-xa2">
                                             <rect key="frame" x="10" y="10" width="50" height="50"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="50" id="5p0-5K-aKR"/>
                                                 <constraint firstAttribute="height" constant="50" id="qb5-7v-E5V"/>
                                             </constraints>
-                                            <state key="normal" image="Back">
-                                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <state key="normal" title="Back">
+                                                <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
                                             </state>
                                             <connections>
                                                 <action selector="BackPressed:" destination="qc5-Kk-QiN" eventType="touchUpInside" id="0cs-K6-2pF"/>
@@ -2750,14 +3021,15 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eH4-4N-APd">
                                             <rect key="frame" x="315" y="10" width="50" height="50"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="50" id="dyi-3a-Yw3"/>
                                                 <constraint firstAttribute="width" constant="50" id="ijD-hq-Hfe"/>
                                             </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <color key="tintColor" name="systemPinkColor" catalog="System" colorSpace="catalog"/>
-                                            <state key="normal" image="SimpleAdd">
-                                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <state key="normal" title="New">
+                                                <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
                                             </state>
                                             <connections>
                                                 <segue destination="5m3-wy-tbn" kind="show" identifier="ShowPoiLocator" id="twy-MJ-tG7"/>
@@ -2769,12 +3041,13 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                                 <segment title="Unused"/>
                                                 <segment title="All"/>
                                             </segments>
-                                            <color key="tintColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="tintColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <connections>
                                                 <action selector="SegmentPoiFilterChanged:" destination="qc5-Kk-QiN" eventType="valueChanged" id="cea-jK-0N6"/>
                                             </connections>
                                         </segmentedControl>
                                     </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
                                         <constraint firstItem="Kmj-Hv-jHZ" firstAttribute="leading" secondItem="8gp-gz-xa2" secondAttribute="trailing" constant="20" id="CKI-FS-vKI"/>
                                         <constraint firstAttribute="trailing" secondItem="eH4-4N-APd" secondAttribute="trailing" constant="10" id="EZp-NI-FDS"/>
@@ -2788,7 +3061,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                 <constraints>
                                     <constraint firstAttribute="height" constant="70" id="y0Y-R9-EJq"/>
                                 </constraints>
-                                <blurEffect style="light"/>
+                                <blurEffect style="dark"/>
                             </visualEffectView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rsI-4X-clf" userLabel="MeSelector">
                                 <rect key="frame" x="0.0" y="76" width="375" height="84"/>
@@ -2799,7 +3072,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                             <constraint firstAttribute="height" constant="40" id="3bR-sK-Mcz"/>
                                             <constraint firstAttribute="width" constant="40" id="IH4-Y5-ROy"/>
                                         </constraints>
-                                        <state key="normal" image="nearby-white"/>
+                                        <state key="normal" image="nearby"/>
                                         <connections>
                                             <segue destination="yXg-UB-z1g" kind="show" identifier="ShowNearbyMe" id="aey-Xk-tuw"/>
                                         </connections>
@@ -2811,7 +3084,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                             <constraint firstAttribute="height" constant="35" id="8wi-X0-c4M"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" weight="thin" pointSize="28"/>
-                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <color key="textColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Count:99" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xDD-Co-KyA">
@@ -2821,11 +3094,11 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                             <constraint firstAttribute="height" constant="21" id="LbP-eA-8cK"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <color key="textColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
-                                <color key="backgroundColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="jxj-kj-X2L" secondAttribute="trailing" constant="20" id="25j-IV-TJS"/>
                                     <constraint firstItem="7No-Ie-WEV" firstAttribute="centerY" secondItem="rsI-4X-clf" secondAttribute="centerY" id="6hG-uo-4AP"/>
@@ -2844,18 +3117,23 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                             <constraint firstItem="eOs-cQ-xBg" firstAttribute="trailing" secondItem="ne8-7E-9Ap" secondAttribute="trailing" id="CaU-W9-lhT"/>
                             <constraint firstItem="ne8-7E-9Ap" firstAttribute="trailing" secondItem="rsI-4X-clf" secondAttribute="trailing" id="FZm-Cy-WRC"/>
                             <constraint firstItem="eOs-cQ-xBg" firstAttribute="bottom" secondItem="ne8-7E-9Ap" secondAttribute="bottom" id="KBy-gB-lLZ"/>
+                            <constraint firstItem="zct-hf-gHO" firstAttribute="leading" secondItem="ne8-7E-9Ap" secondAttribute="leading" id="N8C-Xg-zYt"/>
                             <constraint firstItem="ygy-Km-Yoh" firstAttribute="leading" secondItem="ne8-7E-9Ap" secondAttribute="leading" id="OV9-xV-mcK"/>
                             <constraint firstItem="ygy-Km-Yoh" firstAttribute="top" secondItem="ne8-7E-9Ap" secondAttribute="top" id="OkA-xJ-ufY"/>
                             <constraint firstItem="ne8-7E-9Ap" firstAttribute="bottom" secondItem="FME-yL-c6S" secondAttribute="bottom" id="Vfc-Sk-VVV"/>
                             <constraint firstItem="ygy-Km-Yoh" firstAttribute="trailing" secondItem="ne8-7E-9Ap" secondAttribute="trailing" id="b8Z-Pz-yc3"/>
                             <constraint firstItem="FME-yL-c6S" firstAttribute="trailing" secondItem="ne8-7E-9Ap" secondAttribute="trailing" id="fJi-Sg-rMm"/>
                             <constraint firstItem="rsI-4X-clf" firstAttribute="top" secondItem="ygy-Km-Yoh" secondAttribute="bottom" id="l5D-H4-yhr"/>
+                            <constraint firstItem="zct-hf-gHO" firstAttribute="trailing" secondItem="ne8-7E-9Ap" secondAttribute="trailing" id="sEi-zH-Fjw"/>
                             <constraint firstItem="FME-yL-c6S" firstAttribute="leading" secondItem="ne8-7E-9Ap" secondAttribute="leading" id="w2y-nH-ES3"/>
                             <constraint firstItem="FME-yL-c6S" firstAttribute="top" secondItem="rsI-4X-clf" secondAttribute="bottom" id="yvZ-ky-vP8"/>
+                            <constraint firstItem="zct-hf-gHO" firstAttribute="top" secondItem="ne8-7E-9Ap" secondAttribute="top" id="zh4-HJ-mgc"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="ne8-7E-9Ap"/>
                     </view>
                     <connections>
+                        <outlet property="ButtonBack" destination="8gp-gz-xa2" id="4LU-FB-2et"/>
+                        <outlet property="ButtonNew" destination="eH4-4N-APd" id="kKC-HG-rez"/>
                         <outlet property="LabelCounter" destination="xDD-Co-KyA" id="368-ZZ-Jlr"/>
                         <outlet property="SearchBarPoi" destination="ygy-Km-Yoh" id="96V-zu-tSw"/>
                         <outlet property="SegmentPoiFilterList" destination="Kmj-Hv-jHZ" id="lMo-fa-pD1"/>
@@ -3171,13 +3449,14 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6dD-ji-Uyb">
                                             <rect key="frame" x="10" y="70" width="50" height="50"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="50" id="30D-Je-fT8"/>
                                                 <constraint firstAttribute="width" constant="50" id="WbQ-KB-S7y"/>
                                             </constraints>
-                                            <state key="normal" image="Back">
-                                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <state key="normal" title="Cancel">
+                                                <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
                                             </state>
                                             <connections>
                                                 <action selector="BackPressed:" destination="KMV-wg-dT0" eventType="touchUpInside" id="x5g-uv-bh7"/>
@@ -3185,13 +3464,14 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eCL-jd-0zQ">
                                             <rect key="frame" x="315" y="70" width="50" height="50"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="50" id="AOw-pI-nnh"/>
                                                 <constraint firstAttribute="height" constant="50" id="xjf-Ye-v81"/>
                                             </constraints>
-                                            <state key="normal" title="Add" image="Update">
-                                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <state key="normal" title="Update">
+                                                <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
                                             </state>
                                             <connections>
                                                 <action selector="AddActivityPressed:" destination="KMV-wg-dT0" eventType="touchUpInside" id="InI-bV-oy3"/>
@@ -3199,7 +3479,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                         </button>
                                         <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gey-9K-ZMY">
                                             <rect key="frame" x="162.5" y="70" width="50" height="50"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="backgroundColor" name="systemRedColor" catalog="System" colorSpace="catalog"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="50" id="0C2-v9-6IH"/>
                                                 <constraint firstAttribute="height" constant="50" id="qAL-IL-4Fa"/>
@@ -3211,7 +3491,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="irU-cz-3bU" userLabel="Payment">
                                             <rect key="frame" x="162.5" y="10" width="50" height="50"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="50" id="2BZ-QP-Fx7"/>
                                                 <constraint firstAttribute="width" constant="50" id="Fx7-Sb-jEL"/>
@@ -3223,7 +3503,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="108-pe-v7v">
                                             <rect key="frame" x="10" y="10" width="50" height="50"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="50" id="TIP-Kr-fkN"/>
                                                 <constraint firstAttribute="height" constant="50" id="VdX-be-Wtz"/>
@@ -3237,6 +3517,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gFs-ea-qTo">
                                             <rect key="frame" x="315" y="10" width="50" height="50"/>
+                                            <color key="backgroundColor" red="0.39114451410000001" green="0.96193152670000004" blue="0.0051822378300000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="50" id="4Fj-GE-Tmq"/>
                                                 <constraint firstAttribute="width" constant="50" id="7kv-mi-zZ8"/>
@@ -3306,10 +3587,11 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                 <constraints>
                                     <constraint firstAttribute="height" constant="125" id="Ubw-Ge-9pN"/>
                                 </constraints>
-                                <blurEffect style="light"/>
+                                <blurEffect style="dark"/>
                             </visualEffectView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WGW-Dw-48x">
                                 <rect key="frame" x="10" y="482" width="50" height="50"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="PCx-Cc-HVv"/>
                                     <constraint firstAttribute="width" constant="50" id="s2j-NB-zFf"/>
@@ -3366,8 +3648,12 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                     </view>
                     <connections>
                         <outlet property="ButtonAction" destination="eCL-jd-0zQ" id="5hA-Rh-sd3"/>
+                        <outlet property="ButtonCancel" destination="6dD-ji-Uyb" id="69P-Rv-Jbb"/>
                         <outlet property="ButtonCheckInOut" destination="Gey-9K-ZMY" id="dJC-Rx-6NH"/>
+                        <outlet property="ButtonDateRange" destination="gFs-ea-qTo" id="6Ea-i8-93i"/>
+                        <outlet property="ButtonDirections" destination="108-pe-v7v" id="OTl-vO-001"/>
                         <outlet property="ButtonMore" destination="WGW-Dw-48x" id="zm7-9F-ZjT"/>
+                        <outlet property="ButtonPayment" destination="irU-cz-3bU" id="eRZ-aS-SVj"/>
                         <outlet property="ButtonViewHeightConstraint" destination="Ubw-Ge-9pN" id="2kK-Eb-vMR"/>
                         <outlet property="ImageViewPoi" destination="wSw-PK-GT0" id="JBt-cR-2iK"/>
                         <outlet property="LabelEndDT" destination="xGM-U1-UAj" id="BSl-pJ-Dwc"/>
@@ -3516,41 +3802,38 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
     <resources>
         <image name="Activity" width="256" height="256"/>
         <image name="ActivityCheckIn" width="50" height="50"/>
-        <image name="Airport" width="50" height="50"/>
         <image name="AppleMap" width="50" height="50"/>
         <image name="Back" width="50" height="50"/>
         <image name="Calendar" width="50" height="50"/>
+        <image name="Cat-Astronaut" width="50" height="50"/>
         <image name="Cat-Misc" width="50" height="50"/>
         <image name="Checked" width="64" height="64"/>
-        <image name="Clear" width="50" height="50"/>
         <image name="Delete" width="50" height="50"/>
-        <image name="DeleteRed" width="50" height="50"/>
         <image name="DeleteSubNode" width="50" height="50"/>
         <image name="Directions" width="50" height="50"/>
         <image name="EditLight" width="50" height="50"/>
+        <image name="EditMode" width="50" height="50"/>
+        <image name="Globe" width="256" height="256"/>
         <image name="Key-Off" width="50" height="50"/>
         <image name="Money" width="50" height="50"/>
         <image name="More" width="50" height="50"/>
-        <image name="Next" width="50" height="50"/>
         <image name="Poi" width="256" height="256"/>
         <image name="Project" width="526" height="526"/>
         <image name="Reset" width="50" height="50"/>
         <image name="Scheduler" width="50" height="50"/>
         <image name="SimpleAdd" width="50" height="50"/>
         <image name="Trippo" width="98" height="98"/>
-        <image name="Update" width="50" height="50"/>
         <image name="Wiki" width="50" height="50"/>
         <image name="WikiLocation" width="50" height="50"/>
         <image name="WikiTitle" width="50" height="50"/>
         <image name="bored" width="50" height="50"/>
         <image name="nearby" width="50" height="50"/>
-        <image name="nearby-white" width="50" height="50"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="45R-Pm-Hbo"/>
         <segue reference="6gN-Pq-Dnj"/>
-        <segue reference="lZj-xp-6Ji"/>
-        <segue reference="3os-SD-Z4P"/>
+        <segue reference="ZIc-mm-OQy"/>
+        <segue reference="YS2-Z3-oGI"/>
         <segue reference="kb5-dM-lsE"/>
         <segue reference="aey-Xk-tuw"/>
     </inferredMetricsTieBreakers>

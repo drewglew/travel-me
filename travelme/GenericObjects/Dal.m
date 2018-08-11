@@ -122,6 +122,13 @@
                 
                 [self LoadCountryData];
             }
+            /*
+            char *errorMessage;
+            const char *sql_statement = "delete from payment where key='E7A0A1F1-B1D2-43AE-939B-A1480A8F9F31'";
+            if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                NSLog(@"failed to delete payments in payment table");
+            }
+            */
             
             /* check any updates to the db since the last version */
             if (![self checkColumnExists:@"wikititle" :@"poi"] ) {
@@ -371,22 +378,31 @@
 
 /*
  created date:      28/04/2018
- last modified:     03/06/2018
- remarks:           TODO add new way of inserting parms
+ last modified:     10/08/2018
+ remarks:           
  */
 -(bool) UpdatePoiItem :(PoiNSO*) Poi {
     bool retVal=true;
     
     sqlite3_stmt *stmt = NULL;
-    sqlite3_prepare_v2(_DB, "UPDATE poi SET name = ?, categoryid = ?, privatenotes = ?, wikititle = ? WHERE key=?", -1, &stmt, nil);
+    sqlite3_prepare_v2(_DB, "UPDATE poi SET name = ?, categoryid = ?, privatenotes = ?, wikititle = ?, administrativearea = ?, subadministrativearea = ?, fullthoroughfare = ?, countrycode = ?, locality = ?, sublocality = ?, postcode = ?, lat = ?, lon = ? WHERE key=?", -1, &stmt, nil);
     
     sqlite3_bind_text(stmt, 1, Poi.name==nil?"":[Poi.name UTF8String], -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(stmt, 2, [Poi.categoryid intValue]);
     sqlite3_bind_text(stmt, 3, Poi.privatenotes==nil?"":[Poi.privatenotes UTF8String], -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, 4, Poi.wikititle==nil?"":[Poi.wikititle UTF8String], -1, SQLITE_TRANSIENT);
-    sqlite3_bind_text(stmt, 5, Poi.key==nil?"":[Poi.key UTF8String], -1, SQLITE_TRANSIENT);
-
     
+    sqlite3_bind_text(stmt, 5, Poi.administrativearea==nil?"":[Poi.administrativearea UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 6, Poi.subadministrativearea==nil?"":[Poi.subadministrativearea UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 7, Poi.fullthoroughfare==nil?"":[Poi.fullthoroughfare UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 8, Poi.countrycode==nil?"":[Poi.countrycode UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 9, Poi.locality==nil?"":[Poi.locality UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 10, Poi.sublocality==nil?"":[Poi.sublocality UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 11, Poi.postcode==nil?"":[Poi.postcode UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_double(stmt, 12, [Poi.lat doubleValue]);
+    sqlite3_bind_double(stmt, 13, [Poi.lat doubleValue]);
+    sqlite3_bind_text(stmt, 14, Poi.key==nil?"":[Poi.key UTF8String], -1, SQLITE_TRANSIENT);
+
     if (sqlite3_step(stmt) != SQLITE_DONE) {
         NSLog(@"Failed to update record(s) inside poi table");
         retVal = false;
@@ -996,30 +1012,31 @@
 
 /*
  created date:      02/05/2018
- last modified:     12/05/2018
+ last modified:     07/08/2018
  remarks:
  */
 -(bool) DeleteActivity :(ActivityNSO*) Activity :(NSString*) ProjectKey {
 
     bool retVal = true;
-        sqlite3_stmt *statement;
-        NSString *deleteSQL;
-        if (Activity==nil) {
-            deleteSQL = [NSString stringWithFormat:@"DELETE FROM activity WHERE projectkey = '%@'",ProjectKey];
-        } else {
-            deleteSQL = [NSString stringWithFormat:@"DELETE FROM activity WHERE key = '%@' AND state=%@",Activity.key, Activity.activitystate];
-        }
+    sqlite3_stmt *statement;
+    NSString *deleteSQL;
+    if (Activity==nil) {
+        deleteSQL = [NSString stringWithFormat:@"DELETE FROM activity WHERE projectkey = '%@'",ProjectKey];
+    } else {
+        deleteSQL = [NSString stringWithFormat:@"DELETE FROM activity WHERE key = '%@' AND state=%@",Activity.key, Activity.activitystate];
+    }
 
-        const char *deleteStatement = [deleteSQL UTF8String];
-        sqlite3_prepare_v2(_DB, deleteStatement, -1, &statement, NULL);
-        
-        if (sqlite3_step(statement) != SQLITE_DONE) {
-            NSLog(@"Failed to delete record from activity");
-            retVal = false;
-        } else {
-            NSLog(@"Successfuly deleted record from activity");
-        }
-        sqlite3_finalize(statement);
+    const char *deleteStatement = [deleteSQL UTF8String];
+    sqlite3_prepare_v2(_DB, deleteStatement, -1, &statement, NULL);
+    
+    if (sqlite3_step(statement) != SQLITE_DONE) {
+        NSLog(@"Failed to delete record from activity");
+        retVal = false;
+    } else {
+        NSLog(@"Successfuly deleted record from activity");
+    }
+    
+    sqlite3_finalize(statement);
 
     return retVal;
 }
@@ -1148,7 +1165,7 @@
 
 /*
  created date:      09/05/2018
- last modified:     16/05/2018
+ last modified:     09/08/2018
  remarks:
  */
 -(NSMutableArray*) GetPaymentListContent :(ProjectNSO*) Project :(ActivityNSO *) Activity{
@@ -1159,7 +1176,7 @@
     NSString *whereClause=@"";
 
     if (Project != nil) {
-        selectSQL = [NSString stringWithFormat:@"select p.key, p.description, p.amt_est, p.amt_act, p.localcurrencycode, p.dt_est, p.dt_act, p.state, (select name from activity a where a.key=p.activitykey LIMIT 1) name from payment p  WHERE p.projectkey = '%@'",Project.key];
+        selectSQL = [NSString stringWithFormat:@"select p.key, p.description, p.amt_est, p.amt_act, p.localcurrencycode, p.dt_est, p.dt_act, p.state, IFNULL((select name from activity a where a.key=p.activitykey LIMIT 1),'unclassified') name from payment p  WHERE p.projectkey = '%@' order by p.dt_act, p.dt_est",Project.key];
     } else if (Activity != nil) {
         whereClause = @"WHERE";
         whereClause = [NSString stringWithFormat:@"%@ %@='%@'", whereClause, @"activitykey",Activity.key];

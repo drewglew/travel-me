@@ -17,13 +17,14 @@
 #import "ImagePickerVC.h"
 #import "ImageNSO.h"
 #import "WikiVC.h"
+#import "Reachability.h"
 
 @protocol PoiDataEntryDelegate <NSObject>
 - (void)didCreatePoiFromProject :(NSString*)Key;
 - (void)didUpdatePoi :(bool)IsUpdated;
 @end
 
-@interface PoiDataEntryVC : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource, ImagePickerDelegate, WikiGeneratorDelegate, UIScrollViewDelegate, UITextViewDelegate,UITextFieldDelegate>
+@interface PoiDataEntryVC : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource, ImagePickerDelegate, WikiGeneratorDelegate, UIScrollViewDelegate, UITextViewDelegate,UITextFieldDelegate, CLLocationManagerDelegate>
 
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;
 @property (nonatomic) NSString *Title;
@@ -60,6 +61,10 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *ViewBlurHeightConstraint;
 @property (weak, nonatomic) IBOutlet UISwitch *SwitchViewPhotoOptions;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonWiki;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonUpdate;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonCancel;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonGeo;
+
 @property CGPoint translation;
 @property (weak, nonatomic) IBOutlet UIScrollView *ScrollViewImage;
 

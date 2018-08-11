@@ -14,6 +14,7 @@
 #import "SearchResultListCell.h"
 #import "AnnotationMK.h"
 #import "ProjectNSO.h"
+#import "Reachability.h"
 
 @protocol LocatorDelegate <NSObject>
 - (void)didCreatePoiFromProjectPassThru :(NSString*)Key;
@@ -31,5 +32,13 @@
 @property (nonatomic, weak) id <LocatorDelegate> delegate;
 @property (weak, nonatomic) IBOutlet UITableView *TableViewSearchResult;
 @property (strong, nonatomic)  CLLocationManager *locationManager;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonClear;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonNext;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonSkip;
+@property (weak, nonatomic) IBOutlet UIImageView *ImageViewGlobe;
+
+@property (weak, nonatomic) IBOutlet UILabel *LabelWarningNoInet;
+
 
 @end

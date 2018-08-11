@@ -16,7 +16,7 @@
 
 /*
  created date:      09/05/2018
- last modified:     15/05/2018
+ last modified:     09/08/2018
  remarks:
  */
 - (void)viewDidLoad {
@@ -40,14 +40,20 @@
             self.ImageViewPoi.image = self.Project.Image;
         }
         NSLog(@"image size: %f",self.Project.Image.size.height );
-        self.LabelTitle.text = [NSString stringWithFormat:@"Project: %@", self.Project.name];
-        self.ButtonAction.hidden = true;
+        self.LabelTitle.text = [NSString stringWithFormat:@"Trip: %@", self.Project.name];
+        //self.ButtonAction.hidden = true;
         self.ViewTripAmount.hidden = false;
     }
     
     self.TableViewPayment.rowHeight = 100;
-    self.TableViewPayment.sectionFooterHeight = 50;
+    self.TableViewPayment.sectionFooterHeight = 50+75;
     // Do any additional setup after loading the view.
+    
+    self.ButtonAction.layer.cornerRadius = 25;
+    self.ButtonAction.clipsToBounds = YES;
+    self.ButtonBack.layer.cornerRadius = 25;
+    self.ButtonBack.clipsToBounds = YES;
+
 }
 
 /*
@@ -135,6 +141,8 @@
     return self.localcurrencyitems.count;
 }
 
+
+
 /*
  created date:      08/05/2018
  last modified:     16/05/2018
@@ -153,7 +161,7 @@
 
 /*
  created date:      09/06/2018
- last modified:     23/06/2018
+ last modified:     09/08/2018
  remarks:           table view with sections.
  */
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
@@ -181,9 +189,16 @@
 
     UIView* footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 64)];
     
+    UIView* backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 50)];
+    
+    
+    
     // 2. Set a custom background color and a border
-    footerView.backgroundColor = [UIColor colorWithRed:11.0f/255.0f green:110.0f/255.0f blue:79.0f/255.0f alpha:1.0];
+    backgroundView.backgroundColor = [UIColor colorWithRed:11.0f/255.0f green:110.0f/255.0f blue:79.0f/255.0f alpha:1.0];
 
+    [footerView addSubview:backgroundView];
+    
+    
     // 3. Add a label
     UILabel* actualSummaryLabel = [[UILabel alloc] init];
     actualSummaryLabel.frame = CGRectMake(10, 5, tableView.frame.size.width - 200, 20);
@@ -196,6 +211,9 @@
     
     // 4. Add the label to the header view
     [footerView addSubview:actualSummaryLabel];
+    
+    
+    
     
     /*10 trailing
      40 width of currency field
@@ -293,7 +311,7 @@
     if ([item.rate_act intValue]==1) {
         cell.LabelLocalAmt.hidden = true;
         cell.LabelLocalCurrencyCode.hidden = true;
-        cell.LabelHomeAmt.text = cell.LabelLocalAmtEst.text;
+        cell.LabelHomeAmt.text = cell.LabelLocalAmt.text;
         cell.LabelLocalCurrencyCode.text = item.localcurrencycode;
         
     } else if ([item.rate_est intValue]==0) {
@@ -406,7 +424,7 @@ remarks:
 
 /*
  created date:      03/05/2018
- last modified:     15/05/2018
+ last modified:     07/08/2018
  remarks:           segue controls .
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -414,6 +432,12 @@ remarks:
     if([segue.identifier isEqualToString:@"ShowNewPayment"]){
         PaymentDataEntryVC *controller = (PaymentDataEntryVC *)segue.destinationViewController;
         controller.delegate = self;
+        if (self.Project != nil) {
+            self.Activity = [[ActivityNSO alloc] init];
+            self.Activity.project = self.Project;
+            self.Activity.activitystate = self.activitystate;
+            
+        }
         controller.Activity = self.Activity;
         controller.Payment = nil;
         controller.newitem = true;

@@ -28,6 +28,8 @@
         if (![self.PointOfInterest.name isEqualToString:@""]) {
             self.TextFieldTitle.text = self.PointOfInterest.name;
             self.TextViewNotes.text = self.PointOfInterest.privatenotes;
+        } else {
+            self.TextViewNotes.text = self.PointOfInterest.privatenotes;
         }
     } else if (self.fromnearby) {
         self.TextFieldTitle.text = self.PointOfInterest.name;
@@ -78,6 +80,28 @@
     [self addDoneToolBarToKeyboard:self.TextViewNotes];
     self.TextFieldTitle.delegate = self;
     self.TextViewNotes.delegate = self;
+    
+    self.ButtonUpdate.layer.cornerRadius = 25;
+    self.ButtonUpdate.clipsToBounds = YES;
+    
+    self.ButtonCancel.layer.cornerRadius = 25;
+    self.ButtonCancel.clipsToBounds = YES;
+    
+    if (self.checkInternet) {
+        if ([self.PointOfInterest.countrycode isEqualToString:@""]) {
+            self.ButtonGeo.layer.cornerRadius = 25;
+            self.ButtonGeo.clipsToBounds = YES;
+            self.ButtonGeo.hidden = false;
+        }
+        // TODO we need to check if Poi has missing data and that the internet is available...
+        
+    }
+    
+    self.ButtonWiki.layer.cornerRadius = 25;
+    self.ButtonWiki.clipsToBounds = YES;
+    self.ButtonWiki.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
+    
 }
 
 /*
@@ -250,7 +274,7 @@
 
 /*
  created date:      11/06/2018
- last modified:     11/06/2018
+ last modified:     10/08/2018
  remarks:
  */
 -(void) LoadMapData {
@@ -680,7 +704,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     11/06/2018
+ last modified:     10/08/2018
  remarks:
  */
 - (IBAction)ActionButtonPressed:(id)sender {
@@ -762,7 +786,8 @@
                 counter++;
             }
         }
-
+        // TODO - update only contains main items at the moment.  we need to apply columns all as anything can be updated now.
+        
         [AppDelegateDef.Db UpdatePoiItem :self.PointOfInterest];
         [self.delegate didUpdatePoi:true];
         [self dismissViewControllerAnimated:YES completion:Nil];
@@ -1095,7 +1120,66 @@
     [self dismissViewControllerAnimated:YES completion:Nil];
 }
 
+- (bool)checkInternet
+{
+    if ([[Reachability reachabilityForInternetConnection]currentReachabilityStatus]==NotReachable)
+    {
+        return false;
+    }
+    else
+    {
+        //connection available
+        return true;
+    }
+    
+}
 
+/*
+ created date:      10/08/2018
+ last modified:     10/08/2018
+ remarks: TODO add all items that might have originally been added on insert.
+ */
+- (IBAction)GeoButtonPressed:(id)sender {
+    
+    CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
+    
+    self.PointOfInterest.Coordinates = CLLocationCoordinate2DMake([self.PointOfInterest.lat doubleValue], [self.PointOfInterest.lon doubleValue]);
+    
+    [geoCoder reverseGeocodeLocation: [[CLLocation alloc] initWithLatitude:self.PointOfInterest.Coordinates.latitude longitude:self.PointOfInterest.Coordinates.longitude] completionHandler:^(NSArray *placemarks, NSError *error) {
+        if (error) {
+            NSLog(@"%@", [NSString stringWithFormat:@"%@", error.localizedDescription]);
+        } else {
+            if ([placemarks count]>0) {
+                CLPlacemark *placemark = [placemarks firstObject];
+                NSString *AdminArea = placemark.subAdministrativeArea;
+                if ([AdminArea isEqualToString:@""] || AdminArea == NULL) {
+                    AdminArea = placemark.administrativeArea;
+                }
+                
+                NSLog(@"%@",placemark);
+                self.PointOfInterest.administrativearea = placemark.administrativeArea;
+                self.PointOfInterest.lat = [NSNumber numberWithDouble:self.PointOfInterest.Coordinates.latitude];
+                self.PointOfInterest.lon = [NSNumber numberWithDouble:self.PointOfInterest.Coordinates.longitude];
+                self.PointOfInterest.country = placemark.country;
+                self.PointOfInterest.countrycode = placemark.ISOcountryCode;
+                self.PointOfInterest.locality = placemark.locality;
+                self.PointOfInterest.sublocality = placemark.subLocality;
+                self.PointOfInterest.fullthoroughfare = placemark.thoroughfare;
+                self.PointOfInterest.postcode = placemark.postalCode;
+                self.PointOfInterest.subadministrativearea = placemark.subAdministrativeArea;
+                self.ButtonGeo.hidden = true;
+                /* reset note if it contains autotext detail */
 
+                [self.TextViewNotes setText:[self.TextViewNotes.text stringByReplacingOccurrencesOfString:@"No GeoData has been supplied except coordinates. Please press 'Geo' button when internet connectivity is next available!" withString:@""]];
+                
+            } else {
+                self.PointOfInterest.administrativearea = @"Unknown Place";
+            }
+           
+        }
+    }];
+    
+    
+}
 
 @end

@@ -42,7 +42,7 @@
         
         [self LoadActivityData];
     } else if (!self.newitem && !self.transformed) {
-        [self.ButtonAction setTitle:@"Upd" forState:UIControlStateNormal];
+        [self.ButtonAction setTitle:@"Update" forState:UIControlStateNormal];
         [self LoadActivityData];
         NSComparisonResult result = [self.Activity.startdt compare:today];
         if (self.Activity.startdt == self.Activity.enddt && result==NSOrderedAscending && self.Activity.activitystate==[NSNumber numberWithInt:1]) {
@@ -55,8 +55,8 @@
         self.ButtonCheckInOut.hidden = false;
         UIImage *btnImage = [UIImage imageNamed:@"ActivityCheckIn"];
         [self.ButtonCheckInOut setImage:btnImage forState:UIControlStateNormal];
-        [self.ButtonCheckInOut setBackgroundColor:[UIColor clearColor]];
-        [self.ButtonAction setTitle:@"Upd" forState:UIControlStateNormal];
+        //[self.ButtonCheckInOut setBackgroundColor:[UIColor clearColor]];
+        [self.ButtonAction setTitle:@"Update" forState:UIControlStateNormal];
         [self LoadActivityData];
     } else if (self.newitem) {
         self.TextFieldName.text = self.Activity.poi.name;
@@ -77,6 +77,35 @@
     [self addDoneToolBarToKeyboard:self.TextViewNotes];
     self.TextFieldName.delegate = self;
     self.TextViewNotes.delegate = self;
+    
+    self.ButtonPayment.layer.cornerRadius = 25;
+    self.ButtonPayment.clipsToBounds = YES;
+    self.ButtonPayment.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
+    self.ButtonCheckInOut.layer.cornerRadius = 25;
+    self.ButtonCheckInOut.clipsToBounds = YES;
+    self.ButtonCheckInOut.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
+    self.ButtonAction.layer.cornerRadius = 25;
+    self.ButtonAction.clipsToBounds = YES;
+    
+    self.ButtonDateRange.layer.cornerRadius = 25;
+    self.ButtonDateRange.clipsToBounds = YES;
+    self.ButtonDateRange.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
+    self.ButtonDirections.layer.cornerRadius = 25;
+    self.ButtonDirections.clipsToBounds = YES;
+    self.ButtonDirections.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
+    self.ButtonMore.layer.cornerRadius = 25;
+    self.ButtonMore.clipsToBounds = YES;
+    self.ButtonMore.layer.borderWidth = 1;
+    self.ButtonMore.layer.borderColor = [[UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0] CGColor];
+    self.ButtonMore.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
+    self.ButtonCancel.layer.cornerRadius = 25;
+    self.ButtonCancel.clipsToBounds = YES;
+
     // Do any additional setup after loading the view.
 }
 
@@ -242,7 +271,7 @@
 
 /*
  created date:      03/05/2018
- last modified:     11/06/2018
+ last modified:     08/08/2018
  remarks:           segue controls .
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -271,6 +300,10 @@
         PaymentListingVC *controller = (PaymentListingVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.Activity = self.Activity;
+        controller.activitystate = self.Activity.activitystate;
+        
+        /* here we add something new */
+        
         controller.Project = nil;
         
     }

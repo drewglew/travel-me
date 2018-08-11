@@ -24,17 +24,16 @@ MKLocalSearchResponse *results;
 
 /*
  created date:      27/04/2018
- last modified:     28/04/2018
+ last modified:     10/08/2018
  remarks:
  */
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.SearchBar.delegate = self;
     self.TableViewSearchResult.delegate = self;
-    
     [self startUserLocationSearch];
+     UILongPressGestureRecognizer* mapLongPressAddAnnotation = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(AddAnnotationToMap:)];
     
-    UILongPressGestureRecognizer* mapLongPressAddAnnotation = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(AddAnnotationToMap:)];
     [mapLongPressAddAnnotation setMinimumPressDuration:0.5];
     [self.MapView addGestureRecognizer:mapLongPressAddAnnotation];    // Do any additional setup after loading the view.
     self.MapView.delegate = self;
@@ -46,6 +45,32 @@ MKLocalSearchResponse *results;
     self.PointOfInterest.Images  = [[NSMutableArray alloc] init];
     self.PointOfInterest.Links = [[NSMutableArray alloc] init];
     self.TableViewSearchResult.rowHeight = 70;
+    //[self.SearchBar setBackgroundImage:[UIImage new]];
+    [self.SearchBar setBackgroundColor:[UIColor clearColor]];
+    //[self.SearchBar setBarTintColor:[UIColor clearColor]];
+    
+    self.SearchBar.searchBarStyle = UISearchBarStyleMinimal;
+    
+    UITextField *txfSearchField = [self.SearchBar valueForKey:@"_searchField"];
+    txfSearchField.borderStyle = UITextBorderStyleNone;
+    txfSearchField.backgroundColor = [UIColor whiteColor];
+    [UISearchBar appearance].tintColor = [UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:0.0f/255.0f alpha:1.0]; [[UITextField appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setDefaultTextAttributes:@{NSForegroundColorAttributeName: [UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:0.0f/255.0f alpha:1.0]}];
+    txfSearchField.layer.cornerRadius = 5;
+    txfSearchField.layer.masksToBounds = true;
+    
+    
+    self.ButtonBack.layer.cornerRadius = 25;
+    self.ButtonBack.clipsToBounds = YES;
+    //self.ButtonBack.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    self.ButtonNext.layer.cornerRadius = 25;
+    self.ButtonNext.clipsToBounds = YES;
+    
+    self.ButtonSkip.layer.cornerRadius = 25;
+    self.ButtonSkip.clipsToBounds = YES;
+
+    self.ButtonClear.layer.cornerRadius = 25;
+    self.ButtonClear.clipsToBounds = YES;
+
 }
 
 -(void) viewDidDisappear:(BOOL)animated {
@@ -60,19 +85,28 @@ MKLocalSearchResponse *results;
  */
 -(void)startUserLocationSearch{
     
-    self.locationManager = [[CLLocationManager alloc]init];
-    self.locationManager.delegate = self;
-    self.locationManager.distanceFilter = kCLDistanceFilterNone;
-    self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
-    
-    if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-        [self.locationManager requestWhenInUseAuthorization];
+    if ([CLLocationManager locationServicesEnabled]) {
+        
+        
+        
+        self.locationManager = [[CLLocationManager alloc]init];
+        self.locationManager.delegate = self;
+        self.locationManager.distanceFilter = kCLDistanceFilterNone;
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+        
+        if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+            [self.locationManager requestWhenInUseAuthorization];
+        }
+        [self.locationManager startUpdatingLocation];
+        
+    } else {
+        NSLog(@"Nothing to do here!");
     }
-    [self.locationManager startUpdatingLocation];
+    
 }
 /*
  created date:      06/05/2018
- last modified:     11/06/2018
+ last modified:     10/08/2018
  remarks:
  */
 -(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations{
@@ -81,40 +115,61 @@ MKLocalSearchResponse *results;
     
     CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
     
-    [geoCoder reverseGeocodeLocation: [[CLLocation alloc] initWithLatitude:self.locationManager.location.coordinate.latitude longitude:self.locationManager.location.coordinate.longitude] completionHandler:^(NSArray *placemarks, NSError *error) {
-        if (error) {
-            NSLog(@"%@", [NSString stringWithFormat:@"%@", error.localizedDescription]);
-        } else {
-            AnnotationMK *anno = [[AnnotationMK alloc] init];
-            if ([placemarks count]>0) {
-                CLPlacemark *placemark = [placemarks firstObject];
-                anno.coordinate = placemark.location.coordinate;
-                anno.title = placemark.name;
-                NSString *AdminArea = placemark.subAdministrativeArea;
-                if ([AdminArea isEqualToString:@""] || AdminArea == NULL) {
-                    AdminArea = placemark.administrativeArea;
-                }
-                
-                anno.subtitle = [NSString stringWithFormat:@"%@, %@", AdminArea, placemark.ISOcountryCode ];
-                
-                anno.Country = placemark.country;
-                anno.SubLocality = placemark.subLocality;
-                anno.Locality = placemark.locality;
-                anno.PostCode = placemark.postalCode;
-                anno.CountryCode = placemark.ISOcountryCode;
-                anno.FullThoroughFare = [NSString stringWithFormat:@"%@, %@", placemark.thoroughfare, placemark.subThoroughfare];
+    if ([self checkInternet]) {
 
-                [self.MapView addAnnotation:anno];
-                [self.MapView setCenterCoordinate:anno.coordinate animated:YES];
-                [self.MapView selectAnnotation:anno animated:true];
-                
+        [geoCoder reverseGeocodeLocation: [[CLLocation alloc] initWithLatitude:self.locationManager.location.coordinate.latitude longitude:self.locationManager.location.coordinate.longitude] completionHandler:^(NSArray *placemarks, NSError *error) {
+            if (error) {
+                NSLog(@"%@", [NSString stringWithFormat:@"%@", error.localizedDescription]);
             } else {
-                anno.title = @"Unknown Place";
+                AnnotationMK *anno = [[AnnotationMK alloc] init];
+                if ([placemarks count]>0) {
+                    CLPlacemark *placemark = [placemarks firstObject];
+                    anno.coordinate = placemark.location.coordinate;
+                    anno.title = placemark.name;
+                    NSString *AdminArea = placemark.subAdministrativeArea;
+                    if ([AdminArea isEqualToString:@""] || AdminArea == NULL) {
+                        AdminArea = placemark.administrativeArea;
+                    }
+                    
+                    anno.subtitle = [NSString stringWithFormat:@"%@, %@", AdminArea, placemark.ISOcountryCode ];
+                    
+                    anno.Country = placemark.country;
+                    anno.SubLocality = placemark.subLocality;
+                    anno.Locality = placemark.locality;
+                    anno.PostCode = placemark.postalCode;
+                    anno.CountryCode = placemark.ISOcountryCode;
+                    anno.FullThoroughFare = [NSString stringWithFormat:@"%@, %@", placemark.thoroughfare, placemark.subThoroughfare];
+
+                    [self.MapView addAnnotation:anno];
+                    [self.MapView setCenterCoordinate:anno.coordinate animated:YES];
+                    [self.MapView selectAnnotation:anno animated:true];
+                    
+                } else {
+                    anno.title = @"Unknown Place";
+                }
+                [self.MapView addAnnotation:anno];
+                [self.MapView selectAnnotation:anno animated:true];
             }
-            [self.MapView addAnnotation:anno];
-            [self.MapView selectAnnotation:anno animated:true];
-        }
-    }];
+        }];
+        
+    } else {
+        
+        self.PointOfInterest.lat = [NSNumber numberWithDouble:self.locationManager.location.coordinate.latitude];
+        self.PointOfInterest.lon = [NSNumber numberWithDouble:self.locationManager.location.coordinate.longitude];
+        self.PointOfInterest.Coordinates = CLLocationCoordinate2DMake([self.PointOfInterest.lat doubleValue], [self.PointOfInterest.lon doubleValue]);
+        self.LabelWarningNoInet.hidden = false;
+        
+        self.LabelWarningNoInet.layer.cornerRadius = 5;
+        self.LabelWarningNoInet.layer.masksToBounds = true;
+        
+        self.ButtonSkip.hidden = false;
+        self.ImageViewGlobe.hidden = false;
+        self.SearchBar.hidden = true;
+        self.MapView.hidden = true;
+        self.ButtonClear.hidden = true;
+        self.ButtonNext.hidden = true;
+    }
+        
 }
 
 
@@ -405,7 +460,7 @@ MKLocalSearchResponse *results;
 
 /*
  created date:      28/04/2018
- last modified:     19/07/2018
+ last modified:     10/08/2018
  remarks:           segue controls .
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -425,11 +480,26 @@ MKLocalSearchResponse *results;
         PoiDataEntryVC *controller = (PoiDataEntryVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.PointOfInterest = self.PointOfInterest;
+        controller.PointOfInterest.privatenotes = @"No GeoData has been supplied except coordinates. Please press 'Geo' button when internet connectivity is next available!";
         controller.newitem = true;
         controller.readonlyitem = false;
         controller.fromproject = self.fromproject;
         controller.fromnearby = false;
     }
+}
+
+- (bool)checkInternet
+{
+    if ([[Reachability reachabilityForInternetConnection]currentReachabilityStatus]==NotReachable)
+    {
+        return false;
+    }
+    else
+    {
+        //connection available
+        return true;
+    }
+    
 }
 
 /*

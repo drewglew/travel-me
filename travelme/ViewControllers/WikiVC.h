@@ -24,5 +24,10 @@
 @property (nonatomic, weak) id <WikiGeneratorDelegate> delegate;
 @property (nonatomic) NSNumber *gsradius;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentLanguageOption;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonSearchByLocation;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonSearchByName;
+
+
 
 @end

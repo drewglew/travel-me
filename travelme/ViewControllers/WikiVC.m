@@ -57,6 +57,18 @@
     
     self.webView.hidden=false;
     
+    self.ButtonBack.layer.cornerRadius = 25;
+    self.ButtonBack.clipsToBounds = YES;
+
+    self.ButtonSearchByName.layer.cornerRadius = 25;
+    self.ButtonSearchByName.clipsToBounds = YES;
+    self.ButtonSearchByName.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
+    self.ButtonSearchByLocation.layer.cornerRadius = 25;
+    self.ButtonSearchByLocation.clipsToBounds = YES;
+    self.ButtonSearchByLocation.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
+    
     // Do any additional setup after loading the view.
 }
 
@@ -175,7 +187,7 @@ NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
 
 /*
  created date:      15/06/2018
- last modified:     20/06/2018
+ last modified:     07/08/2018
  remarks:
  */
 - (IBAction)UpdateWikiPagePressed:(id)sender {
@@ -202,7 +214,7 @@ NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
         else if (self.SegmentLanguageOption.selectedSegmentIndex == 1) {
             Country = [AppDelegateDef.Db GetCountryByCode:self.PointOfInterest.countrycode];
         } else {
-            Country = [AppDelegateDef.Db GetCountryByCode:@"UK"];
+            Country = [AppDelegateDef.Db GetCountryByCode:@"GB"];
         }
         
         if (![fileManager fileExistsAtPath:wikiDataFilePath]){

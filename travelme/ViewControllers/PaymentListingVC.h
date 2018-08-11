@@ -23,6 +23,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelTitle;
 @property (strong, nonatomic) NSMutableArray *paymentitems;
 @property (strong, nonatomic) NSArray *localcurrencyitems;
+@property (strong, nonatomic) NSNumber *activitystate;
 @property (strong, nonatomic) NSMutableArray *paymentsections;
 
 @property (strong, nonatomic) ActivityNSO *Activity;
@@ -33,5 +34,9 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelTripPrice;
 @property (weak, nonatomic) IBOutlet UILabel *LabelTripAmount;
 @property (weak, nonatomic) IBOutlet UIView *ViewTripAmount;
+
+@property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonNew;
+
 
 @end
