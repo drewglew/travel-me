@@ -504,12 +504,12 @@ MKLocalSearchResponse *results;
 
 /*
  created date:      11/06/2018
- last modified:     11/06/2018
+ last modified:     12/08/2018
  remarks:
  */
-- (void)didCreatePoiFromProject :(NSString*)Key {
-    [self.delegate didCreatePoiFromProjectPassThru:Key];
-    [self.delegate didUpdatePoi:true];
+- (void)didCreatePoiFromProject :(PoiNSO*)Object {
+    [self.delegate didCreatePoiFromProjectPassThru:Object];
+    [self.delegate didUpdatePoi :@"created" :Object];
     [self dismissViewControllerAnimated:YES completion:Nil];
 }
 /*
@@ -517,17 +517,17 @@ MKLocalSearchResponse *results;
  last modified:     11/06/2018
  remarks: Leave empty
  */
-- (void)didCreatePoiFromProjectPassThru :(NSString*)Key {
+- (void)didCreatePoiFromProjectPassThru :(PoiNSO*)Object {
     
 }
 
 /*
  created date:      15/07/2018
- last modified:     18/07/2018
+ last modified:     12/08/2018
  remarks:
  */
-- (void)didUpdatePoi :(bool)IsUpdated {
-    [self.delegate didUpdatePoi:true];
+- (void)didUpdatePoi :(NSString*)Method :(PoiNSO*)Object {
+    [self.delegate didUpdatePoi:Method :Object];
 }
 
 

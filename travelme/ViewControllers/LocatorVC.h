@@ -17,8 +17,8 @@
 #import "Reachability.h"
 
 @protocol LocatorDelegate <NSObject>
-- (void)didCreatePoiFromProjectPassThru :(NSString*)Key;
-- (void)didUpdatePoi :(bool)IsUpdated;
+- (void)didCreatePoiFromProjectPassThru :(PoiNSO*)Object;
+- (void)didUpdatePoi :(NSString*)Method :(PoiNSO*)Object;
 @end
 
 @interface LocatorVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, MKMapViewDelegate, CLLocationManagerDelegate> {

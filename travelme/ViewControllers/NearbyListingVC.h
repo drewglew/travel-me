@@ -15,7 +15,7 @@
 #import "Reachability.h"
 
 @protocol NearbyListingDelegate <NSObject>
-- (void)didUpdatePoi :(bool)IsUpdated;
+- (void)didUpdatePoi :(NSString*)Method :(PoiNSO*)Object;
 @end
 
 @interface NearbyListingVC : UIViewController <UITableViewDelegate, CLLocationManagerDelegate, PoiDataEntryDelegate> 

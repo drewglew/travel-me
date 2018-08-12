@@ -20,8 +20,8 @@
 #import "Reachability.h"
 
 @protocol PoiDataEntryDelegate <NSObject>
-- (void)didCreatePoiFromProject :(NSString*)Key;
-- (void)didUpdatePoi :(bool)IsUpdated;
+- (void)didCreatePoiFromProject :(PoiNSO*)Object;
+- (void)didUpdatePoi :(NSString*)Method :(PoiNSO*)Object;
 @end
 
 @interface PoiDataEntryVC : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource, ImagePickerDelegate, WikiGeneratorDelegate, UIScrollViewDelegate, UITextViewDelegate,UITextFieldDelegate, CLLocationManagerDelegate>

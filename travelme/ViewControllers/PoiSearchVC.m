@@ -22,7 +22,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     12/08/2018
+ last modified:     11/08/2018
  remarks:
  */
 - (void)viewDidLoad {
@@ -110,8 +110,8 @@
 }
 
 /*
- created date:      12/08/2018
- last modified:     12/08/2018
+ created date:      11/08/2018
+ last modified:     11/08/2018
  remarks:
  */
 -(void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer
@@ -167,11 +167,11 @@
 
 /*
  created date:      03/05/2018
- last modified:     12/08/2018
+ last modified:     11/08/2018
  remarks:
  */
 -(void)RefreshPoiFilteredData :(bool) UpdateTypes {
-    //[self.SearchBarPoi resignFirstResponder];
+
     [self.poifiltereditems removeAllObjects];
     
     NSArray <PoiNSO*> *tempPoi;
@@ -249,7 +249,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     12/08/2018
+ last modified:     11/08/2018
  remarks:
  */
 -(void) LoadPoiData {
@@ -422,18 +422,36 @@
 }
 /*
  created date:      02/05/2018
- last modified:     02/05/2018
+ last modified:     12/08/2018
  remarks:           Might not be totally necessary, but seperated out from editActionsForRowAtIndexPath method above.
  */
 - (void)tableView:(UITableView *)tableView deletePoi:(NSIndexPath *)indexPath  {
     if ([AppDelegateDef.Db DeletePoi:[self.poifiltereditems objectAtIndex:indexPath.row]] == true)
     {
-        [self LoadPoiData];
+        PoiNSO *poi = [self.poifiltereditems objectAtIndex:indexPath.row];
+        
+        NSLog(@"%lu", (unsigned long)[self.poiitems count]);
+        
+        for (int index = 0; index<[self.poiitems count]; index++)
+        {
+            PoiNSO *p = [self.poiitems objectAtIndex:index];
+            
+            if ([poi.key isEqualToString:p.key]) {
+                [self.poiitems removeObjectAtIndex:index];
+                [self RefreshPoiFilteredData:true];
+                break;
+            }
+        }
     }
 }
 
+/*
+ created date:      30/04/2018
+ last modified:     11/08/2018
+ remarks:
+ */
 - (UIView*)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.TableViewSearchPoiItems.frame.size.width, 70)];
+    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.TableViewSearchPoiItems.frame.size.width, self.FilterOptionHeightConstraint.constant)];
     return footerView;
 }
 
@@ -571,8 +589,8 @@
 }
 
 /*
- created date:      12/08/2018
- last modified:     12/08/2018
+ created date:      11/08/2018
+ last modified:     11/08/2018
  remarks:
  */
 - (IBAction)SegmentPoiCountriesFilterChanged:(id)sender {
@@ -585,8 +603,8 @@
 
 
 /*
- created date:      12/08/2018
- last modified:     12/08/2018
+ created date:      11/08/2018
+ last modified:     11/08/2018
  remarks:
  */
 - (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
@@ -594,8 +612,8 @@
 }
 
 /*
- created date:      12/08/2018
- last modified:     12/08/2018
+ created date:      11/08/2018
+ last modified:     11/08/2018
  remarks:
  */
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -611,8 +629,8 @@
 
 
 /*
- created date:      12/08/2018
- last modified:     12/08/2018
+ created date:      11/08/2018
+ last modified:     11/08/2018
  remarks:
  */
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -623,43 +641,10 @@
 }
 
 
-/*
- created date:      11/06/2018
- last modified:     11/06/2018
- remarks:  Called when new Poi item has been created.
- */
-- (void)didCreatePoiFromProjectPassThru :(NSString*)Key {
-    self.SegmentPoiFilterList.selectedSegmentIndex = 1;
-
-    [self.SearchBarPoi setText:Key];
-    [self LoadPoiData];
-    [self searchBar:_SearchBarPoi textDidChange:Key];
-    
-
-}
-
-
-
-- (void)didCreatePoiFromProject:(NSString *)Key {
-    
-}
-
-
-- (IBAction)ButtonOpenAppleMaps:(id)sender {
-}
 
 /*
- created date:      15/07/2018
- last modified:     15/07/2018
- remarks:
- */
-- (void)didUpdatePoi :(bool)IsUpdated {
-    [self LoadPoiData];
-}
-
-/*
- created date:      12/08/2018
- last modified:     12/08/2018
+ created date:      11/08/2018
+ last modified:     11/08/2018
  remarks:           Only sets all category filters to selected
  */
 - (IBAction)FilterResetPressed:(id)sender {
@@ -672,8 +657,8 @@
 }
 
 /*
- created date:      12/08/2018
- last modified:     12/08/2018
+ created date:      11/08/2018
+ last modified:     11/08/2018
  remarks:
  */
 - (IBAction)FilterPressed:(id)sender {
@@ -686,6 +671,7 @@
             //self.ButtonMore.transform = CGAffineTransformMakeRotation(M_PI);
             [self.view layoutIfNeeded];
         } completion:^(BOOL finished) {
+            
             
         }];
         
@@ -703,11 +689,69 @@
     
 }
 
+/*
+ created date:      12/08/2018
+ last modified:     12/08/2018
+ remarks:
+ */
+- (void)didUpdatePoi :(NSString*)Method :(PoiNSO*)Object {
+    
+    if ([Method isEqualToString:@"modified"]) {
 
-
-
-- (IBAction)ButtonWiki:(id)sender {
+        for (NSUInteger index = [self.poiitems count]; index<=0; index--)
+        {
+            PoiNSO *p = [self.poiitems objectAtIndex:index];
+            if ([Object.key isEqualToString:p.key]) {
+                [self.poiitems replaceObjectAtIndex:index withObject:Object];
+                break;
+            }
+        }
+        
+    } else  if ([Method isEqualToString:@"created"]) {
+        Object.connectedactivitycount = [NSNumber numberWithInt:0];
+        [self.poiitems addObject:Object];
+    }
+    
+    NSURL *url = [self applicationDocumentsDirectory];
+    
+    NSData *pngData;
+    
+    if (Object.Images.count > 0) {
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"KeyImage == %@", [NSNumber numberWithInt:1]];
+        NSArray *filteredArray = [Object.Images filteredArrayUsingPredicate:predicate];
+        PoiImageNSO *KeyImageItem = [filteredArray firstObject];
+        
+        NSURL *imagefile = [url URLByAppendingPathComponent:KeyImageItem.ImageFileReference];
+        
+        NSError *err;
+        
+        pngData = [NSData dataWithContentsOfURL:imagefile options:NSDataReadingMappedIfSafe error:&err];
+        
+        UIImage *image =[UIImage imageWithData:pngData];
+        CGSize size = CGSizeMake(self.TableViewSearchPoiItems.frame.size.width , self.TableViewSearchPoiItems.rowHeight); // set the width and height
+        KeyImageItem.Image = [self resizeImage:image imageSize:size];
+    }
+    
+    
+    [self RefreshPoiFilteredData:true];
 }
-- (IBAction)ButtonUpdate:(id)sender {
+
+/*
+ created date:      11/06/2018
+ last modified:     11/06/2018
+ remarks:  Called when new Poi item has been created.
+ */
+- (void)didCreatePoiFromProjectPassThru :(NSString*)Key {
+    self.SegmentPoiFilterList.selectedSegmentIndex = 1;
+    
+    [self.SearchBarPoi setText:Key];
+    [self LoadPoiData];
+    [self searchBar:_SearchBarPoi textDidChange:Key];
 }
+
+
+- (void)didCreatePoiFromProject:(NSString *)Key {
+    
+}
+
 @end

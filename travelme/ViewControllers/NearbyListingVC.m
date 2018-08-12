@@ -336,20 +336,10 @@
 
 /*
  created date:      16/07/2018
- last modified:     16/07/2018
+ last modified:     12/08/2018
  remarks:
  */
-- (void)didCreatePoiFromProject :(NSString*)Key {
-}
-
-
-
-/*
- created date:      16/07/2018
- last modified:     16/07/2018
- remarks:
- */
-- (void)didUpdatePoi :(bool)IsUpdated {
+- (void)didUpdatePoi :(NSString*)Method :(PoiNSO*)Object {
     self.UpdatedPoi = true;
 }
 
@@ -388,12 +378,12 @@
 
 /*
  created date:      16/07/2018
- last modified:     16/07/2018
+ last modified:     12/08/2018
  remarks:
  */
 - (IBAction)BackPressed:(id)sender {
     if (self.UpdatedPoi) {
-        [self.delegate didUpdatePoi:true];
+        [self.delegate didUpdatePoi :@"created" :self.PointOfInterest];
     }
     [self dismissViewControllerAnimated:YES completion:Nil];
 }

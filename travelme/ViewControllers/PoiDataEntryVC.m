@@ -736,13 +736,13 @@
         [AppDelegateDef.Db InsertPoiItem :self.PointOfInterest];
         
         if (self.fromproject) {
-            [self.delegate didCreatePoiFromProject :self.PointOfInterest.name];
+            [self.delegate didCreatePoiFromProject :self.PointOfInterest];
             [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
         } else if (self.fromnearby) {
-             [self.delegate didUpdatePoi:true];
+            [self.delegate didUpdatePoi:@"created" :self.PointOfInterest];
              [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
         } else {
-            [self.delegate didUpdatePoi:true];
+            [self.delegate didUpdatePoi:@"created" :self.PointOfInterest];
             [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
         }
 
@@ -789,7 +789,7 @@
         // TODO - update only contains main items at the moment.  we need to apply columns all as anything can be updated now.
         
         [AppDelegateDef.Db UpdatePoiItem :self.PointOfInterest];
-        [self.delegate didUpdatePoi:true];
+        [self.delegate didUpdatePoi:@"modified" :self.PointOfInterest];
         [self dismissViewControllerAnimated:YES completion:Nil];
     }
 }
@@ -1032,7 +1032,7 @@
     self.PointOfInterest = PointOfInterest;
 }
 
-- (void)didCreatePoiFromProject :(NSString*)Key {
+- (void)didCreatePoiFromProject :(PoiNSO*)Object {
 }
 
 - (void)didCreatePoiFromNearby {
@@ -1091,10 +1091,10 @@
 
 /*
  created date:      15/07/2018
- last modified:     15/07/2018
+ last modified:     12/08/2018
  remarks:
  */
-- (void)didUpdatePoi :(bool)IsUpdated {
+- (void)didUpdatePoi :(NSString*)Method :(PoiNSO*)Object {
     
 }
 
