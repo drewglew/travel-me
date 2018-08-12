@@ -50,10 +50,15 @@
     self.ButtonNew.clipsToBounds = YES;
     self.ButtonBack.layer.cornerRadius = 25;
     self.ButtonBack.clipsToBounds = YES;
+    
     self.ButtonResetFilter.layer.cornerRadius = 25;
     self.ButtonResetFilter.clipsToBounds = YES;
+    self.ButtonResetFilter.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
     self.ButtonFilter.layer.cornerRadius = 25;
     self.ButtonFilter.clipsToBounds = YES;
+    self.ButtonFilter.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
     
     self.poiitems = [[NSMutableArray alloc] init];
     self.poifiltereditems = [[NSMutableArray alloc] init];
@@ -167,7 +172,7 @@
 
 /*
  created date:      03/05/2018
- last modified:     11/08/2018
+ last modified:     12/08/2018
  remarks:
  */
 -(void)RefreshPoiFilteredData :(bool) UpdateTypes {
@@ -193,6 +198,9 @@
         tempPoi = [tempPoi filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"countrycode IN %@",projectcountries]];
     }
     
+    if (self.isSearching) {
+        tempPoi = [tempPoi filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"searchstring CONTAINS %@",self.SearchBarPoi.text]];
+    }
     
     
     if (UpdateTypes) {
@@ -220,9 +228,7 @@
     
     } else {
         // here we filter on existing types instead..
-        
-        
-        
+
         NSMutableArray *types = [[NSMutableArray alloc] init];
         for (TypeNSO *type in self.PoiTypes) {
             if (type.selected) {
@@ -465,24 +471,6 @@
  last modified:     30/04/2018
  remarks:
  */
-- (void)searchTableList {
-    NSString *searchData = self.SearchBarPoi.text;
-    
-    for (PoiNSO *poi in self.poiitems) {
-            
-        NSRange range = [poi.searchstring rangeOfString:searchData options:NSCaseInsensitiveSearch];
-        if (range.location != NSNotFound) {
-            [self.poifiltereditems addObject:poi];
-        }
-            
-    }
-    [self.LabelCounter setText:[NSString stringWithFormat:@"%lu Items", (unsigned long)self.poifiltereditems.count]];
-}
-/*
- created date:      30/04/2018
- last modified:     30/04/2018
- remarks:
- */
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
     self.isSearching = YES;
 }
@@ -507,16 +495,13 @@
     NSLog(@"Text change - %d",self.isSearching);
     
     if ([searchText length] ==0) {
-        [self RefreshPoiFilteredData :false];
         self.isSearching = NO;
     } else {
-        //Remove all objects first.
-        [self.poifiltereditems removeAllObjects];
         self.isSearching = YES;
-        [self searchTableList];
-        [self.TableViewSearchPoiItems reloadData];
     }
+    [self RefreshPoiFilteredData :true];
 }
+
 
 
 /*
@@ -644,7 +629,7 @@
 
 /*
  created date:      11/08/2018
- last modified:     11/08/2018
+ last modified:     12/08/2018
  remarks:           Only sets all category filters to selected
  */
 - (IBAction)FilterResetPressed:(id)sender {
@@ -652,7 +637,10 @@
     for (TypeNSO *type in self.PoiTypes) {
         type.selected = true;
     }
-    [self RefreshPoiFilteredData:false];
+    self.SearchBarPoi.text = @"";
+    self.isSearching = false;
+    
+    [self RefreshPoiFilteredData:true];
     
 }
 
@@ -668,6 +656,7 @@
         [UIView animateWithDuration:0.75 animations:^{
             self.FilterOptionHeightConstraint.constant=420;
             self.ButtonResetFilter.hidden = false;
+            [self.ButtonFilter setImage:[UIImage imageNamed:@"Close-Pane"] forState:UIControlStateNormal];
             //self.ButtonMore.transform = CGAffineTransformMakeRotation(M_PI);
             [self.view layoutIfNeeded];
         } completion:^(BOOL finished) {
@@ -679,6 +668,7 @@
         [UIView animateWithDuration:0.75 animations:^{
             self.FilterOptionHeightConstraint.constant=70;
             self.ButtonResetFilter.hidden = true;
+            [self.ButtonFilter setImage:[UIImage imageNamed:@"Filter"] forState:UIControlStateNormal];
             //self.ButtonMore.transform = CGAffineTransformMakeRotation(-2*M_PI);
             [self.view layoutIfNeeded];
         } completion:^(BOOL finished) {
@@ -696,8 +686,9 @@
  */
 - (void)didUpdatePoi :(NSString*)Method :(PoiNSO*)Object {
     
+    Object.searchstring = [NSString stringWithFormat:@"%@|%@|%@|%@|%@|%@|%@",Object.name,Object.administrativearea,Object.subadministrativearea,Object.postcode,Object.locality,Object.sublocality,Object.country];
+    
     if ([Method isEqualToString:@"modified"]) {
-
         for (NSUInteger index = [self.poiitems count]; index<=0; index--)
         {
             PoiNSO *p = [self.poiitems objectAtIndex:index];
@@ -738,15 +729,14 @@
 
 /*
  created date:      11/06/2018
- last modified:     11/06/2018
+ last modified:     12/08/2018
  remarks:  Called when new Poi item has been created.
  */
-- (void)didCreatePoiFromProjectPassThru :(NSString*)Key {
-    self.SegmentPoiFilterList.selectedSegmentIndex = 1;
-    
-    [self.SearchBarPoi setText:Key];
-    [self LoadPoiData];
-    [self searchBar:_SearchBarPoi textDidChange:Key];
+- (void)didCreatePoiFromProjectPassThru :(PoiNSO*)Object {
+    [self.SegmentCountries setSelectedSegmentIndex:1];
+    [self.SegmentPoiFilterList setSelectedSegmentIndex:0];
+    [self.SearchBarPoi setText:Object.name];
+    [self searchBar:_SearchBarPoi textDidChange:Object.name];
 }
 
 

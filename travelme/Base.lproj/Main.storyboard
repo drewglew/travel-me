@@ -338,7 +338,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                             </searchBar>
                             <tableView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="pu9-8R-cLJ">
                                 <rect key="frame" x="0.0" y="76" width="375" height="350"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="350" id="Bfd-9c-gqz"/>
                                 </constraints>
@@ -350,6 +350,14 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="67.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
+                                                <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TDc-lb-nG1">
+                                                    <rect key="frame" x="0.0" y="0.0" width="375" height="68"/>
+                                                    <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="C6v-2a-zQI">
+                                                        <rect key="frame" x="0.0" y="0.0" width="375" height="68"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                    </view>
+                                                    <blurEffect style="extraLight"/>
+                                                </visualEffectView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9gs-ZW-Udw">
                                                     <rect key="frame" x="20" y="5" width="335" height="22"/>
                                                     <constraints>
@@ -369,17 +377,22 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
-                                            <color key="backgroundColor" red="0.90196078430000004" green="0.92156862750000001" blue="0.87843137250000003" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <constraints>
+                                                <constraint firstItem="TDc-lb-nG1" firstAttribute="leading" secondItem="iOY-wC-xaS" secondAttribute="leading" id="1K1-va-6wv"/>
+                                                <constraint firstAttribute="bottom" secondItem="TDc-lb-nG1" secondAttribute="bottom" id="Aaa-xF-7OR"/>
                                                 <constraint firstItem="0hP-cV-G2u" firstAttribute="leading" secondItem="iOY-wC-xaS" secondAttribute="leading" constant="20" id="BfQ-VL-cbT"/>
+                                                <constraint firstItem="TDc-lb-nG1" firstAttribute="top" secondItem="iOY-wC-xaS" secondAttribute="top" id="EyV-0n-Mnm"/>
                                                 <constraint firstItem="9gs-ZW-Udw" firstAttribute="leading" secondItem="iOY-wC-xaS" secondAttribute="leading" constant="20" id="RF8-dF-aWi"/>
+                                                <constraint firstAttribute="trailing" secondItem="TDc-lb-nG1" secondAttribute="trailing" id="d0E-rX-pNP"/>
                                                 <constraint firstAttribute="trailing" secondItem="0hP-cV-G2u" secondAttribute="trailing" constant="20" id="emc-Dv-Dlb"/>
                                                 <constraint firstItem="9gs-ZW-Udw" firstAttribute="top" secondItem="iOY-wC-xaS" secondAttribute="top" constant="5" id="hif-Gp-NiL"/>
                                                 <constraint firstAttribute="trailing" secondItem="9gs-ZW-Udw" secondAttribute="trailing" constant="20" id="lWO-eI-kke"/>
                                                 <constraint firstItem="0hP-cV-G2u" firstAttribute="top" secondItem="9gs-ZW-Udw" secondAttribute="bottom" constant="5" id="vKW-F0-dC8"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                         <connections>
                                             <outlet property="LabelSearchCountryItem" destination="0hP-cV-G2u" id="Tk7-LC-Fwt"/>
                                             <outlet property="LabelSearchItem" destination="9gs-ZW-Udw" id="nyv-cE-LT0"/>
@@ -3121,22 +3134,21 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                                                 <constraint firstAttribute="width" constant="50" id="WwR-5j-3LA"/>
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                            <state key="normal" title="Filter">
+                                            <state key="normal" image="Filter">
                                                 <color key="titleColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
                                             </state>
                                             <connections>
                                                 <action selector="FilterPressed:" destination="qc5-Kk-QiN" eventType="touchUpInside" id="HZB-94-RxQ"/>
                                             </connections>
                                         </button>
-                                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MWX-es-bse">
+                                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MWX-es-bse">
                                             <rect key="frame" x="175" y="10" width="50" height="50"/>
                                             <color key="backgroundColor" red="0.8980392157" green="0.34509803919999998" blue="0.070588235289999995" alpha="1" colorSpace="calibratedRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="50" id="3T5-Ca-HYA"/>
                                                 <constraint firstAttribute="height" constant="50" id="jUO-DC-DyP"/>
                                             </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                            <state key="normal" title="Reset">
+                                            <state key="normal" image="Clear-Filters">
                                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             </state>
                                             <connections>
@@ -3896,7 +3908,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3O4-g9-Yhk">
                                 <rect key="frame" x="315" y="607" width="50" height="50"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="backgroundColor" red="0.043137254899999998" green="0.43137254899999999" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="b0o-NL-DkK"/>
                                     <constraint firstAttribute="width" constant="50" id="pQ6-vp-6GN"/>
@@ -3958,11 +3970,13 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
         <image name="Cat-Astronaut" width="50" height="50"/>
         <image name="Cat-Misc" width="50" height="50"/>
         <image name="Checked" width="64" height="64"/>
+        <image name="Clear-Filters" width="50" height="50"/>
         <image name="Delete" width="50" height="50"/>
         <image name="DeleteSubNode" width="50" height="50"/>
         <image name="Directions" width="50" height="50"/>
         <image name="EditLight" width="50" height="50"/>
         <image name="EditMode" width="50" height="50"/>
+        <image name="Filter" width="50" height="50"/>
         <image name="Globe" width="256" height="256"/>
         <image name="Key-Off" width="50" height="50"/>
         <image name="Money" width="50" height="50"/>

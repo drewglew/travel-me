@@ -70,6 +70,8 @@ MKLocalSearchResponse *results;
 
     self.ButtonClear.layer.cornerRadius = 25;
     self.ButtonClear.clipsToBounds = YES;
+    
+    self.TableViewSearchResult.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 
 }
 
