@@ -16,9 +16,6 @@
     self.ViewCircleBackground.layer.cornerRadius = self.frame.size.width / 2.0;
     self.ViewCircleBackground.layer.masksToBounds = YES;
     
-   
-    // self.ballStoreImage.layer.borderWidth = 2.5;
-    
 }
 
 

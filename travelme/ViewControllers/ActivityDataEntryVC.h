@@ -39,12 +39,16 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelStartDT;
 @property (weak, nonatomic) IBOutlet UILabel *LabelEndDT;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonCheckInOut;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *ButtonViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet UIButton *ButtonMore;
+
 @property (weak, nonatomic) IBOutlet UIButton *ButtonDirections;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonPayment;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonDateRange;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonCancel;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentPresenter;
+@property (weak, nonatomic) IBOutlet UIImageView *ImageViewActivityClass;
+@property (weak, nonatomic) IBOutlet UIView *ViewMain;
+@property (weak, nonatomic) IBOutlet UIView *ViewNotes;
+@property (weak, nonatomic) IBOutlet UIView *ViewPhotos;
 
 
 

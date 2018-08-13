@@ -654,7 +654,7 @@
     [self.view layoutIfNeeded];
     if (self.FilterOptionHeightConstraint.constant==70) {
         [UIView animateWithDuration:0.75 animations:^{
-            self.FilterOptionHeightConstraint.constant=420;
+            self.FilterOptionHeightConstraint.constant=300;
             self.ButtonResetFilter.hidden = false;
             [self.ButtonFilter setImage:[UIImage imageNamed:@"Close-Pane"] forState:UIControlStateNormal];
             //self.ButtonMore.transform = CGAffineTransformMakeRotation(M_PI);

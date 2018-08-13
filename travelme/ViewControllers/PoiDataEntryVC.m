@@ -51,17 +51,16 @@
     self.ImagePicture.frame = CGRectMake(0, 0, self.ScrollViewImage.frame.size.width, self.ScrollViewImage.frame.size.height);
     self.ScrollViewImage.delegate = self;
     
-    [self LoadTypePicker];
-    
-    self.PickerType.delegate = self;
-    self.PickerType.dataSource = self;
-    
-    [self.PickerType selectRow:[self.PointOfInterest.categoryid longValue] inComponent:0 animated:YES];
+    [self LoadTypeData];
     
     [self LoadMapData];
 
     self.CollectionViewPoiImages.dataSource = self;
     self.CollectionViewPoiImages.delegate = self;
+    
+    
+    self.CollectionViewTypes.dataSource = self;
+    self.CollectionViewTypes.delegate = self;
     // Do any additional setup after loading the view.
 
     self.TextFieldTitle.layer.cornerRadius=8.0f;
@@ -119,36 +118,14 @@
     }
 }
 
-- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
-{
-    return 1;
-}
-
-- (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
-{
-    return self.TypeItems.count;
-}
-
-- (UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(UIView *)view
-{
-    UIView *pickerCustomView = [UIView new];
-    UIImageView *myIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:self.TypeItems[row]]];
-    [myIcon setFrame:CGRectMake(5, 5, 30, 30)];
-    [pickerCustomView addSubview:myIcon];
-    return pickerCustomView;
-}
-
-- (CGFloat)pickerView:(UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component
-{
-    return 40;
-}
 
 /*
  created date:      11/06/2018
- last modified:     16/06/2018
+ last modified:     12/08/2018
  remarks:
  */
--(void) LoadTypePicker {
+-(void) LoadTypeData {
+  
     self.TypeItems = @[@"Cat-Accomodation",
                        @"Cat-Airport",
                        @"Cat-Astronaut",
@@ -265,10 +242,10 @@
                              @1000 // zoo
                              ];
 
-    self.LabelPoi.text = [self GetPoiLabelWithType:[NSNumber numberWithLong:[self.PointOfInterest.categoryid integerValue]]];
+    self.LabelPoi.text = [self GetPoiLabelWithType:self.PointOfInterest.categoryid];
     
     if (self.newitem) {
-        self.PointOfInterest.categoryid = [NSNumber numberWithInteger:0];
+        self.PointOfInterest.categoryid = [NSNumber numberWithLong:0];
     }
 }
 
@@ -291,7 +268,7 @@
     
     anno.coordinate = coord;
     
-    NSNumber *radius = [self.TypeDistanceItems objectAtIndex:[self.PickerType selectedRowInComponent:0]];
+    NSNumber *radius = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
     
     [self.MapView setCenterCoordinate:coord animated:YES];
     MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(coord, [radius doubleValue] * 2.1, [radius doubleValue] * 2.1);
@@ -359,33 +336,49 @@
 
 /*
  created date:      28/04/2018
- last modified:     28/04/2018
+ last modified:     12/08/2018
  remarks:
  */
 - (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    //if (self.readonlyitem) {
-    //    return self.PointOfInterest.Images.count;
-    //} else {
+    if (collectionView == self.CollectionViewPoiImages) {
         return self.PointOfInterest.Images.count + 1;
-    //}
+    } else {
+        return self.TypeItems.count;
+    }
 }
 
 /*
  created date:      28/04/2018
- last modified:     28/04/2018
+ last modified:     12/08/2018
  remarks:
  */
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     
-    PoiImageCell *cell=[collectionView dequeueReusableCellWithReuseIdentifier:@"PoiImageId" forIndexPath:indexPath];
-    NSInteger NumberOfItems = self.PointOfInterest.Images.count + 1;
-    if (indexPath.row == NumberOfItems -1) {
-        cell.ImagePoi.image = [UIImage imageNamed:@"AddItem"];
+    
+    if (collectionView == self.CollectionViewPoiImages) {
+    
+        PoiImageCell *cell=[collectionView dequeueReusableCellWithReuseIdentifier:@"PoiImageId" forIndexPath:indexPath];
+        NSInteger NumberOfItems = self.PointOfInterest.Images.count + 1;
+        if (indexPath.row == NumberOfItems -1) {
+            cell.ImagePoi.image = [UIImage imageNamed:@"AddItem"];
+        } else {
+            PoiImageNSO *img = [self.PointOfInterest.Images objectAtIndex:indexPath.row];
+            cell.ImagePoi.image = img.Image;
+        }
+        return cell;
+        
     } else {
-        PoiImageNSO *img = [self.PointOfInterest.Images objectAtIndex:indexPath.row];
-        cell.ImagePoi.image = img.Image;
+        
+        TypeCell *cell=[collectionView dequeueReusableCellWithReuseIdentifier:@"TypeCellId" forIndexPath:indexPath];
+        cell.TypeImageView.image = [UIImage imageNamed:[self.TypeItems objectAtIndex:indexPath.row]];
+        if ([self.PointOfInterest.categoryid unsignedLongValue] == indexPath.row) {
+            cell.ImageViewChecked.hidden = false;
+        } else {
+            cell.ImageViewChecked.hidden = true;
+        }
+       
+        return cell;
     }
-    return cell;
 }
 
 
@@ -396,32 +389,53 @@
  */
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     /* add the insert method if found to be last cell */
-    NSInteger NumberOfItems = self.PointOfInterest.Images.count + 1;
     
-    if (indexPath.row == NumberOfItems - 1) {
-        /* insert item */
-        //self.PoiImage = [[PoiImageNSO alloc] init];
-        self.imagestate = 1;
-        [self InsertPoiImage];
-    } else {
+    if (collectionView == self.CollectionViewPoiImages) {
+        NSInteger NumberOfItems = self.PointOfInterest.Images.count + 1;
         
-        if (!self.newitem) {
-            PoiImageNSO *item = [self.PointOfInterest.Images objectAtIndex:indexPath.row];
-            self.SelectedImageReference = item.ImageFileReference;
-            self.SelectedImageIndex = [NSNumber numberWithLong:indexPath.row];
-            if (item.KeyImage==0) {
-                self.ViewSelectedKey.hidden = true;
-            } else {
-                self.ViewSelectedKey.hidden = false;
+        if (indexPath.row == NumberOfItems - 1) {
+            /* insert item */
+            //self.PoiImage = [[PoiImageNSO alloc] init];
+            self.imagestate = 1;
+            [self InsertPoiImage];
+        } else {
+            
+            if (!self.newitem) {
+                PoiImageNSO *item = [self.PointOfInterest.Images objectAtIndex:indexPath.row];
+                self.SelectedImageReference = item.ImageFileReference;
+                self.SelectedImageIndex = [NSNumber numberWithLong:indexPath.row];
+                if (item.KeyImage==0) {
+                    self.ViewSelectedKey.hidden = true;
+                } else {
+                    self.ViewSelectedKey.hidden = false;
+                }
+                [self.ImagePicture setImage:item.Image];
             }
-            [self.ImagePicture setImage:item.Image];
+            else {
+                PoiImageNSO *item = [self.PointOfInterest.Images objectAtIndex:indexPath.row];
+                [self.ImagePicture setImage:item.Image];
+            }
         }
-        else {
-            PoiImageNSO *item = [self.PointOfInterest.Images objectAtIndex:indexPath.row];
-            [self.ImagePicture setImage:item.Image];
-        }
+    } else {
+        self.PointOfInterest.categoryid = [NSNumber numberWithLong:indexPath.row];
+         self.LabelPoi.text = [NSString stringWithFormat:@"Point Of Interest - %@",[self.TypeLabelItems objectAtIndex:[self.PointOfInterest.categoryid longValue]]];
+        [collectionView reloadData];
     }
 }
+
+/*
+ created date:      13/08/2018
+ last modified:     13/08/2018
+ remarks:           Scrolls to selected catagory item.
+ */
+-(void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    
+    NSIndexPath *indexPath = [NSIndexPath indexPathForItem:[self.PointOfInterest.categoryid unsignedLongValue] inSection:0];
+    [self.CollectionViewTypes scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
+    
+}
+
 
 /*
  created date:      10/06/2018
@@ -515,7 +529,7 @@
                                                                   controller.delegate = self;
                                                                   controller.PointOfInterest = self.PointOfInterest;
                                                                   
-                                                                  controller.distance = [self.TypeDistanceItems objectAtIndex:[self.PickerType selectedRowInComponent:0]];
+                                                                  controller.distance = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
                                                                   
                                                                   controller.wikiimages = false;
                                                                   
@@ -536,7 +550,7 @@
                                                                   controller.delegate = self;
                                                                   controller.PointOfInterest = self.PointOfInterest;
                                                                   
-                                                                  controller.distance = [self.TypeDistanceItems objectAtIndex:[self.PickerType selectedRowInComponent:0]];
+                                                                  controller.distance = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
                                                                   
                                                                   controller.wikiimages = true;
                                                                   
@@ -673,11 +687,14 @@
  remarks: manages the dynamic width of the cells.
  */
 -(CGSize)collectionView:(UICollectionView *) collectionView layout:(UICollectionViewLayout* )collectionViewLayout sizeForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
-    
-    CGFloat collectionWidth = self.CollectionViewPoiImages.frame.size.width - 20;
-    float cellWidth = collectionWidth/6.0f;
-    CGSize size = CGSizeMake(cellWidth,cellWidth);
-    
+    CGSize size;
+    if (collectionView == self.CollectionViewPoiImages) {
+        CGFloat collectionWidth = self.CollectionViewPoiImages.frame.size.width - 20;
+        float cellWidth = collectionWidth/6.0f;
+        size = CGSizeMake(cellWidth,cellWidth);
+    } else {
+        size = CGSizeMake(50,50);
+    }
     return size;
 }
 
@@ -732,7 +749,7 @@
         }
         self.PointOfInterest.name = self.TextFieldTitle.text;
         self.PointOfInterest.privatenotes = self.TextViewNotes.text;
-        self.PointOfInterest.categoryid = [NSNumber numberWithLong:[self.PickerType selectedRowInComponent:0]];
+        
         [AppDelegateDef.Db InsertPoiItem :self.PointOfInterest];
         
         if (self.fromproject) {
@@ -754,7 +771,6 @@
             self.PointOfInterest.privatenotes = [NSString stringWithFormat:@"%@\n%@\n%@\n%@\n%@\n%@\n%@", self.PointOfInterest.name, self.PointOfInterest.fullthoroughfare, self.PointOfInterest.administrativearea, self.PointOfInterest.subadministrativearea,  self.PointOfInterest.locality, self.PointOfInterest.sublocality, self.PointOfInterest.postcode];
         
         }
-        self.PointOfInterest.categoryid = [NSNumber numberWithLong:[self.PickerType selectedRowInComponent:0]];
     
         if (self.PointOfInterest.Images.count>0) {
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -805,37 +821,31 @@
 
 /*
  created date:      28/04/2018
- last modified:     21/05/2018
+ last modified:     12/08/2018
  remarks:
  */
 -(IBAction)SegmentOptionChanged:(id)sender {
     
     UISegmentedControl *segment = sender;
     if (segment.selectedSegmentIndex==0) {
-        self.MapView.hidden=true;
-        self.CollectionViewPoiImages.hidden=true;
-        self.ScrollViewImage.hidden=true;
-        self.SwitchViewPhotoOptions.hidden=true;
-        self.ViewBlurImageOptionPanel.hidden=true;
-        self.LabelPrivateNotes.hidden=false;
-        self.TextViewNotes.hidden=false;
-        self.PickerType.hidden=false;
-        self.TextFieldTitle.hidden=false;
-        self.ImageViewKey.hidden=false;
-        self.LabelPoi.hidden=false;
-        
+        self.ViewMain.hidden = false;
+        self.ViewNotes.hidden = true;
+        self.ViewMap.hidden = true;
+        self.ViewPhotos.hidden =true;
+
     } else if (segment.selectedSegmentIndex==1) {
-        self.MapView.hidden=false;
-        self.CollectionViewPoiImages.hidden=true;
-        self.ScrollViewImage.hidden=true;
-        self.SwitchViewPhotoOptions.hidden=true;
-        self.ViewBlurImageOptionPanel.hidden=true;
-        self.LabelPrivateNotes.hidden=true;
-        self.TextViewNotes.hidden=true;
-        self.PickerType.hidden=true;
-        self.TextFieldTitle.hidden=true;
-        self.ImageViewKey.hidden=true;
-        self.LabelPoi.hidden=true;
+        self.ViewMain.hidden = true;
+        self.ViewNotes.hidden = false;
+        self.ViewMap.hidden = true;
+        self.ViewPhotos.hidden =true;
+       
+        
+     } else if (segment.selectedSegmentIndex==2) {
+         self.ViewMain.hidden = true;
+         self.ViewNotes.hidden = true;
+         self.ViewMap.hidden = false;
+         self.ViewPhotos.hidden =true;
+         
         
         for (id<MKOverlay> overlay in self.MapView.overlays)
         {
@@ -844,7 +854,7 @@
         
         CLLocationCoordinate2D coord = CLLocationCoordinate2DMake([self.PointOfInterest.lat doubleValue], [self.PointOfInterest.lon doubleValue]);
         
-        NSNumber *radius = [self.TypeDistanceItems objectAtIndex:[self.PickerType selectedRowInComponent:0]];
+        NSNumber *radius = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
         
         [self.MapView setCenterCoordinate:coord animated:YES];
         MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(coord, [radius doubleValue] * 2.1, [radius doubleValue] * 2.1);
@@ -859,23 +869,18 @@
         [self.MapView addOverlay:self.CircleRange];
         
     } else {
-        self.MapView.hidden=true;
+        self.ViewMain.hidden = true;
+        self.ViewNotes.hidden = true;
+        self.ViewMap.hidden = true;
+        self.ViewPhotos.hidden =false;
+
         if (self.PointOfInterest.Images.count > 0 && !self.readonlyitem) {
         //if (self.PointOfInterest.Images.count > 0 ) {
             self.ViewBlurHeightConstraint.constant = 0;
             self.ViewBlurImageOptionPanel.hidden=false;
             self.SwitchViewPhotoOptions.hidden=false;
         }
-        self.CollectionViewPoiImages.hidden=false;
-        self.ScrollViewImage.hidden=false;
-        self.LabelPrivateNotes.hidden=true;
-        self.TextViewNotes.hidden=true;
-        self.PickerType.hidden=true;
-        self.TextFieldTitle.hidden=true;
-        self.ImageViewKey.hidden=true;
-        self.LabelPoi.hidden=true;
     }
-
 }
 
 
@@ -886,19 +891,7 @@
     return LabelText;
 }
 
-/*
- created date:      14/07/2018
- last modified:     19/07/2018
- remarks:
- */
-- (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
 
-    self.LabelPoi.text = [self GetPoiLabelWithType:[NSNumber numberWithInteger:row]];
-    self.PointOfInterest.categoryid = [NSNumber numberWithLong:[self.PickerType selectedRowInComponent:0]];
-
-
-    
-}
 
 /*
  created date:      21/05/2018
@@ -986,7 +979,7 @@
         
         controller.PointOfInterest = self.PointOfInterest;
         controller.PointOfInterest.name = self.TextFieldTitle.text;
-        controller.gsradius = [self.TypeDistanceItems objectAtIndex:[self.PickerType selectedRowInComponent:0]];
+        controller.gsradius = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
     } 
 }
 

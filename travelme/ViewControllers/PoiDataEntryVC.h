@@ -18,13 +18,15 @@
 #import "ImageNSO.h"
 #import "WikiVC.h"
 #import "Reachability.h"
+#import "TypeNSO.h"
+#import "TypeCell.h"
 
 @protocol PoiDataEntryDelegate <NSObject>
 - (void)didCreatePoiFromProject :(PoiNSO*)Object;
 - (void)didUpdatePoi :(NSString*)Method :(PoiNSO*)Object;
 @end
 
-@interface PoiDataEntryVC : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource, ImagePickerDelegate, WikiGeneratorDelegate, UIScrollViewDelegate, UITextViewDelegate,UITextFieldDelegate, CLLocationManagerDelegate>
+@interface PoiDataEntryVC : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, ImagePickerDelegate, WikiGeneratorDelegate, UIScrollViewDelegate, UITextViewDelegate,UITextFieldDelegate, CLLocationManagerDelegate>
 
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;
 @property (nonatomic) NSString *Title;
@@ -40,6 +42,7 @@
 @property (weak, nonatomic) IBOutlet UICollectionView *CollectionViewPoiImages;
 @property (strong, nonatomic) PoiNSO *PointOfInterest;
 @property (strong, nonatomic) NSArray *TypeItems;
+@property (strong, nonatomic) NSMutableArray *CategoryItems;
 @property (strong, nonatomic) NSArray *TypeLabelItems;
 @property (strong, nonatomic) NSArray *TypeDistanceItems;
 @property (weak, nonatomic) IBOutlet UITextView *TextViewNotes;
@@ -53,6 +56,14 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelPoi;
 @property (nonatomic, weak) id <PoiDataEntryDelegate> delegate;
 @property (weak, nonatomic) IBOutlet UIPickerView *PickerType;
+@property (weak, nonatomic) IBOutlet UICollectionView *CollectionViewTypes;
+@property (weak, nonatomic) IBOutlet UIView *ViewMain;
+@property (weak, nonatomic) IBOutlet UIView *ViewNotes;
+@property (weak, nonatomic) IBOutlet UIView *ViewMap;
+@property (weak, nonatomic) IBOutlet UIView *ViewPhotos;
+
+
+
 @property (weak, nonatomic) IBOutlet UIVisualEffectView *ViewBlurImageOptionPanel;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonKey;
 @property (weak, nonatomic) IBOutlet UIView *ViewSelectedKey;

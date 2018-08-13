@@ -97,12 +97,6 @@
     self.ButtonDirections.clipsToBounds = YES;
     self.ButtonDirections.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
     
-    self.ButtonMore.layer.cornerRadius = 25;
-    self.ButtonMore.clipsToBounds = YES;
-    self.ButtonMore.layer.borderWidth = 1;
-    self.ButtonMore.layer.borderColor = [[UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0] CGColor];
-    self.ButtonMore.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
     self.ButtonCancel.layer.cornerRadius = 25;
     self.ButtonCancel.clipsToBounds = YES;
 
@@ -335,12 +329,12 @@
  */
 -(void)FormatPrettyDates :(NSDate*)Start :(NSDate*)End {
     NSDateFormatter *dateformatter = [[NSDateFormatter alloc] init];
-    [dateformatter setDateFormat:@"dd MMM yyyy"];
+    [dateformatter setDateFormat:@"EEE, dd MMM yyyy"];
     NSDateFormatter *timeformatter = [[NSDateFormatter alloc] init];
     [timeformatter setDateFormat:@"HH:mm"];
     
-    self.LabelStartDT.text = [NSString stringWithFormat:@"%@\r%@",[dateformatter stringFromDate:Start], [timeformatter stringFromDate:Start]];
-     self.LabelEndDT.text = [NSString stringWithFormat:@"%@\r%@",[dateformatter stringFromDate:End], [timeformatter stringFromDate :End]];
+    self.LabelStartDT.text = [NSString stringWithFormat:@"%@ %@",[dateformatter stringFromDate:Start], [timeformatter stringFromDate:Start]];
+     self.LabelEndDT.text = [NSString stringWithFormat:@"%@ %@",[dateformatter stringFromDate:End], [timeformatter stringFromDate :End]];
     
 }
 
@@ -371,34 +365,6 @@
         [self dismissViewControllerAnimated:YES completion:Nil];
     }
 }
-/*
- created date:      23/05/2018
- last modified:     23/05/2018
- remarks:
- */
-- (IBAction)ButtonMorePressed:(id)sender {
-    [self.view layoutIfNeeded];
-    if (self.ButtonViewHeightConstraint.constant==125) {
-        [UIView animateWithDuration:1.0 animations:^{
-            self.ButtonViewHeightConstraint.constant=0;
-            self.ButtonMore.transform = CGAffineTransformMakeRotation(M_PI);
-            [self.view layoutIfNeeded];
-        } completion:^(BOOL finished) {
-            
-        }];
-        
-    } else {
-        [UIView animateWithDuration:1.0 animations:^{
-            self.ButtonViewHeightConstraint.constant=125;
-            self.ButtonMore.transform = CGAffineTransformMakeRotation(-2*M_PI);
-            [self.view layoutIfNeeded];
-        } completion:^(BOOL finished) {
-            
-        }];
-        
-    }
-    
-}
 
 
 -(void)addDoneToolBarToKeyboard:(UITextView *)textView
@@ -427,6 +393,24 @@
     [self.TextViewNotes resignFirstResponder];
 }
 
+- (IBAction)SegmentPresenterChanged:(id)sender {
+    
+    if ([self.SegmentPresenter selectedSegmentIndex] == 0) {
+        self.ViewMain.hidden = false;
+        self.ViewNotes.hidden = true;
+        self.ViewPhotos.hidden = true;
+    } else if ([self.SegmentPresenter selectedSegmentIndex] == 1) {
+        self.ViewMain.hidden = true;
+        self.ViewNotes.hidden = false;
+        self.ViewPhotos.hidden = true;
+    } else if ([self.SegmentPresenter selectedSegmentIndex] == 2) {
+        self.ViewMain.hidden = true;
+        self.ViewNotes.hidden = true;
+        self.ViewPhotos.hidden = false;
+    }
+}
+
+
 - (void)didCreatePoiFromProject :(NSString*)Key {
 }
 
@@ -444,11 +428,11 @@
 
 /*
  created date:      15/07/2018
- last modified:     15/07/2018
+ last modified:     12/08/2018
  remarks:
  */
-- (void)didUpdatePoi :(bool)IsUpdated {
-    //[self LoadPoiData];
+- (void)didUpdatePoi :(NSString*)Method :(PoiNSO*)Object {
+
 }
 
 
