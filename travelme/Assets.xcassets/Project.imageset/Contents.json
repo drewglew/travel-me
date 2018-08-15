@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "rocket.png",
+      "filename" : "trippo-476x476.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "rocket-1.png",
+      "filename" : "trippo-476x476-1.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "rocket-2.png",
+      "filename" : "trippo-476x476-2.png",
       "scale" : "3x"
     }
   ],

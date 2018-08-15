@@ -19,6 +19,7 @@
 #import "DatePickerRangeVC.h"
 #import "DirectionsVC.h"
 #import "PaymentListingVC.h"
+#import "HCSStarRatingView.h"
 
 
 @protocol ActivityDelegate <NSObject>
@@ -49,6 +50,10 @@
 @property (weak, nonatomic) IBOutlet UIView *ViewMain;
 @property (weak, nonatomic) IBOutlet UIView *ViewNotes;
 @property (weak, nonatomic) IBOutlet UIView *ViewPhotos;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *ImageViewIdeaWidthConstraint;
+@property (weak, nonatomic) IBOutlet HCSStarRatingView *ViewStarRating;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *ViewEffectBlurDetailHeightConstraint;
+
 
 
 

@@ -40,6 +40,7 @@
         [self LoadExistingData];
         self.updatedimage = false;
     }
+    /*
     self.TextFieldName.layer.cornerRadius=8.0f;
     self.TextFieldName.layer.masksToBounds=YES;
     self.TextFieldName.layer.borderColor=[[UIColor colorWithRed:246.0f/255.0f green:247.0f/255.0f blue:235.0f/255.0f alpha:1.0]CGColor];
@@ -49,11 +50,19 @@
     self.TextViewNotes.layer.masksToBounds=YES;
     self.TextViewNotes.layer.borderColor=[[UIColor colorWithRed:246.0f/255.0f green:247.0f/255.0f blue:235.0f/255.0f alpha:1.0]CGColor];
     self.TextViewNotes.layer.borderWidth= 1.0f;
-    
+    */
+     
     [self addDoneToolBarToKeyboard:self.TextViewNotes];
     self.TextViewNotes.delegate = self;
     self.TextFieldName.delegate = self;
     
+    self.ButtonBack.layer.cornerRadius = 25;
+    self.ButtonBack.clipsToBounds = YES;
+    self.ButtonBack.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
+    self.ButtonAction.layer.cornerRadius = 25;
+    self.ButtonAction.clipsToBounds = YES;
+    self.ButtonAction.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
 }
 
 /*
@@ -326,6 +335,17 @@
 {
     [textField resignFirstResponder];
     return YES;
+}
+- (IBAction)SegmentViewChanged:(id)sender {
+    UISegmentedControl *segment = sender;
+    if (segment.selectedSegmentIndex==0) {
+        self.ViewMain.hidden = false;
+        self.ViewNotes.hidden = true;
+    } else {
+        self.ViewMain.hidden = true;
+        self.ViewNotes.hidden = false;
+    }
+    
 }
 
 @end

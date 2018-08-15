@@ -27,7 +27,7 @@
 @property (nonatomic) NSString *searchstring;
 @property (nonatomic) NSNumber *lat;
 @property (nonatomic) NSNumber *lon;
-
+@property (nonatomic) NSNumber *averageactivityrating;
 @property (nonatomic) NSNumber *connectedactivitycount;
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;
 @property (strong, nonatomic) NSMutableArray *Images;

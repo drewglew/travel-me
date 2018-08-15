@@ -28,6 +28,7 @@
     
     self.ButtonBack.layer.cornerRadius = 25;
     self.ButtonBack.clipsToBounds = YES;
+    self.ButtonBack.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
     
     self.ButtonPayment.layer.cornerRadius = 25;
     self.ButtonPayment.clipsToBounds = YES;
@@ -101,6 +102,7 @@
         cell.VisualViewBlurBehindImage.hidden = true;
         cell.ImageBlurBackground.hidden = true;
         cell.ViewActiveBadge.hidden = true;
+        cell.ViewActiveItem.backgroundColor = [UIColor clearColor];
         
     } else {
         cell.activity = [self.activityitems objectAtIndex:indexPath.row];
@@ -133,7 +135,8 @@
                     cell.ViewActiveBadge.hidden = false;
                 }
             } else {
-                 cell.ViewActiveItem.backgroundColor = [UIColor colorWithRed:255.0f/255.0f green:255.0f/255.0f blue:255.0f/255.0f alpha:1.0];
+                // cell.ViewActiveItem.backgroundColor = [UIColor colorWithRed:255.0f/255.0f green:255.0f/255.0f blue:255.0f/255.0f alpha:1.0];
+                cell.ViewActiveItem.backgroundColor = [UIColor clearColor];
                 cell.ViewActiveBadge.hidden = true;
             }
  
@@ -146,8 +149,8 @@
             }
             cell.VisualViewBlur.hidden = true;
             cell.ButtonDelete.hidden = false;
-            
-            cell.ViewActiveItem.backgroundColor = [UIColor colorWithRed:255.0f/255.0f green:255.0f/255.0f blue:255.0f/255.0f alpha:1.0];
+            cell.ViewActiveItem.backgroundColor = [UIColor clearColor];
+            //cell.ViewActiveItem.backgroundColor = [UIColor colorWithRed:255.0f/255.0f green:255.0f/255.0f blue:255.0f/255.0f alpha:1.0];
             cell.ViewActiveBadge.hidden = true;
             
         }

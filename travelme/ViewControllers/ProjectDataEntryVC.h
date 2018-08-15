@@ -28,6 +28,9 @@
 @property (weak, nonatomic) IBOutlet UIButton *ButtonAction;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonEditImage;
 @property (weak, nonatomic) IBOutlet UILabel *LabelInfo;
+@property (weak, nonatomic) IBOutlet UIView *ViewNotes;
+@property (weak, nonatomic) IBOutlet UIView *ViewMain;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
 
 
 

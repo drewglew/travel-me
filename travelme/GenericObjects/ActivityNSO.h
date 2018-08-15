@@ -19,6 +19,7 @@
 @property (nonatomic) NSDate *enddt;
 @property (nonatomic) NSString *currency;
 @property (nonatomic) NSNumber *costamt;
+@property (nonatomic) NSNumber *rating;
 @property (assign) NSNumber *activitystate;
 @property (assign) NSNumber *legendref;
 @property (strong, nonatomic) ProjectNSO *project;

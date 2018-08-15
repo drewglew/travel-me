@@ -142,25 +142,22 @@
                     NSLog(@"failed to update wikititle in poi column");
                 }
             }
-            /*
-            if (![self checkColumnExists:@"flagged" :@"poi"] ) {
+            if (![self checkColumnExists:@"rating" :@"activity"] ) {
                 char *errorMessage;
-                const char *sql_statement = "ALTER TABLE poi ADD COLUMN flagged INTEGER;";
+                const char *sql_statement = "ALTER TABLE activity ADD COLUMN rating REAL DEFAULT 0;";
                 if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
-                    NSLog(@"failed to alter table new column");
-                }
-                sql_statement = "UPDATE poi set flagged=0;";
-                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
-                    NSLog(@"failed to update wikititle in poi column");
+                    NSLog(@"failed to alter table activity new column rating");
                 }
             }
+            
+            // project, poi & activity
             if (![self checkColumnExists:@"created_dt" :@"poi"] ) {
                 char *errorMessage;
                 const char *sql_statement = "ALTER TABLE poi ADD COLUMN created_dt TEXT;";
                 if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
                     NSLog(@"failed to alter table new column");
                 }
-                sql_statement = "UPDATE poi set created_dt='';";
+                sql_statement = "UPDATE poi set created_dt='2018-08-15 19:00:00';";
                 if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
                     NSLog(@"failed to update created_dt in poi column");
                 }
@@ -171,9 +168,68 @@
                 if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
                     NSLog(@"failed to alter table new column");
                 }
-                sql_statement = "UPDATE poi set modified_dt='';";
+                sql_statement = "UPDATE poi set modified_dt='2018-08-15 19:00:00';";
                 if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
                     NSLog(@"failed to update modified_dt in poi column");
+                }
+            }
+            
+            if (![self checkColumnExists:@"created_dt" :@"project"] ) {
+                char *errorMessage;
+                const char *sql_statement = "ALTER TABLE project ADD COLUMN created_dt TEXT;";
+                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                    NSLog(@"failed to alter table new column");
+                }
+                sql_statement = "UPDATE project set created_dt='2018-08-15 19:00:00';";
+                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                    NSLog(@"failed to update created_dt in project");
+                }
+            }
+            if (![self checkColumnExists:@"modified_dt" :@"project"] ) {
+                char *errorMessage;
+                const char *sql_statement = "ALTER TABLE project ADD COLUMN modified_dt TEXT;";
+                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                    NSLog(@"failed to alter table new column");
+                }
+                sql_statement = "UPDATE project set modified_dt='2018-08-15 19:00:00';";
+                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                    NSLog(@"failed to update modified_dt in project table");
+                }
+            }
+            
+            if (![self checkColumnExists:@"created_dt" :@"activity"] ) {
+                char *errorMessage;
+                const char *sql_statement = "ALTER TABLE activity ADD COLUMN created_dt TEXT;";
+                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                    NSLog(@"failed to alter table new column");
+                }
+                sql_statement = "UPDATE activity set created_dt='2018-08-15 19:00:00';";
+                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                    NSLog(@"failed to update created_dt in activity");
+                }
+            }
+            if (![self checkColumnExists:@"modified_dt" :@"activity"] ) {
+                char *errorMessage;
+                const char *sql_statement = "ALTER TABLE activity ADD COLUMN modified_dt TEXT;";
+                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                    NSLog(@"failed to alter table new column");
+                }
+                sql_statement = "UPDATE activity set modified_dt='2018-08-15 19:00:00';";
+                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                    NSLog(@"failed to update modified_dt in activity table");
+                }
+            }
+            
+            /*
+            if (![self checkColumnExists:@"flagged" :@"poi"] ) {
+                char *errorMessage;
+                const char *sql_statement = "ALTER TABLE poi ADD COLUMN flagged INTEGER;";
+                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                    NSLog(@"failed to alter table new column");
+                }
+                sql_statement = "UPDATE poi set flagged=0;";
+                if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
+                    NSLog(@"failed to update wikititle in poi column");
                 }
             }
             */
@@ -203,7 +259,7 @@
 
 /*
  created date:      27/04/2018
- last modified:     13/07/2018
+ last modified:     13/08/2018
  remarks:           Create a new database with model.  We need to remove Country table, but there are still
  some code attached to it.
  */
@@ -211,7 +267,7 @@
     bool retVal=true;
         char *errorMessage;
         /* PROJECT table */
-        const char *sql_statement = "CREATE TABLE project (key TEXT PRIMARY KEY, name TEXT, privatenotes TEXT, imagefilename TEXT)";
+        const char *sql_statement = "CREATE TABLE project (key TEXT PRIMARY KEY, name TEXT, privatenotes TEXT, imagefilename TEXT, created_dt TEXT, modified_dt TEXT)";
             
         if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
             NSLog(@"failed to create project table");
@@ -227,7 +283,7 @@
         }
   
         /* POI table */
-        sql_statement = "CREATE TABLE poi (key TEXT PRIMARY KEY, name TEXT, administrativearea TEXT, subadministrativearea TEXT, fullthoroughfare TEXT, countrycode TEXT, locality TEXT, sublocality TEXT, postcode TEXT, categoryid INTEGER, privatenotes TEXT, lat DOUBLE, lon DOUBLE, wikititle TEXT)";
+        sql_statement = "CREATE TABLE poi (key TEXT PRIMARY KEY, name TEXT, administrativearea TEXT, subadministrativearea TEXT, fullthoroughfare TEXT, countrycode TEXT, locality TEXT, sublocality TEXT, postcode TEXT, categoryid INTEGER, privatenotes TEXT, lat DOUBLE, lon DOUBLE, wikititle TEXT, created_dt TEXT, modified_dt TEXT)";
             
         if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
             NSLog(@"failed to create poi table");
@@ -235,7 +291,7 @@
         }
 
         /* ACTIVITY table */
-        sql_statement = "CREATE TABLE activity (projectkey TEXT, poikey TEXT, key TEXT, name TEXT, totalprice INTEGER, notes TEXT, startdt TEXT, enddt TEXT, state INTEGER, PRIMARY KEY(key,state), FOREIGN KEY(projectkey) REFERENCES project(key), FOREIGN KEY(poikey) REFERENCES poi(key))";
+        sql_statement = "CREATE TABLE activity (projectkey TEXT, poikey TEXT, key TEXT, name TEXT, totalprice INTEGER, notes TEXT, startdt TEXT, enddt TEXT, state INTEGER, rating REAL DEFAULT 0, created_dt TEXT, modified_dt TEXT, PRIMARY KEY(key,state), FOREIGN KEY(projectkey) REFERENCES project(key), FOREIGN KEY(poikey) REFERENCES poi(key))";
             
             
         if(sqlite3_exec(_DB, sql_statement, NULL, NULL, &errorMessage) != SQLITE_OK) {
@@ -378,14 +434,21 @@
 
 /*
  created date:      28/04/2018
- last modified:     10/08/2018
+ last modified:     15/08/2018
  remarks:           
  */
 -(bool) UpdatePoiItem :(PoiNSO*) Poi {
     bool retVal=true;
     
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    NSString *dateString=[dateFormat stringFromDate:[NSDate date]];
+    
+    
+    
+    
     sqlite3_stmt *stmt = NULL;
-    sqlite3_prepare_v2(_DB, "UPDATE poi SET name = ?, categoryid = ?, privatenotes = ?, wikititle = ?, administrativearea = ?, subadministrativearea = ?, fullthoroughfare = ?, countrycode = ?, locality = ?, sublocality = ?, postcode = ?, lat = ?, lon = ? WHERE key=?", -1, &stmt, nil);
+    sqlite3_prepare_v2(_DB, "UPDATE poi SET name = ?, categoryid = ?, privatenotes = ?, wikititle = ?, administrativearea = ?, subadministrativearea = ?, fullthoroughfare = ?, countrycode = ?, locality = ?, sublocality = ?, postcode = ?, lat = ?, lon = ?, modified_dt = ? WHERE key=?", -1, &stmt, nil);
     
     sqlite3_bind_text(stmt, 1, Poi.name==nil?"":[Poi.name UTF8String], -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(stmt, 2, [Poi.categoryid intValue]);
@@ -401,7 +464,8 @@
     sqlite3_bind_text(stmt, 11, Poi.postcode==nil?"":[Poi.postcode UTF8String], -1, SQLITE_TRANSIENT);
     sqlite3_bind_double(stmt, 12, [Poi.lat doubleValue]);
     sqlite3_bind_double(stmt, 13, [Poi.lat doubleValue]);
-    sqlite3_bind_text(stmt, 14, Poi.key==nil?"":[Poi.key UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 1, [dateString UTF8String] , -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 15, Poi.key==nil?"":[Poi.key UTF8String], -1, SQLITE_TRANSIENT);
 
     if (sqlite3_step(stmt) != SQLITE_DONE) {
         NSLog(@"Failed to update record(s) inside poi table");
@@ -416,44 +480,53 @@
 
 /*
  created date:      29/04/2018
- last modified:     13/05/2018
+ last modified:     15/08/2018
  remarks:           TODO add new way of inserting parms
  */
 -(bool) UpdateProjectItem :(ProjectNSO*) Project {
+    
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    NSString *dateString=[dateFormat stringFromDate:[NSDate date]];
+    
     bool retVal=true;
-        sqlite3_stmt *statement;
-        NSString *updateSQL = [NSString stringWithFormat:@"UPDATE project SET name = '%@', privatenotes = '%@', imagefilename = '%@' WHERE key='%@'", Project.name, Project.privatenotes, Project.imagefilereference, Project.key];
-        
-        const char *update_statement = [updateSQL UTF8String];
-        sqlite3_prepare_v2(_DB, update_statement, -1, &statement, NULL);
-        if (sqlite3_step(statement) != SQLITE_DONE) {
-            NSLog(@"Failed to update record(s) inside project table");
-            retVal = false;
-        }
-        sqlite3_finalize(statement);
+    sqlite3_stmt *statement;
+    NSString *updateSQL = [NSString stringWithFormat:@"UPDATE project SET name = '%@', privatenotes = '%@', imagefilename = '%@', modified_dt='%@' WHERE key='%@'", Project.name, Project.privatenotes, Project.imagefilereference, dateString, Project.key];
+    
+    const char *update_statement = [updateSQL UTF8String];
+    sqlite3_prepare_v2(_DB, update_statement, -1, &statement, NULL);
+    if (sqlite3_step(statement) != SQLITE_DONE) {
+        NSLog(@"Failed to update record(s) inside project table");
+        retVal = false;
+    }
+    sqlite3_finalize(statement);
     
     return retVal;
 }
 
 /*
  created date:      30/04/2018
- last modified:     06/05/2018
+ last modified:     15/08/2018
  remarks:           TODO add new way of inserting parms
  */
 -(bool) UpdateActivityItem :(ActivityNSO*) Activity {
     bool retVal=true;
-        sqlite3_stmt *statement;
+    sqlite3_stmt *statement;
 
-        NSString *updateSQL = [NSString stringWithFormat:@"UPDATE activity SET name = '%@', notes = '%@', poikey = '%@', totalprice = '%d', startdt = '%@', enddt = '%@', state = %@ WHERE key='%@' and state=%@", Activity.name, Activity.privatenotes, Activity.poi.key, 100, [Activity GetStringFromDt :Activity.startdt], [Activity GetStringFromDt :Activity.enddt], Activity.activitystate, Activity.key, Activity.activitystate];
-        
-        const char *update_statement = [updateSQL UTF8String];
-        sqlite3_prepare_v2(_DB, update_statement, -1, &statement, NULL);
-        if (sqlite3_step(statement) != SQLITE_DONE) {
-            NSLog(@"Failed to update record(s) inside activity table");
-            retVal = false;
-        }
-        sqlite3_finalize(statement);
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    NSString *dateString=[dateFormat stringFromDate:[NSDate date]];
     
+    NSString *updateSQL = [NSString stringWithFormat:@"UPDATE activity SET name = '%@', notes = '%@', poikey = '%@', totalprice = '%d', startdt = '%@', enddt = '%@', state = %@, rating = %@, modified_dt='%@' WHERE key='%@' and state=%@", Activity.name, Activity.privatenotes, Activity.poi.key, 100, [Activity GetStringFromDt :Activity.startdt], [Activity GetStringFromDt :Activity.enddt], Activity.activitystate, Activity.rating, dateString, Activity.key, Activity.activitystate];
+    
+    const char *update_statement = [updateSQL UTF8String];
+    sqlite3_prepare_v2(_DB, update_statement, -1, &statement, NULL);
+    if (sqlite3_step(statement) != SQLITE_DONE) {
+        NSLog(@"Failed to update record(s) inside activity table");
+        retVal = false;
+    }
+    sqlite3_finalize(statement);
+
     return retVal;
 }
 
@@ -520,70 +593,85 @@
 
 /*
  created date:      28/04/2018
- last modified:     07/05/2018
+ last modified:     15/08/2018
  remarks: using proper insertion of Poi character data.
  */
 -(bool)InsertPoiItem :(PoiNSO*)Poi {
 
     bool retVal = true;
    
-        Poi.key = [[NSUUID UUID] UUIDString];
+    
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    NSString *dateString=[dateFormat stringFromDate:[NSDate date]];
+    
+    
+    Poi.key = [[NSUUID UUID] UUIDString];
 
-        sqlite3_stmt *stmt = NULL;
-        sqlite3_prepare_v2(_DB, "INSERT INTO poi (key, name, administrativearea, subadministrativearea, fullthoroughfare, countrycode, locality, sublocality, postcode, categoryid, privatenotes, lat, lon, wikititle) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", -1, &stmt, nil);
-    
-        sqlite3_bind_text(stmt, 1, [Poi.key UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 2, [Poi.name UTF8String], -1, SQLITE_TRANSIENT);
-    
-        sqlite3_bind_text(stmt, 3, Poi.administrativearea==nil?"":[Poi.administrativearea UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 4, Poi.subadministrativearea==nil?"":[Poi.subadministrativearea UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 5, Poi.fullthoroughfare==nil?"":[Poi.fullthoroughfare UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 6, Poi.countrycode==nil?"":[Poi.countrycode UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 7, Poi.locality==nil?"":[Poi.locality UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 8, Poi.sublocality==nil?"":[Poi.sublocality UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 9, Poi.postcode==nil?"":[Poi.postcode UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_int(stmt, 10, [Poi.categoryid intValue]);
-        sqlite3_bind_text(stmt, 11, [Poi.privatenotes UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_double(stmt, 12, [Poi.lat doubleValue]);
-        sqlite3_bind_double(stmt, 13, [Poi.lon doubleValue]);
-        sqlite3_bind_text(stmt, 14, Poi.wikititle==nil?"":[Poi.wikititle UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_stmt *stmt = NULL;
+    sqlite3_prepare_v2(_DB, "INSERT INTO poi (key, name, administrativearea, subadministrativearea, fullthoroughfare, countrycode, locality, sublocality, postcode, categoryid, privatenotes, lat, lon, wikititle, created_dt, modified_dt) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", -1, &stmt, nil);
 
-        if (sqlite3_step(stmt) != SQLITE_DONE) {
-            NSLog(@"Failed to insert new record inside poi table");
-            retVal = false;
-        } else {
-            NSLog(@"inserted new poi record inside table!");
-        }
-        sqlite3_finalize(stmt);
-        [self InsertImages :Poi];
-    
+    sqlite3_bind_text(stmt, 1, [Poi.key UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 2, [Poi.name UTF8String], -1, SQLITE_TRANSIENT);
+
+    sqlite3_bind_text(stmt, 3, Poi.administrativearea==nil?"":[Poi.administrativearea UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 4, Poi.subadministrativearea==nil?"":[Poi.subadministrativearea UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 5, Poi.fullthoroughfare==nil?"":[Poi.fullthoroughfare UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 6, Poi.countrycode==nil?"":[Poi.countrycode UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 7, Poi.locality==nil?"":[Poi.locality UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 8, Poi.sublocality==nil?"":[Poi.sublocality UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 9, Poi.postcode==nil?"":[Poi.postcode UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt, 10, [Poi.categoryid intValue]);
+    sqlite3_bind_text(stmt, 11, [Poi.privatenotes UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_double(stmt, 12, [Poi.lat doubleValue]);
+    sqlite3_bind_double(stmt, 13, [Poi.lon doubleValue]);
+    sqlite3_bind_text(stmt, 14, Poi.wikititle==nil?"":[Poi.wikititle UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 15, [dateString UTF8String] , -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 16, [dateString UTF8String] , -1, SQLITE_TRANSIENT);
+
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+        NSLog(@"Failed to insert new record inside poi table");
+        retVal = false;
+    } else {
+        NSLog(@"inserted new poi record inside table!");
+    }
+    sqlite3_finalize(stmt);
+    [self InsertImages :Poi];
+
     return retVal;
 }
 
 /*
  created date:      29/04/2018
- last modified:     06/05/2018
+ last modified:     15/08/2018
  remarks: Flat table with single image representing the project.
  */
 -(bool) InsertProjectItem :(ProjectNSO*) Project {
     bool retVal = true;
   
-        /* PROJECT table */
-        
-        sqlite3_stmt *stmt = NULL;
-        sqlite3_prepare_v2(_DB, "INSERT INTO project (key, name, privatenotes, imagefilename) VALUES (?,?,?,?)", -1, &stmt, nil);
-        sqlite3_bind_text(stmt, 1, [Project.key UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 2, [Project.name UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 3, [Project.privatenotes UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt,4,  [Project.imagefilereference UTF8String], -1, SQLITE_TRANSIENT);
-
-        if (sqlite3_step(stmt) != SQLITE_DONE) {
-            NSLog(@"Failed to insert new record inside project table");
-            retVal = false;
-        } else {
-            NSLog(@"inserted new project record inside table!");
-        }
-        sqlite3_finalize(stmt);
+    /* PROJECT table */
+    
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    NSString *dateString=[dateFormat stringFromDate:[NSDate date]];
+    
+    sqlite3_stmt *stmt = NULL;
+    sqlite3_prepare_v2(_DB, "INSERT INTO project (key, name, privatenotes, imagefilename, created_dt, modified_dt) VALUES (?,?,?,?,?,?)", -1, &stmt, nil);
+    sqlite3_bind_text(stmt, 1, [Project.key UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 2, [Project.name UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 3, [Project.privatenotes UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt,4,  [Project.imagefilereference UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 5, [dateString UTF8String] , -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 6, [dateString UTF8String] , -1, SQLITE_TRANSIENT);
+    
+    
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+        NSLog(@"Failed to insert new record inside project table");
+        retVal = false;
+    } else {
+        NSLog(@"inserted new project record inside table!");
+    }
+    sqlite3_finalize(stmt);
 
     return retVal;
 }
@@ -594,31 +682,39 @@
 
 /*
  created date:      30/04/2018
- last modified:     06/05/2018
+ last modified:     15/08/2018
  remarks: Flat table with single image representing the project.
  */
 -(bool) InsertActivityItem :(ActivityNSO*) Activity {
     bool retVal = true;
    
-        sqlite3_stmt *stmt = NULL;
-        sqlite3_prepare_v2(_DB, "INSERT INTO activity (projectkey, poikey, key, name, totalprice, notes, startdt, enddt, state) VALUES (?,?,?,?,?,?,?,?,?)", -1, &stmt, nil);
-        sqlite3_bind_text(stmt, 1, [Activity.project.key UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 2, [Activity.poi.key UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 3, [Activity.key UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 4, [Activity.name UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_int(stmt,5, [Activity.costamt intValue]);
-        sqlite3_bind_text(stmt, 6, [Activity.privatenotes UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 7, [[Activity GetStringFromDt :Activity.startdt] UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 8, [[Activity GetStringFromDt :Activity.enddt] UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_int(stmt,9, [Activity.activitystate intValue]);
-        
-        if (sqlite3_step(stmt) != SQLITE_DONE) {
-            NSLog(@"Failed to insert new record inside activity table");
-            retVal = false;
-        } else {
-            NSLog(@"inserted new activity record inside table!");
-        }
-        sqlite3_finalize(stmt);
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    NSString *dateString=[dateFormat stringFromDate:[NSDate date]];
+    
+    sqlite3_stmt *stmt = NULL;
+    sqlite3_prepare_v2(_DB, "INSERT INTO activity (projectkey, poikey, key, name, totalprice, notes, startdt, enddt, state, rating) VALUES (?,?,?,?,?,?,?,?,?,?)", -1, &stmt, nil);
+    sqlite3_bind_text(stmt, 1, [Activity.project.key UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 2, [Activity.poi.key UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 3, [Activity.key UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 4, [Activity.name UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt,5, [Activity.costamt intValue]);
+    sqlite3_bind_text(stmt, 6, [Activity.privatenotes UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 7, [[Activity GetStringFromDt :Activity.startdt] UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 8, [[Activity GetStringFromDt :Activity.enddt] UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt,9, [Activity.activitystate intValue]);
+    sqlite3_bind_double(stmt, 10, [Activity.rating doubleValue]);
+    sqlite3_bind_text(stmt, 11, [dateString UTF8String] , -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 12, [dateString UTF8String] , -1, SQLITE_TRANSIENT);
+    
+    
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+        NSLog(@"Failed to insert new record inside activity table");
+        retVal = false;
+    } else {
+        NSLog(@"inserted new activity record inside table!");
+    }
+    sqlite3_finalize(stmt);
     
     return retVal;
 }
@@ -626,13 +722,13 @@
 
 /*
  created date:      12/08/2018
- last modified:     12/08/2018
+ last modified:     13 /08/2018
  remarks:           TODO add new way of inserting parms
  */
 -(NSMutableArray*) GetPoiData :(NSString*) RequiredKey {
     NSMutableArray *poidata  = [[NSMutableArray alloc] init];
     
-    NSString *selectSQL = [NSString stringWithFormat:@"SELECT key,name,fullthoroughfare,administrativearea,subadministrativearea,countrycode,locality,sublocality,postcode,categoryid,privatenotes,lat,lon,wikititle,(select count(*) as counter from activity a where a.poikey=p.key) as sumofactivities FROM poi p ORDER BY name"];
+    NSString *selectSQL = [NSString stringWithFormat:@"SELECT key,name,fullthoroughfare,administrativearea,subadministrativearea,countrycode,locality,sublocality,postcode,categoryid,privatenotes,lat,lon,wikititle,(select count(*) as counter from activity a where a.poikey=p.key) as sumofactivities, (select IFNULL(avg(rating),0) as avgrating from activity a where a.poikey=p.key and rating!=0) as averageratings FROM poi p ORDER BY name"];
     sqlite3_stmt *statement;
     const char *select_statement = [selectSQL UTF8String];
     
@@ -655,6 +751,9 @@
             poi.lon = [NSNumber numberWithDouble:sqlite3_column_double(statement, 12)];
             poi.wikititle = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 13)];
             poi.connectedactivitycount = [NSNumber numberWithInt:sqlite3_column_int(statement, 14)];
+            poi.averageactivityrating = [NSNumber numberWithFloat:sqlite3_column_double(statement, 15)];
+            
+            
             poi.Images = [NSMutableArray arrayWithArray:[self GetImagesForSelectedPoi:poi.key]];
             CountryNSO *country = [self GetCountryByCode:poi.countrycode];
             poi.country = country.name;
@@ -696,7 +795,7 @@
     
     
     
-        NSString *selectSQL = [NSString stringWithFormat:@"SELECT key,name,fullthoroughfare,administrativearea,subadministrativearea,countrycode,locality,sublocality,postcode,categoryid,privatenotes,lat,lon,wikititle,(select count(*) as counter from activity a where a.poikey=p.key) as sumofactivities FROM poi p %@ ORDER BY name", whereClause];
+        NSString *selectSQL = [NSString stringWithFormat:@"SELECT key,name,fullthoroughfare,administrativearea,subadministrativearea,countrycode,locality,sublocality,postcode,categoryid,privatenotes,lat,lon,wikititle,(select count(*) as counter from activity a where a.poikey=p.key) as sumofactivities, (select avg(rating) as avgrating from activity a where a.poikey=p.key and rating!=0) as averageratings FROM poi p %@ ORDER BY name", whereClause];
         sqlite3_stmt *statement;
         const char *select_statement = [selectSQL UTF8String];
 
@@ -719,6 +818,8 @@
                 poi.lon = [NSNumber numberWithDouble:sqlite3_column_double(statement, 12)];
                 poi.wikititle = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 13)];
                 poi.connectedactivitycount = [NSNumber numberWithInt:sqlite3_column_int(statement, 14)];
+                poi.averageactivityrating = [NSNumber numberWithFloat:sqlite3_column_double(statement, 15)];
+                
                 poi.Images = [NSMutableArray arrayWithArray:[self GetImagesForSelectedPoi:poi.key]];
                 CountryNSO *country = [self GetCountryByCode:poi.countrycode];
                 poi.country = country.name;
@@ -769,35 +870,35 @@
 -(NSMutableArray*) GetProjectContent :(NSString*) RequiredKey {
     NSMutableArray *projectdata  = [[NSMutableArray alloc] init];
     
-        sqlite3_stmt *statement;
+    sqlite3_stmt *statement;
 
-        NSString *whereClause = @"";
-        if (RequiredKey != nil) {
-            whereClause = @"WHERE";
-            whereClause = [NSString stringWithFormat:@"%@ %@='%@' AND ", whereClause, @"key",RequiredKey];
-            if (![whereClause isEqualToString:@"WHERE"]) {
-                whereClause = [whereClause substringToIndex:[whereClause length]-5];
-            }
+    NSString *whereClause = @"";
+    if (RequiredKey != nil) {
+        whereClause = @"WHERE";
+        whereClause = [NSString stringWithFormat:@"%@ %@='%@' AND ", whereClause, @"key",RequiredKey];
+        if (![whereClause isEqualToString:@"WHERE"]) {
+            whereClause = [whereClause substringToIndex:[whereClause length]-5];
         }
-        
-        NSString *selectSQL = [NSString stringWithFormat:@"SELECT key, name, privatenotes, imagefilename FROM project %@ ORDER BY name", whereClause];
-        
-        const char *select_statement = [selectSQL UTF8String];
+    }
+    
+    NSString *selectSQL = [NSString stringWithFormat:@"SELECT key, name, privatenotes, imagefilename FROM project %@ ORDER BY name", whereClause];
+    
+    const char *select_statement = [selectSQL UTF8String];
 
-        if (sqlite3_prepare_v2(_DB, select_statement, -1, &statement, NULL) == SQLITE_OK)
+    if (sqlite3_prepare_v2(_DB, select_statement, -1, &statement, NULL) == SQLITE_OK)
+    {
+        while (sqlite3_step(statement) == SQLITE_ROW)
         {
-            while (sqlite3_step(statement) == SQLITE_ROW)
-            {
-                ProjectNSO *project = [[ProjectNSO alloc] init];
-                project.key = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 0)];
-                project.name = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 1)];
-                project.privatenotes = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 2)];
-                project.imagefilereference = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 3)];
-                project = [self GetProjectDateRanges :project];
-                [projectdata addObject:project];
-            }
+            ProjectNSO *project = [[ProjectNSO alloc] init];
+            project.key = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 0)];
+            project.name = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 1)];
+            project.privatenotes = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 2)];
+            project.imagefilereference = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 3)];
+            project = [self GetProjectDateRanges :project];
+            [projectdata addObject:project];
         }
-        sqlite3_finalize(statement);
+    }
+    sqlite3_finalize(statement);
 
     return projectdata;
 }
@@ -850,7 +951,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     06/05/2018
+ last modified:     13/08/2018
  remarks:  Only need to retrieve one record here.  TODO add new way of inserting parms
  */
 -(ActivityNSO*) GetActivityContent :(NSString*) RequiredKey {
@@ -859,7 +960,7 @@
 
         sqlite3_stmt *statement;
 
-        NSString *selectSQL = [NSString stringWithFormat:@"SELECT projectkey, poikey, key, name, notes, totalprice, startdt, enddt, state FROM activity WHERE key='%@' ORDER BY startdt", RequiredKey];
+        NSString *selectSQL = [NSString stringWithFormat:@"SELECT projectkey, poikey, key, name, notes, totalprice, startdt, enddt, state, rating FROM activity WHERE key='%@' ORDER BY startdt", RequiredKey];
         
         const char *select_statement = [selectSQL UTF8String];
         
@@ -876,6 +977,7 @@
                 activity.startdt = [activity GetDtFromString :[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 6)]];
                 activity.enddt = [activity GetDtFromString :[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 7)]];
                 activity.activitystate = [NSNumber numberWithInt:sqlite3_column_int(statement, 8)];
+                activity.rating = [NSNumber numberWithFloat:sqlite3_column_double(statement, 9)];
             }
         }
         sqlite3_finalize(statement);
@@ -928,12 +1030,12 @@
 
         if ([RequiredState intValue] == 0) {
             /* Ideas */
-            selectSQL = [NSString stringWithFormat:@"SELECT act.projectkey, act.poikey, act.key, act.name, act.notes, act.totalprice, act.startdt, act.enddt, act.state, (select count(1) from activity data where data.key=act.key group by data.key), poi.categoryid FROM activity act, poi WHERE act.projectkey='%@' AND act.state=0 AND act.poikey = poi.key ORDER BY act.startdt", RequiredProjectKey];
+            selectSQL = [NSString stringWithFormat:@"SELECT act.projectkey, act.poikey, act.key, act.name, act.notes, act.totalprice, act.startdt, act.enddt, act.state, (select count(1) from activity data where data.key=act.key group by data.key), poi.categoryid, act.rating FROM activity act, poi WHERE act.projectkey='%@' AND act.state=0 AND act.poikey = poi.key ORDER BY act.startdt", RequiredProjectKey];
         }
         else
         {
             
-            selectSQL = [NSString stringWithFormat:@"SELECT act.projectkey, act.poikey, act.key, act.name, act.notes, act.totalprice, act.startdt, act.enddt, act.state, (SELECT COUNT(1) FROM activity ds WHERE ds.key=act.key GROUP BY ds.key), poi.categoryid FROM activity act, poi, (SELECT MAX(state) AS maxstate, key FROM activity GROUP BY key) data WHERE act.key=data.key AND act.state=data.maxstate AND act.projectkey='%@' AND act.poikey = poi.key ORDER BY act.state desc, act.startdt", RequiredProjectKey];
+            selectSQL = [NSString stringWithFormat:@"SELECT act.projectkey, act.poikey, act.key, act.name, act.notes, act.totalprice, act.startdt, act.enddt, act.state, (SELECT COUNT(1) FROM activity ds WHERE ds.key=act.key GROUP BY ds.key), poi.categoryid, act.rating   FROM activity act, poi, (SELECT MAX(state) AS maxstate, key FROM activity GROUP BY key) data WHERE act.key=data.key AND act.state=data.maxstate AND act.projectkey='%@' AND act.poikey = poi.key ORDER BY act.state desc, act.startdt", RequiredProjectKey];
             
         }
         
@@ -957,6 +1059,7 @@
                 activity.activitystate = [NSNumber numberWithInt:sqlite3_column_int(statement, 8)];
                 activity.legendref = [NSNumber numberWithInt:sqlite3_column_int(statement, 9)];
                 activity.poi.categoryid = [NSNumber numberWithInt:sqlite3_column_int(statement, 10)];
+                activity.rating = [NSNumber numberWithFloat:sqlite3_column_double(statement, 11)];
                 [activitydata addObject:activity];
             }
         }

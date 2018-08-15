@@ -49,7 +49,10 @@
     self.ButtonNew.layer.cornerRadius = 25;
     self.ButtonNew.clipsToBounds = YES;
     self.ButtonBack.layer.cornerRadius = 25;
+    
     self.ButtonBack.clipsToBounds = YES;
+    self.ButtonBack.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
     
     self.ButtonResetFilter.layer.cornerRadius = 25;
     self.ButtonResetFilter.clipsToBounds = YES;

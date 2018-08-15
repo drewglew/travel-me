@@ -23,6 +23,7 @@
 		3A224CC92097950600075457 /* ActivityDataEntryVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CC82097950600075457 /* ActivityDataEntryVC.m */; };
 		3A224CCC2097B39F00075457 /* DatePickerRangeVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CCB2097B39F00075457 /* DatePickerRangeVC.m */; };
 		3A224CCF209A178700075457 /* ToolBoxNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CCE209A178700075457 /* ToolBoxNSO.m */; };
+		3A3075DE21220446007D53C9 /* HCSStarRatingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A3075DC21220445007D53C9 /* HCSStarRatingView.m */; };
 		3A374EE620936A9300E5A652 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374EE520936A9300E5A652 /* AppDelegate.m */; };
 		3A374EEC20936A9300E5A652 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3A374EEA20936A9300E5A652 /* Main.storyboard */; };
 		3A374EEE20936A9600E5A652 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3A374EED20936A9600E5A652 /* Assets.xcassets */; };
@@ -96,6 +97,8 @@
 		3A224CCB2097B39F00075457 /* DatePickerRangeVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DatePickerRangeVC.m; sourceTree = "<group>"; };
 		3A224CCD209A178700075457 /* ToolBoxNSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ToolBoxNSO.h; sourceTree = "<group>"; };
 		3A224CCE209A178700075457 /* ToolBoxNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ToolBoxNSO.m; sourceTree = "<group>"; };
+		3A3075DC21220445007D53C9 /* HCSStarRatingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HCSStarRatingView.m; sourceTree = "<group>"; };
+		3A3075DD21220445007D53C9 /* HCSStarRatingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HCSStarRatingView.h; sourceTree = "<group>"; };
 		3A374EE120936A9300E5A652 /* travelme.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = travelme.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A374EE420936A9300E5A652 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		3A374EE520936A9300E5A652 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -332,6 +335,8 @@
 				3AB915F120CDB3E5001A08A9 /* ImageNSO.m */,
 				3A12B8DB21010BF4006B621D /* Reachability.h */,
 				3A12B8DC21010BF4006B621D /* Reachability.m */,
+				3A3075DD21220445007D53C9 /* HCSStarRatingView.h */,
+				3A3075DC21220445007D53C9 /* HCSStarRatingView.m */,
 				3A58B4C1211F547100699008 /* TypeNSO.h */,
 				3A58B4C2211F547100699008 /* TypeNSO.m */,
 			);
@@ -450,6 +455,7 @@
 				3A9EA18620AE17DF0052CC4F /* ScheduleBackgroundView.m in Sources */,
 				3A224CAC2094736200075457 /* SearchResultListCell.m in Sources */,
 				3AAB60C520FCFEA600A22047 /* NearbyPoiNSO.m in Sources */,
+				3A3075DE21220446007D53C9 /* HCSStarRatingView.m in Sources */,
 				3A082776211B4EBE00363BB7 /* CurrencyPickerVC.m in Sources */,
 				3A224CC92097950600075457 /* ActivityDataEntryVC.m in Sources */,
 				3A374F1E2093939400E5A652 /* LocatorVC.m in Sources */,

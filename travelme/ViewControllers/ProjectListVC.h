@@ -21,6 +21,7 @@
 @property (strong, nonatomic) NSMutableArray *filteredprojectitems;
 @property (assign) bool editmode;
 @property (nonatomic, weak) id <ProjectListDelegate> delegate;
+@property (strong, nonatomic) ProjectNSO *Trip;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentFilterProjects;
 
 @end

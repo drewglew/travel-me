@@ -19,7 +19,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     19/07/2018
+ last modified:     13/08/2018
  remarks: TODO - split load existing data into 2 - map data and images.
  */
 - (void)viewDidLoad {
@@ -51,7 +51,7 @@
     self.ImagePicture.frame = CGRectMake(0, 0, self.ScrollViewImage.frame.size.width, self.ScrollViewImage.frame.size.height);
     self.ScrollViewImage.delegate = self;
     
-    [self LoadTypeData];
+    [self LoadCategoryData];
     
     [self LoadMapData];
 
@@ -85,6 +85,7 @@
     
     self.ButtonCancel.layer.cornerRadius = 25;
     self.ButtonCancel.clipsToBounds = YES;
+    self.ButtonCancel.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
     
     if (self.checkInternet) {
         if ([self.PointOfInterest.countrycode isEqualToString:@""]) {
@@ -100,6 +101,15 @@
     self.ButtonWiki.clipsToBounds = YES;
     self.ButtonWiki.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
     
+    if (self.PointOfInterest.averageactivityrating!=0) {
+        self.LabelOccurances.text = [NSString stringWithFormat:@"%@ Occurances", self.PointOfInterest.connectedactivitycount];
+        self.LabelOccurances.hidden=false;
+        
+        self.ViewStarRatings.allowsHalfStars=TRUE;
+        self.ViewStarRatings.accurateHalfStars=TRUE;
+        self.ViewStarRatings.value = [self.PointOfInterest.averageactivityrating floatValue];
+        self.ViewStarRatings.hidden=false;
+    }
     
 }
 
@@ -121,10 +131,10 @@
 
 /*
  created date:      11/06/2018
- last modified:     12/08/2018
+ last modified:     13/08/2018
  remarks:
  */
--(void) LoadTypeData {
+-(void) LoadCategoryData {
   
     self.TypeItems = @[@"Cat-Accomodation",
                        @"Cat-Airport",
@@ -821,7 +831,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     12/08/2018
+ last modified:     13/08/2018
  remarks:
  */
 -(IBAction)SegmentOptionChanged:(id)sender {
@@ -832,12 +842,14 @@
         self.ViewNotes.hidden = true;
         self.ViewMap.hidden = true;
         self.ViewPhotos.hidden =true;
+        self.SwitchViewPhotoOptions.hidden=true;
 
     } else if (segment.selectedSegmentIndex==1) {
         self.ViewMain.hidden = true;
         self.ViewNotes.hidden = false;
         self.ViewMap.hidden = true;
         self.ViewPhotos.hidden =true;
+        self.SwitchViewPhotoOptions.hidden=true;
        
         
      } else if (segment.selectedSegmentIndex==2) {
@@ -845,7 +857,7 @@
          self.ViewNotes.hidden = true;
          self.ViewMap.hidden = false;
          self.ViewPhotos.hidden =true;
-         
+         self.SwitchViewPhotoOptions.hidden=true;
         
         for (id<MKOverlay> overlay in self.MapView.overlays)
         {

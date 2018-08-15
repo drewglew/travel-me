@@ -20,6 +20,7 @@
 #import "Reachability.h"
 #import "TypeNSO.h"
 #import "TypeCell.h"
+#import "HCSStarRatingView.h"
 
 @protocol PoiDataEntryDelegate <NSObject>
 - (void)didCreatePoiFromProject :(PoiNSO*)Object;
@@ -78,6 +79,8 @@
 
 @property CGPoint translation;
 @property (weak, nonatomic) IBOutlet UIScrollView *ScrollViewImage;
+@property (weak, nonatomic) IBOutlet HCSStarRatingView *ViewStarRatings;
+@property (weak, nonatomic) IBOutlet UILabel *LabelOccurances;
 
 
 @end

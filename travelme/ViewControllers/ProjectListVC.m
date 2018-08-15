@@ -15,10 +15,16 @@
 @implementation ProjectListVC
 @synthesize delegate;
 
+/*
+ created date:      29/04/2018
+ last modified:     15/08/2018
+ remarks:
+ */
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.CollectionViewProjects.delegate = self;
     self.editmode = false;
+
     // Do any additional setup after loading the view.
 }
 
@@ -29,6 +35,8 @@
  */
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    /* user selected specific option from startup view */
+
     [self LoadProjectData];
 }
 

@@ -34,6 +34,7 @@
     self.TextViewNotes.layer.borderWidth= 1.0f;
     
     
+    
     NSDate *today = [NSDate date];
     if (self.deleteitem) {
         UIImage *btnImage = [UIImage imageNamed:@"Delete"];
@@ -46,6 +47,7 @@
         [self LoadActivityData];
         NSComparisonResult result = [self.Activity.startdt compare:today];
         if (self.Activity.startdt == self.Activity.enddt && result==NSOrderedAscending && self.Activity.activitystate==[NSNumber numberWithInt:1]) {
+            
             self.ButtonCheckInOut.hidden = false;
             UIImage *btnImage = [UIImage imageNamed:@"ActivityCheckOut"];
             [self.ButtonCheckInOut setImage:btnImage forState:UIControlStateNormal];
@@ -58,6 +60,7 @@
         //[self.ButtonCheckInOut setBackgroundColor:[UIColor clearColor]];
         [self.ButtonAction setTitle:@"Update" forState:UIControlStateNormal];
         [self LoadActivityData];
+        
     } else if (self.newitem) {
         self.TextFieldName.text = self.Activity.poi.name;
         NSCalendar *cal = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
@@ -99,7 +102,21 @@
     
     self.ButtonCancel.layer.cornerRadius = 25;
     self.ButtonCancel.clipsToBounds = YES;
-
+    self.ButtonCancel.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
+    
+    if (self.Activity.activitystate==[NSNumber numberWithInt:1]) {
+        self.ImageViewIdeaWidthConstraint.constant = 0;
+        self.ViewEffectBlurDetailHeightConstraint.constant = 140;
+        self.ViewStarRating.hidden = false;
+        
+        self.ViewStarRating.maximumValue = 5;
+        self.ViewStarRating.minimumValue = 0;
+        self.ViewStarRating.value = [self.Activity.rating floatValue];
+        self.ViewStarRating.allowsHalfStars = YES;
+        self.ViewStarRating.accurateHalfStars = YES;
+        
+    }
     // Do any additional setup after loading the view.
 }
 
@@ -230,7 +247,7 @@
 
 /*
  created date:      01/05/2018
- last modified:     01/05/2018
+ last modified:     13/08/2018
  remarks:
  */
 - (IBAction)AddActivityPressed:(id)sender {
@@ -241,6 +258,7 @@
     }
     self.Activity.name = self.TextFieldName.text;
     self.Activity.privatenotes = self.TextViewNotes.text;
+    self.Activity.rating = [NSNumber numberWithFloat: self.ViewStarRating.value];
     
     if (self.deleteitem) {
         [AppDelegateDef.Db DeleteActivity:self.Activity :nil];
