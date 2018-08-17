@@ -48,6 +48,8 @@
 		3A9F73AC20A36A1D00D61666 /* PaymentDataEntryVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9F73AB20A36A1D00D61666 /* PaymentDataEntryVC.m */; };
 		3A9F73AF20A3747300D61666 /* PaymentNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9F73AE20A3747300D61666 /* PaymentNSO.m */; };
 		3A9F73B520A3784400D61666 /* PaymentListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9F73B420A3784400D61666 /* PaymentListCell.m */; };
+		3AA4DA6821267FE900F7CAC9 /* CirclePart.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA4DA6721267FE900F7CAC9 /* CirclePart.m */; };
+		3AA4DA6B2126807400F7CAC9 /* GraphView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA4DA6A2126807400F7CAC9 /* GraphView.m */; };
 		3AAB60BF20FCF8C300A22047 /* NearbyListingVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AAB60BE20FCF8C300A22047 /* NearbyListingVC.m */; };
 		3AAB60C220FCFCE800A22047 /* NearbyPoiCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AAB60C120FCFCE800A22047 /* NearbyPoiCell.m */; };
 		3AAB60C520FCFEA600A22047 /* NearbyPoiNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AAB60C420FCFEA600A22047 /* NearbyPoiNSO.m */; };
@@ -142,6 +144,10 @@
 		3A9F73AE20A3747300D61666 /* PaymentNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PaymentNSO.m; sourceTree = "<group>"; };
 		3A9F73B320A3784400D61666 /* PaymentListCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PaymentListCell.h; path = ../../PaymentListCell.h; sourceTree = "<group>"; };
 		3A9F73B420A3784400D61666 /* PaymentListCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = PaymentListCell.m; path = ../../PaymentListCell.m; sourceTree = "<group>"; };
+		3AA4DA6621267FE900F7CAC9 /* CirclePart.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CirclePart.h; sourceTree = "<group>"; };
+		3AA4DA6721267FE900F7CAC9 /* CirclePart.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CirclePart.m; sourceTree = "<group>"; };
+		3AA4DA692126807300F7CAC9 /* GraphView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GraphView.h; sourceTree = "<group>"; };
+		3AA4DA6A2126807400F7CAC9 /* GraphView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GraphView.m; sourceTree = "<group>"; };
 		3AAB60BD20FCF8C300A22047 /* NearbyListingVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NearbyListingVC.h; sourceTree = "<group>"; };
 		3AAB60BE20FCF8C300A22047 /* NearbyListingVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NearbyListingVC.m; sourceTree = "<group>"; };
 		3AAB60C020FCFCE800A22047 /* NearbyPoiCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NearbyPoiCell.h; sourceTree = "<group>"; };
@@ -339,6 +345,10 @@
 				3A3075DC21220445007D53C9 /* HCSStarRatingView.m */,
 				3A58B4C1211F547100699008 /* TypeNSO.h */,
 				3A58B4C2211F547100699008 /* TypeNSO.m */,
+				3AA4DA6621267FE900F7CAC9 /* CirclePart.h */,
+				3AA4DA6721267FE900F7CAC9 /* CirclePart.m */,
+				3AA4DA692126807300F7CAC9 /* GraphView.h */,
+				3AA4DA6A2126807400F7CAC9 /* GraphView.m */,
 			);
 			path = GenericObjects;
 			sourceTree = "<group>";
@@ -435,9 +445,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3AA4DA6821267FE900F7CAC9 /* CirclePart.m in Sources */,
 				3A224CBA2095F1DF00075457 /* ProjectDataEntryVC.m in Sources */,
 				3A224CC320976B1100075457 /* ActivityNSO.m in Sources */,
 				3A224CC02096E2C700075457 /* ActivityListCell.m in Sources */,
+				3AA4DA6B2126807400F7CAC9 /* GraphView.m in Sources */,
 				3A224CBD2095F1FD00075457 /* ActivityListVC.m in Sources */,
 				3A374EFC209372CC00E5A652 /* MenuVC.m in Sources */,
 				3A224CC62097792800075457 /* PoiSearchVC.m in Sources */,

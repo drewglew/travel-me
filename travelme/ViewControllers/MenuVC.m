@@ -39,8 +39,8 @@
     [super viewDidLoad];
  
     self.alltripitems = [AppDelegateDef.Db GetProjectContent :nil];
-  
-    self.ButtonInfo.layer.cornerRadius = 25;
+  /*
+    self.ButtonInfo.layer.cornerRadius = 10;
     self.ButtonInfo.clipsToBounds = YES;
 
     self.ButtonProject.layer.cornerRadius = 10; // this value vary as per your desire
@@ -49,6 +49,9 @@
     self.ButtonPoi.layer.cornerRadius = 10; // this value vary as per your desire
     self.ButtonPoi.clipsToBounds = YES;
   
+    self.ButtonSettings.layer.cornerRadius = 10; // this value vary as per your desire
+    self.ButtonSettings.clipsToBounds = YES;
+   */
     [self LocateTripContent];
     [self LoadSupportingData];
     
@@ -211,14 +214,14 @@
     
     
     if (trip.timeinverval==1) {
-        cell.LabelDateRange.text = @"Last Trip";
+        cell.LabelDateRange.text = @"Last";
         
     } else if (trip.timeinverval==2) {
         cell.LabelDateRange.text = @"Active";
     } else if (trip.timeinverval==4) {
-        cell.LabelDateRange.text = @"Next Trip";
+        cell.LabelDateRange.text = @"Next";
     } else {
-        cell.LabelDateRange.text = @"New Trip";
+        cell.LabelDateRange.text = @"New";
     }
     return cell;
 }

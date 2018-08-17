@@ -20,5 +20,6 @@
 @property (weak, nonatomic) IBOutlet UICollectionView *CollectionViewPreviewPanel;
 @property (strong, nonatomic) NSMutableArray *alltripitems;
 @property (strong, nonatomic) NSMutableArray *selectedtripitems;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonSettings;
 
 @end

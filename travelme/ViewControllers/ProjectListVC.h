@@ -11,6 +11,8 @@
 #import "ProjectListCell.h"
 #import "ActivityListVC.h"
 #import "ProjectDataEntryVC.h"
+#import "CirclePart.h"
+#import "GraphView.h"
 
 @protocol ProjectListDelegate <NSObject>
 @end
@@ -23,5 +25,6 @@
 @property (nonatomic, weak) id <ProjectListDelegate> delegate;
 @property (strong, nonatomic) ProjectNSO *Trip;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentFilterProjects;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
 
 @end

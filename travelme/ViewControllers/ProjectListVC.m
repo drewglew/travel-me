@@ -24,7 +24,10 @@
     [super viewDidLoad];
     self.CollectionViewProjects.delegate = self;
     self.editmode = false;
-
+    
+    self.ButtonBack.layer.cornerRadius = 25;
+    self.ButtonBack.clipsToBounds = YES;
+    self.ButtonBack.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
     // Do any additional setup after loading the view.
 }
 
@@ -79,7 +82,7 @@
 
 /*
  created date:      29/04/2018
- last modified:     03/06/2018
+ last modified:     17/08/2018
  remarks:
  */
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -108,12 +111,49 @@
             cell.LabelDateRange.text = @"";
         }
         
+        int TotalDataPoints = [project.numberofactivitiesonlyactual intValue] +  [project.numberofactivities intValue] + [project.numberofactivitiesonlyplanned intValue];
+        
+        if (TotalDataPoints >0 && self.editmode) {
+            
+            float degreesPart1 = ([project.numberofactivitiesonlyactual floatValue] / TotalDataPoints)*360.0f;
+            float degreesPart2 = ([project.numberofactivities floatValue] / TotalDataPoints)*360.0f;
+            
+            
+            CirclePart *part1 = [[CirclePart alloc] initWithStartDegree:0 endDegree:degreesPart1 partColor:[UIColor colorWithRed:114.0f/255.0f green:24.0f/255.0f blue:23.0f/255.0f alpha:1.0]];
+            CirclePart *part2 = [[CirclePart alloc] initWithStartDegree:degreesPart1 endDegree:degreesPart1 + degreesPart2 partColor:[UIColor colorWithRed:250.0f/255.0f green:159.0f/255.0f blue:66.0f/255.0f alpha:1.0]];
+            CirclePart *part3 = [[CirclePart alloc] initWithStartDegree:degreesPart1 + degreesPart2 endDegree:360 partColor:[UIColor colorWithRed:43.0f/255.0f green:65.0f/255.0f blue:98.0f/255.0f alpha:1.0]];
+            
+            NSArray *circleParts = [[NSArray alloc] initWithObjects:part1, part2, part3, nil];
+            
+            CGRect rect = CGRectMake(10, 10, 50, 50);
+            CGPoint circleCenter = CGPointMake(rect.size.width / 2, rect.size.height / 2);
+            
+            GraphView *graphView = [[GraphView alloc] initWithFrame:rect CentrePoint:circleCenter radius:80 lineWidth:2 circleParts:circleParts];
+            graphView.backgroundColor = [UIColor clearColor];
+            graphView.layer.borderColor = [UIColor clearColor].CGColor;
+            graphView.layer.cornerRadius = 25;
+            graphView.clipsToBounds = YES;
+            
+            graphView.layer.borderWidth = 1.0f;
+            
+            [cell.VisualEffectsViewBlur addSubview:graphView];
+        
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        /*
         if (self.editmode) {
-            /* TODO - needs to be smarter */
+            
             if (project.numberofactivitiesonlyactual > [NSNumber numberWithInt:0]) {
                 cell.LabelNbrOfActivities3.hidden=false;
-                cell.LabelNbrOfActivities3.layer.cornerRadius = 20;
-                cell.LabelNbrOfActivities3.layer.masksToBounds = YES;
+                //cell.LabelNbrOfActivities3.layer.cornerRadius = 20;
+                //cell.LabelNbrOfActivities3.layer.masksToBounds = YES;
                 cell.LabelNbrOfActivities3.text = [NSString stringWithFormat:@"%@",project.numberofactivitiesonlyactual];
             } else {
                 cell.LabelNbrOfActivities3.hidden=true;
@@ -121,8 +161,8 @@
         
             if (project.numberofactivities > [NSNumber numberWithInt:0] ) {
                 cell.LabelNbrOfActivities2.hidden=false;
-                cell.LabelNbrOfActivities2.layer.cornerRadius = 20;
-                cell.LabelNbrOfActivities2.layer.masksToBounds = YES;
+                //cell.LabelNbrOfActivities2.layer.cornerRadius = 20;
+                //cell.LabelNbrOfActivities2.layer.masksToBounds = YES;
                 cell.LabelNbrOfActivities2.text = [NSString stringWithFormat:@"%@",project.numberofactivities];
             } else if (project.numberofactivitiesonlyactual == [NSNumber numberWithInt:0]) {
                 cell.LabelNbrOfActivities2.hidden=true;
@@ -130,19 +170,20 @@
         
             if (project.numberofactivitiesonlyplanned > [NSNumber numberWithInt:0] ) {
                 cell.LabelNbrOfActivities.hidden=false;
-                cell.LabelNbrOfActivities.layer.cornerRadius = 20;
-                cell.LabelNbrOfActivities.layer.masksToBounds = YES;
+               // cell.LabelNbrOfActivities.layer.cornerRadius = 20;
+               // cell.LabelNbrOfActivities.layer.masksToBounds = YES;
                 cell.LabelNbrOfActivities.text = [NSString stringWithFormat:@"%@",project.numberofactivitiesonlyplanned];
             } else if (project.numberofactivities == [NSNumber numberWithInt:0] &&      project.numberofactivitiesonlyactual == [NSNumber numberWithInt:0]) {
                 cell.LabelNbrOfActivities.hidden=true;
             } else {
                 cell.LabelNbrOfActivities.hidden=false;
-                cell.LabelNbrOfActivities.layer.cornerRadius = 20;
-                cell.LabelNbrOfActivities.layer.masksToBounds = YES;
+               // cell.LabelNbrOfActivities.layer.cornerRadius = 20;
+               // cell.LabelNbrOfActivities.layer.masksToBounds = YES;
                 cell.LabelNbrOfActivities.text = @"0";
             }
         }
-        
+        */
+    
         cell.isNewAccessor = false;
         if (self.editmode) {
             cell.editButton.hidden=false;
@@ -195,6 +236,12 @@
     
     return size;
 }
+
+- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.CollectionViewProjects.frame.size.width, 64)];
+    return headerView;
+}
+
 
 /*
  created date:      29/04/2018
