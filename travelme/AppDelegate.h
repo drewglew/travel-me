@@ -15,5 +15,6 @@
 @property (strong, nonatomic) Dal *Db;
 @property (nonatomic) NSString *databasename;
 @property (nonatomic) NSString *HomeCurrencyCode;
+@property (strong, nonatomic) NSMutableArray *poiitems;
 @end
 

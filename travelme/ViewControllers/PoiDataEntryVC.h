@@ -62,6 +62,7 @@
 @property (weak, nonatomic) IBOutlet UIView *ViewNotes;
 @property (weak, nonatomic) IBOutlet UIView *ViewMap;
 @property (weak, nonatomic) IBOutlet UIView *ViewPhotos;
+@property (weak, nonatomic) IBOutlet UIView *ViewTrash;
 
 
 

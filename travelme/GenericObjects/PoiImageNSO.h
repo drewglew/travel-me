@@ -16,4 +16,5 @@
 @property (assign) int KeyImage;
 @property (assign) bool NewImage;
 @property (assign) bool UpdateImage;
+@property (assign) int ImageFlaggedDeleted;
 @end

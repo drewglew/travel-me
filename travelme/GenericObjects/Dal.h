@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#include <stdlib.h>
 #import <sqlite3.h>
 #import "PoiNSO.h"
 #import "PoiImageNSO.h"
@@ -51,4 +52,6 @@
 -(NSMutableArray *)GetImagesForSelectedPoi :(NSString *) RequiredKey;
 -(bool) InsertExchangeRate :(NSString*) LocalCurrencyCode :(NSString*) DateValue :(NSNumber*) Rate;
 -(bool) InsertPayment :(PaymentNSO*) Payment :(ActivityNSO*) Activity;
+-(bool) DeleteImage :(PoiImageNSO*) ImageItem;
+-(PoiNSO*) GetFeaturedPoi;
 @end

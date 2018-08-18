@@ -13,6 +13,13 @@
 
 @implementation MenuVC
 
+
+- (NSURL *)applicationDocumentsDirectory
+{
+    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory
+                                                   inDomains:NSUserDomainMask] lastObject];
+}
+
 /*
  created date:      27/04/2018
  last modified:     28/04/2018
@@ -37,30 +44,39 @@
  */
 - (void)viewDidLoad {
     [super viewDidLoad];
- 
+    self.SetReload = false;
     self.alltripitems = [AppDelegateDef.Db GetProjectContent :nil];
-  /*
-    self.ButtonInfo.layer.cornerRadius = 10;
-    self.ButtonInfo.clipsToBounds = YES;
-
-    self.ButtonProject.layer.cornerRadius = 10; // this value vary as per your desire
-    self.ButtonProject.clipsToBounds = YES;
-    
-    self.ButtonPoi.layer.cornerRadius = 10; // this value vary as per your desire
-    self.ButtonPoi.clipsToBounds = YES;
-  
-    self.ButtonSettings.layer.cornerRadius = 10; // this value vary as per your desire
-    self.ButtonSettings.clipsToBounds = YES;
-   */
     [self LocateTripContent];
     [self LoadSupportingData];
-    
+    [self LoadFeaturedPoi];
 }
+
+/*
+ created date:      18/08/2018
+ last modified:     18/08/2018
+ remarks:
+ */
+-(void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [self.ActivityView stopAnimating];
+
+    if (self.SetReload) {
+        
+        self.alltripitems = [AppDelegateDef.Db GetProjectContent :nil];
+        [self LocateTripContent];
+        [self LoadSupportingData];
+        [self LoadFeaturedPoi];
+        [self.CollectionViewPreviewPanel reloadData];
+    } else {
+        self.SetReload = true;
+    }
+}
+
 
 
 /*
  created date:      15/08/2018
- last modified:     15/08/2018
+ last modified:     17/08/2018
  remarks:
  */
 
@@ -83,14 +99,14 @@
                 lasttrip = trip;
             } else if ([tripdt compare: trip.enddt] == NSOrderedAscending) {
                 lasttrip = trip;
+                lasttrip.timeinverval = 1;
                 tripdt = trip.enddt;
             }
 
         }
     }
     
-    if (lasttrip!=nil) {
-        lasttrip.timeinverval = 1;
+    if (lasttrip.timeinverval==1) {
         [self.selectedtripitems addObject:lasttrip];
     }
 
@@ -122,15 +138,16 @@
             if (tripdt==nil) {
                 tripdt = trip.startdt;
                 nexttrip = trip;
+                nexttrip.timeinverval = 4;
             } else if ([tripdt compare: trip.startdt] == NSOrderedDescending) {
                 nexttrip = trip;
+                nexttrip.timeinverval = 4;
                 tripdt = trip.startdt;
             }
         }
     }
 
-    if (nexttrip!=nil) {
-        nexttrip.timeinverval = 4;
+    if (nexttrip.timeinverval==4) {
         [self.selectedtripitems addObject:nexttrip];
     }
     
@@ -160,12 +177,50 @@
     }
 }
 
+/*
+ created date:      18/08/2018
+ last modified:     18/08/2018
+ remarks:
+ */
+-(void) LoadFeaturedPoi {
+   self.FeaturedPoi = [AppDelegateDef.Db GetFeaturedPoi];
+    
+    NSURL *url = [self applicationDocumentsDirectory];
+    
+    NSData *pngData;
+    
+    if (self.FeaturedPoi.Images.count > 0) {
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"KeyImage == %@", [NSNumber numberWithInt:1]];
+        NSArray *filteredArray = [self.FeaturedPoi.Images filteredArrayUsingPredicate:predicate];
+        
+        PoiImageNSO *KeyImageItem;
+        
+        if (filteredArray.count==0) {
+            KeyImageItem = [self.FeaturedPoi.Images firstObject];
+        } else {
+            KeyImageItem = [filteredArray firstObject];
+        }
+        
+        NSURL *imagefile = [url URLByAppendingPathComponent:KeyImageItem.ImageFileReference];
+        
+        NSError *err;
+        
+        pngData = [NSData dataWithContentsOfURL:imagefile options:NSDataReadingMappedIfSafe error:&err];
+        
+        UIImage *image =[UIImage imageWithData:pngData];
+        
+        self.ImageViewFeaturedPoi.image = image;
+        
+    } else {
+        self.ImageViewFeaturedPoi.image = [UIImage imageNamed:@"Poi"];
+    }   
+}
 
 
 
 /*
  created date:      27/04/2018
- last modified:     15/08/2018
+ last modified:     18/08/2018
  remarks:           segue controls .
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -173,14 +228,20 @@
     // Pass the selected object to the new view controller.
     
     if([segue.identifier isEqualToString:@"ShowPoiList"]){
+        
         PoiSearchVC *controller = (PoiSearchVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.Project = nil;
         controller.Activity = nil;
-    } else  if([segue.identifier isEqualToString:@"ShowProjectList"]){
+    } else if([segue.identifier isEqualToString:@"ShowProjectList"]){
         ProjectListVC *controller = (ProjectListVC *)segue.destinationViewController;
         controller.delegate = self;
-    } 
+    } else if ([segue.identifier isEqualToString:@"ShowFeaturedPoi"]){
+        PoiDataEntryVC *controller= (PoiDataEntryVC *)segue.destinationViewController;
+        controller.delegate = self;
+        controller.PointOfInterest = self.FeaturedPoi;
+        controller.readonlyitem = true;
+    }
 }
 
 
@@ -280,10 +341,45 @@
     
 }
 
+- (IBAction)ButtonFeaturedPoiPressed:(id)sender {
+    
+    
+}
+
+/*
+ created date:      18/08/2018
+ last modified:     18/08/2018
+ remarks:           Opens up the POI search list view.  Activity view needs NSRunLoop command to get time to present it.
+ */
+- (IBAction)ButtonShowPoiListPressed:(id)sender {
+
+    [self.ActivityView startAnimating];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate date]];
+    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    
+    PoiSearchVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"PoiListingViewController"];
+    controller.delegate = self;
+    controller.Project = nil;
+    controller.Activity = nil;
+    
+    [controller setModalPresentationStyle:UIModalPresentationFullScreen];
+    [self presentViewController:controller animated:YES completion:nil];
+    
+    [self.ActivityView stopAnimating];
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)didCreatePoiFromProject:(PoiNSO *)Object {
+    
+}
+
+- (void)didUpdatePoi:(NSString *)Method :(PoiNSO *)Object {
+    
 }
 
 @end

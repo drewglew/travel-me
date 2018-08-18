@@ -196,6 +196,7 @@
         cell.ImageViewTypeOfPoi.image = [UIImage imageNamed:[TypeItems objectAtIndex:[cell.activity.poi.categoryid integerValue]]];
 
         cell.LabelName.text = cell.activity.name;
+        //[cell.LabelName sizeToFit];
         cell.LabelActivityLegend.layer.cornerRadius = 5;
         cell.LabelActivityLegend.layer.masksToBounds = YES;
         NSDateFormatter *dtformatter = [[NSDateFormatter alloc] init];

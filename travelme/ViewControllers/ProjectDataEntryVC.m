@@ -17,7 +17,7 @@
 
 /*
  created date:      29/04/2018
- last modified:     20/07/2018
+ last modified:     17/08/2018
  remarks:
  */
 - (void)viewDidLoad {
@@ -25,9 +25,8 @@
     // Do any additional setup after loading the view.
     if (!self.newitem) {
         if (self.deleteitem) {
-            [self.ButtonAction setTitle:@"Del" forState:UIControlStateNormal];
-            
-            UIImage *btnImage = [UIImage imageNamed:@"DeleteRed"];
+            self.ButtonAction.backgroundColor = [UIColor redColor];
+            UIImage *btnImage = [UIImage imageNamed:@"Delete"];
             [self.ButtonAction setImage:btnImage forState:UIControlStateNormal];
             [self.ButtonAction setTitle:@"" forState:UIControlStateNormal];
             
@@ -35,22 +34,12 @@
             self.LabelInfo.hidden = false;
             self.LabelInfo.text = @"Confirm Deletion";
         } else {
-            [self.ButtonAction setTitle:@"Upd" forState:UIControlStateNormal];
+            [self.ButtonAction setTitle:@"Update" forState:UIControlStateNormal];
         }
         [self LoadExistingData];
         self.updatedimage = false;
     }
-    /*
-    self.TextFieldName.layer.cornerRadius=8.0f;
-    self.TextFieldName.layer.masksToBounds=YES;
-    self.TextFieldName.layer.borderColor=[[UIColor colorWithRed:246.0f/255.0f green:247.0f/255.0f blue:235.0f/255.0f alpha:1.0]CGColor];
-    self.TextFieldName.layer.borderWidth= 1.0f;
 
-    self.TextViewNotes.layer.cornerRadius=8.0f;
-    self.TextViewNotes.layer.masksToBounds=YES;
-    self.TextViewNotes.layer.borderColor=[[UIColor colorWithRed:246.0f/255.0f green:247.0f/255.0f blue:235.0f/255.0f alpha:1.0]CGColor];
-    self.TextViewNotes.layer.borderWidth= 1.0f;
-    */
      
     [self addDoneToolBarToKeyboard:self.TextViewNotes];
     self.TextViewNotes.delegate = self;

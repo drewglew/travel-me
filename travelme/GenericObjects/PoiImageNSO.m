@@ -14,5 +14,6 @@
 @synthesize ImageFileReference;
 @synthesize KeyImage;
 @synthesize NewImage;
+@synthesize ImageFlaggedDeleted;
 
 @end

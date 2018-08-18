@@ -19,7 +19,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     13/08/2018
+ last modified:     18/08/2018
  remarks: TODO - split load existing data into 2 - map data and images.
  */
 - (void)viewDidLoad {
@@ -76,6 +76,9 @@
     self.ViewSelectedKey.layer.cornerRadius=28;
     self.ViewSelectedKey.layer.masksToBounds=YES;
     
+    self.ViewTrash.layer.cornerRadius=28;
+    self.ViewTrash.layer.masksToBounds=YES;
+    
     [self addDoneToolBarToKeyboard:self.TextViewNotes];
     self.TextFieldTitle.delegate = self;
     self.TextViewNotes.delegate = self;
@@ -110,6 +113,9 @@
         self.ViewStarRatings.value = [self.PointOfInterest.averageactivityrating floatValue];
         self.ViewStarRatings.hidden=false;
     }
+    
+    NSIndexPath *indexPath = [NSIndexPath indexPathForItem:[self.PointOfInterest.categoryid unsignedLongValue] inSection:0];
+    [self.CollectionViewTypes scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
     
 }
 
@@ -214,42 +220,42 @@
                              ];
     
     self.TypeDistanceItems  = @[
-                             @40, // accomodation
-                             @500, // airport
-                             @20000, // astronaut
-                             @50, // beer
-                             @50, // bicyle
-                             @300, //bridge
-                             @100, // car hire
-                             @500, // casino
-                             @200, // church
-                             @2000, // city
-                             @250, // club
-                             @250, // concert
-                             @50, // food and drink
-                             @400, // historic
-                             @20, // house
-                             @500, // lake
-                             @250, // lighthouse
-                             @10000, // metropolis
-                             @10000, // misc
-                             @1000, // monument
-                             @1000, // museum
-                             @10000, // nature
-                             @250, // office
-                             @150, // restuarnat
-                             @5000, // scenary
-                             @5000, // coast
-                             @1000, // ship
-                             @250, // shopping
-                             @5000, // skiing
-                             @250, // sports
-                             @150, // theatre
-                             @500, // theme park
-                             @150, // train
-                             @10000, // trekking
-                             @150, // venue
-                             @1000 // zoo
+                             @40, // accomodation 0
+                             @500, // airport 1
+                             @20000, // astronaut 2
+                             @50, // beer 3
+                             @50, // bicyle 4
+                             @300, //bridge 5
+                             @100, // car hire 6
+                             @500, // casino 7
+                             @200, // church 8
+                             @2000, // city 9
+                             @250, // club 10
+                             @250, // concert 11
+                             @50, // food and drink 12
+                             @400, // historic, 13
+                             @20, // house, 14
+                             @500, // lake, 15
+                             @250, // lighthouse, 16
+                             @10000, // metropolis, 17
+                             @10000, // misc, 18
+                             @1000, // monument, 19
+                             @1000, // museum, 20
+                             @10000, // nature, 21
+                             @250, // office, 22
+                             @150, // restuarnat, 23
+                             @5000, // scenary, 24
+                             @5000, // coast, 25
+                             @1000, // ship, 26
+                             @250, // shopping, 27
+                             @5000, // skiing, 28
+                             @250, // sports, 29
+                             @150, // theatre, 30
+                             @500, // theme park, 31
+                             @150, // train, 32
+                             @10000, // trekking, 33
+                             @150, // venue, 34
+                             @1000 // zoo, 35
                              ];
 
     self.LabelPoi.text = [self GetPoiLabelWithType:self.PointOfInterest.categoryid];
@@ -326,11 +332,12 @@
         imageitem.Image = [UIImage imageWithData:pngData];
         if (imageitem.KeyImage) {
             self.SelectedImageReference = imageitem.ImageFileReference;
-            self.SelectedImageIndex = [NSNumber numberWithLong:ImageIndex];;
+            self.SelectedImageIndex = [NSNumber numberWithLong:ImageIndex];
             self.ViewSelectedKey.hidden = false;
             [self.ImagePicture setImage:imageitem.Image];
             [self.ImageViewKey setImage:imageitem.Image];
         }
+        
         ImageIndex ++;
     }
     /* Text fields and Segment */
@@ -394,7 +401,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     19/07/2018
+ last modified:     17/08/2018
  remarks:
  */
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -420,6 +427,12 @@
                     self.ViewSelectedKey.hidden = false;
                 }
                 [self.ImagePicture setImage:item.Image];
+                if (item.ImageFlaggedDeleted==0) {
+                    self.ViewTrash.hidden = true;
+                } else {
+                     self.ViewTrash.hidden = false;
+                }
+
             }
             else {
                 PoiImageNSO *item = [self.PointOfInterest.Images objectAtIndex:indexPath.row];
@@ -427,9 +440,11 @@
             }
         }
     } else {
-        self.PointOfInterest.categoryid = [NSNumber numberWithLong:indexPath.row];
-         self.LabelPoi.text = [NSString stringWithFormat:@"Point Of Interest - %@",[self.TypeLabelItems objectAtIndex:[self.PointOfInterest.categoryid longValue]]];
-        [collectionView reloadData];
+        if (!self.readonlyitem) {
+            self.PointOfInterest.categoryid = [NSNumber numberWithLong:indexPath.row];
+            self.LabelPoi.text = [NSString stringWithFormat:@"Point Of Interest - %@",[self.TypeLabelItems objectAtIndex:[self.PointOfInterest.categoryid longValue]]];
+            [collectionView reloadData];
+        }
     }
 }
 
@@ -440,10 +455,10 @@
  */
 -(void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
-    
+    /*
     NSIndexPath *indexPath = [NSIndexPath indexPathForItem:[self.PointOfInterest.categoryid unsignedLongValue] inSection:0];
     [self.CollectionViewTypes scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
-    
+    */
 }
 
 
@@ -731,7 +746,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     10/08/2018
+ last modified:     18/08/2018
  remarks:
  */
 - (IBAction)ActionButtonPressed:(id)sender {
@@ -788,13 +803,15 @@
         
             NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/Images/%@",self.PointOfInterest.key]];
         
-            [[NSFileManager defaultManager] createDirectoryAtPath:dataPath withIntermediateDirectories:YES attributes:nil error:nil];
-        
-            int counter = 1;
-        
+            NSFileManager *fm = [NSFileManager defaultManager];
+            [fm createDirectoryAtPath:dataPath withIntermediateDirectories:YES attributes:nil error:nil];
+
+            NSInteger count = [self.PointOfInterest.Images count];
+            for (NSInteger index = (count - 1); index >= 0; index--) {
             /* handle new images, updated images are already identified in the button pressed actions */
-            for (PoiImageNSO *imageitem in self.PointOfInterest.Images) {
-            
+            //for (PoiImageNSO *imageitem in self.PointOfInterest.Images) {
+                PoiImageNSO *imageitem = self.PointOfInterest.Images[index];
+                
                 if ([imageitem.ImageFileReference isEqualToString:@""] || imageitem.ImageFileReference==nil) {
                     imageitem.NewImage = true;
                     NSData *imageData =  UIImagePNGRepresentation(imageitem.Image);
@@ -803,13 +820,24 @@
                     [imageData writeToFile:filepathname atomically:YES];
                     imageitem.ImageFileReference = [NSString stringWithFormat:@"Images/%@/%@",self.PointOfInterest.key,filename];
                     NSLog(@"new image");
+                } else if (imageitem.ImageFlaggedDeleted) {
+                    
+                    NSString *filepathname = [imagesDirectory stringByAppendingPathComponent:imageitem.ImageFileReference];
+                    NSError *error = nil;
+                    BOOL success = [fm removeItemAtPath:filepathname error:&error];
+                    if (!success || error) {
+                        NSLog(@"something failed in deleting unwanted data");
+                    }
+                    [AppDelegateDef.Db DeleteImage :imageitem];
+                    [self.PointOfInterest.Images removeObjectAtIndex:index];
                 } else if (imageitem.UpdateImage) {
                     NSData *imageData =  UIImagePNGRepresentation(imageitem.Image);
                     NSString *filepathname = [imagesDirectory stringByAppendingPathComponent:imageitem.ImageFileReference];
                     [imageData writeToFile:filepathname atomically:YES];
                     NSLog(@"updated image");
+                    imageitem.UpdateImage = false;
                 }
-                counter++;
+                
             }
         }
         // TODO - update only contains main items at the moment.  we need to apply columns all as anything can be updated now.
@@ -907,10 +935,33 @@
 
 /*
  created date:      21/05/2018
- last modified:     21/05/2018
+ last modified:     18/08/2018
  remarks:
  */
 - (IBAction)ButtonImageDeletePressed:(id)sender {
+    bool DeletedFlagEnabled = false;
+    if (self.PointOfInterest.Images.count==0) {
+        self.ViewBlurImageOptionPanel.hidden = true;
+    } else {
+        for (PoiImageNSO *item in self.PointOfInterest.Images) {
+            if ([item.ImageFileReference isEqualToString:self.SelectedImageReference]) {
+                if (item.ImageFlaggedDeleted==0) {
+                    if (item.KeyImage==0) {
+                        self.ViewTrash.hidden = false;
+                        item.ImageFlaggedDeleted = 1;
+                        DeletedFlagEnabled = true;
+                        item.UpdateImage = true;
+                    }
+                } else {
+                    self.ViewTrash.hidden = true;
+                    item.ImageFlaggedDeleted = 0;
+                }
+            }
+        }
+    }
+
+    
+    
 }
 
 /*
@@ -929,10 +980,12 @@
         for (PoiImageNSO *item in self.PointOfInterest.Images) {
             if ([item.ImageFileReference isEqualToString:self.SelectedImageReference]) {
                 if (item.KeyImage==0) {
-                    self.ViewSelectedKey.hidden = false;
-                    item.KeyImage = 1;
-                    KeyImageEnabled = true;
-                    item.UpdateImage = true;
+                    if (item.ImageFlaggedDeleted==0) {
+                        self.ViewSelectedKey.hidden = false;
+                        item.KeyImage = 1;
+                        KeyImageEnabled = true;
+                        item.UpdateImage = true;
+                    }
                 } else {
                     self.ViewSelectedKey.hidden = true;
                     item.KeyImage = 0;
@@ -1008,7 +1061,9 @@
 - (IBAction)SwitchViewPhotoOptionsChanged:(id)sender {
     [self.view layoutIfNeeded];
     bool showkeyview = self.ViewSelectedKey.hidden;
+    bool showdeletedflag = self.ViewTrash.hidden;
     self.ViewSelectedKey.hidden = true;
+    self.ViewTrash.hidden = true;
     if (self.ViewBlurHeightConstraint.constant==60) {
         
         [UIView animateWithDuration:0.5 animations:^{
@@ -1016,6 +1071,7 @@
             [self.view layoutIfNeeded];
         } completion:^(BOOL finished) {
             self.ViewSelectedKey.hidden = showkeyview;
+            self.ViewTrash.hidden = showdeletedflag;
         }];
         
     } else {
@@ -1024,6 +1080,7 @@
             [self.view layoutIfNeeded];
         } completion:^(BOOL finished) {
             self.ViewSelectedKey.hidden = showkeyview;
+            self.ViewTrash.hidden = showdeletedflag;
         }];
     }
 }

@@ -434,7 +434,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     15/08/2018
+ last modified:     18/08/2018
  remarks:           
  */
 -(bool) UpdatePoiItem :(PoiNSO*) Poi {
@@ -464,7 +464,7 @@
     sqlite3_bind_text(stmt, 11, Poi.postcode==nil?"":[Poi.postcode UTF8String], -1, SQLITE_TRANSIENT);
     sqlite3_bind_double(stmt, 12, [Poi.lat doubleValue]);
     sqlite3_bind_double(stmt, 13, [Poi.lat doubleValue]);
-    sqlite3_bind_text(stmt, 1, [dateString UTF8String] , -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 14, [dateString UTF8String] , -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, 15, Poi.key==nil?"":[Poi.key UTF8String], -1, SQLITE_TRANSIENT);
 
     if (sqlite3_step(stmt) != SQLITE_DONE) {
@@ -766,6 +766,43 @@
     
     return poidata;
 }
+
+/*
+ created date:      18/08/2018
+ last modified:     18/08/2018
+ remarks:           Featured Poi item for startup view
+ */
+
+-(PoiNSO*)GetFeaturedPoi {
+    
+    PoiNSO *FeaturedPoi = [[PoiNSO alloc] init];
+    
+    NSMutableArray *poikeys = [[NSMutableArray alloc] init];
+    
+    NSString *selectSQL = [NSString stringWithFormat:@"SELECT key from poi WHERE categoryid not in (0,1,4,6,14,22,23,27,32)"];
+    sqlite3_stmt *statement;
+    const char *select_statement = [selectSQL UTF8String];
+
+    if (sqlite3_prepare_v2(_DB, select_statement, -1, &statement, NULL) == SQLITE_OK) {
+        //Loop through all the returned rows (should be just one)
+        while (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            NSString *key = [NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, 0)];
+            [poikeys addObject:key];
+        }
+    }
+    sqlite3_finalize(statement);
+    
+    int numberofpois = (int)poikeys.count;
+    
+    if (numberofpois!=0) {
+        int featuredIndex = arc4random_uniform(numberofpois);
+        FeaturedPoi = [[self GetPoiContent:[poikeys objectAtIndex:featuredIndex] :nil :nil] firstObject];
+    }
+    return FeaturedPoi;
+}
+
+
 
 
 
@@ -1260,7 +1297,30 @@
     return retVal;
 }
 
-
+/*
+ created date:      18/08/2018
+ last modified:     18/08/2018
+ remarks:
+ */
+-(bool) DeleteImage :(PoiImageNSO*) ImageItem {
+    
+    bool retVal = true;
+    
+    sqlite3_stmt *statement;
+    NSString *deleteSQL = [NSString stringWithFormat:@"DELETE FROM imageitem WHERE filename = '%@'",ImageItem.ImageFileReference];
+    const char *deleteStatement = [deleteSQL UTF8String];
+    sqlite3_prepare_v2(_DB, deleteStatement, -1, &statement, NULL);
+    
+    if (sqlite3_step(statement) != SQLITE_DONE) {
+        NSLog(@"Failed to delete items from imageitem");
+        retVal = false;
+    } else {
+        NSLog(@"Successfuly deleted items from imageitem");
+    }
+    sqlite3_finalize(statement);
+    
+    return retVal;
+}
 
 /*
  created date:      05/05/2018

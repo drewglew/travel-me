@@ -12,8 +12,10 @@
 #import "ProjectListVC.h"
 #import "ProjectDataEntryVC.h"
 #import "ActivityListVC.h"
+#import "PoiNSO.h"
+#import "PoiDataEntryVC.h"
 
-@interface MenuVC : UIViewController <UICollectionViewDelegate, UICollectionViewDataSource, ProjectDataEntryDelegate, ActivityListDelegate>
+@interface MenuVC : UIViewController <UICollectionViewDelegate, UICollectionViewDataSource, ProjectDataEntryDelegate, ActivityListDelegate, PoiDataEntryDelegate>
 @property (weak, nonatomic) IBOutlet UIButton *ButtonProject;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonPoi;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonInfo;
@@ -21,5 +23,12 @@
 @property (strong, nonatomic) NSMutableArray *alltripitems;
 @property (strong, nonatomic) NSMutableArray *selectedtripitems;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonSettings;
+@property (weak, nonatomic) IBOutlet UIImageView *ImageViewFeaturedPoi;
+
+
+@property (assign) bool SetReload;
+@property (strong, nonatomic) PoiNSO *FeaturedPoi;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *ActivityView;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonShowPoiListing;
 
 @end

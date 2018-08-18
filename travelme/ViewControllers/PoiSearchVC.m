@@ -22,7 +22,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     11/08/2018
+ last modified:     18/08/2018
  remarks:
  */
 - (void)viewDidLoad {
@@ -41,7 +41,7 @@
     } else {
         // project is available
         // [self.SegmentPoiFilterList setTitle:@"Project Countries" forSegmentAtIndex:0];
-        
+        self.SegmentCountries.selectedSegmentIndex=0;
         self.countries = [AppDelegateDef.Db GetProjectCountries :self.Project.key];
         
     }
@@ -61,9 +61,7 @@
     self.ButtonFilter.layer.cornerRadius = 25;
     self.ButtonFilter.clipsToBounds = YES;
     self.ButtonFilter.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    
-    self.poiitems = [[NSMutableArray alloc] init];
+
     self.poifiltereditems = [[NSMutableArray alloc] init];
 
     self.TypeItems = @[@"Cat-Accomodation",
@@ -104,8 +102,9 @@
                        @"Cat-Zoo"
                        ];
     
-    [self LoadPoiData];
-    
+    if (AppDelegateDef.poiitems.count==0) {
+        [self LoadPoiData];
+    }
     [self RefreshPoiFilteredData :true];
    
     UILongPressGestureRecognizer *lpgr
@@ -175,7 +174,7 @@
 
 /*
  created date:      03/05/2018
- last modified:     12/08/2018
+ last modified:     18/08/2018
  remarks:
  */
 -(void)RefreshPoiFilteredData :(bool) UpdateTypes {
@@ -194,7 +193,7 @@
     } else {
         usabilityPredicate = [NSPredicate predicateWithFormat:@"connectedactivitycount >= 0"];
     }
-    tempPoi = [self.poiitems filteredArrayUsingPredicate:usabilityPredicate];
+    tempPoi = [AppDelegateDef.poiitems filteredArrayUsingPredicate:usabilityPredicate];
 
     if (self.Project != nil && self.SegmentCountries.selectedSegmentIndex == 0) {
         NSSet *projectcountries = [NSSet setWithArray:self.countries];
@@ -258,23 +257,30 @@
 
 /*
  created date:      30/04/2018
- last modified:     11/08/2018
+ last modified:     18/08/2018
  remarks:
  */
 -(void) LoadPoiData {
 
-    self.poiitems = [AppDelegateDef.Db GetPoiData :nil];
+    AppDelegateDef.poiitems = [AppDelegateDef.Db GetPoiData :nil];
 
     NSURL *url = [self applicationDocumentsDirectory];
 
     NSData *pngData;
-    for (PoiNSO *poi in self.poiitems) {
+    for (PoiNSO *poi in AppDelegateDef.poiitems) {
         
         if (poi.Images.count > 0) {
             NSPredicate *predicate = [NSPredicate predicateWithFormat:@"KeyImage == %@", [NSNumber numberWithInt:1]];
             NSArray *filteredArray = [poi.Images filteredArrayUsingPredicate:predicate];
-            PoiImageNSO *KeyImageItem = [filteredArray firstObject];
-
+            
+            PoiImageNSO *KeyImageItem;
+            
+            if (filteredArray.count==0) {
+                KeyImageItem = [poi.Images firstObject];
+            } else {
+                KeyImageItem = [filteredArray firstObject];
+            }
+            
             NSURL *imagefile = [url URLByAppendingPathComponent:KeyImageItem.ImageFileReference];
             
             NSError *err;
@@ -431,7 +437,7 @@
 }
 /*
  created date:      02/05/2018
- last modified:     12/08/2018
+ last modified:     18/08/2018
  remarks:           Might not be totally necessary, but seperated out from editActionsForRowAtIndexPath method above.
  */
 - (void)tableView:(UITableView *)tableView deletePoi:(NSIndexPath *)indexPath  {
@@ -439,14 +445,14 @@
     {
         PoiNSO *poi = [self.poifiltereditems objectAtIndex:indexPath.row];
         
-        NSLog(@"%lu", (unsigned long)[self.poiitems count]);
+        NSLog(@"%lu", (unsigned long)[AppDelegateDef.poiitems count]);
         
-        for (int index = 0; index<[self.poiitems count]; index++)
+        for (int index = 0; index<[AppDelegateDef.poiitems count]; index++)
         {
-            PoiNSO *p = [self.poiitems objectAtIndex:index];
+            PoiNSO *p = [AppDelegateDef.poiitems objectAtIndex:index];
             
             if ([poi.key isEqualToString:p.key]) {
-                [self.poiitems removeObjectAtIndex:index];
+                [AppDelegateDef.poiitems removeObjectAtIndex:index];
                 [self RefreshPoiFilteredData:true];
                 break;
             }
@@ -684,7 +690,7 @@
 
 /*
  created date:      12/08/2018
- last modified:     12/08/2018
+ last modified:     18/08/2018
  remarks:
  */
 - (void)didUpdatePoi :(NSString*)Method :(PoiNSO*)Object {
@@ -692,18 +698,18 @@
     Object.searchstring = [NSString stringWithFormat:@"%@|%@|%@|%@|%@|%@|%@",Object.name,Object.administrativearea,Object.subadministrativearea,Object.postcode,Object.locality,Object.sublocality,Object.country];
     
     if ([Method isEqualToString:@"modified"]) {
-        for (NSUInteger index = [self.poiitems count]; index<=0; index--)
+        for (NSUInteger index = [AppDelegateDef.poiitems count]; index<=0; index--)
         {
-            PoiNSO *p = [self.poiitems objectAtIndex:index];
+            PoiNSO *p = [AppDelegateDef.poiitems objectAtIndex:index];
             if ([Object.key isEqualToString:p.key]) {
-                [self.poiitems replaceObjectAtIndex:index withObject:Object];
+                [AppDelegateDef.poiitems replaceObjectAtIndex:index withObject:Object];
                 break;
             }
         }
         
     } else  if ([Method isEqualToString:@"created"]) {
         Object.connectedactivitycount = [NSNumber numberWithInt:0];
-        [self.poiitems addObject:Object];
+        [AppDelegateDef.poiitems addObject:Object];
     }
     
     NSURL *url = [self applicationDocumentsDirectory];

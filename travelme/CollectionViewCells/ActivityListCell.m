@@ -32,7 +32,14 @@
     }
 }
 */
-
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    self.ButtonDelete.layer.cornerRadius = 15;
+    self.ButtonDelete.clipsToBounds = YES;
+    self.ButtonDelete.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
+    
+   
+}
 
 
 @end

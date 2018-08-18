@@ -25,6 +25,8 @@
     NSLocale *theLocale = [NSLocale currentLocale];
     self.HomeCurrencyCode = [theLocale objectForKey:NSLocaleCurrencyCode];
     
+    self.poiitems = [[NSMutableArray alloc] init];
+    
    /* if (@available(iOS 11, *)) {
         UIImageView.appearance.accessibilityIgnoresInvertColors=true;
     }*/
