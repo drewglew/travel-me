@@ -16,24 +16,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    
-    // Create the object
-    
-    
-
-
-    /*RLMLoginViewController *loginController = [[RLMLoginViewController alloc] initWithStyle:LoginViewControllerStyleLightTranslucent];
-    
-    // Configure any of the inputs before presenting it
-    loginController.serverURL = @"localhost";
-    
-    // Set a closure that will be called on successful login
-    loginController.loginSuccessfulHandler = ^(RLMSyncUser *user) {
-        // Provides the successfully authenticated RLMSyncUser object
-    };
-    */
-    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -41,19 +23,10 @@
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 - (IBAction)LoginPressed:(id)sender {
-   // NSURL *authURL = [NSURL URLWithString:@"https://incredible-wooden-hat.de1a.cloud.realm.io"];
-    
+   
      NSURL *authURL = [NSURL URLWithString:@"https://incredible-wooden-hat.de1a.cloud.realm.io"];
     
     
@@ -65,20 +38,15 @@
             [user logOut];
         }
         */
-        RLMSyncCredentials *usernameCredentials = [RLMSyncCredentials credentialsWithUsername:self.TextFieldUserName.text password:self.TextFieldPassword.text
-                                                                                     register:NO];
+        RLMSyncCredentials *usernameCredentials = [RLMSyncCredentials credentialsWithUsername:self.TextFieldUserName.text password:self.TextFieldPassword.text register:NO];
         [RLMSyncUser logInWithCredentials:usernameCredentials
                             authServerURL:authURL
                              onCompletion:^(RLMSyncUser *user, NSError *error) {
                                  if (user) {
-                                     
-                                     
-                                     
+    
                                      // can now open a synchronized RLMRealm with this user
                                      RLMRealmConfiguration *config = [user configuration];
-                                     
-                                     
-                                     
+
                                      [RLMRealm asyncOpenWithConfiguration:config
                                                             callbackQueue:dispatch_get_main_queue()
                                                                  callback:^(RLMRealm *realm, NSError *error) {
@@ -131,15 +99,34 @@
     [RLMSyncUser logInWithCredentials:usernameCredentials
                             authServerURL:authURL
                              onCompletion:^(RLMSyncUser *user, NSError *error) {
-                                 if (user) {
+                                if (user) {
                                      // can now open a synchronized RLMRealm with this user
+                                     RLMRealmConfiguration *config = [user configuration];
                                      
+                                     [RLMRealm asyncOpenWithConfiguration:config
+                                                            callbackQueue:dispatch_get_main_queue()
+                                                                 callback:^(RLMRealm *realm, NSError *error) {
+                                     if (realm) {
+                                         self.LabelInfo.text = @"Success!";
+                                         NSURL *syncServerURL = [NSURL URLWithString: @"realms://incredible-wooden-hat.de1a.cloud.realm.io/~/trippo"];
+                                         
+                                         RLMRealmConfiguration.defaultConfiguration = [user configurationWithURL:syncServerURL fullSynchronization:YES];
+                                         
+                                         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+                                         MenuVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"MenuViewController"];
+                                         controller.delegate = self;
+                                         controller.realm = realm;
+                                         [controller setModalPresentationStyle:UIModalPresentationFullScreen];
+                                         [self presentViewController:controller animated:YES completion:nil];
+                                         
+                                     }
+                                }];
                                      
-                                 } else if (error) {
-                                     self.LabelInfo.text = @"Error registering user!";
-                                     // handle error
-                                 }
-                             }];
+                            } else if (error) {
+                                self.LabelInfo.text = @"Error registering user!";
+                                // handle error
+                            }
+                        }];
         
     }
 

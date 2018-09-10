@@ -37,6 +37,7 @@
 @property (weak, nonatomic) IBOutlet UIView *ViewNotes;
 @property (weak, nonatomic) IBOutlet UIView *ViewMain;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonUploadImage;
 
 
 

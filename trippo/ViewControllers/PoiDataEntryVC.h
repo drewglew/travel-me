@@ -82,6 +82,7 @@
 @property (weak, nonatomic) IBOutlet HCSStarRatingView *ViewStarRatings;
 @property (weak, nonatomic) IBOutlet UILabel *LabelOccurances;
 @property (weak, nonatomic) IBOutlet UILabel *LabelPhotoInfo;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonUploadImages;
 
 
 @end

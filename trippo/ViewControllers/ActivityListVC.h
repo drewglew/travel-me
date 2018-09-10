@@ -22,7 +22,7 @@
 @protocol ActivityListDelegate <NSObject>
 @end
 
-@interface ActivityListVC : UIViewController <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, PoiSearchDelegate, ActivityDelegate, ScheduleListDelegate, PaymentListingDelegate>
+@interface ActivityListVC : UIViewController <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, PoiSearchDelegate, ActivityDataEntryDelegate, ScheduleListDelegate, PaymentListingDelegate>
 
 @property (assign) bool editmode;
 
@@ -38,6 +38,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonRouting;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonPayment;
+@property (assign) bool ImagesNeedUpdating;
 @property RLMRealm *realm;
 
 @end

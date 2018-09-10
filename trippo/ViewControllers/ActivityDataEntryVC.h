@@ -22,7 +22,8 @@
 #import "ActivityImageCell.h"
 
 
-@protocol ActivityDelegate <NSObject>
+@protocol ActivityDataEntryDelegate <NSObject>
+- (void)didUpdateActivityImages :(bool) ForceUpdate;
 @end
 
 @interface ActivityDataEntryVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, MKMapViewDelegate, PoiDataEntryDelegate, SelectDateRangeDelegate, DirectionsDelegate, PaymentListingDelegate, UITextViewDelegate,UITextFieldDelegate, UICollectionViewDelegate, UICollectionViewDataSource,UIImagePickerControllerDelegate, UINavigationControllerDelegate, ImagePickerDelegate, UIScrollViewDelegate>
@@ -32,8 +33,9 @@
 @property (assign) bool deleteitem;
 @property (assign) int imagestate;
 @property (nonatomic) NSString *SelectedImageReference;
+@property (nonatomic) NSString *SelectedImageKey;
 @property (nonatomic) NSNumber *SelectedImageIndex;
-@property (nonatomic, weak) id <ActivityDelegate> delegate;
+@property (nonatomic, weak) id <ActivityDataEntryDelegate> delegate;
 @property ActivityRLM *Activity;
 @property PoiRLM *Poi;
 @property TripRLM *Trip;
@@ -69,6 +71,8 @@
 @property (weak, nonatomic) IBOutlet UIScrollView *ScrollViewImage;
 @property (strong, nonatomic) NSArray *TypeDistanceItems;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewKeyActivity;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonUploadImage;
+
 
 @end
 

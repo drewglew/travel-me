@@ -38,6 +38,11 @@
     self.ButtonDelete.clipsToBounds = YES;
     self.ButtonDelete.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
     
+
+    self.ViewPoiType.layer.cornerRadius = 15;
+    self.ViewPoiType.clipsToBounds = YES;
+    
+    
    
 }
 

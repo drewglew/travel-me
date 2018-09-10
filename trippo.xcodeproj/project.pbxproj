@@ -23,6 +23,8 @@
 		3A224CC92097950600075457 /* ActivityDataEntryVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CC82097950600075457 /* ActivityDataEntryVC.m */; };
 		3A224CCC2097B39F00075457 /* DatePickerRangeVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CCB2097B39F00075457 /* DatePickerRangeVC.m */; };
 		3A224CCF209A178700075457 /* ToolBoxNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CCE209A178700075457 /* ToolBoxNSO.m */; };
+		3A291BD5213D917500FDFDFB /* ExchangeRateRLM.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A291BD4213D917500FDFDFB /* ExchangeRateRLM.m */; };
+		3A291BD8213D949F00FDFDFB /* ExpenseRLM.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A291BD7213D949F00FDFDFB /* ExpenseRLM.m */; };
 		3A3075DE21220446007D53C9 /* HCSStarRatingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A3075DC21220445007D53C9 /* HCSStarRatingView.m */; };
 		3A374EE620936A9300E5A652 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374EE520936A9300E5A652 /* AppDelegate.m */; };
 		3A374EEC20936A9300E5A652 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3A374EEA20936A9300E5A652 /* Main.storyboard */; };
@@ -122,6 +124,10 @@
 		3A224CCB2097B39F00075457 /* DatePickerRangeVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DatePickerRangeVC.m; sourceTree = "<group>"; };
 		3A224CCD209A178700075457 /* ToolBoxNSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ToolBoxNSO.h; sourceTree = "<group>"; };
 		3A224CCE209A178700075457 /* ToolBoxNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ToolBoxNSO.m; sourceTree = "<group>"; };
+		3A291BD3213D917500FDFDFB /* ExchangeRateRLM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExchangeRateRLM.h; sourceTree = "<group>"; };
+		3A291BD4213D917500FDFDFB /* ExchangeRateRLM.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExchangeRateRLM.m; sourceTree = "<group>"; };
+		3A291BD6213D949F00FDFDFB /* ExpenseRLM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpenseRLM.h; sourceTree = "<group>"; };
+		3A291BD7213D949F00FDFDFB /* ExpenseRLM.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExpenseRLM.m; sourceTree = "<group>"; };
 		3A3075DC21220445007D53C9 /* HCSStarRatingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HCSStarRatingView.m; sourceTree = "<group>"; };
 		3A3075DD21220445007D53C9 /* HCSStarRatingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HCSStarRatingView.h; sourceTree = "<group>"; };
 		3A374EE120936A9300E5A652 /* trippo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = trippo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -442,6 +448,10 @@
 				3AF785E121319D2100DD5A5B /* ImageCollectionRLM.m */,
 				3ACDD0F2213858AF0017E765 /* CountryRLM.h */,
 				3ACDD0F3213858AF0017E765 /* CountryRLM.m */,
+				3A291BD3213D917500FDFDFB /* ExchangeRateRLM.h */,
+				3A291BD4213D917500FDFDFB /* ExchangeRateRLM.m */,
+				3A291BD6213D949F00FDFDFB /* ExpenseRLM.h */,
+				3A291BD7213D949F00FDFDFB /* ExpenseRLM.m */,
 			);
 			path = Realm;
 			sourceTree = "<group>";
@@ -556,6 +566,7 @@
 				3A224CC02096E2C700075457 /* ActivityListCell.m in Sources */,
 				3AA4DA6B2126807400F7CAC9 /* GraphView.m in Sources */,
 				3A634970212F12AA00BE53FC /* SettingsVC.m in Sources */,
+				3A291BD8213D949F00FDFDFB /* ExpenseRLM.m in Sources */,
 				3A224CBD2095F1FD00075457 /* ActivityListVC.m in Sources */,
 				3A374EFC209372CC00E5A652 /* MenuVC.m in Sources */,
 				3AF785DC21319BB600DD5A5B /* ActivityRLM.m in Sources */,
@@ -593,6 +604,7 @@
 				3AEE018F20A0B05700AE260E /* AnnotationMK.m in Sources */,
 				3AAB60C220FCFCE800A22047 /* NearbyPoiCell.m in Sources */,
 				3A374F12209386F700E5A652 /* PoiListCell.m in Sources */,
+				3A291BD5213D917500FDFDFB /* ExchangeRateRLM.m in Sources */,
 				3A224CAF2094946800075457 /* PoiImageNSO.m in Sources */,
 				3A12B8DD21010BF4006B621D /* Reachability.m in Sources */,
 				3A9F73AF20A3747300D61666 /* PaymentNSO.m in Sources */,

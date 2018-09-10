@@ -22,7 +22,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     18/08/2018
+ last modified:     10/09/2018
  remarks:
  */
 - (void)viewDidLoad {
@@ -32,18 +32,33 @@
     self.TableViewSearchPoiItems.rowHeight = 100;
     
     self.SegmentCountries.selectedSegmentIndex=1;
-    if (self.Project == nil) {
+    if (self.TripItem == nil) {
         // we are arriving directly from the menu
-        // [self.SegmentPoiFilterList setTitle:@"Unused" forSegmentAtIndex:0];
+        //[self.SegmentPoiFilterList setTitle:@"Unused" forSegmentAtIndex:0];
         self.SegmentCountries.selectedSegmentIndex=1;
         self.SegmentCountries.enabled = false;
         
     } else {
         // project is available
-        // [self.SegmentPoiFilterList setTitle:@"Project Countries" forSegmentAtIndex:0];
         self.SegmentCountries.selectedSegmentIndex=0;
-        //self.countries = [AppDelegateDef.Db GetProjectCountries :self.Project.key];
+
+        NSArray *keypaths  = [[NSArray alloc] initWithObjects:@"poikey", nil];
+        RLMResults <ActivityRLM*> *activities = [[ActivityRLM objectsWhere:@"tripkey = %@",self.TripItem.key] distinctResultsUsingKeyPaths:keypaths];
         
+        self.countries = [[NSMutableArray alloc] init];
+        for (ActivityRLM *activityobj in activities) {
+            PoiRLM *poi = [PoiRLM objectForPrimaryKey:activityobj.poikey];
+            bool found=false;
+            for (NSString *country in self.countries) {
+                if ([country isEqualToString:poi.countrycode]) {
+                    found=true;
+                    break;
+                }
+            }
+            if (!found) {
+                [self.countries addObject:poi.countrycode];
+            }
+        }
     }
     
     self.ButtonNew.layer.cornerRadius = 25;
@@ -63,17 +78,12 @@
     self.ButtonFilter.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
 
     /* user selected specific option from startup view */
-    self.poicollection = [PoiRLM allObjects];
-    
     __weak typeof(self) weakSelf = self;
+    
     self.notification = [self.realm addNotificationBlock:^(NSString *note, RLMRealm *realm) {
         [weakSelf RefreshPoiFilteredData:true];
         [weakSelf.TableViewSearchPoiItems reloadData];
     }];
-    
-    
-    
-    self.poifiltereditems = [[NSMutableArray alloc] init];
 
     self.TypeItems = @[@"Cat-Accomodation",
                        @"Cat-Airport",
@@ -113,12 +123,12 @@
                        @"Cat-Zoo"
                        ];
     
-   
     
-    [self RefreshPoiFilteredData :true];
     
     [self LoadPoiBackgroundImageData];
     
+    [self RefreshPoiFilteredData :true];
+
     UILongPressGestureRecognizer *lpgr
     = [[UILongPressGestureRecognizer alloc]
        initWithTarget:self action:@selector(handleLongPress:)];
@@ -171,9 +181,7 @@
  */
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-//     if (self.Project == nil) {
-//         [self LoadPoiData];
-//     }
+
     [UISearchBar appearance].tintColor = [UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0]; [[UITextField appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setDefaultTextAttributes:@{NSForegroundColorAttributeName: [UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0]}];
     
 }
@@ -186,26 +194,38 @@
 
 /*
  created date:      03/05/2018
- last modified:     18/08/2018
+ last modified:     10/09/2018
  remarks:
  */
 -(void)RefreshPoiFilteredData :(bool) UpdateTypes {
-
+    
     self.poifilteredcollection = [PoiRLM allObjects];
-    //NSPredicate *usabilityPredicate;
-    /*
-    if (self.SegmentPoiFilterList.selectedSegmentIndex == 0) {
-        NSLog(@"unused");
-        usabilityPredicate = [NSPredicate predicateWithFormat:@"connectedactivitycount = 0"];
-    } else if (self.SegmentPoiFilterList.selectedSegmentIndex == 2) {
-        NSLog(@"used");
-        usabilityPredicate = [NSPredicate predicateWithFormat:@"connectedactivitycount > 0"];
-    } else {
-        usabilityPredicate = [NSPredicate predicateWithFormat:@"connectedactivitycount >= 0"];
+    
+    if (self.SegmentPoiFilterList.selectedSegmentIndex != 1) {
+        /* get distinct poi items from activities */
+        NSArray *keypaths  = [[NSArray alloc] initWithObjects:@"poikey", nil];
+        RLMResults<ActivityRLM*> *used = [[ActivityRLM allObjects] distinctResultsUsingKeyPaths:keypaths];
+        
+        NSMutableArray *poiitems = [[NSMutableArray alloc] init];
+        for (ActivityRLM *usedPois in used) {
+            [poiitems addObject:usedPois.poikey];
+        }
+        NSSet *typeset = [[NSSet alloc] initWithArray:poiitems];
+        
+        if (self.SegmentPoiFilterList.selectedSegmentIndex == 0) {
+            NSLog(@"unused");
+
+            self.poifilteredcollection = [self.poifilteredcollection objectsWithPredicate:[NSPredicate predicateWithFormat:@"NOT (key IN %@)",typeset]];
+            
+        } else if (self.SegmentPoiFilterList.selectedSegmentIndex == 2) {
+            NSLog(@"used");
+
+            self.poifilteredcollection = [self.poifilteredcollection objectsWithPredicate:[NSPredicate predicateWithFormat:@"key IN %@",typeset]];
+            
+        }
     }
-    tempPoi = [AppDelegateDef.poiitems filteredArrayUsingPredicate:usabilityPredicate];
-     */
-    if (self.Project != nil && self.SegmentCountries.selectedSegmentIndex == 0) {
+
+    if (self.TripItem != nil && self.SegmentCountries.selectedSegmentIndex == 0) {
         NSSet *projectcountries = [NSSet setWithArray:self.countries];
         self.poifilteredcollection = [self.poifilteredcollection objectsWithPredicate:[NSPredicate predicateWithFormat:@"countrycode IN %@",projectcountries]];
     }
@@ -216,8 +236,6 @@
     
     
     if (UpdateTypes) {
-        
-        //[self.poifiltereditems addObjectsFromArray: tempPoi];
         
         NSCountedSet* countedSet = [[NSCountedSet alloc] init];
         
@@ -251,8 +269,6 @@
         NSSet *typeset = [[NSSet alloc] initWithArray:types];
         
         self.poifilteredcollection = [self.poifilteredcollection objectsWithPredicate:[NSPredicate predicateWithFormat:@"categoryid IN %@",typeset]];
-        
-        //[self.poifiltereditems addObjectsFromArray: tempPoi];
     }
 
     
@@ -276,7 +292,10 @@
         NSURL *url = [self applicationDocumentsDirectory];
 
         NSData *pngData;
-        for (PoiRLM *poi in self.poifilteredcollection) {
+        
+        RLMResults <PoiRLM*> *allPoiObjects = [PoiRLM allObjects];
+        
+        for (PoiRLM *poi in allPoiObjects) {
             
             if (poi.images.count > 0) {
                 NSPredicate *predicate = [NSPredicate predicateWithFormat:@"KeyImage == %@", [NSNumber numberWithInt:1]];
@@ -340,7 +359,7 @@
  remarks:
  */
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.self.poifilteredcollection.count;
+    return self.poifilteredcollection.count;
 }
 
 
@@ -430,11 +449,28 @@
 }
 
 /*
+ created date:      10/09/2018
+ last modified:     10/09/2018
+ remarks:           User can only delete unused Poi items
+ */
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    BOOL edit = NO;
+    if(self.SegmentPoiFilterList.selectedSegmentIndex == 0) {
+        edit = YES;
+    }
+    return edit;
+}
+
+
+
+/*
  created date:      02/05/2018
- last modified:     02/05/2018
+ last modified:     10/09/2018
  remarks:
  */
 -(NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
+
     UITableViewRowAction *deleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Delete" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath)
                                           {
                                               
@@ -445,30 +481,21 @@
     
     deleteAction.backgroundColor = [UIColor redColor];
     return @[deleteAction];
+
 }
 /*
  created date:      02/05/2018
- last modified:     18/08/2018
+ last modified:     10/09/2018
  remarks:           Might not be totally necessary, but seperated out from editActionsForRowAtIndexPath method above.
  */
 - (void)tableView:(UITableView *)tableView deletePoi:(NSIndexPath *)indexPath  {
-    if ([AppDelegateDef.Db DeletePoi:[self.poifiltereditems objectAtIndex:indexPath.row]] == true)
-    {
-        PoiRLM *poi = [self.self.poifilteredcollection objectAtIndex:indexPath.row];
-        
-        NSLog(@"%lu", (unsigned long)[AppDelegateDef.poiitems count]);
-        
-        for (int index = 0; index<[AppDelegateDef.poiitems count]; index++)
-        {
-            PoiNSO *p = [AppDelegateDef.poiitems objectAtIndex:index];
-            
-            if ([poi.key isEqualToString:p.key]) {
-                [AppDelegateDef.poiitems removeObjectAtIndex:index];
-                [self RefreshPoiFilteredData:true];
-                break;
-            }
-        }
-    }
+
+    PoiRLM *item = [self.poifilteredcollection objectAtIndex:indexPath.row];
+    [self.realm transactionWithBlock:^{
+        [self.realm deleteObject:item];
+    }];
+
+    NSLog(@"delete called!");
 }
 
 /*
@@ -703,7 +730,7 @@
 
 /*
  created date:      12/08/2018
- last modified:     30/08/2018
+ last modified:     02/09/2018
  remarks:
  */
 - (void)didUpdatePoi :(NSString*)Method :(PoiRLM*)Object {
@@ -724,9 +751,11 @@
         NSURL *imagefile = [url URLByAppendingPathComponent:imgobject.ImageFileReference];
         NSError *err;
         pngData = [NSData dataWithContentsOfURL:imagefile options:NSDataReadingMappedIfSafe error:&err];
-        UIImage *image =[UIImage imageWithData:pngData];
-        CGSize size = CGSizeMake(self.TableViewSearchPoiItems.frame.size.width , self.TableViewSearchPoiItems.rowHeight); // set the width and height
-        [AppDelegateDef.PoiBackgroundImageDictionary setObject:[self resizeImage:image imageSize:size] forKey:imgobject.key];
+        if (pngData!=nil) {
+            UIImage *image =[UIImage imageWithData:pngData];
+            CGSize size = CGSizeMake(self.TableViewSearchPoiItems.frame.size.width , self.TableViewSearchPoiItems.rowHeight); // set the width and height
+            [AppDelegateDef.PoiBackgroundImageDictionary setObject:[self resizeImage:image imageSize:size] forKey:Object.key];
+        }
     }
 }
 
@@ -746,5 +775,15 @@
 - (void)didCreatePoiFromProject:(NSString *)Key {
     
 }
+
+/*
+ created date:      09/09/2018
+ last modified:     09/09/2018
+ remarks:  TODO, make sure it is optimal and not called multiple times!
+ */
+- (void)didUpdateActivityImages :(bool) ForceUpdate {
+    [self.delegate didUpdateActivityImages :true];
+}
+
 
 @end

@@ -24,6 +24,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewTypeOfPoi;
 @property (weak, nonatomic) IBOutlet UIView *ViewActiveItem;
 @property (weak, nonatomic) IBOutlet UIView *ViewActiveBadge;
+@property (weak, nonatomic) IBOutlet UIView *ViewPoiType;
 
 
 

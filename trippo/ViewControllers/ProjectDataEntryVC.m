@@ -17,47 +17,12 @@
 
 /*
  created date:      29/04/2018
- last modified:     17/08/2018
+ last modified:     09/09/2018
  remarks:
  */
 - (void)viewDidLoad {
     [super viewDidLoad];
-    /*
-    ActivityRLM *a = [[ActivityRLM alloc] init];
-    a.name = @"Auckland";
-    a.key = [[NSUUID UUID] UUIDString];
-    
-    ImageCollectionRLM *i = [[ImageCollectionRLM alloc] init];
-    i.ImageFileReference=@"test2_activity.png";
-    
-    [a.images addObject:i];
-    
-    TripRLM *test = [[TripRLM alloc] init];
-    test.name = @"North Island, New Zeland";
-    test.privatenotes = @"planned back in 2003";
-    test.modifieddt = [NSDate date];
-    test.createddt = [NSDate date];
-    test.key = [[NSUUID UUID] UUIDString];
-    [test.activities addObject:a];
-    
-    ImageCollectionRLM *i2 = [[ImageCollectionRLM alloc] init];
-    i2.ImageFileReference=@"test2_trip.png";
-    
-    [test.images addObject:i2];
-    
-    RLMSyncUser *user = [RLMSyncUser currentUser];
-    NSURL *syncServerURL = [NSURL URLWithString: @"realms://incredible-wooden-hat.de1a.cloud.realm.io/~/trippo"];
-    RLMRealmConfiguration *config = [user configurationWithURL:syncServerURL fullSynchronization:true];
-    
-    RLMRealm *realm = [RLMRealm realmWithConfiguration:config error:nil];
  
-    //RLMRealm *realm = [RLMRealm defaultRealm];
-    
-    [realm beginWriteTransaction];
-    [realm addObject:test];
-    [realm commitWriteTransaction];
-    */
-
     // Do any additional setup after loading the view.
     if (!self.newitem) {
         if (self.deleteitem) {
@@ -84,6 +49,10 @@
     self.ButtonBack.layer.cornerRadius = 25;
     self.ButtonBack.clipsToBounds = YES;
     self.ButtonBack.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
+    self.ButtonUploadImage.layer.cornerRadius = 25;
+    self.ButtonUploadImage.clipsToBounds = YES;
+    self.ButtonUploadImage.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
     
     self.ButtonAction.layer.cornerRadius = 25;
     self.ButtonAction.clipsToBounds = YES;
@@ -162,7 +131,12 @@
         //[AppDelegateDef.Db InsertProjectItem :self.Project];
     }
     else if (self.deleteitem) {
-        
+        /* TODO - are you sure?? */
+        [self.realm beginWriteTransaction];
+        RLMResults <ActivityRLM*> *activities = [ActivityRLM objectsWhere:@"tripkey=%@",self.Trip.key];
+        [self.realm deleteObjects:activities];
+        [self.realm deleteObject:self.Trip];
+        [self.realm commitWriteTransaction];
         
         //[AppDelegateDef.Db DeleteProject:self.Project];
     }
@@ -403,5 +377,58 @@
     }
     
 }
+
+/*
+ created date:      09/09/2018
+ last modified:     09/09/2018
+ remarks:
+ */
+- (IBAction)UploadImagePressed:(id)sender {
+    NSData *dataImage = UIImagePNGRepresentation(self.ImageViewProject.image);
+    NSString *stringImage = [dataImage base64EncodedStringWithOptions:0];
+    
+    NSString *ImageFileReference = [NSString stringWithFormat:@"Images/Trips/%@/image.png",self.Trip.key];
+    
+    NSString *ImageFileDirectory = [NSString stringWithFormat:@"Images/Trips/%@",self.Trip.key];
+    
+    NSDictionary* dataJSON = [NSDictionary dictionaryWithObjectsAndKeys:
+                              @"Trip",
+                              @"type",
+                              ImageFileReference,
+                              @"filereference",
+                              ImageFileDirectory,
+                              @"directory",
+                              stringImage,
+                              @"image",
+                              nil];
+    
+    
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dataJSON
+                                                       options:NSJSONWritingPrettyPrinted error:nil];
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *imagesDirectory = [paths objectAtIndex:0];
+    NSURL *url = [NSURL fileURLWithPath:imagesDirectory];
+    url = [url URLByAppendingPathComponent:@"Trip.trippo"];
+    
+    [jsonData writeToURL:url atomically:NO];
+    
+    UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[url] applicationActivities:nil];
+    
+    [activityViewController setCompletionWithItemsHandler:^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
+        //Delete file
+        NSError *errorBlock;
+        if([[NSFileManager defaultManager] removeItemAtURL:url error:&errorBlock] == NO) {
+            //NSLog(@"error deleting file %@",error);
+            return;
+        }
+    }];
+    
+    
+    activityViewController.popoverPresentationController.sourceView = self.view;
+    [self presentViewController:activityViewController animated:YES completion:nil];
+    
+}
+
 
 @end

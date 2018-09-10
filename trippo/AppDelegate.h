@@ -19,5 +19,7 @@
 @property (nonatomic) NSString *HomeCurrencyCode;
 @property (strong, nonatomic) NSMutableArray *poiitems;
 @property (strong, nonatomic) NSMutableDictionary *PoiBackgroundImageDictionary;
+
+
 @end
 

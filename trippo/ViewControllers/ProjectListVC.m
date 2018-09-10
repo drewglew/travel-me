@@ -31,7 +31,7 @@
     self.ButtonBack.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
     
     /* user selected specific option from startup view */
-    self.tripcollection = [TripRLM allObjects];
+    
     
     __weak typeof(self) weakSelf = self;
     self.notification = [self.realm addNotificationBlock:^(NSString *note, RLMRealm *realm) {
@@ -47,11 +47,13 @@
 
 /*
  created date:      29/04/2018
- last modified:     29/08/2018
+ last modified:     09/09/2018
  remarks:
  */
 -(void) LoadSupportingData {
     /* 1. Get Images from file. */
+    self.tripcollection = [TripRLM allObjects];
+    
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *imagesDirectory = [paths objectAtIndex:0];
     for (TripRLM *trip in self.tripcollection) {

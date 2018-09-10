@@ -19,7 +19,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     31/08/2018
+ last modified:     08/09/2018
  remarks: TODO - split load existing data into 2 - map data and images.
  */
 - (void)viewDidLoad {
@@ -105,6 +105,10 @@
     self.ButtonWiki.layer.cornerRadius = 25;
     self.ButtonWiki.clipsToBounds = YES;
     self.ButtonWiki.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    self.ButtonUploadImages.layer.cornerRadius = 25;
+    self.ButtonUploadImages.clipsToBounds = YES;
+    self.ButtonUploadImages.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    self.ButtonUploadImages.hidden = true;
     /*
     if (self.PointOfInterest.averageactivityrating!=0) {
         self.LabelOccurances.text = [NSString stringWithFormat:@"%@ Occurances", self.PointOfInterest.connectedactivitycount];
@@ -731,12 +735,16 @@
         [self.PointOfInterest.images addObject:imgobject];
         [self.realm commitWriteTransaction];
         
+        [self.PoiImageDictionary setObject:chosenImage forKey:imgobject.key];
+        
     } else if (self.imagestate == 2) {
         ImageCollectionRLM *imgobject = [self.PointOfInterest.images objectAtIndex:[self.SelectedImageIndex longValue]];
         
         [self.realm beginWriteTransaction];
         imgobject.UpdateImage = true;
         [self.realm commitWriteTransaction];
+        
+        [self.PoiImageDictionary setObject:chosenImage forKey:imgobject.key];
     }
     
     self.imagestate = 0;
@@ -855,25 +863,11 @@
             [fm createDirectoryAtPath:dataPath withIntermediateDirectories:YES attributes:nil error:nil];
 
             NSInteger count = [self.PointOfInterest.images count];
-            bool NoKeyPhoto = true;
+            //bool NoKeyPhoto = true;
             /* loop through in reverse as it is easier to handle deletions in array */
             for (NSInteger index = (count - 1); index >= 0; index--) {
                 ImageCollectionRLM *imgobject = self.PointOfInterest.images[index];
-                /* make sure there is at least 1 key image in the collection */
-                /* check that we have a key image that is not assigned to be deleted */
-                if (imgobject.KeyImage == 1 && !imgobject.ImageFlaggedDeleted) {
-                    NoKeyPhoto = false;
-                }
-                /* now check if we are on the first image and we have not located a key image
-                 set it as such */
-                if (NoKeyPhoto && index == 0) {
-                    imgobject.KeyImage = 1;
-                    imgobject.UpdateImage = true;
-                }
-                /* if we are on first image, there is no designated Key and it is set by user to be deleted, we do not.  it is ignored */
-                if (NoKeyPhoto && index == 0 && imgobject.ImageFlaggedDeleted) {
-                    NSLog(@"Cannot delete this last photo");
-                } else if (imgobject.ImageFlaggedDeleted) {
+                if (imgobject.ImageFlaggedDeleted) {
                     /* else we are good to delete it */
                     NSString *filepathname = [imagesDirectory stringByAppendingPathComponent:imgobject.ImageFileReference];
                     NSError *error = nil;
@@ -919,7 +913,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     13/08/2018
+ last modified:     08/09/2018
  remarks:
  */
 -(IBAction)SegmentOptionChanged:(id)sender {
@@ -931,6 +925,10 @@
         self.ViewMap.hidden = true;
         self.ViewPhotos.hidden =true;
         self.SwitchViewPhotoOptions.hidden=true;
+        self.ButtonUploadImages.hidden=true;
+        if (self.ButtonGeo.layer.cornerRadius==25) {
+            self.ButtonGeo.hidden = false;
+        }
 
     } else if (segment.selectedSegmentIndex==1) {
         self.ViewMain.hidden = true;
@@ -938,7 +936,8 @@
         self.ViewMap.hidden = true;
         self.ViewPhotos.hidden =true;
         self.SwitchViewPhotoOptions.hidden=true;
-       
+        self.ButtonUploadImages.hidden = true;
+        self.ButtonGeo.hidden = true;
         
      } else if (segment.selectedSegmentIndex==2) {
          self.ViewMain.hidden = true;
@@ -946,6 +945,7 @@
          self.ViewMap.hidden = false;
          self.ViewPhotos.hidden =true;
          self.SwitchViewPhotoOptions.hidden=true;
+         self.ButtonGeo.hidden = true;
         
         for (id<MKOverlay> overlay in self.MapView.overlays)
         {
@@ -966,12 +966,15 @@
         self.CircleRange = [MKCircle circleWithCenterCoordinate:coord radius:RadiusAmt];
         
         [self.MapView addOverlay:self.CircleRange];
+        self.ButtonUploadImages.hidden = true;
         
     } else {
         self.ViewMain.hidden = true;
         self.ViewNotes.hidden = true;
         self.ViewMap.hidden = true;
         self.ViewPhotos.hidden =false;
+        self.ButtonGeo.hidden = true;
+        self.ButtonUploadImages.hidden = false;
 
         if (self.PointOfInterest.images.count > 0 && !self.readonlyitem) {
             self.ViewBlurHeightConstraint.constant = 0;
@@ -1002,7 +1005,9 @@
         self.ViewBlurImageOptionPanel.hidden = true;
     } else {
         for (ImageCollectionRLM *imgobject in self.PointOfInterest.images) {
+           
             if ([imgobject.key isEqualToString:self.SelectedImageKey]) {
+                 [self.realm beginWriteTransaction];
                 if (imgobject.ImageFlaggedDeleted==0) {
                     //if (item.KeyImage==0) {
                         self.ViewTrash.hidden = false;
@@ -1015,7 +1020,9 @@
                     self.ViewTrash.hidden = true;
                     imgobject.ImageFlaggedDeleted = 0;
                 }
+                [self.realm commitWriteTransaction];
             }
+            
         }
     }
 
@@ -1025,7 +1032,7 @@
 
 /*
  created date:      21/05/2018
- last modified:     19/07/2018
+ last modified:     09/08/2018
  remarks:
  */
 - (IBAction)ButtonImageKeyPressed:(id)sender {
@@ -1036,13 +1043,16 @@
     } else if (self.PointOfInterest.images.count==1) {
         
     } else {
+        [self.realm beginWriteTransaction];
         for (ImageCollectionRLM *imgobject in self.PointOfInterest.images) {
+            
             if ([imgobject.key isEqualToString:self.SelectedImageKey]) {
                 if (imgobject.KeyImage==0) {
                     self.ViewSelectedKey.hidden = false;
                     imgobject.KeyImage = 1;
                     KeyImageEnabled = true;
                     imgobject.UpdateImage = true;
+                    [self.ImageViewKey setImage:self.ImagePicture.image];
                 } else {
                     self.ViewSelectedKey.hidden = true;
                     imgobject.KeyImage = 0;
@@ -1054,7 +1064,9 @@
                     imgobject.UpdateImage = true;
                 }
             }
+            
         }
+        [self.realm commitWriteTransaction];
     }
 }
 
@@ -1315,6 +1327,59 @@
         }
     }];
     
+    
+}
+/*
+ created date:      08/09/2018
+ last modified:     08/09/2018
+ remarks:
+ */
+- (IBAction)UploadImagesPressed:(id)sender {
+    
+    
+    NSData *dataImage = UIImagePNGRepresentation(self.ImagePicture.image);
+    NSString *stringImage = [dataImage base64EncodedStringWithOptions:0];
+
+    NSString *ImageFileReference = [NSString stringWithFormat:@"Images/%@/%@.png",self.PointOfInterest.key, self.SelectedImageKey];
+    
+    NSString *ImageFileDirectory = [NSString stringWithFormat:@"Images/%@",self.PointOfInterest.key];
+
+    NSDictionary* dataJSON = [NSDictionary dictionaryWithObjectsAndKeys:
+                              @"Point of Interest",
+                              @"type",
+                              ImageFileReference,
+                              @"filereference",
+                              ImageFileDirectory,
+                              @"directory",
+                              stringImage,
+                              @"image",
+                              nil];
+    
+    
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dataJSON
+                                                       options:NSJSONWritingPrettyPrinted error:nil];
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *imagesDirectory = [paths objectAtIndex:0];
+    NSURL *url = [NSURL fileURLWithPath:imagesDirectory];
+    url = [url URLByAppendingPathComponent:@"Poi.trippo"];
+    
+    [jsonData writeToURL:url atomically:NO];
+    
+    UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[url] applicationActivities:nil];
+    
+    [activityViewController setCompletionWithItemsHandler:^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
+        //Delete file
+        NSError *errorBlock;
+        if([[NSFileManager defaultManager] removeItemAtURL:url error:&errorBlock] == NO) {
+            //NSLog(@"error deleting file %@",error);
+            return;
+        }
+    }];
+    
+    
+    activityViewController.popoverPresentationController.sourceView = self.view;
+    [self presentViewController:activityViewController animated:YES completion:nil];
     
 }
 

@@ -13,7 +13,7 @@
 @end
 
 @implementation ActivityListVC
-
+@synthesize delegate;
 /*
  created date:      30/04/2018
  last modified:     01/09/2018
@@ -56,6 +56,9 @@
     
     __weak typeof(self) weakSelf = self;
     self.notification = [self.realm addNotificationBlock:^(NSString *note, RLMRealm *realm) {
+        if (weakSelf.ImagesNeedUpdating) {
+            [weakSelf LoadActivityImageData];
+        }
         [weakSelf LoadActivityData :[NSNumber numberWithInteger:weakSelf.SegmentState.selectedSegmentIndex]];
         [weakSelf.CollectionViewActivities reloadData];
     }];
@@ -96,7 +99,6 @@
                                                  ascending:YES];
     
     temp2 = [temp2 sortedArrayUsingDescriptors:@[sortDescriptorState,sortDescriptorStartDt]];
-    
     self.activitycollection = [NSMutableArray arrayWithArray:temp2];
 }
 
@@ -109,7 +111,7 @@
     /* for each activity we need to show the image of the poi attached to it */
     /* load images from file - TODO make sure we locate them all */
     
-    RLMResults<ActivityRLM*> *activities = [ActivityRLM objectsWhere:@"tripkey=='%@'",self.Trip.key];
+    RLMResults<ActivityRLM*> *activities = [ActivityRLM objectsWhere:@"tripkey==%@",self.Trip.key];
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *imagesDirectory = [paths objectAtIndex:0];
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"KeyImage == %@", [NSNumber numberWithInt:1]];
@@ -140,7 +142,7 @@
             [self.ActivityImageDictionary setObject:[UIImage imageWithData:pngData] forKey:activityobj.compondkey];
         }
     }
-    
+    self.ImagesNeedUpdating=false;
     
 }
 
@@ -255,13 +257,13 @@
         
         cell.ImageViewTypeOfPoi.image = [UIImage imageNamed:[TypeItems objectAtIndex:[poiobject.categoryid integerValue]]];
 
-        cell.LabelName.text = cell.activity.name;
+        //cell.LabelName.text = cell.activity.name;
         //[cell.LabelName sizeToFit];
         cell.LabelActivityLegend.layer.cornerRadius = 5;
         cell.LabelActivityLegend.layer.masksToBounds = YES;
         NSDateFormatter *dtformatter = [[NSDateFormatter alloc] init];
-        [dtformatter setDateFormat:@"dd MMM HH:mm"];
-        cell.LabelDate.text = [NSString stringWithFormat:@"%@",[dtformatter stringFromDate:cell.activity.startdt]];
+        [dtformatter setDateFormat:@"EEE dd MMM HH:mm"];
+        //cell.LabelDate.text = [NSString stringWithFormat:@"%@",[dtformatter stringFromDate:cell.activity.startdt]];
         cell.VisualViewBlurBehindImage.hidden = false;
         cell.ImageBlurBackground.hidden = false;
         if (poiobject.images.count == 0) {
@@ -271,14 +273,57 @@
             cell.ImageViewActivity.image = [self.ActivityImageDictionary objectForKey:cell.activity.compondkey];
             cell.ImageBlurBackground.image = [self.ActivityImageDictionary objectForKey:cell.activity.compondkey];;
         }
+        
+        cell.LabelName.attributedText=[[NSAttributedString alloc]
+                                       initWithString:cell.activity.name
+                                       attributes:@{
+                                                    NSStrokeWidthAttributeName: @-2.0,
+                                                    NSStrokeColorAttributeName:[UIColor blackColor],
+                                                    NSForegroundColorAttributeName:[UIColor whiteColor]
+                                                    }
+                                       ];
+        
+        cell.LabelDate.attributedText=[[NSAttributedString alloc]
+                                       initWithString:[NSString stringWithFormat:@"%@",[dtformatter stringFromDate:cell.activity.startdt]]
+                                       attributes:@{
+                                                    NSStrokeWidthAttributeName: @-2.0,
+                                                    NSStrokeColorAttributeName:[UIColor blackColor],
+                                                    NSForegroundColorAttributeName:[UIColor whiteColor]
+                                                    }
+                                       ];
+        
     }
     return cell;
+}
+
+/*
+ created date:      05/09/2018
+ last modified:     05/09/2018
+ remarks:  ImG
+ */
+-(UIImage*) RetrievePoiImageItem :(PoiRLM*) poi {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *imagesDirectory = [paths objectAtIndex:0];
+    UIImage *image = [[UIImage alloc] init];
+    if (poi.images.count>0) {
+        ImageCollectionRLM *imgobject = [poi.images firstObject];
+        NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",imgobject.ImageFileReference]];
+        NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
+        if (pngData==nil) {
+            image = [UIImage imageNamed:@"Poi"];
+        } else {
+            image = [UIImage imageWithData:pngData];
+        }
+    } else {
+        image = [UIImage imageNamed:@"Poi"];
+    }
+    return image;
 }
 
 
 /*
  created date:      30/04/2018
- last modified:     31/08/2018
+ last modified:     05/09/2018
  remarks:  ImG todo
  */
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -295,8 +340,8 @@
         ActivityRLM *activity = [self.activitycollection objectAtIndex:indexPath.row];
         
         controller.Poi = [PoiRLM objectForPrimaryKey:activity.poikey];
-        controller.PoiImage = [self.ActivityImageDictionary objectForKey:activity.key];
-        
+        controller.PoiImage = [self RetrievePoiImageItem :controller.Poi];
+       
         controller.Trip = self.Trip;
         long selectedSegmentState = self.SegmentState.selectedSegmentIndex;
         controller.newitem = false;
@@ -424,4 +469,14 @@
 - (IBAction)BackPressed:(id)sender {
     [self dismissViewControllerAnimated:YES completion:Nil];
 }
+
+/*
+ created date:      08/09/2018
+ last modified:     08/09/2018
+ remarks:
+ */
+- (void)didUpdateActivityImages :(bool)ForceUpdate {
+    self.ImagesNeedUpdating = true;
+}
+
 @end

@@ -15,6 +15,7 @@ int BlurredMainViewPresentedHeight;
 int BlurredImageViewPresentedHeight=60;
 @implementation ActivityDataEntryVC
 @synthesize ImageViewPoi;
+@synthesize delegate;
 
 /*
  created date:      01/05/2018
@@ -114,6 +115,9 @@ int BlurredImageViewPresentedHeight=60;
         [self.ButtonAction setTitle:@"Update" forState:UIControlStateNormal];
         [self LoadActivityData];
         self.CollectionViewActivityImages.scrollEnabled = true;
+        self.Activity.startdt = [NSDate date];
+        self.Activity.enddt = [NSDate date];
+        [self FormatPrettyDates:self.Activity.startdt :self.Activity.enddt];
         
     } else if (self.newitem) {
         self.TextFieldName.text = self.Poi.name;
@@ -133,6 +137,10 @@ int BlurredImageViewPresentedHeight=60;
     [self addDoneToolBarToKeyboard:self.TextViewNotes];
     self.TextFieldName.delegate = self;
     self.TextViewNotes.delegate = self;
+    
+    self.ButtonUploadImage.layer.cornerRadius = 25;
+    self.ButtonUploadImage.clipsToBounds = YES;
+    self.ButtonUploadImage.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
     
     self.ButtonPayment.layer.cornerRadius = 25;
     self.ButtonPayment.clipsToBounds = YES;
@@ -202,12 +210,13 @@ int BlurredImageViewPresentedHeight=60;
         UIImage *image = [[UIImage alloc] init];
         NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",imgobject.ImageFileReference]];
         NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
-        if (pngData!=nil) {
+        if (pngData==nil) {
             image = [UIImage imageNamed:@"Activity"];
         } else {
             image = [UIImage imageWithData:pngData];
         }
         if (imgobject.KeyImage) {
+            self.SelectedImageKey = imgobject.key;
             self.SelectedImageReference = imgobject.ImageFileReference;
             self.SelectedImageIndex = [NSNumber numberWithLong:ImageIndex];
             self.ViewSelectedKey.hidden = false;
@@ -229,7 +238,7 @@ int BlurredImageViewPresentedHeight=60;
 
 /*
  created date:      01/05/2018
- last modified:     19/08/2018
+ last modified:     09/09/2018
  remarks: Focus on Point of Interest Data
  */
 -(void) LoadPoiData {
@@ -257,11 +266,28 @@ int BlurredImageViewPresentedHeight=60;
     [self.PoiMapView selectAnnotation:anno animated:YES];
     
     /* load images from file - TODO make sure we locate them all */
-    if (self.Poi.images.count > 0) {
-        //ImageCollectionRLM *img = [self.Poi.images firstObject];
-        self.ImageViewPoi.image = self.PoiImage;
+    if (self.PoiImage==nil) {
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *imagesDirectory = [paths objectAtIndex:0];
+        
+        if (self.Poi.images.count>0) {
+            
+            ImageCollectionRLM *imgobject = [[self.Poi.images objectsWhere:@"KeyImage==1"] firstObject];
+            
+            NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",imgobject.ImageFileReference]];
+            
+            NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
+            
+            if (pngData!=nil) {
+                self.ImageViewPoi.image = [UIImage imageWithData:pngData];
+            } else {
+                self.ImageViewPoi.image = [UIImage imageNamed:@"Poi"];
+            }
+        } else {
+            self.ImageViewPoi.image = [UIImage imageNamed:@"Poi"];
+        }
     } else {
-        self.ImageViewPoi.image = [UIImage imageNamed:@"Poi"];
+        self.ImageViewPoi.image = self.PoiImage;
     }
     
     MKCircle *myCircle = [MKCircle circleWithCenterCoordinate:coord radius:[radius doubleValue]];
@@ -298,8 +324,8 @@ int BlurredImageViewPresentedHeight=60;
 
 /*
  created date:      01/05/2018
- last modified:     01/09/2018
- remarks:
+ last modified:     09/09/2018
+ remarks:  TODO [self.delegate didUpdateActivityImage]; add to update
  */
 - (IBAction)ActionButtonPressed:(id)sender {
     /* validations perhaps? */
@@ -324,6 +350,7 @@ int BlurredImageViewPresentedHeight=60;
         self.Activity.rating = [NSNumber numberWithFloat: self.ViewStarRating.value];
         self.Activity.modifieddt = [NSDate date];
         self.Activity.createddt = [NSDate date];
+        //self.Activity.Poi = self.Poi;
         self.Activity.poikey = self.Poi.key;
         self.Activity.tripkey = self.Trip.key;
         
@@ -334,7 +361,7 @@ int BlurredImageViewPresentedHeight=60;
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
             NSString *imagesDirectory = [paths objectAtIndex:0];
             
-            NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/Images/Projects/%@/Activities/%@",self.Activity.tripkey, self.Activity.key]];
+            NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/Images/Projects/%@/Activities/%@",self.Activity.tripkey, self.Activity.compondkey]];
             
             [[NSFileManager defaultManager] createDirectoryAtPath:dataPath withIntermediateDirectories:YES attributes:nil error:nil];
             
@@ -345,11 +372,10 @@ int BlurredImageViewPresentedHeight=60;
                 NSString *filepathname = [dataPath stringByAppendingPathComponent:filename];
                 [imageData writeToFile:filepathname atomically:YES];
                 //activityimgobject.NewImage = true;
-                activityimgobject.ImageFileReference = [NSString stringWithFormat:@"/Images/Projects/%@/Activities/%@/%@",self.Activity.tripkey, self.Activity.key,filename];
+                activityimgobject.ImageFileReference = [NSString stringWithFormat:@"/Images/Projects/%@/Activities/%@/%@",self.Activity.tripkey, self.Activity.compondkey,filename];
                 //activityimgobject.State = self.Activity.state;
                 counter++;
             }
-            
         }
         [self.realm beginWriteTransaction];
         [self.realm addObject:self.Activity];
@@ -370,13 +396,13 @@ int BlurredImageViewPresentedHeight=60;
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
             NSString *imagesDirectory = [paths objectAtIndex:0];
             
-            NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/Images/Activity/%@",self.Activity.key]];
+            NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/Images/Activity/%@",self.Activity.compondkey]];
             
             NSFileManager *fm = [NSFileManager defaultManager];
             [fm createDirectoryAtPath:dataPath withIntermediateDirectories:YES attributes:nil error:nil];
 
             NSInteger count = [self.Activity.images count];
-
+            
             for (NSInteger index = (count - 1); index >= 0; index--) {
                 ImageCollectionRLM *imgobject = self.Activity.images[index];
                 
@@ -398,14 +424,16 @@ int BlurredImageViewPresentedHeight=60;
                     NSString *filename = [NSString stringWithFormat:@"%@.png", imgobject.key];
                     NSString *filepathname = [dataPath stringByAppendingPathComponent:filename];
                     [imageData writeToFile:filepathname atomically:YES];
-                    imgobject.ImageFileReference = [NSString stringWithFormat:@"Images/Activity/%@/%@",self.Activity.key,filename];
+                    imgobject.ImageFileReference = [NSString stringWithFormat:@"Images/Activity/%@/%@",self.Activity.compondkey,filename];
                     NSLog(@"new image");
+                    
                 } else if (imgobject.UpdateImage) {
                     /* we might swap it out as user has replaced the original file */
                     NSData *imageData =  UIImagePNGRepresentation([self.ActivityImageDictionary objectForKey:imgobject.key]);
                     NSString *filepathname = [imagesDirectory stringByAppendingPathComponent:imgobject.ImageFileReference];
                     [imageData writeToFile:filepathname atomically:YES];
                     NSLog(@"updated image");
+                    
                 }
                 
             }
@@ -427,8 +455,8 @@ int BlurredImageViewPresentedHeight=60;
     if([segue.identifier isEqualToString:@"ShowPoiDetail"]){
         PoiDataEntryVC *controller = (PoiDataEntryVC *)segue.destinationViewController;
         controller.delegate = self;
-        PoiRLM *poiobject = [PoiRLM objectForPrimaryKey:self.Activity.poikey];
-        controller.PointOfInterest = poiobject;
+        //PoiRLM *poiobject = [PoiRLM objectForPrimaryKey:self.Activity.poikey];
+        controller.PointOfInterest = self.Poi;
         controller.newitem = false;
         controller.readonlyitem = true;
         controller.fromproject = false;
@@ -469,12 +497,15 @@ int BlurredImageViewPresentedHeight=60;
 
 /*
  created date:      04/05/2018
- last modified:     04/05/2018
+ last modified:     09/09/2018
  remarks:
  */
 - (void)didPickDateSelection :(NSDate*)Start :(NSDate*)End {
+    
+    [self.realm beginWriteTransaction];
     self.Activity.startdt = Start;
     self.Activity.enddt = End;
+    [self.realm commitWriteTransaction];
     [self FormatPrettyDates:Start :End];
 }
 /*
@@ -649,10 +680,6 @@ int BlurredImageViewPresentedHeight=60;
                                                                   NSLog(@"you want to select a photo");
                                                                   
                                                               }];
-    
-    
-    
-    
     
     UIAlertAction *photosCloseToPoiAction = [UIAlertAction actionWithTitle:photoCloseToPoiOption
                                                                      style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
@@ -839,15 +866,23 @@ int BlurredImageViewPresentedHeight=60;
         [self.Activity.images addObject:imgobject];
         [self.realm commitWriteTransaction];
         
+        [self.ActivityImageDictionary setObject:chosenImage forKey:imgobject.key];
+        
+        
     } else if (self.imagestate == 2) {
         ImageCollectionRLM *imgobject = [self.Activity.images objectAtIndex:[self.SelectedImageIndex longValue]];
         
         [self.realm beginWriteTransaction];
         imgobject.UpdateImage = true;
         [self.realm commitWriteTransaction];
+        
+        [self.ActivityImageDictionary setObject:chosenImage forKey:imgobject.key];
+        
     }
     
     self.imagestate = 0;
+    
+    [self.delegate didUpdateActivityImages :true];
     
     [self.CollectionViewActivityImages reloadData];
     [picker dismissViewControllerAnimated:YES completion:NULL];
@@ -883,6 +918,7 @@ int BlurredImageViewPresentedHeight=60;
     }
     if (AddedImage) {
         [self.CollectionViewActivityImages reloadData];
+        [self.delegate didUpdateActivityImages :true];
     }
 }
 
@@ -935,6 +971,7 @@ int BlurredImageViewPresentedHeight=60;
     } else {
         if (!self.newitem) {
             ImageCollectionRLM *imgobject = [self.Activity.images objectAtIndex:indexPath.row];
+            self.SelectedImageKey = imgobject.key;
             self.SelectedImageReference = imgobject.ImageFileReference;
             self.SelectedImageIndex = [NSNumber numberWithLong:indexPath.row];
             if (imgobject.KeyImage==0) {
@@ -1045,7 +1082,9 @@ int BlurredImageViewPresentedHeight=60;
         self.ViewBlurImageOptionPanel.hidden = true;
     } else {
         for (ImageNSO *item in self.Activity.images) {
+            
             if ([item.ImageFileReference isEqualToString:self.SelectedImageReference]) {
+                [self.realm beginWriteTransaction];
                 if (item.ImageFlaggedDeleted==0) {
                     
                     self.ViewTrash.hidden = false;
@@ -1058,6 +1097,7 @@ int BlurredImageViewPresentedHeight=60;
                     self.ViewTrash.hidden = true;
                     item.ImageFlaggedDeleted = 0;
                 }
+                [self.realm commitWriteTransaction];
             }
         }
     }
@@ -1075,6 +1115,7 @@ int BlurredImageViewPresentedHeight=60;
     } else if (self.Activity.images.count==1) {
         
     } else {
+        [self.realm beginWriteTransaction];
         for (ImageNSO *item in self.Activity.images) {
             if ([item.ImageFileReference isEqualToString:self.SelectedImageReference]) {
                 if (item.KeyImage==0) {
@@ -1094,7 +1135,9 @@ int BlurredImageViewPresentedHeight=60;
                 }
             }
         }
+        [self.realm commitWriteTransaction];
     }
+    [self.delegate didUpdateActivityImages :true];
     
 }
 
@@ -1108,8 +1151,66 @@ int BlurredImageViewPresentedHeight=60;
     [self InsertActivityImage];
 }
 
+/*
+ created date:      08/09/2018
+ last modified:     08/09/2018
+ remarks:
+ */
+- (IBAction)UploadImagePressed:(id)sender {
+    
 
+    NSData *dataImage = UIImagePNGRepresentation(self.ImagePicture.image);
+    NSString *stringImage = [dataImage base64EncodedStringWithOptions:0];
+    
+    NSString *ImageFileReference = [NSString stringWithFormat:@"Images/%@/%@.png",self.Activity.key, self.SelectedImageKey];
+    NSString *ImageFileDirectory = [NSString stringWithFormat:@"Images/%@",self.Activity.key];
+    
+    NSDictionary* dataJSON = [NSDictionary dictionaryWithObjectsAndKeys:
+                              @"Activity",
+                              @"type",
+                              ImageFileReference,
+                              @"filereference",
+                              ImageFileDirectory,
+                              @"directory",
+                              stringImage,
+                              @"image",
+                              nil];
+    
+    
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dataJSON
+                                                       options:NSJSONWritingPrettyPrinted error:nil];
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *imagesDirectory = [paths objectAtIndex:0];
+    NSURL *url = [NSURL fileURLWithPath:imagesDirectory];
+    url = [url URLByAppendingPathComponent:@"Activity.trippo"];
+    
+    [jsonData writeToURL:url atomically:NO];
+    
+    UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[url] applicationActivities:nil];
+    
+    [activityViewController setCompletionWithItemsHandler:^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
+        //Delete file
+        NSError *errorBlock;
+        if([[NSFileManager defaultManager] removeItemAtURL:url error:&errorBlock] == NO) {
+            //NSLog(@"error deleting file %@",error);
+            return;
+        }
+    }];
+    
+    
+    activityViewController.popoverPresentationController.sourceView = self.view;
+    [self presentViewController:activityViewController animated:YES completion:nil];
+}
 
+/*
+ created date:      09/09/2018
+ last modified:     09/09/2018
+ remarks:  TODO, make sure it is optimal and not called multiple times!
+ */
+- (void)didUpdateActivityImages :(bool)ForceUpdate {
+    
+}
 
 
 @end

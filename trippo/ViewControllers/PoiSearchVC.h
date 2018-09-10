@@ -22,10 +22,10 @@
 #import "ActivityRLM.h"
 
 @protocol PoiSearchDelegate <NSObject>
-
+- (void)didUpdateActivityImages :(bool) ForceUpdate;
 @end
 
-@interface PoiSearchVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, ActivityDelegate, LocatorDelegate, PoiDataEntryDelegate, NearbyListingDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UIGestureRecognizerDelegate>
+@interface PoiSearchVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, ActivityDataEntryDelegate, LocatorDelegate, PoiDataEntryDelegate, NearbyListingDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UIGestureRecognizerDelegate>
 @property (weak, nonatomic) IBOutlet UISearchBar *SearchBarPoi;
 @property (weak, nonatomic) IBOutlet UITableView *TableViewSearchPoiItems;
 @property (strong, nonatomic) NSMutableArray *poiitems;
@@ -56,7 +56,6 @@
 @property (weak, nonatomic) IBOutlet UICollectionView *CollectionViewTypes;
 
 @property RLMRealm *realm;
-@property RLMResults<PoiRLM *> *poicollection;
 @property RLMResults<PoiRLM *> *poifilteredcollection;
 
 @property TripRLM *TripItem;

@@ -38,5 +38,10 @@
 @property (strong, nonatomic) NSMutableDictionary *TripImageDictionary;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *ActivityView;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonShowPoiListing;
+@property (weak, nonatomic) IBOutlet UILabel *LabelFeaturedPoi;
+@property (weak, nonatomic) IBOutlet UILabel *LabelAbout;
+@property (weak, nonatomic) IBOutlet UILabel *LabelSettings;
+@property (weak, nonatomic) IBOutlet UILabel *LabelPoiSearch;
+@property (weak, nonatomic) IBOutlet UILabel *LabelAllTrips;
 
 @end

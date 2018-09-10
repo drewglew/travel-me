@@ -18,8 +18,8 @@
 @property  NSDate *createddt;
 @property  NSDate *modifieddt;
 @property  NSNumber<RLMInt> *itemgrouping;
-
 @property RLMArray<ImageCollectionRLM *><ImageCollectionRLM> *images;
+//@property RLMArray<ExpenseRLM *><ExpenseRLM> *expenses;
 @end
 
 
