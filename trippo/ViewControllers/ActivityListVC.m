@@ -75,31 +75,29 @@
     NSMutableDictionary *dataset = [[NSMutableDictionary alloc] init];
     /* obtain the planned activities, both planned and actual activities are interested in this */
 
-    RLMResults<ActivityRLM*> *plannedactivities = [ActivityRLM objectsWhere:@"state==0 AND tripkey = %@", self.Trip.key];
+    self.AllActivitiesInTrip = [ActivityRLM objectsWhere:@"tripkey = %@", self.Trip.key];
+    
+    RLMResults<ActivityRLM*> *plannedactivities = [self.AllActivitiesInTrip objectsWhere:@"state==0"];
     for (ActivityRLM* planned in plannedactivities) {
         [dataset setObject:planned forKey:planned.key];
     }
     /* next only for actual activities we search for those too and replace using dictionary any of them */
     if (State==[NSNumber numberWithLong:1]) {
-        RLMResults<ActivityRLM*> *actualactivities = [ActivityRLM objectsWhere:@"state==1 AND tripkey = %@",self.Trip.key];
+        RLMResults<ActivityRLM*> *actualactivities = [self.AllActivitiesInTrip objectsWhere:@"state==1"];
         for (ActivityRLM* actual in actualactivities) {
             [dataset setObject:actual forKey:actual.key];
         }
     }
     
     NSArray *temp2 = [[NSArray alloc] initWithArray:[dataset allValues]];
-    /*
-    for (ActivityRLM *activity in [dataset allValues]) {
-        NSLog(@"%@",activity.state);
-        [self.activitycollection addObject:activity];
-    }
-    */
+
     NSSortDescriptor *sortDescriptorState = [[NSSortDescriptor alloc] initWithKey:@"state" ascending:NO];
     NSSortDescriptor *sortDescriptorStartDt = [[NSSortDescriptor alloc] initWithKey:@"startdt"
                                                  ascending:YES];
     
     temp2 = [temp2 sortedArrayUsingDescriptors:@[sortDescriptorState,sortDescriptorStartDt]];
     self.activitycollection = [NSMutableArray arrayWithArray:temp2];
+
 }
 
 /*
@@ -159,7 +157,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     31/08/2018
+ last modified:     14/09/2018
  remarks:
  */
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -177,21 +175,43 @@
         
     } else {
         cell.activity = [self.activitycollection objectAtIndex:indexPath.row];
+        
+        RLMResults <ActivityRLM*> *activitySet = [self.AllActivitiesInTrip objectsWhere:[NSString stringWithFormat:@"key = '%@'",cell.activity.key]];
+        NSNumber *CountOfActivitiesInSet = [NSNumber numberWithLong:activitySet.count];
+        
         if (self.SegmentState.selectedSegmentIndex == 1) {
             
+            if (CountOfActivitiesInSet == [NSNumber numberWithLong:2]) {
+                [cell.ImageViewBookmark setImage:[UIImage imageNamed:@""]];
+            } else {
+                ActivityRLM *single = [activitySet firstObject];
+                if (single.state == [NSNumber numberWithInteger:1]) {
+                    [cell.ImageViewBookmark setImage:[UIImage imageNamed:@"Bookmark-Yellow"]];
+                } else {
+                    /* Activity not set as active */
+                    [cell.ImageViewBookmark setImage:[UIImage imageNamed:@"Bookmark-Blue"]];
+                }
+            }
+
             if (cell.activity.state == [NSNumber numberWithInteger:0]) {
                 cell.ButtonDelete.hidden = true;
                 cell.VisualViewBlur.hidden = false;
+            } else {
+                cell.ButtonDelete.hidden = false;
+                cell.VisualViewBlur.hidden = true;
             }
            
-            if (cell.activity.startdt == cell.activity.enddt) {
+            if ([cell.activity.startdt compare: cell.activity.enddt] == NSOrderedSame && cell.activity.startdt!=nil) {
                 // only show badge when activity is Actual.
-                if (cell.activity.state == [NSNumber numberWithInt:1]) {
+                //int state = [cell.activity.state intValue];
+                if (cell.activity.state == [NSNumber numberWithInteger:1]) {
                     cell.ViewActiveBadge.layer.cornerRadius = 35;
                     cell.ViewActiveBadge.layer.masksToBounds = YES;
                     cell.ViewActiveBadge.transform = CGAffineTransformMakeRotation(.34906585);
                     cell.ViewActiveItem.backgroundColor = [UIColor colorWithRed:252.0f/255.0f green:33.0f/255.0f blue:37.0f/255.0f alpha:1.0];
                     cell.ViewActiveBadge.hidden = false;
+                } else  {
+                    cell.ViewActiveBadge.hidden = true;
                 }
             } else {
                 cell.ViewActiveItem.backgroundColor = [UIColor clearColor];
@@ -199,14 +219,13 @@
             }
  
         } else {
-            /*
-            if (cell.activity.legendref == [NSNumber numberWithInt:2]) {
-                cell.LabelActivityLegend.backgroundColor = [UIColor colorWithRed:250.0f/255.0f green:159.0f/255.0f blue:66.0f/255.0f alpha:1.0];
-                
-            } else if (cell.activity.legendref== [NSNumber numberWithInt:1]) {
-                cell.LabelActivityLegend.backgroundColor = [UIColor colorWithRed:114.0f/255.0f green:24.0f/255.0f blue:23.0f/255.0f alpha:1.0];
+
+            if (CountOfActivitiesInSet == [NSNumber numberWithLong:2]) {
+                [cell.ImageViewBookmark setImage:[UIImage imageNamed:@""]];
+            } else {
+                [cell.ImageViewBookmark setImage:[UIImage imageNamed:@"Bookmark-Blue"]];
             }
-             */
+            
             cell.VisualViewBlur.hidden = true;
             cell.ButtonDelete.hidden = false;
             cell.ViewActiveItem.backgroundColor = [UIColor clearColor];
@@ -259,20 +278,15 @@
 
         //cell.LabelName.text = cell.activity.name;
         //[cell.LabelName sizeToFit];
-        cell.LabelActivityLegend.layer.cornerRadius = 5;
-        cell.LabelActivityLegend.layer.masksToBounds = YES;
+        
         NSDateFormatter *dtformatter = [[NSDateFormatter alloc] init];
         [dtformatter setDateFormat:@"EEE dd MMM HH:mm"];
         //cell.LabelDate.text = [NSString stringWithFormat:@"%@",[dtformatter stringFromDate:cell.activity.startdt]];
         cell.VisualViewBlurBehindImage.hidden = false;
         cell.ImageBlurBackground.hidden = false;
-        if (poiobject.images.count == 0) {
-            cell.ImageViewActivity.image = [UIImage imageNamed:@"Activity"];
-            cell.ImageBlurBackground.image = [UIImage imageNamed:@"Activity"];
-        } else {
-            cell.ImageViewActivity.image = [self.ActivityImageDictionary objectForKey:cell.activity.compondkey];
-            cell.ImageBlurBackground.image = [self.ActivityImageDictionary objectForKey:cell.activity.compondkey];;
-        }
+
+        cell.ImageViewActivity.image = [self.ActivityImageDictionary objectForKey:cell.activity.compondkey];
+        cell.ImageBlurBackground.image = [self.ActivityImageDictionary objectForKey:cell.activity.compondkey];;
         
         cell.LabelName.attributedText=[[NSAttributedString alloc]
                                        initWithString:cell.activity.name

@@ -42,7 +42,8 @@
     self.ViewPoiType.layer.cornerRadius = 15;
     self.ViewPoiType.clipsToBounds = YES;
     
-    
+    //self.LabelActivityLegend.layer.cornerRadius = 15;
+    //self.LabelActivityLegend.layer.masksToBounds = YES;
    
 }
 

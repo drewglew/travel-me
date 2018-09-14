@@ -324,7 +324,7 @@ int BlurredImageViewPresentedHeight=60;
 
 /*
  created date:      01/05/2018
- last modified:     09/09/2018
+ last modified:     14/09/2018
  remarks:  TODO [self.delegate didUpdateActivityImage]; add to update
  */
 - (IBAction)ActionButtonPressed:(id)sender {
@@ -361,7 +361,7 @@ int BlurredImageViewPresentedHeight=60;
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
             NSString *imagesDirectory = [paths objectAtIndex:0];
             
-            NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/Images/Projects/%@/Activities/%@",self.Activity.tripkey, self.Activity.compondkey]];
+            NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/Images/Trips/%@/Activities/%@",self.Activity.tripkey, self.Activity.compondkey]];
             
             [[NSFileManager defaultManager] createDirectoryAtPath:dataPath withIntermediateDirectories:YES attributes:nil error:nil];
             
@@ -372,14 +372,16 @@ int BlurredImageViewPresentedHeight=60;
                 NSString *filepathname = [dataPath stringByAppendingPathComponent:filename];
                 [imageData writeToFile:filepathname atomically:YES];
                 //activityimgobject.NewImage = true;
-                activityimgobject.ImageFileReference = [NSString stringWithFormat:@"/Images/Projects/%@/Activities/%@/%@",self.Activity.tripkey, self.Activity.compondkey,filename];
+                activityimgobject.ImageFileReference = [NSString stringWithFormat:@"/Images/Trips/%@/Activities/%@/%@",self.Activity.tripkey, self.Activity.compondkey,filename];
                 //activityimgobject.State = self.Activity.state;
                 counter++;
             }
+            [delegate didUpdateActivityImages:true];
         }
         [self.realm beginWriteTransaction];
         [self.realm addObject:self.Activity];
         [self.realm commitWriteTransaction];
+        
         if (self.newitem) {
             [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
         } else {
@@ -396,7 +398,8 @@ int BlurredImageViewPresentedHeight=60;
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
             NSString *imagesDirectory = [paths objectAtIndex:0];
             
-            NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/Images/Activity/%@",self.Activity.compondkey]];
+            NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/Images/Trips/%@/Activities/%@",self.Trip.key, self.Activity.compondkey]];
+            
             
             NSFileManager *fm = [NSFileManager defaultManager];
             [fm createDirectoryAtPath:dataPath withIntermediateDirectories:YES attributes:nil error:nil];
@@ -424,8 +427,10 @@ int BlurredImageViewPresentedHeight=60;
                     NSString *filename = [NSString stringWithFormat:@"%@.png", imgobject.key];
                     NSString *filepathname = [dataPath stringByAppendingPathComponent:filename];
                     [imageData writeToFile:filepathname atomically:YES];
-                    imgobject.ImageFileReference = [NSString stringWithFormat:@"Images/Activity/%@/%@",self.Activity.compondkey,filename];
+                    
+                    imgobject.ImageFileReference = [NSString stringWithFormat:@"Images/Trips/%@/Activities/%@/%@",self.Trip.key, self.Activity.compondkey,filename];
                     NSLog(@"new image");
+                    [delegate didUpdateActivityImages:true];
                     
                 } else if (imgobject.UpdateImage) {
                     /* we might swap it out as user has replaced the original file */
@@ -433,6 +438,7 @@ int BlurredImageViewPresentedHeight=60;
                     NSString *filepathname = [imagesDirectory stringByAppendingPathComponent:imgobject.ImageFileReference];
                     [imageData writeToFile:filepathname atomically:YES];
                     NSLog(@"updated image");
+                    [delegate didUpdateActivityImages:true];
                     
                 }
                 
@@ -534,6 +540,7 @@ int BlurredImageViewPresentedHeight=60;
     NSDate *today = [NSDate date];
     
     if (self.newitem || self.transformed) {
+        
         self.Activity.startdt = today;
         self.Activity.enddt = today;
         
@@ -542,16 +549,19 @@ int BlurredImageViewPresentedHeight=60;
         [self.realm addObject:self.Activity];
         [self.realm commitWriteTransaction];
 
+        [self.delegate didUpdateActivityImages :true];
         // double dismissing so we flow back to the activity window bypassing the search..
         if (self.newitem) {
             [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
         } else {
             [self dismissViewControllerAnimated:YES completion:Nil];
         }
+        
     } else {
         [self.realm beginWriteTransaction];
         self.Activity.enddt = today;
         [self.realm commitWriteTransaction];
+        [self.delegate didUpdateActivityImages :true];
         [self dismissViewControllerAnimated:YES completion:Nil];
     }
 }
@@ -776,9 +786,9 @@ int BlurredImageViewPresentedHeight=60;
                                                       }
                                                       [self.ActivityImageDictionary setObject:image forKey:imgobject.key];
                                                       
-                                                      //[self.realm beginWriteTransaction];
+                                                      [self.realm beginWriteTransaction];
                                                       [self.Activity.images.realm addObject:imgobject];
-                                                      //[self.realm commitWriteTransaction];
+                                                      [self.realm commitWriteTransaction];
                                                       
                                                   } else if (self.imagestate==2) {
                                                       
@@ -787,13 +797,10 @@ int BlurredImageViewPresentedHeight=60;
                                                       UIImage *image = [ToolBoxNSO imageWithImage:result scaledToSize:size];
                                                       
                                                       [self.ActivityImageDictionary setObject:image forKey:imgobject.key];
-                                                      
-                                                      
-                                                      //[self.realm beginWriteTransaction];
+
+                                                      [self.realm beginWriteTransaction];
                                                       imgobject.UpdateImage = true;
-                                                      //[self.realm commitWriteTransaction];
-                                                      
-                                            
+                                                      [self.realm commitWriteTransaction];
                                                   }
                                                   [self.CollectionViewActivityImages reloadData];
                                               });
@@ -1153,7 +1160,7 @@ int BlurredImageViewPresentedHeight=60;
 
 /*
  created date:      08/09/2018
- last modified:     08/09/2018
+ last modified:     14/09/2018
  remarks:
  */
 - (IBAction)UploadImagePressed:(id)sender {
@@ -1161,9 +1168,10 @@ int BlurredImageViewPresentedHeight=60;
 
     NSData *dataImage = UIImagePNGRepresentation(self.ImagePicture.image);
     NSString *stringImage = [dataImage base64EncodedStringWithOptions:0];
-    
-    NSString *ImageFileReference = [NSString stringWithFormat:@"Images/%@/%@.png",self.Activity.key, self.SelectedImageKey];
-    NSString *ImageFileDirectory = [NSString stringWithFormat:@"Images/%@",self.Activity.key];
+
+    NSString *ImageFileReference = [NSString stringWithFormat:@"Images/Trips/%@/Activities/%@/%@.png",self.Activity.tripkey, self.Activity.compondkey, self.SelectedImageKey];
+
+    NSString *ImageFileDirectory = [NSString stringWithFormat:@"Images/Trips/%@/Activities/%@",self.Activity.tripkey, self.Activity.compondkey];
     
     NSDictionary* dataJSON = [NSDictionary dictionaryWithObjectsAndKeys:
                               @"Activity",

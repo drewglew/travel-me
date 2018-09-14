@@ -38,6 +38,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonRouting;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonPayment;
+@property RLMResults<ActivityRLM*> *AllActivitiesInTrip;
 @property (assign) bool ImagesNeedUpdating;
 @property RLMRealm *realm;
 

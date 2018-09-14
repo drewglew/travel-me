@@ -652,9 +652,9 @@
                                                         }
                                                         [self.PoiImageDictionary setObject:image forKey:imgobject.key];
                                                         
-                                                        //[self.realm beginWriteTransaction];
+                                                        [self.realm beginWriteTransaction];
                                                         [self.PointOfInterest.images.realm addObject:imgobject];
-                                                        //[self.realm commitWriteTransaction];
+                                                        [self.realm commitWriteTransaction];
                                                         
                                                     } else if (self.imagestate==2) {
                                                         
@@ -663,15 +663,10 @@
                                                         ImageCollectionRLM *imgobject = [self.PointOfInterest.images objectAtIndex:[self.SelectedImageIndex longValue]];
                                                         
                                                         UIImage *image = [ToolBoxNSO imageWithImage:result scaledToSize:size];
-                                                        
                                                         [self.PoiImageDictionary setObject:image forKey:imgobject.key];
-                                                        
-                                                       
-                                                        //[self.realm beginWriteTransaction];
+                                                        [self.realm beginWriteTransaction];
                                                         imgobject.UpdateImage = true;
-                                                        //[self.realm commitWriteTransaction];
-                                                        
-                                                       
+                                                        [self.realm commitWriteTransaction];
                                                     }
                                                     [self.CollectionViewPoiImages reloadData];
                                                 });
@@ -761,9 +756,10 @@
 -(CGSize)collectionView:(UICollectionView *) collectionView layout:(UICollectionViewLayout* )collectionViewLayout sizeForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
     CGSize size;
     if (collectionView == self.CollectionViewPoiImages) {
-        CGFloat collectionWidth = self.CollectionViewPoiImages.frame.size.width - 20;
+        /*CGFloat collectionWidth = self.CollectionViewPoiImages.frame.size.width - 20;
         float cellWidth = collectionWidth/6.0f;
-        size = CGSizeMake(cellWidth,cellWidth);
+        size = CGSizeMake(cellWidth,cellWidth);*/
+        size = CGSizeMake(100,100);
     } else {
         size = CGSizeMake(50,50);
     }

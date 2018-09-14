@@ -30,7 +30,7 @@
 }
 
 - (IBAction)StartDateAdjusted:(id)sender {
-    if (self.DatePickerStart.date > self.DatePickerEnd.date) {
+    if ([self.DatePickerStart.date compare: self.DatePickerEnd.date] == NSOrderedDescending) {
         self.ButtonAcceptDates.alpha = 0.5f;
         self.ButtonAcceptDates.enabled = false;
         self.DatePickerEnd.date = self.DatePickerStart.date;
@@ -42,7 +42,7 @@
 
 
 - (IBAction)EndDateAdjusted:(id)sender {
-    if (self.DatePickerStart.date > self.DatePickerEnd.date) {
+    if ([self.DatePickerStart.date compare: self.DatePickerEnd.date] == NSOrderedDescending) {
         self.ButtonAcceptDates.alpha = 0.5f;
         self.ButtonAcceptDates.enabled = false;
          self.DatePickerStart.date = self.DatePickerEnd.date;

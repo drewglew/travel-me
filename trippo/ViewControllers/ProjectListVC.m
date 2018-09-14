@@ -108,7 +108,14 @@
             cell.ImageViewProject.image = image;
         }
 
-        cell.LabelProjectName.text = trip.name;
+        cell.LabelProjectName.attributedText=[[NSAttributedString alloc]
+                                       initWithString:trip.name
+                                       attributes:@{
+                                                    NSStrokeWidthAttributeName: @-2.0,
+                                                    NSStrokeColorAttributeName:[UIColor blackColor],
+                                                    NSForegroundColorAttributeName:[UIColor whiteColor]
+                                                    }
+                                       ];
         
         if (trip.startdt != nil) {
             NSDateFormatter *dtformatter = [[NSDateFormatter alloc] init];

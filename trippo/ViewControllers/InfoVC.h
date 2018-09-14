@@ -9,5 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface InfoVC : UIViewController
+@property (weak, nonatomic) IBOutlet UILabel *LabelVersion;
 
 @end

@@ -315,9 +315,15 @@
                 } else {
                     image =[UIImage imageWithData:pngData];
                 }
-                CGSize size = CGSizeMake(self.TableViewSearchPoiItems.frame.size.width , self.TableViewSearchPoiItems.rowHeight); // set the width and height
                 
-                [AppDelegateDef.PoiBackgroundImageDictionary setObject:[self resizeImage:image imageSize:size] forKey:poi.key];
+                CGSize tablecellsize = CGSizeMake(self.TableViewSearchPoiItems.frame.size.width , self.TableViewSearchPoiItems.rowHeight); // set the width and height
+                CGSize imagesize = CGSizeMake(image.size.width , image.size.height); // set the width and height
+                
+               
+                CGRect CropRect = CGRectMake((imagesize.width/2) - (tablecellsize.width/2), (imagesize.height/2) - (tablecellsize.height/2), tablecellsize.width, tablecellsize.height);
+
+                
+                [AppDelegateDef.PoiBackgroundImageDictionary setObject:[self croppIngimageByImageName:image toRect:CropRect] forKey:poi.key];
             }
         }
     }
@@ -329,7 +335,7 @@
 /*
  created date:      15/07/2018
  last modified:     15/07/2018
- remarks:
+ remarks:   Scale image to size passed in
  */
 
 -(UIImage *)resizeImage:(UIImage *)image imageSize:(CGSize)size
@@ -342,6 +348,18 @@
     return newImage;
 }
 
+/*
+ created date:      13/09/2018
+ last modified:     13/09/2018
+ remarks:   Crop image with size passed in
+ */
+- (UIImage *)croppIngimageByImageName:(UIImage *)imageToCrop toRect:(CGRect)rect
+{
+    CGImageRef imageRef = CGImageCreateWithImageInRect([imageToCrop CGImage], rect);
+    UIImage *cropped = [UIImage imageWithCGImage:imageRef];
+    CGImageRelease(imageRef);
+    return cropped;
+}
 
 
 /*
@@ -383,8 +401,17 @@
 
     PoiRLM *poi = [self.self.poifilteredcollection objectAtIndex:indexPath.row];
     
-    cell.poi = poi;
-    cell.Name.text = poi.name;
+    cell.poi = poi;    
+    cell.Name.attributedText=[[NSAttributedString alloc]
+                                          initWithString:poi.name
+                                          attributes:@{
+                                                       NSStrokeWidthAttributeName: @-2.0,
+                                                       NSStrokeColorAttributeName:[UIColor blackColor],
+                                                       NSForegroundColorAttributeName:[UIColor whiteColor]
+                                                       }
+                                          ];
+    
+    
     cell.AdministrativeArea.text = poi.administrativearea;
     
     cell.ImageCategory.image = [UIImage imageNamed:[self.TypeItems objectAtIndex:[cell.poi.categoryid integerValue]]];
@@ -730,7 +757,7 @@
 
 /*
  created date:      12/08/2018
- last modified:     02/09/2018
+ last modified:     13/09/2018
  remarks:
  */
 - (void)didUpdatePoi :(NSString*)Method :(PoiRLM*)Object {
@@ -751,11 +778,19 @@
         NSURL *imagefile = [url URLByAppendingPathComponent:imgobject.ImageFileReference];
         NSError *err;
         pngData = [NSData dataWithContentsOfURL:imagefile options:NSDataReadingMappedIfSafe error:&err];
+        UIImage *image;
         if (pngData!=nil) {
-            UIImage *image =[UIImage imageWithData:pngData];
-            CGSize size = CGSizeMake(self.TableViewSearchPoiItems.frame.size.width , self.TableViewSearchPoiItems.rowHeight); // set the width and height
-            [AppDelegateDef.PoiBackgroundImageDictionary setObject:[self resizeImage:image imageSize:size] forKey:Object.key];
+            image =[UIImage imageWithData:pngData];
         }
+        else {
+            image =[UIImage imageNamed:@"Poi"];
+        }
+        CGSize tablecellsize = CGSizeMake(self.TableViewSearchPoiItems.frame.size.width , self.TableViewSearchPoiItems.rowHeight); // set the width and height
+        CGSize imagesize = CGSizeMake(image.size.width , image.size.height); // set the width and height
+        
+        CGRect CropRect = CGRectMake((imagesize.width/2) - (tablecellsize.width/2), (imagesize.height/2) - (tablecellsize.height/2), tablecellsize.width, tablecellsize.height);
+
+        [AppDelegateDef.PoiBackgroundImageDictionary setObject:[self croppIngimageByImageName:image toRect:CropRect] forKey:Object.key];
     }
 }
 

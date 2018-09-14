@@ -83,8 +83,8 @@ int Adjustment;
                                           initWithString:@"Featured..."
                                           attributes:@{
                                                        NSStrokeWidthAttributeName: @-2.0,
-                                                       NSStrokeColorAttributeName:[UIColor whiteColor],
-                                                       NSForegroundColorAttributeName:[UIColor clearColor]
+                                                       NSStrokeColorAttributeName:[UIColor blackColor],
+                                                       NSForegroundColorAttributeName:[UIColor whiteColor]
                                                        }
                                           ];
     
@@ -165,19 +165,20 @@ int Adjustment;
     for (TripRLM* trip in self.alltripitems) {
         RLMResults <ActivityRLM*> *allActivities = [ActivityRLM objectsWhere:@"tripkey=%@", trip.key];
         NSDate *EarliestDate = [allActivities maxOfProperty:@"startdt"];
-        NSDate *LastestDate = [allActivities maxOfProperty:@"enddt"];
-
-        if ([currentDate compare: EarliestDate] == NSOrderedDescending && [currentDate compare: LastestDate] == NSOrderedAscending) {
-            
-            TripRLM* tripobject = [[TripRLM alloc] init];
-            tripobject.key = trip.key;
-            tripobject.name = trip.name;
-            tripobject.itemgrouping = [NSNumber numberWithInt:2];
-            
-            [self.selectedtripitems addObject:tripobject];
-            found_active = true;
-            [self RetrieveImageItem :trip :imagesDirectory];
-        }
+        NSDate *LatestDate = [allActivities maxOfProperty:@"enddt"];
+        //if (EarliestDate != nil && LatestDate != nil ) {
+            if ([currentDate compare: EarliestDate] == NSOrderedDescending && [currentDate compare: LatestDate] == NSOrderedAscending) {
+                
+                TripRLM* tripobject = [[TripRLM alloc] init];
+                tripobject.key = trip.key;
+                tripobject.name = trip.name;
+                tripobject.itemgrouping = [NSNumber numberWithInt:2];
+                
+                [self.selectedtripitems addObject:tripobject];
+                found_active = true;
+                [self RetrieveImageItem :trip :imagesDirectory];
+            }
+        //}
     }
     
     /* optional new if no active trip found */
@@ -301,7 +302,7 @@ int Adjustment;
         self.ImageViewFeaturedPoi.image = [UIImage imageNamed:@"Poi"];
     }
     self.ViewFeature.hidden = false;
-    [UIView animateWithDuration:1.0f animations:^{
+    [UIView animateWithDuration:0.75f animations:^{
         self.FeaturedViewTrailingConstraint.constant = self.FeaturedViewTrailingConstraint.constant + Adjustment;
         [self.view layoutIfNeeded];
     } completion:^(BOOL finished) {
@@ -368,8 +369,8 @@ int Adjustment;
                                initWithString:trip.name
                                attributes:@{
                                             NSStrokeWidthAttributeName: @-2.0,
-                                            NSStrokeColorAttributeName:[UIColor whiteColor],
-                                            NSForegroundColorAttributeName:[UIColor clearColor]
+                                            NSStrokeColorAttributeName:[UIColor blackColor],
+                                            NSForegroundColorAttributeName:[UIColor whiteColor]
                                             }
                                ];
     
@@ -393,8 +394,8 @@ int Adjustment;
                                           initWithString:reference
                                           attributes:@{
                                                        NSStrokeWidthAttributeName: @-2.0,
-                                                       NSStrokeColorAttributeName:[UIColor whiteColor],
-                                                       NSForegroundColorAttributeName:[UIColor clearColor]
+                                                       NSStrokeColorAttributeName:[UIColor blackColor],
+                                                       NSForegroundColorAttributeName:[UIColor whiteColor]
                                                        }
                                           ];
     
