@@ -20,13 +20,14 @@
 #import "HCSStarRatingView.h"
 #import "ImageNSO.h"
 #import "ActivityImageCell.h"
-
+#import <TesseractOCR/TesseractOCR.h>
+#import "TOCropViewController.h"
 
 @protocol ActivityDataEntryDelegate <NSObject>
 - (void)didUpdateActivityImages :(bool) ForceUpdate;
 @end
 
-@interface ActivityDataEntryVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, MKMapViewDelegate, PoiDataEntryDelegate, SelectDateRangeDelegate, DirectionsDelegate, PaymentListingDelegate, UITextViewDelegate,UITextFieldDelegate, UICollectionViewDelegate, UICollectionViewDataSource,UIImagePickerControllerDelegate, UINavigationControllerDelegate, ImagePickerDelegate, UIScrollViewDelegate>
+@interface ActivityDataEntryVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, MKMapViewDelegate, PoiDataEntryDelegate, SelectDateRangeDelegate, DirectionsDelegate, PaymentListingDelegate, UITextViewDelegate,UITextFieldDelegate, UICollectionViewDelegate, UICollectionViewDataSource,UIImagePickerControllerDelegate, UINavigationControllerDelegate, ImagePickerDelegate, UIScrollViewDelegate,G8TesseractDelegate, TOCropViewControllerDelegate>
 @property (nonatomic) UIImage *PoiImage;
 @property (assign) bool newitem;
 @property (assign) bool transformed;
@@ -48,11 +49,14 @@
 @property (weak, nonatomic) IBOutlet UIButton *ButtonAction;
 @property (weak, nonatomic) IBOutlet UILabel *LabelStartDT;
 @property (weak, nonatomic) IBOutlet UILabel *LabelEndDT;
-@property (weak, nonatomic) IBOutlet UIButton *ButtonCheckInOut;
+@property (weak, nonatomic) IBOutlet UIView *ViewCheckInOut;
+@property (weak, nonatomic) IBOutlet UILabel *LabelCheckInOut;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonDirections;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonPayment;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonDateRange;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonCancel;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonScan;
+
 @property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentPresenter;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewActivityClass;
 @property (weak, nonatomic) IBOutlet UIView *ViewMain;

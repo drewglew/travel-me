@@ -17,6 +17,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.MapView.delegate = self;
+    
+    self.ButtonBack.layer.cornerRadius = 25;
+    self.ButtonBack.clipsToBounds = YES;
+    self.ButtonBack.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
+    
     // Do any additional setup after loading the view.
 }
 
@@ -31,15 +37,23 @@
      which in turn once found will goto processMultiRouting method. */
     if (self.Route.count==1) {
         self.ButtonOpenMap.hidden = false;
+        self.ButtonOpenMap.layer.cornerRadius = 25;
+        self.ButtonOpenMap.clipsToBounds = YES;
+        self.ButtonOpenMap.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+        self.ButtonUpdateCalc.hidden = true;
         [self startUserLocationSearch];
     } else {
-         self.ButtonOpenMap.hidden = true;
+        self.ButtonOpenMap.hidden = true;
+        self.ButtonUpdateCalc.hidden = false;
+        self.ButtonUpdateCalc.layer.cornerRadius = 25;
+        self.ButtonUpdateCalc.clipsToBounds = YES;
+        self.ButtonUpdateCalc.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
         [self processMultiRouting];
     }
 }
 /*
  created date:      08/05/2018
- last modified:     14/05/2018
+ last modified:     06/10/2018
  remarks:
  */
 -(void)processMultiRouting {
@@ -49,22 +63,19 @@
     MKMapItem *mapItemPrevious;
     MKDirectionsRequest *request = [[MKDirectionsRequest alloc] init];
     
-    for (PoiNSO *route in self.Route) {
+    for (PoiRLM *route in self.Route) {
 
         AnnotationMK *annotation = [[AnnotationMK alloc] init];
-        PoiNSO* poi;
-        if (![route.name isEqualToString:@"My Current Location"]) {
-            poi  = [[AppDelegateDef.Db GetPoiContent:route.key :nil :nil] firstObject];
-        } else {
-            poi = route;
-        }
-        poi.Coordinates = CLLocationCoordinate2DMake([poi.lat doubleValue], [poi.lon doubleValue]);
-        annotation.coordinate = poi.Coordinates;
-        annotation.title = poi.name;
-        annotation.subtitle = poi.administrativearea;
+        //PoiRLM* poi;
+        //if ([route.name isEqualToString:@"My Current Location"]) {
+        //    poi = route;
+        //}
+        annotation.coordinate = CLLocationCoordinate2DMake([route.lat doubleValue], [route.lon doubleValue]);
+        annotation.title = route.name;
+        annotation.subtitle = route.administrativearea;
         [self.MapView addAnnotation:annotation];
         
-        MKPlacemark *placemark  = [[MKPlacemark alloc] initWithCoordinate:poi.Coordinates addressDictionary:nil];
+        MKPlacemark *placemark  = [[MKPlacemark alloc] initWithCoordinate:annotation.coordinate addressDictionary:nil];
         MKMapItem *mapItem = [[MKMapItem alloc] initWithPlacemark:placemark];
 
         if (firstItem) {
@@ -73,6 +84,16 @@
             request.source = mapItemPrevious;
             request.destination = mapItem;
             request.requestsAlternateRoutes = NO;
+            //request.transportType
+            
+            if (route.transportid==[NSNumber numberWithInt:1]) {
+                request.transportType = MKDirectionsTransportTypeWalking;
+            } else  if (route.transportid==[NSNumber numberWithInt:2]) {
+                request.transportType = MKDirectionsTransportTypeTransit;
+            } else {
+                request.transportType = MKDirectionsTransportTypeAutomobile;
+            }
+
             MKDirections *directions = [[MKDirections alloc] initWithRequest:request];
         
             [directions calculateDirectionsWithCompletionHandler:
@@ -120,7 +141,7 @@
     mylocation.name = @"My Current Location";
     mylocation.lat = [NSNumber numberWithDouble: self.locationManager.location.coordinate.latitude];
     mylocation.lon = [NSNumber numberWithDouble:self.locationManager.location.coordinate.longitude];
-    mylocation.administrativearea =@"";
+    mylocation.administrativearea = @"";
     [self.Route insertObject:mylocation atIndex:0];
     
     [self processMultiRouting];
@@ -132,16 +153,23 @@
  */
 -(void)showRoute:(MKDirectionsResponse *)response
 {
-    
     for (MKRoute *route in response.routes)
     {
+        route.polyline.subtitle = [NSString stringWithFormat:@"%lu",(unsigned long)route.transportType];
+        NSLog(@"transport=%lu",route.transportType);
         [self.MapView
          addOverlay:route.polyline level:MKOverlayLevelAboveRoads];
+        
+        NSLog(@"EXPRECTED TRAVELTIME:%f", route.expectedTravelTime);
+        
+        //[self.MapView
+        // addOverlay:route.polyline level:MKOverlayLevelAboveRoads];
         for (MKRouteStep *step in route.steps)
         {
             NSLog(@"%@", step.instructions);
         }
         self.Distance += (route.distance / 1000);
+        self.TravelTime += (route.expectedTravelTime);
         self.LabelDistance.text = [NSString stringWithFormat:@"Distance = %.02f km", self.Distance];
     }
 }
@@ -213,10 +241,17 @@
  */
 - (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
 {
+    
     if ([overlay isKindOfClass:[MKPolyline class]]) {
         MKPolylineRenderer *renderer = [[MKPolylineRenderer alloc] initWithOverlay:overlay];
-        [renderer setStrokeColor:[UIColor blueColor]];
-        [renderer setLineWidth:5.0];
+        if ([overlay.subtitle isEqualToString:@"1"]) {
+            [renderer setStrokeColor:[UIColor blueColor]];
+        } else if ([overlay.subtitle isEqualToString:@"2"]) {
+            [renderer setStrokeColor:[UIColor blackColor]];
+        } else {
+            [renderer setStrokeColor:[UIColor blackColor]];
+        }
+        [renderer setLineWidth:3.0];
         return renderer;
     }
     return nil;
@@ -261,6 +296,27 @@
     }
 }
 
+/*
+ created date:      07/10/2018
+ last modified:     07/10/2018
+ remarks:           Update the trip summary
+ */
+- (IBAction)UpdateCalcPressed:(id)sender {
+
+    [self.realm beginWriteTransaction];
+ 
+    if (self.ActivityState == [NSNumber numberWithInteger:0]) {
+        self.Trip.routeplannedcalculateddt = [NSDate date];
+        self.Trip.routeplannedtotaltravelminutes = [NSNumber numberWithLong:self.TravelTime];
+        self.Trip.routeplannedtotaltraveldistance = [NSNumber numberWithDouble:self.Distance];
+    } else {
+        self.Trip.routeactualcalculateddt = [NSDate date];
+        self.Trip.routeactualtotaltravelminutes = [NSNumber numberWithLong:self.TravelTime];
+        self.Trip.routeactualtotaltraveldistance = [NSNumber numberWithDouble:self.Distance];
+    }
+    [self.realm commitWriteTransaction];
+    
+}
 
 
 

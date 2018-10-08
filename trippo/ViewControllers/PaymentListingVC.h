@@ -14,6 +14,8 @@
 #import "AppDelegate.h"
 #import "PaymentListCell.h"
 #import "PoiImageNSO.h"
+#import "PaymentRLM.h"
+#import "TripRLM.h"
 
 @protocol PaymentListingDelegate <NSObject>
 @end
@@ -24,12 +26,17 @@
 @property (strong, nonatomic) NSMutableArray *paymentitems;
 @property (strong, nonatomic) NSArray *localcurrencyitems;
 @property (strong, nonatomic) NSNumber *activitystate;
+@property (strong, nonatomic) NSString *headerImageReference;
 @property (strong, nonatomic) NSMutableArray *paymentsections;
+@property (strong, nonatomic) UIImage *headerImage;
 
-@property (strong, nonatomic) ActivityNSO *Activity;
-@property (strong, nonatomic) ProjectNSO *Project;
+@property ActivityRLM *ActivityItem;
+@property TripRLM *TripItem;
+@property RLMResults<PaymentRLM*>*ExpenseCollection;
+@property RLMRealm *realm;
+
 @property (nonatomic, weak) id <PaymentListingDelegate> delegate;
-@property (weak, nonatomic) IBOutlet UIImageView *ImageViewPoi;
+@property (weak, nonatomic) IBOutlet UIImageView *ImageView;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonAction;
 @property (weak, nonatomic) IBOutlet UILabel *LabelTripPrice;
 @property (weak, nonatomic) IBOutlet UILabel *LabelTripAmount;

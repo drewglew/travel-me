@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
 #import <CoreLocation/CoreLocation.h>
+#import "PoiRLM.h"
 #import "PoiNSO.h"
 #import "PoiImageNSO.h"
 #import "AppDelegate.h"
@@ -31,9 +32,14 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelJourneyDetail;
 @property (strong, nonatomic) NSMutableArray *Route;
 @property (assign) double Distance;
+@property (assign) long TravelTime;
 @property (strong, nonatomic) NSMutableArray *scheduleitems;
-
+@property (nonatomic) NSNumber *ActivityState;
+@property RLMRealm *realm;
+@property TripRLM *Trip;
 @property (weak, nonatomic) IBOutlet UILabel *LabelDistance;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonOpenMap;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonUpdateCalc;
 
 @end

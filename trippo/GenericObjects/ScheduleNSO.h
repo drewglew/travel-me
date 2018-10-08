@@ -7,19 +7,23 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <MapKit/MapKit.h>
 #import "ProjectNSO.h"
-#import "PoiNSO.h"
+#import "TripRLM.h"
+#import "PoiRLM.h"
+
 
 @interface ScheduleNSO : NSObject
-@property (nonatomic) NSString *key;
+@property (nonatomic) NSString *compondkey;
 @property (nonatomic) NSString *name;
 @property (nonatomic) NSDate *dt;
 @property (nonatomic) NSString *type;
 @property (assign) int hierarcyindex;
-@property (nonatomic) NSNumber *activitystate;
 @property (nonatomic) NSNumber *categoryid;
+@property (nonatomic) NSNumber *transportid;
+@property (nonatomic) NSNumber *sortorder;
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;
-@property (strong, nonatomic) ProjectNSO *project;
-@property (strong, nonatomic) PoiNSO *poi;
+@property (strong, nonatomic) TripRLM *trip;
+@property PoiRLM *poi;
 -(NSDate *)GetDtFromString :(NSString *) dt;
 @end

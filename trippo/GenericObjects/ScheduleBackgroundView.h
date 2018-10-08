@@ -13,7 +13,7 @@
     int LastLineStyle;
 }
 
-- (void)addColumns:(int)amount :(int)linestyle;
+- (void)addColumns:(int)amount :(int)linestyle :(float)spacer;
 
 
 @end

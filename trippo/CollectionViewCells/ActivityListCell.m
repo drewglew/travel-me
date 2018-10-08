@@ -37,14 +37,11 @@
     self.ButtonDelete.layer.cornerRadius = 15;
     self.ButtonDelete.clipsToBounds = YES;
     self.ButtonDelete.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
-    
-
     self.ViewPoiType.layer.cornerRadius = 15;
     self.ViewPoiType.clipsToBounds = YES;
-    
-    //self.LabelActivityLegend.layer.cornerRadius = 15;
-    //self.LabelActivityLegend.layer.masksToBounds = YES;
-   
+    //self.ViewPoiType.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
+    self.layer.cornerRadius = 8;
+    self.clipsToBounds = YES;
 }
 
 

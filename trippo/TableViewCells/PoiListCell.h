@@ -18,5 +18,6 @@
 
 @property (strong, nonatomic) PoiRLM *poi;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageCategory;
+@property (weak, nonatomic) IBOutlet UILabel *LabelFlag;
 
 @end

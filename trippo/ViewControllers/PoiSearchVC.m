@@ -22,7 +22,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     10/09/2018
+ last modified:     16/09/2018
  remarks:
  */
 - (void)viewDidLoad {
@@ -120,6 +120,7 @@
                        @"Cat-Train",
                        @"Cat-Trek",
                        @"Cat-Venue",
+                       @"Cat-Village",
                        @"Cat-Zoo"
                        ];
     
@@ -272,6 +273,10 @@
     }
 
     
+    self.poifilteredcollection = [self.poifilteredcollection sortedResultsUsingDescriptors:@[
+                                                       [RLMSortDescriptor sortDescriptorWithKeyPath:@"name" ascending:YES],
+                                                       ]];
+    
     
     [self.LabelCounter setText:[NSString stringWithFormat:@"%lu Items", (unsigned long)self.poifilteredcollection.count]];
     
@@ -380,6 +385,26 @@
     return self.poifilteredcollection.count;
 }
 
+/*
+ created date:      07/10/2018
+ last modified:     07/10/2018
+ remarks:
+ */
+- (NSString *)emojiFlagForISOCountryCode:(NSString *)countryCode {
+    NSAssert(countryCode.length == 2, @"Expecting ISO country code");
+    
+    int base = 127462 -65;
+    
+    wchar_t bytes[2] = {
+        base +[countryCode characterAtIndex:0],
+        base +[countryCode characterAtIndex:1]
+    };
+    
+    return [[NSString alloc] initWithBytes:bytes
+                                    length:countryCode.length *sizeof(wchar_t)
+                                  encoding:NSUTF32LittleEndianStringEncoding];
+}
+
 
 /*
  created date:      30/04/2018
@@ -399,20 +424,25 @@
         
     }
 
-    PoiRLM *poi = [self.self.poifilteredcollection objectAtIndex:indexPath.row];
+    PoiRLM *poi = [self.poifilteredcollection objectAtIndex:indexPath.row];
     
     cell.poi = poi;    
     cell.Name.attributedText=[[NSAttributedString alloc]
                                           initWithString:poi.name
                                           attributes:@{
-                                                       NSStrokeWidthAttributeName: @-2.0,
+                                                       NSStrokeWidthAttributeName: @-1.0,
                                                        NSStrokeColorAttributeName:[UIColor blackColor],
                                                        NSForegroundColorAttributeName:[UIColor whiteColor]
                                                        }
                                           ];
     
     
+   // cell.AdministrativeArea.text = poi.administrativearea;
+    
+    
     cell.AdministrativeArea.text = poi.administrativearea;
+    cell.LabelFlag.text = [self emojiFlagForISOCountryCode:poi.countrycode];
+    
     
     cell.ImageCategory.image = [UIImage imageNamed:[self.TypeItems objectAtIndex:[cell.poi.categoryid integerValue]]];
     
@@ -591,7 +621,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     16/07/2018
+ last modified:     06/10/2018
  remarks:           segue controls.  We need to work here next - get selection Project==null
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -624,6 +654,7 @@
     } else if([segue.identifier isEqualToString:@"ShowNearbyMe"]){
         NearbyListingVC *controller = (NearbyListingVC *)segue.destinationViewController;
         controller.delegate = self;
+        controller.realm = self.realm;
         controller.PointOfInterest = nil;
     }
     

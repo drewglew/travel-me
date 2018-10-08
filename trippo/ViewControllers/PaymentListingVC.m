@@ -9,41 +9,39 @@
 #import "PaymentListingVC.h"
 
 @interface PaymentListingVC ()
-
+@property RLMNotificationToken *notification;
 @end
 
 @implementation PaymentListingVC
 
 /*
  created date:      09/05/2018
- last modified:     09/08/2018
+ last modified:     16/09/2018
  remarks:
  */
 - (void)viewDidLoad {
     [super viewDidLoad];
     /* going to receive an array of existing payments and what category */
     
-    if (self.Project == nil) {
-        PoiImageNSO *img = [self.Activity.poi.Images firstObject];
-        if (img.Image.size.height==0) {
-            self.ImageViewPoi.image = [UIImage imageNamed:@"Activity"];
-        } else {
-            self.ImageViewPoi.image = img.Image;
-        }
-        self.LabelTitle.text = [NSString stringWithFormat:@"Activity: %@", self.Activity.name];
+    NSString *Title = [NSString stringWithFormat:@"Expenses - %@", self.ActivityItem.name];
+    if (self.TripItem == nil) {
         self.ViewTripAmount.hidden = true;
-        
     } else {
-        if (self.Project.Image.size.height==0) {
-            self.ImageViewPoi.image = [UIImage imageNamed:@"Project"];
-        } else {
-            self.ImageViewPoi.image = self.Project.Image;
-        }
-        NSLog(@"image size: %f",self.Project.Image.size.height );
-        self.LabelTitle.text = [NSString stringWithFormat:@"Trip: %@", self.Project.name];
-        //self.ButtonAction.hidden = true;
+        Title = [NSString stringWithFormat:@"Trip Expenses - %@", self.TripItem.name];
         self.ViewTripAmount.hidden = false;
     }
+    
+     self.LabelTitle.attributedText=[[NSAttributedString alloc]
+                                          initWithString:Title
+                                          attributes:@{
+                                                       NSStrokeWidthAttributeName: @-2.0,
+                                                       NSStrokeColorAttributeName:[UIColor blackColor],
+                                                       NSForegroundColorAttributeName:[UIColor whiteColor]
+                                                       }
+                                          ];
+    
+    
+    self.ImageView.image = self.headerImage;
     
     self.TableViewPayment.rowHeight = 100;
     self.TableViewPayment.sectionFooterHeight = 50+75;
@@ -53,7 +51,13 @@
     self.ButtonAction.clipsToBounds = YES;
     self.ButtonBack.layer.cornerRadius = 25;
     self.ButtonBack.clipsToBounds = YES;
-
+    self.ButtonBack.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
+    __weak typeof(self) weakSelf = self;
+    self.notification = [self.realm addNotificationBlock:^(NSString *note, RLMRealm *realm) {
+        [weakSelf LoadPaymentData];
+        [weakSelf.TableViewPayment reloadData];
+    }];
 }
 
 /*
@@ -68,60 +72,79 @@
 
 /*
  created date:      09/05/2018
- last modified:     15/07/2018
- remarks:
+ last modified:     15/09/2018
+ remarks:  
  */
 -(void) LoadPaymentData {
 
-    self.paymentitems = [AppDelegateDef.Db GetPaymentListContent :self.Project :self.Activity];
-    self.localcurrencyitems = [[NSSet setWithArray:[self.paymentitems valueForKey:@"localcurrencycode"]] allObjects];
-    self.paymentsections = [[NSMutableArray alloc] initWithCapacity:self.localcurrencyitems.count];
-    NSArray *rows = [[NSMutableArray alloc] init];
-    
-    for (NSString *item in self.localcurrencyitems) {
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"localcurrencycode = %@", item];
-        rows = [self.paymentitems filteredArrayUsingPredicate:predicate];
-        [self.paymentsections addObject:rows];
+    if (self.TripItem == nil) {
+        self.ExpenseCollection = [PaymentRLM objectsWhere:@"activitykey=%@",self.ActivityItem.key];
+    }
+    else {
+        self.ExpenseCollection = [PaymentRLM objectsWhere:@"tripkey=%@",self.TripItem.key];
     }
 
+    self.localcurrencyitems = [[NSSet setWithArray:[self.ExpenseCollection valueForKey:@"localcurrencycode"]] allObjects];
     
+    
+    self.paymentsections = [[NSMutableArray alloc] initWithCapacity:self.localcurrencyitems.count];
+    RLMResults <PaymentRLM*> *rows;
+    //NSArray *rows = [[NSArray alloc] init];
+    
+    
+    for (NSString *item in self.localcurrencyitems) {
+        NSLog(@"item=%@", item);
+        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"localcurrencycode = %@", item];
+        rows = [self.ExpenseCollection objectsWithPredicate:predicate];
+        
+        for (PaymentRLM *test in rows) {
+            NSLog(@"localcurrencycode=%@", test.localcurrencycode);
+        }
+        
+        [self.paymentsections addObject:rows];
+    }
     
     /* work out trip price rate */
-    
-    if (self.Project != nil) {
+    if (self.TripItem != nil) {
         
         /* get total days as fraction */
         NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
         NSDateComponents *components = [gregorianCalendar components:NSCalendarUnitHour
-                                                            fromDate:self.Project.startdt
-                                                              toDate:self.Project.enddt
+                                                            fromDate:self.TripItem.startdt
+                                                              toDate:self.TripItem.enddt
                                                              options:0];
         
         long Days = [components hour]/24;
         long RemainingHours = [components hour]%24;
         double TotalDays = Days + (double)RemainingHours/24.0f;
-        /* now get home currency actual paid amount */
-        double actrate=0, actamt=0;
-        for (PaymentNSO *item in self.paymentitems) {
-            actrate = [item.rate_act doubleValue] / 10000;
-            if ([item.rate_act intValue]==1) {
-                actamt += ([item.amt_act doubleValue] / 100);
-            } else {
-                actamt +=  ([item.amt_act doubleValue] / 100) * actrate;
+        
+        
+        /* if there are no days or even partial days we need to hide the badge */
+        if (TotalDays > 0) {
+            /* now get home currency actual paid amount */
+            double actrate=0, actamt=0;
+            for (PaymentRLM *item in self.ExpenseCollection) {
+                actrate = [item.rate_act.rate doubleValue] / 10000;
+                if ([item.rate_act.rate intValue]==1) {
+                    actamt += ([item.amt_act doubleValue] / 100);
+                } else {
+                    actamt +=  ([item.amt_act doubleValue] / 100) * actrate;
+                }
             }
+            /* simply calculate trip rate */
+            double TripRate = 0;
+            if (actamt!=0) {
+                TripRate = actamt / TotalDays;
+            }
+            
+            self.LabelTripAmount.text = [NSString stringWithFormat:@"%.2f\n%@",TripRate,[AppDelegateDef HomeCurrencyCode]];
+            
+            self.ViewTripAmount.layer.cornerRadius = self.ViewTripAmount.bounds.size.width/2;
+            self.ViewTripAmount.transform = CGAffineTransformMakeRotation(.17);
+        } else {
+            self.ViewTripAmount.hidden = true;
         }
-        /* simply calculate trip rate */
-        double TripRate = 0;
-        if (actamt!=0) {
-            TripRate = actamt / TotalDays;
-        }
-        
-        self.LabelTripAmount.text = [NSString stringWithFormat:@"%.2f\n%@",TripRate,[AppDelegateDef HomeCurrencyCode]];
-        
-        
-        self.ViewTripAmount.layer.cornerRadius = self.ViewTripAmount.bounds.size.width/2;
-        self.ViewTripAmount.transform = CGAffineTransformMakeRotation(.17);
-        
     }
     
     [self.TableViewPayment reloadData];
@@ -154,9 +177,17 @@
     return temp.count;
 }
 
+/*
+ created date:      19/09/2018
+ last modified:     19/09/2018
+ remarks:           Added currency symbol to header.
+ */
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    return self.localcurrencyitems[section];
+    NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:self.localcurrencyitems[section]];
+    NSString *currencySymbol = [NSString stringWithFormat:@"%@",[locale displayNameForKey:NSLocaleCurrencySymbol value:self.localcurrencyitems[section]]];
+    
+    return [NSString stringWithFormat:@" %@ (%@)",self.localcurrencyitems[section],currencySymbol];
 }
 
 /*
@@ -171,28 +202,26 @@
     double actrate=0, plannedrate=0;
     double actamt=0, plannedamt=0;
     
-    for (PaymentNSO *item in temp) {
+    for (PaymentRLM *item in temp) {
         
-        actrate = [item.rate_act doubleValue] / 10000;
-        if ([item.rate_act intValue]==1) {
+        actrate = [item.rate_act.rate doubleValue] / 10000;
+        if ([item.rate_act.rate intValue]==1) {
             actamt += ([item.amt_act doubleValue] / 100);
         } else {
             actamt +=  ([item.amt_act doubleValue] / 100) * actrate;
         }
-        plannedrate = [item.rate_est doubleValue] / 10000;
-        if ([item.rate_est intValue]==1) {
+        plannedrate = [item.rate_est.rate doubleValue] / 10000;
+        if ([item.rate_est.rate intValue]==1) {
             plannedamt += ([item.amt_est doubleValue] / 100);
         } else {
-            plannedamt +=  ([item.amt_est doubleValue] / 100) * actrate;
+            plannedamt +=  ([item.amt_est doubleValue] / 100) * plannedrate;
         }
     }
 
     UIView* footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 64)];
     
     UIView* backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 50)];
-    
-    
-    
+
     // 2. Set a custom background color and a border
     backgroundView.backgroundColor = [UIColor colorWithRed:11.0f/255.0f green:110.0f/255.0f blue:79.0f/255.0f alpha:1.0];
 
@@ -211,10 +240,7 @@
     
     // 4. Add the label to the header view
     [footerView addSubview:actualSummaryLabel];
-    
-    
-    
-    
+
     /*10 trailing
      40 width of currency field
      10 spacer
@@ -261,9 +287,7 @@
     plannedSummaryAmtLabel.textAlignment = NSTextAlignmentRight;
     
     [footerView addSubview:plannedSummaryAmtLabel];
-    
-    
-    
+
     UILabel* plannedSummaryCurrLabel = [[UILabel alloc] init];
     plannedSummaryCurrLabel.frame = CGRectMake(tableView.frame.size.width - 50, 26, 40, 20);
     plannedSummaryCurrLabel.backgroundColor = [UIColor clearColor];
@@ -281,18 +305,18 @@
 
 /*
  created date:      30/04/2018
- last modified:     09/06/2018
+ last modified:     19/09/2018
  remarks:           table view with sections.
  */
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     PaymentListCell *cell = [tableView dequeueReusableCellWithIdentifier:@"PaymentCellId"];
 
-    PaymentNSO *item = [[self.paymentsections objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+    PaymentRLM *item = [[self.paymentsections objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
     
-    if (self.Project!=nil) {
-        cell.LabelDescription.text = [NSString stringWithFormat:@"%@: %@",item.activityname, item.description];
+    if (item.activityname != nil) {
+        cell.LabelDescription.text = [NSString stringWithFormat:@"%@: %@",item.activityname, item.desc];
     } else {
-        cell.LabelDescription.text = item.description;
+        cell.LabelDescription.text = item.desc;
     }
         
     /* might need to adjust this with rate */
@@ -308,37 +332,41 @@
     cell.LabelLocalCurrencyCodeEst.text = item.localcurrencycode;
     
 
-    if ([item.rate_act intValue]==1) {
+    if ([item.rate_act.rate intValue]==1) {
         cell.LabelLocalAmt.hidden = true;
         cell.LabelLocalCurrencyCode.hidden = true;
         cell.LabelHomeAmt.text = cell.LabelLocalAmt.text;
         cell.LabelLocalCurrencyCode.text = item.localcurrencycode;
         
-    } else if ([item.rate_est intValue]==0) {
+    } else /*if ([item.rate_act.rate intValue]==0) {
+        
+        NSLog(@"item1 %@",item.rate_act.rate);
+        
         cell.LabelHomeAmt.text = @"unknown rate";
         cell.LabelHomeCurrencyCode.hidden = true;
-    } else {
+    } else */{
         cell.LabelHomeAmt.hidden = false;
         cell.LabelHomeCurrencyCode.hidden = false;
-        double rate = [item.rate_act doubleValue] / 10000;
+        double rate = [item.rate_act.rate doubleValue] / 10000;
         double homeamt = ([item.amt_act doubleValue] / 100) * rate;
         cell.LabelHomeAmt.text = [NSString stringWithFormat:@"%.2f",homeamt];
         cell.LabelHomeCurrencyCode.text = [AppDelegateDef HomeCurrencyCode];
     }
     
-    if ([item.rate_est intValue]==1) {
+    if ([item.rate_est.rate intValue]==1) {
         cell.LabelLocalAmtEst.hidden = true;
         cell.LabelLocalCurrencyCodeEst.hidden = true;
         cell.LabelHomeAmtEst.text = cell.LabelLocalAmtEst.text;
         cell.LabelLocalCurrencyCodeEst.text = item.localcurrencycode;
-    } else if ([item.rate_est intValue]==0) {
+    } else /*if ([item.rate_est.rate intValue]==0) {
+        NSLog(@"item2 %@",item.rate_est.rate);
         cell.LabelHomeAmtEst.text = @"unknown rate";
         cell.LabelHomeCurrencyCodeEst.hidden = true;
-    } else {
+    } else */ {
         cell.LabelHomeAmtEst.hidden = false;
         cell.LabelHomeCurrencyCodeEst.hidden = false;
         
-        double rate = [item.rate_est doubleValue] / 10000;
+        double rate = [item.rate_est.rate doubleValue] / 10000;
         double homeamt = ([item.amt_est doubleValue] / 100) * rate;
         cell.homeAmount = [NSNumber numberWithDouble:homeamt];
         
@@ -357,11 +385,11 @@
 - (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section
 {
     // Background color
-    view.tintColor = [UIColor colorWithRed:114.0f/255.0f green:24.0f/255.0f blue:23.0f/255.0f alpha:1.0];
+    view.tintColor = [UIColor colorWithRed:164.0f/255.0f green:36.0f/255.0f blue:59.0f/255.0f alpha:1.0];
     
     // Text Color
     UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
-    [header.textLabel setTextColor:[UIColor colorWithRed:230.0f/255.0f green:235.0f/255.0f blue:224.0f/255.0f alpha:1.0]];
+    [header.textLabel setTextColor:[UIColor colorWithRed:216.0f/255.0f green:201.0f/255.0f blue:155.0f/255.0f alpha:1.0]];
      
 }
 
@@ -380,15 +408,16 @@ remarks:
         cell = [[PaymentListCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:IDENTIFIER];
     }
     
-    PaymentNSO *Payment = [[self.paymentsections objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+    PaymentRLM *Expense = [[self.paymentsections objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
 
 
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     PaymentDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"PaymentDataEntryId"];
     controller.delegate = self;
-    controller.Payment = Payment;
-    controller.Activity = self.Activity;
+    controller.ExpenseItem = Expense;
+    controller.ActivityItem = self.ActivityItem;
     controller.newitem = false;
+    controller.realm = self.realm;
     [controller setModalPresentationStyle:UIModalPresentationFullScreen];
     [self presentViewController:controller animated:YES completion:nil];
 }
@@ -432,14 +461,14 @@ remarks:
     if([segue.identifier isEqualToString:@"ShowNewPayment"]){
         PaymentDataEntryVC *controller = (PaymentDataEntryVC *)segue.destinationViewController;
         controller.delegate = self;
-        if (self.Project != nil) {
-            self.Activity = [[ActivityNSO alloc] init];
-            self.Activity.project = self.Project;
-            self.Activity.activitystate = self.activitystate;
-            
+        if (self.TripItem != nil) {
+            self.ActivityItem = [[ActivityRLM alloc] init];
+            self.ActivityItem.tripkey = self.TripItem.key;
+            self.ActivityItem.state = self.activitystate;
         }
-        controller.Activity = self.Activity;
-        controller.Payment = nil;
+        controller.realm = self.realm;
+        controller.ActivityItem  = self.ActivityItem;
+        controller.ExpenseItem = nil;
         controller.newitem = true;
     }
         

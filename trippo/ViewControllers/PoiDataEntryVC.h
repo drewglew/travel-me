@@ -22,13 +22,15 @@
 #import "TypeCell.h"
 #import "HCSStarRatingView.h"
 #import "PoiRLM.h"
+#import <TesseractOCR/TesseractOCR.h>
+#import "TOCropViewController.h"
 
 @protocol PoiDataEntryDelegate <NSObject>
 - (void)didCreatePoiFromProject :(PoiRLM*)Object;
 - (void)didUpdatePoi :(NSString*)Method :(PoiRLM*)Object;
 @end
 
-@interface PoiDataEntryVC : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, ImagePickerDelegate, WikiGeneratorDelegate, UIScrollViewDelegate, UITextViewDelegate,UITextFieldDelegate, CLLocationManagerDelegate>
+@interface PoiDataEntryVC : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, ImagePickerDelegate, WikiGeneratorDelegate, UIScrollViewDelegate, UITextViewDelegate,UITextFieldDelegate, CLLocationManagerDelegate, G8TesseractDelegate, TOCropViewControllerDelegate>
 
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;
 @property (nonatomic) NSString *Title;
@@ -83,6 +85,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelOccurances;
 @property (weak, nonatomic) IBOutlet UILabel *LabelPhotoInfo;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonUploadImages;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonScan;
 
 
 @end

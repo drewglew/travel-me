@@ -10,13 +10,14 @@
 
 @interface ActivityListVC ()
 @property RLMNotificationToken *notification;
+@property NSIndexPath *LongGesturedPressedSelectedIndexPath;
 @end
 
 @implementation ActivityListVC
 @synthesize delegate;
 /*
  created date:      30/04/2018
- last modified:     01/09/2018
+ last modified:     27/09/2018
  remarks:
  */
 - (void)viewDidLoad {
@@ -62,6 +63,94 @@
         [weakSelf LoadActivityData :[NSNumber numberWithInteger:weakSelf.SegmentState.selectedSegmentIndex]];
         [weakSelf.CollectionViewActivities reloadData];
     }];
+    
+    UILongPressGestureRecognizer* longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPress:)];
+    [self.CollectionViewActivities addGestureRecognizer:longPressRecognizer];
+}
+
+/*
+ created date:      27/09/2018
+ last modified:     27/09/2018
+ remarks:
+ */
+-(NSString*)remainingTime:(NSDate*)startDate endDate:(NSDate*)endDate
+{
+    NSDateComponents *components;
+    NSInteger days;
+    NSInteger hour;
+    NSInteger minutes;
+    NSString *durationString;
+    
+    components = [[NSCalendar currentCalendar] components: NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute fromDate: startDate toDate: endDate options: 0];
+    
+    days = [components day];
+    hour = [components hour];
+    minutes = [components minute];
+    
+    if(days>0)
+    {
+        if(days>1)
+            durationString=[NSString stringWithFormat:@"%@ days",[NSNumber numberWithInteger:days]];
+        else
+            durationString=[NSString stringWithFormat:@"%@ day",[NSNumber numberWithInteger:days]];
+        return durationString;
+    }
+    if(hour>0)
+    {
+        if(hour>1)
+            durationString=[NSString stringWithFormat:@"%@ hours",[NSNumber numberWithInteger:hour]];
+        else
+            durationString=[NSString stringWithFormat:@"%@ hour",[NSNumber numberWithInteger:hour]];
+        return durationString;
+    }
+    if(minutes>0)
+    {
+        if(minutes>1)
+            durationString = [NSString stringWithFormat:@"%@ minutes",[NSNumber numberWithInteger:minutes]];
+        else
+            durationString = [NSString stringWithFormat:@"%@ minute",[NSNumber numberWithInteger:minutes]];
+        
+        return durationString;
+    }
+    return @"";
+}
+
+
+/*
+ created date:      27/09/2018
+ last modified:     27/09/2018
+ remarks:
+ */
+-(void)onLongPress:(UILongPressGestureRecognizer*)pGesture
+{
+    NSInteger NumberOfItems = self.activitycollection.count + 1;
+    
+        
+    if (pGesture.state == UIGestureRecognizerStateBegan)
+    {
+        CGPoint touchPoint = [pGesture locationInView:self.CollectionViewActivities];
+        self.LongGesturedPressedSelectedIndexPath = [self.CollectionViewActivities indexPathForItemAtPoint:touchPoint];
+        if (self.LongGesturedPressedSelectedIndexPath != nil) {
+            if (self.LongGesturedPressedSelectedIndexPath.row == NumberOfItems -1) {
+                return;
+            }
+            //Handle the long press on row
+            NSLog(@"%ld row pressed",(long)self.LongGesturedPressedSelectedIndexPath.row);
+            ActivityListCell *cell= (ActivityListCell*)[self.CollectionViewActivities cellForItemAtIndexPath:self.LongGesturedPressedSelectedIndexPath ];
+            cell.ViewDateInfo.hidden = false;
+        }
+    }
+    if (pGesture.state == UIGestureRecognizerStateEnded)
+    {
+        if (self.LongGesturedPressedSelectedIndexPath != nil) {
+            //Handle the long press on row
+            NSLog(@"%ld row unpressed",(long)self.LongGesturedPressedSelectedIndexPath.row);
+            ActivityListCell *cell= (ActivityListCell*)[self.CollectionViewActivities cellForItemAtIndexPath:self.LongGesturedPressedSelectedIndexPath ];
+            cell.ViewDateInfo.hidden = true;
+            
+        }
+    }
+    
 }
 
 
@@ -115,8 +204,13 @@
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"KeyImage == %@", [NSNumber numberWithInt:1]];
     ImageCollectionRLM *imgobject;
     RLMResults *filteredResults;
+
+    for (ActivityRLM *activityobj in activities) {
+        NSLog(@"Name=%@",activityobj.name);
+    }
     
     for (ActivityRLM *activityobj in activities) {
+        
         imgobject = [[ImageCollectionRLM alloc] init];
         filteredResults = [activityobj.images objectsWithPredicate:predicate];
         if (filteredResults.count>0) {
@@ -157,16 +251,24 @@
 
 /*
  created date:      30/04/2018
- last modified:     14/09/2018
+ last modified:     29/09/2018
  remarks:
  */
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     
     ActivityListCell *cell=[collectionView dequeueReusableCellWithReuseIdentifier:@"ActivityCellId" forIndexPath:indexPath];
     
+
+    
+    
+    NSDateFormatter *TimePlusDayOfWeekFormatter = [[NSDateFormatter alloc] init];
+    [TimePlusDayOfWeekFormatter setDateFormat:@"HH:mm, EEEE"];
+    NSDateFormatter *DateFormatter = [[NSDateFormatter alloc] init];
+    [DateFormatter setDateFormat:@"dd MMM YYYY"];
+    
     NSInteger NumberOfItems = self.activitycollection.count + 1;
     if (indexPath.row == NumberOfItems -1) {
-        cell.ImageViewActivity.image = [UIImage imageNamed:@"AddItem"];
+        cell.ImageViewActivity.image = [UIImage imageNamed:@"Add-orange"];
         cell.VisualViewBlur.hidden = true;
         cell.VisualViewBlurBehindImage.hidden = true;
         cell.ImageBlurBackground.hidden = true;
@@ -175,6 +277,29 @@
         
     } else {
         cell.activity = [self.activitycollection objectAtIndex:indexPath.row];
+        
+        /* setup startdt popup that shows on longpress */
+        if (cell.activity.startdt!=nil) {
+            cell.LabelStartTimePlusWeekDay.text = [NSString stringWithFormat:@"%@",[TimePlusDayOfWeekFormatter stringFromDate:cell.activity.startdt]];
+            cell.LabelStartDate.text = [NSString stringWithFormat:@"%@",[DateFormatter stringFromDate:cell.activity.startdt]];
+        } else {
+            cell.LabelStartTimePlusWeekDay.text = @"";
+            cell.LabelStartDate.text = @"";
+        }
+        
+         /* setup enddt & approx duration popup that shows on longpress */
+        NSComparisonResult resultSameStartEndDt = [cell.activity.startdt compare:cell.activity.enddt];
+        
+        if (cell.activity.enddt!=nil && resultSameStartEndDt != NSOrderedSame ) {
+            cell.LabelEndTimePlusWeekDay.text = [NSString stringWithFormat:@"%@",[TimePlusDayOfWeekFormatter stringFromDate:cell.activity.enddt]];
+            cell.LabelEndDate.text = [NSString stringWithFormat:@"%@",[DateFormatter stringFromDate:cell.activity.enddt]];
+            cell.LabelDuration.text = [self remainingTime:cell.activity.startdt endDate:cell.activity.enddt];
+        } else {
+            cell.LabelEndTimePlusWeekDay.text = @"";
+            cell.LabelEndDate.text = @"";
+            cell.LabelDuration.text = @"";
+        }
+       
         
         RLMResults <ActivityRLM*> *activitySet = [self.AllActivitiesInTrip objectsWhere:[NSString stringWithFormat:@"key = '%@'",cell.activity.key]];
         NSNumber *CountOfActivitiesInSet = [NSNumber numberWithLong:activitySet.count];
@@ -208,13 +333,13 @@
                     cell.ViewActiveBadge.layer.cornerRadius = 35;
                     cell.ViewActiveBadge.layer.masksToBounds = YES;
                     cell.ViewActiveBadge.transform = CGAffineTransformMakeRotation(.34906585);
-                    cell.ViewActiveItem.backgroundColor = [UIColor colorWithRed:252.0f/255.0f green:33.0f/255.0f blue:37.0f/255.0f alpha:1.0];
+                    //cell.ViewActiveItem.backgroundColor = [UIColor colorWithRed:252.0f/255.0f green:33.0f/255.0f blue:37.0f/255.0f alpha:1.0];
                     cell.ViewActiveBadge.hidden = false;
                 } else  {
                     cell.ViewActiveBadge.hidden = true;
                 }
             } else {
-                cell.ViewActiveItem.backgroundColor = [UIColor clearColor];
+                //cell.ViewActiveItem.backgroundColor = [UIColor clearColor];
                 cell.ViewActiveBadge.hidden = true;
             }
  
@@ -269,6 +394,7 @@
                                @"Cat-Train",
                                @"Cat-Trek",
                                @"Cat-Venue",
+                               @"Cat-Village",
                                @"Cat-Zoo"
                                ];
         
@@ -278,10 +404,7 @@
 
         //cell.LabelName.text = cell.activity.name;
         //[cell.LabelName sizeToFit];
-        
-        NSDateFormatter *dtformatter = [[NSDateFormatter alloc] init];
-        [dtformatter setDateFormat:@"EEE dd MMM HH:mm"];
-        //cell.LabelDate.text = [NSString stringWithFormat:@"%@",[dtformatter stringFromDate:cell.activity.startdt]];
+       
         cell.VisualViewBlurBehindImage.hidden = false;
         cell.ImageBlurBackground.hidden = false;
 
@@ -291,28 +414,18 @@
         cell.LabelName.attributedText=[[NSAttributedString alloc]
                                        initWithString:cell.activity.name
                                        attributes:@{
-                                                    NSStrokeWidthAttributeName: @-2.0,
+                                                    NSStrokeWidthAttributeName: @-1.0,
                                                     NSStrokeColorAttributeName:[UIColor blackColor],
                                                     NSForegroundColorAttributeName:[UIColor whiteColor]
                                                     }
                                        ];
-        
-        cell.LabelDate.attributedText=[[NSAttributedString alloc]
-                                       initWithString:[NSString stringWithFormat:@"%@",[dtformatter stringFromDate:cell.activity.startdt]]
-                                       attributes:@{
-                                                    NSStrokeWidthAttributeName: @-2.0,
-                                                    NSStrokeColorAttributeName:[UIColor blackColor],
-                                                    NSForegroundColorAttributeName:[UIColor whiteColor]
-                                                    }
-                                       ];
-        
     }
     return cell;
 }
 
 /*
  created date:      05/09/2018
- last modified:     05/09/2018
+ last modified:     29/09/2018
  remarks:  ImG
  */
 -(UIImage*) RetrievePoiImageItem :(PoiRLM*) poi {
@@ -320,7 +433,9 @@
     NSString *imagesDirectory = [paths objectAtIndex:0];
     UIImage *image = [[UIImage alloc] init];
     if (poi.images.count>0) {
-        ImageCollectionRLM *imgobject = [poi.images firstObject];
+        ImageCollectionRLM *imgobject = [[poi.images objectsWhere:@"KeyImage==1"] firstObject];
+        
+        //ImageCollectionRLM *imgobject = [poi.images firstObject];
         NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",imgobject.ImageFileReference]];
         NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
         if (pngData==nil) {
@@ -406,7 +521,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     12/05/2018
+ last modified:     16/09/2018
  remarks:           segue controls .
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -425,7 +540,8 @@
         ScheduleVC *controller = (ScheduleVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.activityitems = self.activityitems;
-        //controller.Project = self.Project;
+        controller.Trip = self.Trip;
+        controller.realm = self.realm;
         controller.ActivityState = [NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex];
     } else if([segue.identifier isEqualToString:@"ShowDeleteActivity"]) {
         
@@ -446,14 +562,28 @@
             }
             
         }
-        
         controller.deleteitem = true;
         controller.newitem = false;
         controller.transformed = false;
     } else if([segue.identifier isEqualToString:@"ShowProjectPaymentList"]) {
         PaymentListingVC *controller = (PaymentListingVC *)segue.destinationViewController;
         controller.delegate = self;
-        //controller.Project = self.Project;
+        /* here we add something new */
+        controller.realm = self.realm;
+        controller.TripItem = self.Trip;
+        // we need the trip image..
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *imagesDirectory = [paths objectAtIndex:0];
+        ImageCollectionRLM *image = [self.Trip.images firstObject];
+        NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",image.ImageFileReference]];
+        NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
+        if (pngData!=nil) {
+            //image.Image = [UIImage imageWithData:pngData];
+            controller.headerImage = [UIImage imageWithData:pngData];
+        } else {
+            controller.headerImage = [UIImage imageNamed:@"Project"];
+        }
+        controller.ActivityItem = nil;
         controller.activitystate = [NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex];
     }
 }
@@ -491,6 +621,14 @@
  */
 - (void)didUpdateActivityImages :(bool)ForceUpdate {
     self.ImagesNeedUpdating = true;
+}
+
+- (IBAction)ShowDatePressed:(id)sender {
+    NSLog(@"TOUCHED");
+}
+
+- (IBAction)RemoveDatePressedUp:(id)sender {
+    NSLog(@"UNTOUCHED");
 }
 
 @end

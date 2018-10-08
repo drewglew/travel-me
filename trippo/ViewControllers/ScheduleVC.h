@@ -10,6 +10,7 @@
 #import "ScheduleCell.h"
 #import "AppDelegate.h"
 #import "DirectionsVC.h"
+#import "TripRLM.h"
 
 @protocol ScheduleListDelegate <NSObject>
 @end
@@ -21,11 +22,15 @@
 @property (nonatomic) NSNumber *ActivityState;
 @property (nonatomic, weak) id <ScheduleListDelegate> delegate;
 @property (strong, nonatomic) ProjectNSO *Project;
+@property TripRLM *Trip;
+@property RLMRealm *realm;
 @property (assign) int level;
 @property (assign) int MaxNbrOfHierarcyLevels;
 @property (weak, nonatomic) IBOutlet UILabel *labelHeader;
-@property (weak, nonatomic) IBOutlet UIButton *ButtonDeleteIdeas;
 @property (weak, nonatomic) IBOutlet UILabel *LabelItemCounter;
-
+@property (strong, nonatomic) NSMutableDictionary *ActivityImageDictionary;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonReset;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonDirections;
 
 @end

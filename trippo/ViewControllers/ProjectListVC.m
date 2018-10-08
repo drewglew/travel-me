@@ -94,7 +94,7 @@
     
     NSInteger NumberOfItems = self.tripcollection.count + 1;
     if (indexPath.row == NumberOfItems -1) {
-        cell.ImageViewProject.image = [UIImage imageNamed:@"AddItem"];
+        cell.ImageViewProject.image = [UIImage imageNamed:@"Add-orange"];
         cell.isNewAccessor = true;
         cell.VisualEffectsViewBlur.hidden = true;
     } else {
@@ -111,7 +111,7 @@
         cell.LabelProjectName.attributedText=[[NSAttributedString alloc]
                                        initWithString:trip.name
                                        attributes:@{
-                                                    NSStrokeWidthAttributeName: @-2.0,
+                                                    NSStrokeWidthAttributeName: @-1.0,
                                                     NSStrokeColorAttributeName:[UIColor blackColor],
                                                     NSForegroundColorAttributeName:[UIColor whiteColor]
                                                     }
@@ -322,5 +322,25 @@
     [self.CollectionViewProjects reloadData];
 }
 
+
+/*
+ created date:      07/10/2018
+ last modified:     07/10/2018
+ remarks:
+ */
+- (NSString *)emojiFlagForISOCountryCode:(NSString *)countryCode {
+    NSAssert(countryCode.length == 2, @"Expecting ISO country code");
+    
+    int base = 127462 -65;
+    
+    wchar_t bytes[2] = {
+        base +[countryCode characterAtIndex:0],
+        base +[countryCode characterAtIndex:1]
+    };
+    
+    return [[NSString alloc] initWithBytes:bytes
+                                    length:countryCode.length *sizeof(wchar_t)
+                                  encoding:NSUTF32LittleEndianStringEncoding];
+}
 
 @end

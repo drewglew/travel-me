@@ -19,6 +19,27 @@
     // Do any additional setup after loading the view.
     
     self.LabelVersion.text = [NSString stringWithFormat: @"%@ build %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"], [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleVersionKey]];
+    
+    self.LabelMainTitle.attributedText=[[NSAttributedString alloc]
+                                         initWithString:@"Trippo For Travel"
+                                         attributes:@{
+                                                      NSStrokeWidthAttributeName: @-2.0,
+                                                      NSStrokeColorAttributeName:[UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0],
+                                                      NSForegroundColorAttributeName:[UIColor clearColor]
+                                                      }
+                                         ];
+    self.LabelCreditsTitle.attributedText=[[NSAttributedString alloc]
+                                        initWithString:@"Credits"
+                                        attributes:@{
+                                                     NSStrokeWidthAttributeName: @-2.0,
+                                                     NSStrokeColorAttributeName:[UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0],
+                                                     NSForegroundColorAttributeName:[UIColor clearColor]
+                                                     }
+                                        ];
+    
+    self.ButtonBack.layer.cornerRadius = 25;
+    self.ButtonBack.clipsToBounds = YES;
+    self.ButtonBack.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
 }
 
 - (void)didReceiveMemoryWarning {

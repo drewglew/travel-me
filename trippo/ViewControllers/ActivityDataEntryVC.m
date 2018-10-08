@@ -19,7 +19,7 @@ int BlurredImageViewPresentedHeight=60;
 
 /*
  created date:      01/05/2018
- last modified:     01/09/2018
+ last modified:     16/09/2018
  remarks:
  */
 - (void)viewDidLoad {
@@ -79,7 +79,8 @@ int BlurredImageViewPresentedHeight=60;
                                 @150, // train, 32
                                 @10000, // trekking, 33
                                 @150, // venue, 34
-                                @1000 // zoo, 35
+                                @1000, // village 35
+                                @1000 // zoo, 36
                                 ];
     
     NSDate *today = [NSDate date];
@@ -91,27 +92,45 @@ int BlurredImageViewPresentedHeight=60;
         
         [self LoadActivityData];
         
-        //self.Activity.Images = [NSMutableArray arrayWithArray:[AppDelegateDef.Db GetImagesForSelectedActivity:self.Activity.key :self.Activity.state]];
-        
         self.CollectionViewActivityImages.scrollEnabled = true;
     } else if (!self.newitem && !self.transformed) {
         [self.ButtonAction setTitle:@"Update" forState:UIControlStateNormal];
-         //self.Activity.Images = [NSMutableArray arrayWithArray:[AppDelegateDef.Db GetImagesForSelectedActivity:self.Activity.key :self.Activity.activitystate]];
         [self LoadActivityData];
-        
         self.CollectionViewActivityImages.scrollEnabled = true;
 
         NSComparisonResult result = [self.Activity.startdt compare:today];
-        if (self.Activity.startdt == self.Activity.enddt && result==NSOrderedAscending && self.Activity.state==[NSNumber numberWithInt:1]) {
-            self.ButtonCheckInOut.hidden = false;
-            UIImage *btnImage = [UIImage imageNamed:@"ActivityCheckOut"];
-            [self.ButtonCheckInOut setImage:btnImage forState:UIControlStateNormal];
+        NSComparisonResult resultStartEnd = [self.Activity.startdt compare:self.Activity.enddt];
+
+        if (resultStartEnd == NSOrderedSame && result==NSOrderedAscending && self.Activity.state==[NSNumber numberWithInteger:1]) {
+            self.ViewCheckInOut.layer.cornerRadius = 100;
+            self.ViewCheckInOut.clipsToBounds = YES;
+            self.ViewCheckInOut.hidden = false;
+            // systemPink colour
+            self.ViewCheckInOut.backgroundColor = [UIColor colorWithRed:251.0f/255.0f green:13.0f/255.0f blue:68.0f/255.0f alpha:1.0];
+            self.LabelCheckInOut.attributedText=[[NSAttributedString alloc]
+                                           initWithString:@"Check\nOut"
+                                           attributes:@{
+                                                        NSStrokeWidthAttributeName: @-4.0,
+                                                        NSStrokeColorAttributeName:[UIColor whiteColor],
+                                                        NSForegroundColorAttributeName:[UIColor colorWithRed:251.0f/255.0f green:13.0f/255.0f blue:68.0f/255.0f alpha:1.0]
+                                                        }
+                                           ];
         }
 
     } else if (self.transformed) {
-        self.ButtonCheckInOut.hidden = false;
-        UIImage *btnImage = [UIImage imageNamed:@"ActivityCheckIn"];
-        [self.ButtonCheckInOut setImage:btnImage forState:UIControlStateNormal];
+        self.ViewCheckInOut.layer.cornerRadius = 100;
+        self.ViewCheckInOut.clipsToBounds = YES;
+        self.ViewCheckInOut.hidden = false;
+        // systemYellow colour
+        self.ViewCheckInOut.backgroundColor = [UIColor colorWithRed:254.0f/255.0f green:195.0f/255.0f blue:9.0f/255.0f alpha:1.0];
+        self.LabelCheckInOut.attributedText=[[NSAttributedString alloc]
+                                             initWithString:@"Check\nIn"
+                                             attributes:@{
+                                                          NSStrokeWidthAttributeName: @-4.0,
+                                                          NSStrokeColorAttributeName:[UIColor whiteColor],
+                                                          NSForegroundColorAttributeName:[UIColor colorWithRed:254.0f/255.0f green:195.0f/255.0f blue:9.0f/255.0f alpha:1.0]
+                                                          }
+                                             ];
         [self.ButtonAction setTitle:@"Update" forState:UIControlStateNormal];
         [self LoadActivityData];
         self.CollectionViewActivityImages.scrollEnabled = true;
@@ -142,13 +161,16 @@ int BlurredImageViewPresentedHeight=60;
     self.ButtonUploadImage.clipsToBounds = YES;
     self.ButtonUploadImage.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
     
+    self.ButtonScan.layer.cornerRadius = 25;
+    self.ButtonScan.clipsToBounds = YES;
+    self.ButtonScan.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
     self.ButtonPayment.layer.cornerRadius = 25;
     self.ButtonPayment.clipsToBounds = YES;
     self.ButtonPayment.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
     
-    self.ButtonCheckInOut.layer.cornerRadius = 25;
-    self.ButtonCheckInOut.clipsToBounds = YES;
-    self.ButtonCheckInOut.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
+    //self.ButtonCheckInOut.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
     
     self.ButtonAction.layer.cornerRadius = 25;
     self.ButtonAction.clipsToBounds = YES;
@@ -166,7 +188,7 @@ int BlurredImageViewPresentedHeight=60;
     self.ButtonCancel.clipsToBounds = YES;
     self.ButtonCancel.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
     
-    if (self.Activity.state==[NSNumber numberWithInt:1]) {
+    if (self.Activity.state==[NSNumber numberWithInteger:1]) {
         self.ImageViewIdeaWidthConstraint.constant = 0;
         BlurredMainViewPresentedHeight = 140;
         self.ViewEffectBlurDetailHeightConstraint.constant = BlurredMainViewPresentedHeight;
@@ -324,7 +346,7 @@ int BlurredImageViewPresentedHeight=60;
 
 /*
  created date:      01/05/2018
- last modified:     14/09/2018
+ last modified:     29/09/2018
  remarks:  TODO [self.delegate didUpdateActivityImage]; add to update
  */
 - (IBAction)ActionButtonPressed:(id)sender {
@@ -350,7 +372,7 @@ int BlurredImageViewPresentedHeight=60;
         self.Activity.rating = [NSNumber numberWithFloat: self.ViewStarRating.value];
         self.Activity.modifieddt = [NSDate date];
         self.Activity.createddt = [NSDate date];
-        //self.Activity.Poi = self.Poi;
+        self.Activity.poi = self.Poi;
         self.Activity.poikey = self.Poi.key;
         self.Activity.tripkey = self.Trip.key;
         
@@ -376,12 +398,12 @@ int BlurredImageViewPresentedHeight=60;
                 //activityimgobject.State = self.Activity.state;
                 counter++;
             }
-            [delegate didUpdateActivityImages:true];
         }
+      
         [self.realm beginWriteTransaction];
         [self.realm addObject:self.Activity];
         [self.realm commitWriteTransaction];
-        
+        [delegate didUpdateActivityImages:true];
         if (self.newitem) {
             [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
         } else {
@@ -439,11 +461,8 @@ int BlurredImageViewPresentedHeight=60;
                     [imageData writeToFile:filepathname atomically:YES];
                     NSLog(@"updated image");
                     [delegate didUpdateActivityImages:true];
-                    
                 }
-                
             }
-            
         }
         [self.realm commitWriteTransaction];
         [self dismissViewControllerAnimated:YES completion:Nil];
@@ -453,7 +472,7 @@ int BlurredImageViewPresentedHeight=60;
 
 /*
  created date:      03/05/2018
- last modified:     08/08/2018
+ last modified:     19/09/2018
  remarks:           segue controls .
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -482,12 +501,20 @@ int BlurredImageViewPresentedHeight=60;
     } else if ([segue.identifier isEqualToString:@"ShowPayments"]){
         PaymentListingVC *controller = (PaymentListingVC *)segue.destinationViewController;
         controller.delegate = self;
-        controller.Activity = self.Activity;
+        controller.ActivityItem = self.Activity;
         controller.activitystate = self.Activity.state;
-        
+        if (self.Activity.images.count > 0) {
+            controller.headerImage = self.ImageViewKeyActivity.image;
+        } else {
+            if (self.Poi.images.count > 0) {
+                 controller.headerImage = self.PoiImage;
+            } else {
+                controller.headerImage = [UIImage imageNamed:@"Activity"];
+            }
+        }
         /* here we add something new */
-        
-        controller.Project = nil;
+        controller.realm = self.realm;
+        controller.TripItem = nil;
         
     }
 }
@@ -611,14 +638,20 @@ int BlurredImageViewPresentedHeight=60;
         self.ViewMain.hidden = false;
         self.ViewNotes.hidden = true;
         self.ViewPhotos.hidden = true;
+        self.ButtonScan.hidden = true;
+        self.ButtonUploadImage.hidden = true;
     } else if ([self.SegmentPresenter selectedSegmentIndex] == 1) {
         self.ViewMain.hidden = true;
         self.ViewNotes.hidden = false;
         self.ViewPhotos.hidden = true;
+        self.ButtonScan.hidden = false;
+        self.ButtonUploadImage.hidden = true;
     } else if ([self.SegmentPresenter selectedSegmentIndex] == 2) {
         self.ViewMain.hidden = true;
         self.ViewNotes.hidden = true;
         self.ViewPhotos.hidden = false;
+        self.ButtonScan.hidden = true;
+        self.ButtonUploadImage.hidden = false;
     }
 }
 
@@ -839,62 +872,95 @@ int BlurredImageViewPresentedHeight=60;
 
 /*
  created date:      19/08/2018
- last modified:     19/08/2018
+ last modified:     29/09/2018
  remarks:
  */
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     
-    /* obtain the image from the camera */
-    UIImage *chosenImage = info[UIImagePickerControllerEditedImage];
-    if (self.newitem) {
+    // OCR scan
+    if (self.imagestate==3) {
         
-        CGSize size = CGSizeMake(self.TextViewNotes.frame.size.width * 2, self.TextViewNotes.frame.size.width *2);
-        chosenImage = [ToolBoxNSO imageWithImage:chosenImage scaledToSize:size];
+        UIImage *originalImage = info[UIImagePickerControllerOriginalImage];
+        TOCropViewController *cropViewController = [[TOCropViewController alloc] initWithImage:originalImage];
+        cropViewController.delegate = self;
+        [picker dismissViewControllerAnimated:YES completion:^{
+            [self presentViewController:cropViewController animated:YES completion:nil];
+        }];
         
     } else {
-        
-        CGSize size = CGSizeMake(self.ImagePicture.frame.size.width * 2, self.ImagePicture.frame.size.width *2);
-        chosenImage = [ToolBoxNSO imageWithImage:chosenImage scaledToSize:size];
-    }
     
-    if (self.imagestate==1) {
-        ImageCollectionRLM *imgobject = [[ImageCollectionRLM alloc] init];
-        imgobject.key = [[NSUUID UUID] UUIDString];
-        
-        
-        if (self.Activity.images.count==0) {
-            imgobject.KeyImage = 1;
+        /* obtain the image from the camera */
+        UIImage *chosenImage = info[UIImagePickerControllerEditedImage];
+        CGSize size;
+        if (self.newitem) {
+            size = CGSizeMake(self.TextViewNotes.frame.size.width * 2, self.TextViewNotes.frame.size.width *2);
         } else {
-            imgobject.KeyImage = 0;
+            
+            size = CGSizeMake(self.ImagePicture.frame.size.width * 2, self.ImagePicture.frame.size.width *2);
         }
-        
-        [self.realm beginWriteTransaction];
-        [self.Activity.images addObject:imgobject];
-        [self.realm commitWriteTransaction];
-        
-        [self.ActivityImageDictionary setObject:chosenImage forKey:imgobject.key];
-        
-        
-    } else if (self.imagestate == 2) {
-        ImageCollectionRLM *imgobject = [self.Activity.images objectAtIndex:[self.SelectedImageIndex longValue]];
-        
-        [self.realm beginWriteTransaction];
-        imgobject.UpdateImage = true;
-        [self.realm commitWriteTransaction];
-        
-        [self.ActivityImageDictionary setObject:chosenImage forKey:imgobject.key];
+        chosenImage = [ToolBoxNSO imageWithImage:chosenImage scaledToSize:size];
+        if (self.imagestate==1) {
+            ImageCollectionRLM *imgobject = [[ImageCollectionRLM alloc] init];
+            imgobject.key = [[NSUUID UUID] UUIDString];
+            
+            
+            if (self.Activity.images.count==0) {
+                imgobject.KeyImage = 1;
+            } else {
+                imgobject.KeyImage = 0;
+            }
+            
+            [self.realm beginWriteTransaction];
+            [self.Activity.images addObject:imgobject];
+            [self.realm commitWriteTransaction];
+            
+            [self.ActivityImageDictionary setObject:chosenImage forKey:imgobject.key];
+            
+            
+        } else if (self.imagestate == 2) {
+            ImageCollectionRLM *imgobject = [self.Activity.images objectAtIndex:[self.SelectedImageIndex longValue]];
+            
+            [self.realm beginWriteTransaction];
+            imgobject.UpdateImage = true;
+            [self.realm commitWriteTransaction];
+            
+            [self.ActivityImageDictionary setObject:chosenImage forKey:imgobject.key];
+            
+        }
+        [self.delegate didUpdateActivityImages :true];
+        [self.CollectionViewActivityImages reloadData];
+        [picker dismissViewControllerAnimated:YES completion:NULL];
         
     }
-    
     self.imagestate = 0;
-    
-    [self.delegate didUpdateActivityImages :true];
-    
-    [self.CollectionViewActivityImages reloadData];
-    [picker dismissViewControllerAnimated:YES completion:NULL];
 }
 
+
+/*
+ created date:      29/09/2018
+ last modified:     29/09/2018
+ remarks:           TODO - is it worth presenting the black and white image?
+ */
+- (void)cropViewController:(TOCropViewController *)cropViewController didCropToImage:(UIImage *)image withRect:(CGRect)cropRect angle:(NSInteger)angle
+{
+    G8Tesseract *tesseract = [[G8Tesseract alloc] initWithLanguage:@"eng"];
+    tesseract.delegate = self;
+    tesseract.image = [image g8_blackAndWhite];
+    tesseract.maximumRecognitionTime = 20.0;
+    [tesseract recognize];
+    
+    if (!self.TextViewNotes.selectedTextRange.empty) {
+        // use selected position to obtain location where to add the text
+        [self.TextViewNotes replaceRange:self.TextViewNotes.selectedTextRange withText:[tesseract recognizedText]];
+    } else {
+        // append to the end of the detail.
+        self.TextViewNotes.text = [NSString stringWithFormat:@"%@\n%@", self.TextViewNotes.text, [tesseract recognizedText]];
+    }
+    NSLog(@"%@", [tesseract recognizedText]);
+    
+    [cropViewController dismissViewControllerAnimated:YES completion:NULL];
+}
 
 
 /*
@@ -952,7 +1018,7 @@ int BlurredImageViewPresentedHeight=60;
     ActivityImageCell *cell=[collectionView dequeueReusableCellWithReuseIdentifier:@"ActivityImageId" forIndexPath:indexPath];
     NSInteger NumberOfItems = self.Activity.images.count + 1;
     if (indexPath.row == NumberOfItems -1) {
-        cell.ImageActivity.image = [UIImage imageNamed:@"AddItem"];
+        cell.ImageActivity.image = [UIImage imageNamed:@"Add-orange"];
     } else {
         ImageCollectionRLM *imgobject = [self.Activity.images objectAtIndex:indexPath.row];
         cell.ImageActivity.image = [self.ActivityImageDictionary objectForKey: imgobject.key];
@@ -1220,5 +1286,32 @@ int BlurredImageViewPresentedHeight=60;
     
 }
 
+/*
+ created date:      29/09/2018
+ last modified:     29/09/2018
+ remarks:           OCR obtain image and scan for text
+ */
+- (IBAction)ScanButtonPressed:(id)sender {
+    self.imagestate=3;
+    
+    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        
+        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Error" message:@"Device has no camera" preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {}];
+        
+        [alert addAction:defaultAction];
+        [self presentViewController:alert animated:YES completion:nil];
+        
+    }else
+    {
+        UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+        picker.delegate = self;
+        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+        picker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
+        [self presentViewController:picker animated:YES completion:NULL];
+        
+    }
+}
 
 @end

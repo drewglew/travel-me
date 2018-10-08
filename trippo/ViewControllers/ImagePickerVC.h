@@ -29,12 +29,15 @@
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *ActivityLoading;
 @property (nonatomic, retain) IBOutlet UILabel *LabelPhotoCounter;
 @property (weak, nonatomic) IBOutlet ImageCollectionCell *CellContent;
-@property (weak, nonatomic) IBOutlet UIButton *ButtonStopSearching;
+
 @property (weak, nonatomic) IBOutlet UILabel *LabelPoiName;
 @property (strong, nonatomic) NSMutableDictionary *PoiImageDictionary;
 @property (nonatomic) NSNumber *distance;
 @property (assign) bool wikiimages;
 @property (strong, nonatomic) PoiRLM *PointOfInterest;
 @property (nonatomic, weak) id <ImagePickerDelegate> delegate;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonCancel;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonSelect;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonStopSearching;
 
 @end

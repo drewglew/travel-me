@@ -105,6 +105,11 @@
     self.ButtonWiki.layer.cornerRadius = 25;
     self.ButtonWiki.clipsToBounds = YES;
     self.ButtonWiki.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
+    self.ButtonScan.layer.cornerRadius = 25;
+    self.ButtonScan.clipsToBounds = YES;
+    self.ButtonScan.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
     self.ButtonUploadImages.layer.cornerRadius = 25;
     self.ButtonUploadImages.clipsToBounds = YES;
     self.ButtonUploadImages.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
@@ -143,7 +148,7 @@
 
 /*
  created date:      11/06/2018
- last modified:     13/08/2018
+ last modified:     05/10/2018
  remarks:
  */
 -(void) LoadCategoryData {
@@ -183,6 +188,7 @@
                        @"Cat-Train",
                        @"Cat-Trek",
                        @"Cat-Venue",
+                       @"Cat-Village",
                        @"Cat-Zoo"
                        ];
     
@@ -222,6 +228,7 @@
                              @"Train",
                              @"Trekking",
                              @"Venue",
+                             @"Village",
                              @"Zoo"
                              ];
     
@@ -261,6 +268,7 @@
                              @150, // train, 32
                              @10000, // trekking, 33
                              @150, // venue, 34
+                             @1000, // village 35
                              @1000 // zoo, 35
                              ];
 
@@ -697,56 +705,98 @@
 
 /*
  created date:      28/04/2018
- last modified:     30/08/2018
+ last modified:     26/09/2018
  remarks:
  */
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     
     /* obtain the image from the camera */
-    UIImage *chosenImage = info[UIImagePickerControllerEditedImage];
-    if (self.newitem) {
-    
-        CGSize size = CGSizeMake(self.TextViewNotes.frame.size.width * 2, self.TextViewNotes.frame.size.width *2);
-        chosenImage = [ToolBoxNSO imageWithImage:chosenImage scaledToSize:size];
+   
+    // OCR scan
+    if (self.imagestate==3) {
+
+        UIImage *originalImage = info[UIImagePickerControllerOriginalImage];
+        TOCropViewController *cropViewController = [[TOCropViewController alloc] initWithImage:originalImage];
+        cropViewController.delegate = self;
+        [picker dismissViewControllerAnimated:YES completion:^{
+            [self presentViewController:cropViewController animated:YES completion:nil];
+        }];
         
     } else {
-        
-        CGSize size = CGSizeMake(self.ImagePicture.frame.size.width * 2, self.ImagePicture.frame.size.width *2);
-        chosenImage = [ToolBoxNSO imageWithImage:chosenImage scaledToSize:size];
-    }
-
-    if (self.imagestate==1) {
-        ImageCollectionRLM *imgobject = [[ImageCollectionRLM alloc] init];
-        imgobject.key = [[NSUUID UUID] UUIDString];
-        
-        
-        if (self.PointOfInterest.images.count==0) {
-            imgobject.KeyImage = 1;
+        /* normal image from camera */
+        UIImage *chosenImage = info[UIImagePickerControllerEditedImage];
+        CGSize size;
+        if (self.newitem) {
+            size = CGSizeMake(self.TextViewNotes.frame.size.width * 2, self.TextViewNotes.frame.size.width *2);
         } else {
-            imgobject.KeyImage = 0;
+            size = CGSizeMake(self.ImagePicture.frame.size.width * 2, self.ImagePicture.frame.size.width *2);
         }
-         
-        [self.realm beginWriteTransaction];
-        [self.PointOfInterest.images addObject:imgobject];
-        [self.realm commitWriteTransaction];
+        chosenImage = [ToolBoxNSO imageWithImage:chosenImage scaledToSize:size];
+        if (self.imagestate==1) {
+            ImageCollectionRLM *imgobject = [[ImageCollectionRLM alloc] init];
+            imgobject.key = [[NSUUID UUID] UUIDString];
+            
+            if (self.PointOfInterest.images.count==0) {
+                imgobject.KeyImage = 1;
+            } else {
+                imgobject.KeyImage = 0;
+            }
+            
+            [self.realm beginWriteTransaction];
+            [self.PointOfInterest.images addObject:imgobject];
+            [self.realm commitWriteTransaction];
+            
+            [self.PoiImageDictionary setObject:chosenImage forKey:imgobject.key];
+            
+        } else if (self.imagestate == 2) {
+            ImageCollectionRLM *imgobject = [self.PointOfInterest.images objectAtIndex:[self.SelectedImageIndex longValue]];
+            
+            [self.realm beginWriteTransaction];
+            imgobject.UpdateImage = true;
+            [self.realm commitWriteTransaction];
+            
+            [self.PoiImageDictionary setObject:chosenImage forKey:imgobject.key];
+        }
+        [self.CollectionViewPoiImages reloadData];
+        [picker dismissViewControllerAnimated:YES completion:NULL];
         
-        [self.PoiImageDictionary setObject:chosenImage forKey:imgobject.key];
-        
-    } else if (self.imagestate == 2) {
-        ImageCollectionRLM *imgobject = [self.PointOfInterest.images objectAtIndex:[self.SelectedImageIndex longValue]];
-        
-        [self.realm beginWriteTransaction];
-        imgobject.UpdateImage = true;
-        [self.realm commitWriteTransaction];
-        
-        [self.PoiImageDictionary setObject:chosenImage forKey:imgobject.key];
     }
-    
     self.imagestate = 0;
-    
-    [self.CollectionViewPoiImages reloadData];
-    [picker dismissViewControllerAnimated:YES completion:NULL];
+
 }
+
+
+
+
+
+
+/*
+ created date:      26/09/2018
+ last modified:     26/09/2018
+ remarks:           TODO - is it worth presenting the black and white image?
+ */
+- (void)cropViewController:(TOCropViewController *)cropViewController didCropToImage:(UIImage *)image withRect:(CGRect)cropRect angle:(NSInteger)angle
+{
+    G8Tesseract *tesseract = [[G8Tesseract alloc] initWithLanguage:@"eng"];
+    tesseract.delegate = self;
+    //tesseract.charWhitelist = @"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'-?@$%&().,:;";
+    tesseract.image = [image g8_blackAndWhite];
+    tesseract.maximumRecognitionTime = 20.0;
+    [tesseract recognize];
+
+    if (!self.TextViewNotes.selectedTextRange.empty) {
+        // use selected position to obtain location where to add the text
+        [self.TextViewNotes replaceRange:self.TextViewNotes.selectedTextRange withText:[tesseract recognizedText]];
+    } else {
+        // append to the end of the detail.
+        self.TextViewNotes.text = [NSString stringWithFormat:@"%@\n%@", self.TextViewNotes.text, [tesseract recognizedText]];
+    }
+    NSLog(@"%@", [tesseract recognizedText]);
+    
+    [cropViewController dismissViewControllerAnimated:YES completion:NULL];
+}
+
+
 
 /*
  created date:      21/05/2018
@@ -909,7 +959,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     08/09/2018
+ last modified:     26/09/2018
  remarks:
  */
 -(IBAction)SegmentOptionChanged:(id)sender {
@@ -925,10 +975,12 @@
         if (self.ButtonGeo.layer.cornerRadius==25) {
             self.ButtonGeo.hidden = false;
         }
+        self.ButtonScan.hidden = true;
 
     } else if (segment.selectedSegmentIndex==1) {
         self.ViewMain.hidden = true;
         self.ViewNotes.hidden = false;
+        self.ButtonScan.hidden = false;
         self.ViewMap.hidden = true;
         self.ViewPhotos.hidden =true;
         self.SwitchViewPhotoOptions.hidden=true;
@@ -942,6 +994,7 @@
          self.ViewPhotos.hidden =true;
          self.SwitchViewPhotoOptions.hidden=true;
          self.ButtonGeo.hidden = true;
+         self.ButtonScan.hidden = true;
         
         for (id<MKOverlay> overlay in self.MapView.overlays)
         {
@@ -971,6 +1024,7 @@
         self.ViewPhotos.hidden =false;
         self.ButtonGeo.hidden = true;
         self.ButtonUploadImages.hidden = false;
+        self.ButtonScan.hidden = true;
 
         if (self.PointOfInterest.images.count > 0 && !self.readonlyitem) {
             self.ViewBlurHeightConstraint.constant = 0;
@@ -1120,6 +1174,109 @@
         controller.gsradius = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
     } 
 }
+
+
+/*
+ created date:      26/09/2018
+ last modified:     26/09/2018
+ remarks:
+ */
+- (IBAction)ButtonWikiPressed:(id)sender {
+
+
+    if (self.SegmentDetailOption.selectedSegmentIndex!=1) {
+       
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        
+        WikiVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"WikiViewId"];
+        controller.delegate = self;
+        
+        PoiRLM *poi = [[PoiRLM alloc] init];
+        poi.name = self.PointOfInterest.name;
+        poi.lat = self.PointOfInterest.lat;
+        poi.lon = self.PointOfInterest.lon;
+        poi.wikititle = self.PointOfInterest.wikititle;
+        poi.key = self.PointOfInterest.key;
+        
+        controller.PointOfInterest = poi;
+        controller.PointOfInterest.name = self.TextFieldTitle.text;
+        controller.gsradius = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
+        
+        [self presentViewController:controller animated:YES completion:nil];
+        
+    } else {
+        if (![self.PointOfInterest.wikititle isEqualToString:@""]) {
+            // add text to notes from wiki page.
+  
+            NSArray *parms = [self.PointOfInterest.wikititle componentsSeparatedByString:@"~"];
+            
+            NSString *url = [NSString stringWithFormat:@"https://%@.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=%@",[parms objectAtIndex:0],[parms objectAtIndex:1]];
+            
+            url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+            
+            /* get data */
+            [self fetchFromWikiApi:url withDictionary:^(NSDictionary *data) {
+                
+                NSDictionary *query = [data objectForKey:@"query"];
+                NSDictionary *pages =  [query objectForKey:@"pages"];
+                NSArray *keys = [pages allKeys];
+                NSDictionary *item =  [pages objectForKey:[keys firstObject]];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    if (!self.TextViewNotes.selectedTextRange.empty) {
+                    
+                        // use selected position to obtain location where to add the text
+                        [self.TextViewNotes replaceRange:self.TextViewNotes.selectedTextRange withText:[item objectForKey:@"extract"]];
+                        
+                    } else {
+                        // we append to the end of the contents.
+                        NSString *content = self.TextViewNotes.text;
+                        if ([content isEqualToString:@""]) {
+                            content = [item objectForKey:@"extract"];
+                        } else {
+                            content = [NSString stringWithFormat:@"%@\n\n%@", content, [item objectForKey:@"extract"]];
+                        }
+                        self.TextViewNotes.text = content;
+                    }
+                });
+            }];
+            
+        }
+        
+    }
+}
+
+
+/*
+ created date:      26/09/2018
+ last modified:     26/09/2018
+ remarks:           Copied from Nearby View Controller 
+ */
+-(void)fetchFromWikiApi:(NSString *)url withDictionary:(void (^)(NSDictionary* data))dictionary{
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:url]];
+    [request setHTTPMethod:@"GET"];
+    
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+    
+    
+    NSURLSessionDataTask *task = [session dataTaskWithRequest:request
+                                            completionHandler:
+                                  ^(NSData *data, NSURLResponse *response, NSError *error) {
+                                      NSDictionary *dicData = [NSJSONSerialization JSONObjectWithData:data
+                                                                                              options:0
+                                                                                                error:NULL];
+                                      dictionary(dicData);
+                                  }];
+    [task resume];
+}
+
+
+
+
+
+
+
 
 /*
  created date:      23/05/2018
@@ -1378,5 +1535,44 @@
     [self presentViewController:activityViewController animated:YES completion:nil];
     
 }
+
+/*
+ created date:      25/09/2018
+ last modified:     25/09/2018
+ remarks:           OCR obtain image and scan for text
+ */
+- (IBAction)ScanImagePressed:(id)sender {
+    
+    self.imagestate=3;
+    
+    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+
+        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Error" message:@"Device has no camera" preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {}];
+        
+        [alert addAction:defaultAction];
+        [self presentViewController:alert animated:YES completion:nil];
+
+    }else
+    {
+       
+        
+        UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+        picker.delegate = self;
+        //picker.allowsEditing = YES;
+
+        //picker.
+        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+        picker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
+        [self presentViewController:picker animated:YES completion:NULL];
+        
+    }
+    
+    
+    
+}
+
+
 
 @end

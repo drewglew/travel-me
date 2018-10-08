@@ -22,6 +22,12 @@
     
     [self.DatePickerStart setValue:[UIColor colorWithRed:11.0f/255.0f green:110.0f/255.0f blue:79.0f/255.0f alpha:1.0] forKey:@"textColor"];
     [self.DatePickerEnd setValue:[UIColor colorWithRed:11.0f/255.0f green:110.0f/255.0f blue:79.0f/255.0f alpha:1.0] forKey:@"textColor"];
+    /* if actual event, we cannot state a date in the future. */
+    if (self.Activity.state==[NSNumber numberWithInt:1]) {
+        self.DatePickerStart.maximumDate = [NSDate date];
+        self.DatePickerEnd.maximumDate = [NSDate date];
+    }
+    
 }
 
 

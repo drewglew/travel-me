@@ -17,6 +17,12 @@
 @property  NSDate *enddt;
 @property  NSDate *createddt;
 @property  NSDate *modifieddt;
+@property  NSDate *routeplannedcalculateddt;
+@property  NSNumber<RLMInt> *routeplannedtotaltravelminutes;
+@property  NSNumber<RLMDouble> *routeplannedtotaltraveldistance;
+@property  NSDate *routeactualcalculateddt;
+@property  NSNumber<RLMInt> *routeactualtotaltravelminutes;
+@property  NSNumber<RLMDouble> *routeactualtotaltraveldistance;
 @property  NSNumber<RLMInt> *itemgrouping;
 @property RLMArray<ImageCollectionRLM *><ImageCollectionRLM> *images;
 //@property RLMArray<ExpenseRLM *><ExpenseRLM> *expenses;

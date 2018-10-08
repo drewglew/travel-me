@@ -46,35 +46,35 @@ int Adjustment;
     self.LabelAbout.attributedText=[[NSAttributedString alloc]
                                         initWithString:@"About"
                                         attributes:@{
-                                                     NSStrokeWidthAttributeName: @-2.0,
-                                                     NSStrokeColorAttributeName:[UIColor whiteColor],
-                                                     NSForegroundColorAttributeName:[UIColor clearColor]
+                                                     NSStrokeWidthAttributeName: @-1.0,
+                                                     NSStrokeColorAttributeName:[UIColor blackColor],
+                                                     NSForegroundColorAttributeName:[UIColor whiteColor]
                                                      }
                                         ];
     
     self.LabelAllTrips.attributedText=[[NSAttributedString alloc]
                                     initWithString:@"Trips"
                                     attributes:@{
-                                                 NSStrokeWidthAttributeName: @-2.0,
-                                                 NSStrokeColorAttributeName:[UIColor whiteColor],
-                                                 NSForegroundColorAttributeName:[UIColor clearColor]
+                                                 NSStrokeWidthAttributeName: @-1.0,
+                                                 NSStrokeColorAttributeName:[UIColor blackColor],
+                                                 NSForegroundColorAttributeName:[UIColor whiteColor]
                                                  }
                                     ];
     self.LabelSettings.attributedText=[[NSAttributedString alloc]
                                        initWithString:@"Settings"
                                        attributes:@{
-                                                    NSStrokeWidthAttributeName: @-2.0,
-                                                    NSStrokeColorAttributeName:[UIColor whiteColor],
-                                                    NSForegroundColorAttributeName:[UIColor clearColor]
+                                                    NSStrokeWidthAttributeName: @-1.0,
+                                                    NSStrokeColorAttributeName:[UIColor blackColor],
+                                                    NSForegroundColorAttributeName:[UIColor whiteColor]
                                                     }
                                        ];
     
     self.LabelPoiSearch.attributedText=[[NSAttributedString alloc]
-                                       initWithString:@"POI"
+                                       initWithString:@"Points of Interest"
                                        attributes:@{
-                                                    NSStrokeWidthAttributeName: @-2.0,
-                                                    NSStrokeColorAttributeName:[UIColor whiteColor],
-                                                    NSForegroundColorAttributeName:[UIColor clearColor]
+                                                    NSStrokeWidthAttributeName: @-1.0,
+                                                    NSStrokeColorAttributeName:[UIColor blackColor],
+                                                    NSForegroundColorAttributeName:[UIColor whiteColor]
                                                     }
                                        ];
     
@@ -82,7 +82,7 @@ int Adjustment;
     self.LabelFeaturedPoi.attributedText=[[NSAttributedString alloc]
                                           initWithString:@"Featured..."
                                           attributes:@{
-                                                       NSStrokeWidthAttributeName: @-2.0,
+                                                       NSStrokeWidthAttributeName: @-1.0,
                                                        NSStrokeColorAttributeName:[UIColor blackColor],
                                                        NSForegroundColorAttributeName:[UIColor whiteColor]
                                                        }
@@ -186,7 +186,7 @@ int Adjustment;
         TripRLM* emptytrip = [[TripRLM alloc] init];
         emptytrip.key = [[NSUUID UUID] UUIDString];
         emptytrip.itemgrouping = [NSNumber numberWithInt:3];
-        emptytrip.name = @"Start creating!";
+        emptytrip.name = @"";
         [self.selectedtripitems addObject:emptytrip];
         [self.TripImageDictionary setObject:[UIImage imageNamed:@"Project"] forKey:emptytrip.key];
     }
@@ -231,7 +231,7 @@ int Adjustment;
         TripRLM* emptytrip = [[TripRLM alloc] init];
         emptytrip.key = [[NSUUID UUID] UUIDString];
         emptytrip.itemgrouping = [NSNumber numberWithInt:5];;
-        emptytrip.name = @"Start planning!";
+        emptytrip.name = @"";
         [self.TripImageDictionary setObject:[UIImage imageNamed:@"Project"] forKey:emptytrip.key];
         [self.selectedtripitems addObject:emptytrip];
     }
@@ -368,7 +368,7 @@ int Adjustment;
     cell.LabelProjectName.attributedText=[[NSAttributedString alloc]
                                initWithString:trip.name
                                attributes:@{
-                                            NSStrokeWidthAttributeName: @-2.0,
+                                            NSStrokeWidthAttributeName: @-1.0,
                                             NSStrokeColorAttributeName:[UIColor blackColor],
                                             NSForegroundColorAttributeName:[UIColor whiteColor]
                                             }
@@ -380,7 +380,7 @@ int Adjustment;
     NSLog(@"itemgrouping=%@",trip.itemgrouping);
     
     if (trip.itemgrouping==[NSNumber numberWithInt:1]) {
-        reference = @"Last";
+        reference = @"Previous";
         
     } else if (trip.itemgrouping==[NSNumber numberWithInt:2]) {
         reference = @"Active";
@@ -393,7 +393,7 @@ int Adjustment;
     cell.LabelDateRange.attributedText=[[NSAttributedString alloc]
                                           initWithString:reference
                                           attributes:@{
-                                                       NSStrokeWidthAttributeName: @-2.0,
+                                                       NSStrokeWidthAttributeName: @-1.0,
                                                        NSStrokeColorAttributeName:[UIColor blackColor],
                                                        NSForegroundColorAttributeName:[UIColor whiteColor]
                                                        }

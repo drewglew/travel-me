@@ -29,4 +29,6 @@
 @property (assign) bool UpdatedPoi;
 @property (strong, nonatomic)  CLLocationManager *locationManager;
 @property RLMRealm *realm;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
+
 @end

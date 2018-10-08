@@ -12,19 +12,20 @@
 #import "PoiRLM.h"
 
 @interface ActivityRLM : RLMObject
-@property  (strong, nonatomic) NSString *key;
-@property (strong, nonatomic) NSNumber<RLMInt> *state;
-@property  (strong, nonatomic) NSString *compondkey;  // 12345-67890~0
-@property  (strong, nonatomic) NSString *name;
-@property  (strong, nonatomic) NSString *privatenotes;
-@property  (strong, nonatomic) NSString *tripkey;
-@property  (strong, nonatomic) NSString *poikey;
-@property (strong, nonatomic) NSDate *createddt;
-@property (strong, nonatomic) NSDate *modifieddt;
-@property (nonatomic) NSNumber<RLMFloat> *rating;
-@property (assign) NSNumber<RLMInt> *legendref;
-@property (nonatomic) NSDate *startdt;
-@property (nonatomic) NSDate *enddt;
+@property NSString *key;
+@property NSNumber<RLMInt> *state;
+@property NSString *compondkey;  // 12345-67890~0
+@property NSString *name;
+@property NSString *privatenotes;
+@property NSString *tripkey;
+@property NSString *poikey;
+@property PoiRLM *poi;
+@property NSDate *createddt;
+@property NSDate *modifieddt;
+@property NSNumber<RLMFloat> *rating;
+@property NSNumber<RLMInt> *legendref;
+@property NSDate *startdt;
+@property NSDate *enddt;
 @property RLMArray<ImageCollectionRLM *><ImageCollectionRLM> *images;
 //@property RLMArray<ExpenseRLM *><ExpenseRLM> *expenses;
 @end

@@ -41,8 +41,6 @@
 -(void) InitRealm :(NSURL*) url {
     self.PoiBackgroundImageDictionary = [[NSMutableDictionary alloc] init];
     
-    self.rlm = [[RealmDAL alloc] init];
-    
     [RLMSyncManager sharedManager].errorHandler = ^(NSError *error, RLMSyncSession *session) {
         NSLog(@"A global error has occurred! %@", error);
     };

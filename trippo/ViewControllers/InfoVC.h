@@ -10,5 +10,8 @@
 
 @interface InfoVC : UIViewController
 @property (weak, nonatomic) IBOutlet UILabel *LabelVersion;
+@property (weak, nonatomic) IBOutlet UILabel *LabelMainTitle;
+@property (weak, nonatomic) IBOutlet UILabel *LabelCreditsTitle;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
 
 @end

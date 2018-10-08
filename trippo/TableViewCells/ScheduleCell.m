@@ -9,6 +9,7 @@
 #import "ScheduleCell.h"
 
 @implementation ScheduleCell
+@synthesize TransportButton;
 
 - (void)awakeFromNib {
     [super awakeFromNib];

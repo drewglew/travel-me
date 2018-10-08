@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ActivityNSO.h"
+#import "ActivityRLM.h"
 
 @protocol SelectDateRangeDelegate <NSObject>
 - (void)didPickDateSelection :(NSDate*)Start :(NSDate*)End;
@@ -19,6 +19,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelEnd;
 @property (weak, nonatomic) IBOutlet UILabel *LabelStart;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonAcceptDates;
-@property (strong, nonatomic) ActivityNSO *Activity;
+@property (strong, nonatomic) ActivityRLM *Activity;
 @property (nonatomic, weak) id <SelectDateRangeDelegate> delegate;
 @end

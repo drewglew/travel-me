@@ -7,11 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ActivityNSO.h"
-#import "PaymentNSO.h"
 #import "AppDelegate.h"
 #import "CurrencyPickerVC.h"
 #import "Reachability.h"
+#import "ExchangeRateRLM.h"
+#import "PaymentRLM.h"
+#import "ActivityRLM.h"
 
 @protocol PaymentDetailDelegate <NSObject>
 @end
@@ -22,8 +23,9 @@
 @property (weak, nonatomic) IBOutlet UITextField *TextFieldCurrency;
 @property (weak, nonatomic) IBOutlet UIDatePicker *DatePickerPaymentDt;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonAction;
-@property (strong, nonatomic) ActivityNSO *Activity;
-@property (strong, nonatomic) PaymentNSO *Payment;
+@property ActivityRLM *ActivityItem;
+@property PaymentRLM *ExpenseItem;
+@property RLMRealm *realm;
 @property (weak, nonatomic) IBOutlet UILabel *LabelTitle;
 @property (assign) bool newitem;
 @property (nonatomic, weak) id <PaymentDetailDelegate> delegate;

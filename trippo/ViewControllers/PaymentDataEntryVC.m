@@ -15,7 +15,7 @@
 @implementation PaymentDataEntryVC
 /*
  created date:      14/05/2018
- last modified:     09/08/2018
+ last modified:     16/09/2018
  remarks:
  */
 - (void)viewDidLoad {
@@ -24,41 +24,45 @@
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     
-    [self.DatePickerPaymentDt setValue:[UIColor colorWithRed:11.0f/255.0f green:110.0f/255.0f blue:79.0f/255.0f alpha:1.0] forKey:@"textColor"];
+    [self.DatePickerPaymentDt setValue:[UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0] forKey:@"textColor"];
+
+    self.DatePickerPaymentDt.maximumDate = [NSDate date];
     
     if (self.newitem) {
         /* get the expected currency code from the country of the point of interest.*/
-        if (self.Activity.poi == nil) {
+        if (self.ActivityItem.poikey == nil) {
             // do nothing.
         } else {
-            NSDictionary *components = [NSDictionary dictionaryWithObject:self.Activity.poi.countrycode forKey:NSLocaleCountryCode];
+            
+            PoiRLM *poi = [PoiRLM objectForPrimaryKey:self.ActivityItem.poikey];
+            NSDictionary *components = [NSDictionary dictionaryWithObject:poi.countrycode forKey:NSLocaleCountryCode];
             NSString *localeIdent = [NSLocale localeIdentifierFromComponents:components];
             NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:localeIdent];
             self.TextFieldCurrency.text = [locale objectForKey: NSLocaleCurrencyCode];
         }
     } else {
 
-        self.TextFieldCurrency.text = self.Payment.localcurrencycode;
-        self.TextFieldDescription.text = self.Payment.description;
+        self.TextFieldCurrency.text = self.ExpenseItem.localcurrencycode;
+        self.TextFieldDescription.text = self.ExpenseItem.desc;
         NSDate *date;
         
-        if (self.Payment.amt_act !=  [NSNumber numberWithInt:0]) {
+        if (self.ExpenseItem.amt_act !=  [NSNumber numberWithInteger:0]) {
             self.SegmentPaymentType.selectedSegmentIndex=1;
-            double amount = [self.Payment.amt_act doubleValue];
+            double amount = [self.ExpenseItem.amt_act doubleValue];
             amount = amount / 100.0;
             self.TextFieldAmt.text = [NSString stringWithFormat:@"%.2f",amount];
-            date = [dateFormatter dateFromString:self.Payment.date_act];
+            date = [dateFormatter dateFromString:self.ExpenseItem.date_act];
         } else {
             self.SegmentPaymentType.selectedSegmentIndex=0;
-            double amount = [self.Payment.amt_est doubleValue];
+            double amount = [self.ExpenseItem.amt_est doubleValue];
             amount = amount / 100.0;
             self.TextFieldAmt.text = [NSString stringWithFormat:@"%.2f",amount];
-            date = [dateFormatter dateFromString:self.Payment.date_est];
+            date = [dateFormatter dateFromString:self.ExpenseItem.date_est];
         }
         self.DatePickerPaymentDt.date = date;
     }
-    if (self.Activity != NULL) {
-        self.LabelTitle.text = self.Activity.name;
+    if (self.ActivityItem != NULL) {
+        self.LabelTitle.text = self.ActivityItem.name;
     }
     self.TextFieldCurrency.delegate = self;
     
@@ -66,6 +70,8 @@
     self.ButtonAction.clipsToBounds = YES;
     self.ButtonCancel.layer.cornerRadius = 25;
     self.ButtonCancel.clipsToBounds = YES;
+    self.ButtonCancel.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
     self.ButtonHomeCurrency.layer.cornerRadius = 25;
     self.ButtonHomeCurrency.clipsToBounds = YES;
     self.ButtonLocalCurrency.layer.cornerRadius = 25;
@@ -86,7 +92,7 @@
 
 /*
  created date:      14/05/2018
- last modified:     08/08/2018
+ last modified:     19/09/2018
  remarks:   We should only add planned payments to activities that are planned.
             Additionally we should be able to add payments that are not attached to an activity.
             For example: Petrol payment.
@@ -98,12 +104,17 @@
         return;
     }
     
-    NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
-    f.numberStyle = NSNumberFormatterDecimalStyle;
-
     if (self.newitem) {
-        self.Payment = [[PaymentNSO alloc] init];
-        self.Payment.key = [[NSUUID UUID] UUIDString];
+        self.ExpenseItem = [[PaymentRLM alloc] init];
+        self.ExpenseItem.key = [[NSUUID UUID] UUIDString];
+        if (self.ActivityItem.key!=nil) {
+            self.ExpenseItem.tripkey = self.ActivityItem.tripkey;
+            self.ExpenseItem.activitykey = self.ActivityItem.key;
+        } else {
+            self.ExpenseItem.tripkey = self.ActivityItem.tripkey;
+        }
+    } else {
+        [self.realm beginWriteTransaction];
     }
     
     NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
@@ -121,83 +132,129 @@
             break;
     }
     
-    self.Payment.description = self.TextFieldDescription.text;
-    self.Payment.status = [NSNumber numberWithLong:self.SegmentPaymentType.selectedSegmentIndex];
+    self.ExpenseItem.desc = self.TextFieldDescription.text;
+    self.ExpenseItem.status = [NSNumber numberWithLong:self.SegmentPaymentType.selectedSegmentIndex];
 
     /* estimated payment */
-    if (self.Payment.status == [NSNumber numberWithLong:0] ) {
+    if (self.ExpenseItem.status == [NSNumber numberWithLong:0] ) {
 
-        self.Payment.amt_est = [f numberFromString:self.TextFieldAmt.text];
-        double temp = [self.Payment.amt_est doubleValue];
-        temp = temp * 100;
-        self.Payment.amt_est = [NSNumber numberWithDouble:temp];
+        double amt = [self.TextFieldAmt.text  doubleValue];
+        int amt_int = amt*100;
+        self.ExpenseItem.amt_est = [NSNumber numberWithInt:amt_int];
         
-        self.Payment.dt_est = self.DatePickerPaymentDt.date;
-        self.Payment.date_est = [dateFormatter stringFromDate:self.Payment.dt_est];
+        self.ExpenseItem.dt_est = self.DatePickerPaymentDt.date;
+        self.ExpenseItem.date_est = [dateFormatter stringFromDate:self.ExpenseItem.dt_est];
         
-        self.Payment.dt_act = self.Payment.dt_est;
-        self.Payment.date_act = self.Payment.date_est;
-        self.Payment.amt_act = [NSNumber numberWithInt:0];
+        self.ExpenseItem.dt_act = self.ExpenseItem.dt_est;
+        self.ExpenseItem.date_act = self.ExpenseItem.date_est;
+        self.ExpenseItem.amt_act = [NSNumber numberWithInt:0];
         
     } else {
-        self.Payment.amt_act = [f numberFromString:self.TextFieldAmt.text];
-        double temp = [self.Payment.amt_act doubleValue];
-        temp = temp * 100;
-        self.Payment.amt_act = [NSNumber numberWithDouble:temp];
         
-        self.Payment.dt_act = self.DatePickerPaymentDt.date;
-        self.Payment.date_act = [dateFormatter stringFromDate:self.Payment.dt_act];
-        self.Payment.amt_act = [NSNumber numberWithDouble:temp];
+        double amt = [self.TextFieldAmt.text  doubleValue];
+        int amt_int = amt*100;
+        self.ExpenseItem.amt_act = [NSNumber numberWithInt:amt_int];
         
-        if (self.newitem && self.Activity.activitystate == [NSNumber numberWithInteger:0]) {
-            self.Payment.dt_est = self.Payment.dt_act;
-            self.Payment.date_est = self.Payment.date_act;
-            self.Payment.amt_est = self.Payment.amt_act;
+        self.ExpenseItem.dt_act = self.DatePickerPaymentDt.date;
+        self.ExpenseItem.date_act = [dateFormatter stringFromDate:self.ExpenseItem.dt_act];
+        self.ExpenseItem.amt_act = self.ExpenseItem.amt_act;
+        
+        if (self.newitem && self.ActivityItem.state == [NSNumber numberWithInteger:0]) {
+            self.ExpenseItem.dt_est = self.ExpenseItem.dt_act;
+            self.ExpenseItem.date_est = self.ExpenseItem.date_act;
+            self.ExpenseItem.amt_est = self.ExpenseItem.amt_act;
         } else if (self.newitem) {
-            self.Payment.amt_est = [NSNumber numberWithInt:0];
-            self.Payment.dt_est = self.Payment.dt_act;
-            self.Payment.date_est = self.Payment.date_act;
+            self.ExpenseItem.amt_est = [NSNumber numberWithInt:0];
+            self.ExpenseItem.dt_est = self.ExpenseItem.dt_act;
+            self.ExpenseItem.date_est = self.ExpenseItem.date_act;
         }
     }
 
-    self.Payment.localcurrencycode = self.TextFieldCurrency.text;
-    self.Payment.homecurrencycode = [AppDelegateDef HomeCurrencyCode];
+    self.ExpenseItem.localcurrencycode = self.TextFieldCurrency.text;
+    self.ExpenseItem.homecurrencycode = [AppDelegateDef HomeCurrencyCode];
     
-    if (![self.Payment.localcurrencycode isEqualToString:self.Payment.homecurrencycode]) {
-        /* might return zero, but it worked.. */
-        if (self.Payment.status == [NSNumber numberWithLong:0] ) {
-            self.Payment.rate_est = [self GetExchangeRates :self.Payment];
-        } else {
-            self.Payment.rate_act = [self GetExchangeRates :self.Payment];
-            if (self.newitem) {
-                self.Payment.rate_est = self.Payment.rate_act;
-            }
-        }
+    NSString *primarykey = [NSString stringWithFormat:@"%@~%@%@",self.ExpenseItem.date_est, self.ExpenseItem.localcurrencycode, self.ExpenseItem.homecurrencycode];
+    
+    if (![self.ExpenseItem.localcurrencycode isEqualToString:self.ExpenseItem.homecurrencycode]) {
+        [self GetExchangeRates];
+        //[self finializePayment] --> called from within GetExchangeRates
     } else {
-        self.Payment.rate_est = [NSNumber numberWithInt:1*10000];
-        self.Payment.rate_act = self.Payment.rate_est;
-    }
-    
-    if (self.Payment.rate_est == [NSNumber numberWithInt:-1] || self.Payment.rate_act == [NSNumber numberWithInt:-1]) {
-        // do nothing. later apply some error message perhaps.
-    } else {
-    
-        /*
-         we need to add payment record to database
-         */
-        if (self.newitem) {
-            [AppDelegateDef.Db InsertPayment:self.Payment :self.Activity];
+        if (self.ExpenseItem.status==[NSNumber numberWithLong:0]) {
+            self.ExpenseItem.rate_est = [[ExchangeRateRLM alloc] init];
+            self.ExpenseItem.rate_est.date = self.ExpenseItem.date_est;
+            self.ExpenseItem.rate_est.homecurrencycode = self.ExpenseItem.homecurrencycode;
+            self.ExpenseItem.rate_est.currencycode = self.ExpenseItem.localcurrencycode;
+            self.ExpenseItem.rate_est.compondkey = primarykey;
+            self.ExpenseItem.rate_est.rate = [NSNumber numberWithInt:1*10000];
         } else {
-             [AppDelegateDef.Db UpdatePaymentItem:self.Payment];
+            self.ExpenseItem.rate_act = [[ExchangeRateRLM alloc] init];
+            self.ExpenseItem.rate_act.date = self.ExpenseItem.date_act;
+            self.ExpenseItem.rate_act.homecurrencycode = self.ExpenseItem.homecurrencycode;
+            self.ExpenseItem.rate_act.currencycode = self.ExpenseItem.localcurrencycode;
+            self.ExpenseItem.rate_act.compondkey = primarykey;
+            self.ExpenseItem.rate_act.rate = [NSNumber numberWithInt:1*10000];
         }
+        
+        
+        [self finializePayment];
     }
-    [self dismissViewControllerAnimated:YES completion:Nil];
 }
+
+
+/*
+ created date:      15/09/2018
+ last modified:     15/09/2018
+ remarks:           Method finalizes the transaction if its an update and adds the object if it is a new item.  Called directly by
+                    GetExchangeRates so flow of thread is covered on callback and also ButtonActionPressed: if exchange rate is already
+                    available.
+ */
+-(void) finializePayment {
+    
+    if (((self.ExpenseItem.rate_est.rate == nil && self.ExpenseItem.status == [NSNumber numberWithInteger:0]) || (self.ExpenseItem.rate_act.rate == nil && self.ExpenseItem.status == [NSNumber numberWithInteger:1]))  && ![self.ExpenseItem.localcurrencycode isEqualToString:self.ExpenseItem.homecurrencycode]) {
+        
+        /*
+         device not connected to the internet,  should we discard this whole item as we do not have a means to provide a valid
+         exchange rate..
+         We do not have the rate already.
+         It is in home currency
+         */
+        if (!self.newitem) {
+            [self.realm cancelWriteTransaction];
+        }
+        
+        UIAlertController * alert = [UIAlertController
+                                     alertControllerWithTitle:@"Cannot add new expense"
+                                     message:@"Trippo requires web access to obtain exchange rate in currency you have requested. Please try again later."
+                                     preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction* okButton = [UIAlertAction
+                                   actionWithTitle:@"OK"
+                                   style:UIAlertActionStyleDefault
+                                   handler:^(UIAlertAction * action) {
+                                      [self dismissViewControllerAnimated:YES completion:Nil];
+                                   }];
+        
+        [alert addAction:okButton];
+        [self presentViewController:alert animated:YES completion:nil];
+        
+    } else {
+        if (self.newitem) {
+            [self.realm beginWriteTransaction];
+            [self.realm addObject:self.ExpenseItem];
+            [self.realm commitWriteTransaction];
+        } else {
+            [self.realm commitWriteTransaction];
+        }
+        [self dismissViewControllerAnimated:YES completion:Nil];
+    }
+    
+}
+
 
 /*
  created date:      14/05/2018
  last modified:     15/05/2018
- remarks:
+ remarks:           This procedure handles the call to the web service and returns a dictionary back to GetExchangeRates method.
  */
 -(void)fetchFromExchangeRateApi:(NSString *)url withDictionary:(void (^)(NSDictionary* data))dictionary{
     
@@ -221,53 +278,91 @@
 
 /*
  created date:      14/05/2018
- last modified:     16/05/2018
- remarks:
+ last modified:     15/09/2018
+ remarks:           A little complex.  This code is processed when we do not have the exchange rate requested.
  */
-- (NSNumber*)GetExchangeRates:(PaymentNSO*)payment {
-    
-   
-        
+- (void) GetExchangeRates {
+  
         NSString *AccessKey = @"";
-        NSString *DateValue = self.Payment.date_act;
+        NSString *DateValue = self.ExpenseItem.date_act;
         
-        if (self.Payment.status==[NSNumber numberWithLong:0]) {
-            DateValue = self.Payment.date_est;
+        if (self.ExpenseItem.status==[NSNumber numberWithLong:0]) {
+            DateValue = self.ExpenseItem.date_est;
         }
-        
-        NSNumber *ExchangeRate = [AppDelegateDef.Db GetExchangeRate:payment.localcurrencycode :DateValue];
-        
-        if (ExchangeRate == [NSNumber numberWithInt:0]) {
+    
+        NSString *primarykey = [NSString stringWithFormat:@"%@~%@%@",DateValue, self.ExpenseItem.localcurrencycode, self.ExpenseItem.homecurrencycode];
+
+        ExchangeRateRLM *exrateexisting = [ExchangeRateRLM objectForPrimaryKey:primarykey];
+  
+        if (exrateexisting == nil) {
         
             if ([self checkInternet]) {
-                NSString *url = [NSString stringWithFormat:@"https://free.currencyconverterapi.com/api/v5/convert?q=%@_%@&compact=ultra&date=%@&apikey=%@", payment.localcurrencycode, payment.homecurrencycode, DateValue, AccessKey];
+                NSString *url = [NSString stringWithFormat:@"https://free.currencyconverterapi.com/api/v5/convert?q=%@_%@&compact=ultra&date=%@&apikey=%@", self.ExpenseItem.localcurrencycode, self.ExpenseItem.homecurrencycode, DateValue, AccessKey];
 
                 [self fetchFromExchangeRateApi:url withDictionary:^(NSDictionary *data) {
 
-                    dispatch_async(dispatch_get_main_queue(), ^(void){
+                    dispatch_sync(dispatch_get_main_queue(), ^(void){
                         
                         if ([data objectForKey:@"status"]==[NSNumber numberWithLong:400]) {
-                            NSLog(@"Cannot locate currency with code %@", payment.localcurrencycode);
+                            NSLog(@"Cannot locate currency with code %@", self.ExpenseItem.localcurrencycode);
                         } else {
                         
-                            NSDictionary *LocalToHome = [data objectForKey:[NSString stringWithFormat:@"%@_%@", payment.localcurrencycode, payment.homecurrencycode]];
+                            NSDictionary *LocalToHome = [data objectForKey:[NSString stringWithFormat:@"%@_%@", self.ExpenseItem.localcurrencycode, self.ExpenseItem.homecurrencycode]];
                             NSNumber *LocalToHomeRate = [LocalToHome valueForKey:DateValue];
-                            [AppDelegateDef.Db InsertExchangeRate:payment.localcurrencycode :DateValue :LocalToHomeRate];
+                            
+                            ExchangeRateRLM *exrate = [[ExchangeRateRLM alloc] init];
+                            if (self.newitem) {
+                                if (self.ExpenseItem.status==[NSNumber numberWithLong:0]) {
+                                    self.ExpenseItem.rate_est = [[ExchangeRateRLM alloc] init];
+                                    exrate = self.ExpenseItem.rate_est;
+                                } else {
+                                    self.ExpenseItem.rate_act = [[ExchangeRateRLM alloc] init];
+                                    exrate = self.ExpenseItem.rate_act;
+                                }
+                            }
+                            
+                            exrate.compondkey = [NSString stringWithFormat:@"%@~%@%@",DateValue, self.ExpenseItem.localcurrencycode, self.ExpenseItem.homecurrencycode];
+                            exrate.currencycode = self.ExpenseItem.localcurrencycode;
+                            exrate.homecurrencycode = self.ExpenseItem.homecurrencycode;
+                            
+                            double adjustedRate = [LocalToHomeRate doubleValue] * 10000;
+                            
+                            exrate.rate = [NSNumber numberWithInt:(int)adjustedRate];
+                            exrate.date = DateValue;
+                            
+                            if (self.newitem && self.ExpenseItem.status == [NSNumber numberWithLong:1]) {
+                                self.ExpenseItem.rate_est = self.ExpenseItem.rate_act;
+                            }
+                            if (!self.newitem) {
+                                if (self.ExpenseItem.status==[NSNumber numberWithLong:0]) {
+                                    self.ExpenseItem.rate_est = exrate;
+                                } else {
+                                    self.ExpenseItem.rate_act = exrate;
+                                }
+                            }
+                            [self finializePayment];
                         }
-                    });
+                });
+                    
                 }];
-                return 0;
             } else {
                 NSLog(@"Device is not connected to the Internet");
-                return [NSNumber numberWithInt:-1];
+                ExchangeRateRLM *exrate = [[ExchangeRateRLM alloc] init];
+                exrate.rate = [NSNumber numberWithInt:-1];
+                [self finializePayment];
+                return;
             }
             
         } else {
-            return ExchangeRate;
+            if (self.ExpenseItem.status==[NSNumber numberWithLong:0]) {
+                self.ExpenseItem.rate_est = exrateexisting;
+            } else {
+                self.ExpenseItem.rate_act = exrateexisting;
+            }
+
+            [self finializePayment];
+            return;
         }
-        
-    
-    
 }
 
 /*
@@ -291,24 +386,27 @@
 }
 
 - (IBAction)AmountEditingEnded:(id)sender {
+    
     double amount = [self.TextFieldAmt.text doubleValue];
     amount = (round(amount*100)) / 100.0;
-    //amount = amount * 100;
     
-    if (self.Payment.status==[NSNumber numberWithLong:0]) {
-        self.Payment.amt_est = [NSNumber numberWithDouble:amount];
+    [self.realm beginWriteTransaction];
+    if (self.ExpenseItem.status==[NSNumber numberWithLong:0]) {
+        self.ExpenseItem.amt_est = [NSNumber numberWithDouble:amount];
     } else {
-        self.Payment.amt_act = [NSNumber numberWithDouble:amount];
+        self.ExpenseItem.amt_act = [NSNumber numberWithDouble:amount];
         if (self.newitem) {
-            self.Payment.amt_est = self.Payment.amt_act;
+            self.ExpenseItem.amt_est = self.ExpenseItem.amt_act;
         }
     }
+    [self.realm commitWriteTransaction];
+    
     self.TextFieldAmt.text = [NSString stringWithFormat:@"%.2f",amount];
 }
 
 
 - (IBAction)SegmentStatusChanged:(id)sender {
-    
+
 }
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
@@ -348,17 +446,32 @@
     
 }
 
+/*
+ created date:      08/08/2018
+ last modified:     16/09/2018
+ remarks:
+ */
 - (IBAction)ButtonLocalPressed:(id)sender {
-    if (self.Activity.poi == nil) {
-        // do nothing.
+    
+    if (self.ActivityItem.poikey==nil) {
+        // apply counter of poi's attached to trip.
+        
+        
+        
+        self.TextFieldCurrency.text = [AppDelegateDef HomeCurrencyCode];
     } else {
-        NSDictionary *components = [NSDictionary dictionaryWithObject:self.Activity.poi.countrycode forKey:NSLocaleCountryCode];
+        PoiRLM *poi = [PoiRLM objectForPrimaryKey:self.ActivityItem.poikey];
+        NSDictionary *components = [NSDictionary dictionaryWithObject:poi.countrycode forKey:NSLocaleCountryCode];
         NSString *localeIdent = [NSLocale localeIdentifierFromComponents:components];
         NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:localeIdent];
         self.TextFieldCurrency.text = [locale objectForKey: NSLocaleCurrencyCode];
     }
 }
 
+- (IBAction)DatePickerChanged:(id)sender {
+    
+    
+}
 
 
 @end

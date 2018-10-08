@@ -31,10 +31,12 @@
     else
         NSLog(@"Device is not connected to the Internet");
     
-    
+    self.ButtonBack.layer.cornerRadius = 25;
+    self.ButtonBack.clipsToBounds = YES;
+    self.ButtonBack.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
    
     self.TableViewNearbyPoi.delegate = self;
-    self.TableViewNearbyPoi.rowHeight = 77;
+    self.TableViewNearbyPoi.rowHeight = 100;
     // Do any additional setup after loading the view.
 }
 
@@ -205,7 +207,7 @@
 
 /*
  created date:      16/07/2018
- last modified:     16/07/2018
+ last modified:     16/09/2018
  remarks:           table view with sections.
  */
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -216,8 +218,15 @@
     NSNumberFormatter *fmt = [[NSNumberFormatter alloc] init];
     [fmt setPositiveFormat:@"0.##"];
     cell.LabelDist.text = [NSString stringWithFormat:@"%@ metres",[fmt stringFromNumber:item.dist]];
-
-    cell.LabelTitle.text = item.title;
+    
+    cell.LabelTitle.attributedText=[[NSAttributedString alloc]
+                                    initWithString:item.title
+                                    attributes:@{
+                                                 NSStrokeWidthAttributeName: @-2.0,
+                                                 NSStrokeColorAttributeName:[UIColor blackColor],
+                                                 NSForegroundColorAttributeName:[UIColor whiteColor]
+                                                 }
+                                    ];
 
     return cell;
 }

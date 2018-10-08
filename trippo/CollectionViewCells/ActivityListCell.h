@@ -15,9 +15,9 @@
 @property (strong, nonatomic) ActivityRLM *activity;
 @property (weak, nonatomic) IBOutlet UILabel *LabelName;
 @property (weak, nonatomic) IBOutlet UIVisualEffectView *VisualViewBlur;
+@property (weak, nonatomic) IBOutlet UIView *ViewMain;
 
 @property (weak, nonatomic) IBOutlet UIButton *ButtonDelete;
-@property (weak, nonatomic) IBOutlet UILabel *LabelDate;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageBlurBackground;
 @property (weak, nonatomic) IBOutlet UIVisualEffectView *VisualViewBlurBehindImage;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewBookmark;
@@ -25,8 +25,11 @@
 @property (weak, nonatomic) IBOutlet UIView *ViewActiveItem;
 @property (weak, nonatomic) IBOutlet UIView *ViewActiveBadge;
 @property (weak, nonatomic) IBOutlet UIView *ViewPoiType;
-
-
-
+@property (weak, nonatomic) IBOutlet UIVisualEffectView *ViewDateInfo;
+@property (weak, nonatomic) IBOutlet UILabel *LabelStartTimePlusWeekDay;
+@property (weak, nonatomic) IBOutlet UILabel *LabelEndTimePlusWeekDay;
+@property (weak, nonatomic) IBOutlet UILabel *LabelStartDate;
+@property (weak, nonatomic) IBOutlet UILabel *LabelEndDate;
+@property (weak, nonatomic) IBOutlet UILabel *LabelDuration;
 
 @end

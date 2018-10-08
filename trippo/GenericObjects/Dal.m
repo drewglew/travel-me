@@ -1544,7 +1544,7 @@
 -(NSMutableArray*) GetActivitySchedule :(NSString *) ProjectKey :(NSNumber *) RequiredState {
 
     NSMutableArray *activityschedulelist  = [[NSMutableArray alloc] init];
-
+/*
         sqlite3_stmt *statement;
         NSString *selectSQL;
         if (RequiredState == [NSNumber numberWithLong:0]) {
@@ -1574,13 +1574,13 @@
                     schedule.hierarcyindex = index;
                     index --;
                 }
-                schedule.activitystate = [NSNumber numberWithInt:sqlite3_column_int(statement, 4)];
+               //schedule.activitystate = [NSNumber numberWithInt:sqlite3_column_int(statement, 4)];
                 [activityschedulelist addObject:schedule];
                 
             }
         }
         sqlite3_finalize(statement);
-
+*/
     return activityschedulelist;
  }
 

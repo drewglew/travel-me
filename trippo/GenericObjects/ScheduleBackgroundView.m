@@ -12,15 +12,18 @@
 
 /*
  created date:      19/05/2018
- last modified:     19/05/2018
+ last modified:     04/10/2018
  remarks:
  */
--(void)addColumns:(int)amount :(int)linestyle {
+-(void)addColumns:(int)amount :(int)linestyle :(float)spacer{
     LastLineStyle = linestyle;
     columns = [[NSMutableArray alloc] init];
+    float border = 10;
+    float imagemidsize = 50;
     for (int i = 0; i < amount; i++)
     {
-        float position = (20 * i ) + 20;
+        float position = (spacer * i ) + imagemidsize + border;
+
         [columns addObject:[NSNumber numberWithFloat:position]];
     }
 }
@@ -34,7 +37,7 @@
 
     CGContextSetStrokeColorWithColor(ctx, [[UIColor colorWithRed:250.0f/255.0f green:159.0f/255.0f blue:66.0f/255.0f alpha:1.0] CGColor]);
 
-    CGContextSetLineWidth(ctx, 6.0);
+    CGContextSetLineWidth(ctx, 4.0);
     
     for (int i = 0; i < [columns count]; i++) {
         CGFloat f = [((NSNumber*) [columns objectAtIndex:i]) floatValue];
