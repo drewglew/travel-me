@@ -15,9 +15,10 @@
 @property (strong, nonatomic) Dal *Db;
 @property (nonatomic) NSString *databasename;
 @property (nonatomic) NSString *HomeCurrencyCode;
+@property (nonatomic) NSString *MeasurementSystem;
+@property (assign) bool MetricSystem;
 @property (strong, nonatomic) NSMutableArray *poiitems;
 @property (strong, nonatomic) NSMutableDictionary *PoiBackgroundImageDictionary;
-
 
 @end
 

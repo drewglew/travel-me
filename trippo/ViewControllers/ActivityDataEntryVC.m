@@ -472,7 +472,7 @@ int BlurredImageViewPresentedHeight=60;
 
 /*
  created date:      03/05/2018
- last modified:     19/09/2018
+ last modified:     09/10/2018
  remarks:           segue controls .
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -489,15 +489,7 @@ int BlurredImageViewPresentedHeight=60;
         DatePickerRangeVC *controller = (DatePickerRangeVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.Activity = self.Activity;
-    } else if ([segue.identifier isEqualToString:@"ShowDirections"]){
-        // todo
-        DirectionsVC *controller = (DirectionsVC *)segue.destinationViewController;
-        controller.delegate = self;
-        NSMutableArray *Route = [[NSMutableArray alloc] init];
-        [Route addObject:self.Poi];
-        controller.Route = Route;
-        /* soon to be obsolete */
-        controller.LocationToCoord = CLLocationCoordinate2DMake([self.Poi.lat doubleValue], [self.Poi.lon doubleValue]);
+        
     } else if ([segue.identifier isEqualToString:@"ShowPayments"]){
         PaymentListingVC *controller = (PaymentListingVC *)segue.destinationViewController;
         controller.delegate = self;
@@ -515,7 +507,6 @@ int BlurredImageViewPresentedHeight=60;
         /* here we add something new */
         controller.realm = self.realm;
         controller.TripItem = nil;
-        
     }
 }
 
@@ -1313,5 +1304,92 @@ int BlurredImageViewPresentedHeight=60;
         
     }
 }
+
+/*
+ created date:      09/10/2018
+ last modified:     09/10/2018
+ remarks:           Give user option of origins..
+ */
+- (IBAction)ShowDirectionsPressed:(id)sender {
+
+    RLMResults <ActivityRLM*> *ActivitiesInTrip = [ActivityRLM objectsWhere:@"tripkey = %@ and state=%@", self.Trip.key, self.Activity.state];
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"startdt < %@", self.Activity.startdt];
+    
+    RLMResults *filteredActivities = [ActivitiesInTrip objectsWithPredicate:predicate];
+    
+    RLMSortDescriptor *sort = [RLMSortDescriptor sortDescriptorWithKeyPath:@"startdt" ascending:NO];
+    
+    [filteredActivities sortedResultsUsingDescriptors:[NSArray arrayWithObject:sort]];
+    
+    int MaxList = 8;
+    if (filteredActivities.count < MaxList) {
+        MaxList = (int)filteredActivities.count;
+    }
+
+    UIAlertController * alertPickOrigin = [UIAlertController
+                                           alertControllerWithTitle:@"Origin"
+                                           message:[NSString stringWithFormat:@"Choose the location you wish to travel from to get to %@", self.Activity.name]
+                                           preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction* action = [UIAlertAction
+                             actionWithTitle:@"My current position"
+                             style:UIAlertActionStyleDefault
+                             handler:^(UIAlertAction * action) {
+                                 
+                                 UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+                                 DirectionsVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"DirectionsStoryboardId"];
+                                 controller.delegate = self;
+                                 controller.realm = self.realm;
+                                 NSMutableArray *Route = [[NSMutableArray alloc] init];
+                                 [Route addObject:self.Poi];
+                                 controller.Route = Route;
+                                 controller.FromScheduler = false;
+                                 [controller setModalPresentationStyle:UIModalPresentationFullScreen];
+                                 [self presentViewController:controller animated:YES completion:nil];
+                             }];
+    
+    [alertPickOrigin addAction:action];
+    
+    for (NSInteger index = 0; index < MaxList; index++) {
+        ActivityRLM *item = [filteredActivities objectAtIndex:index];
+        PoiRLM *poiitem = item.poi;
+        
+        if (poiitem == nil) {
+            poiitem = [PoiRLM objectForPrimaryKey:item.poikey];
+        }
+        
+        UIAlertAction* action = [UIAlertAction
+                                 actionWithTitle:poiitem.name
+                                 style:UIAlertActionStyleDefault
+                                 handler:^(UIAlertAction * action) {
+                                     
+                                     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+                                     DirectionsVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"DirectionsStoryboardId"];
+                                     controller.delegate = self;
+                                     controller.realm = self.realm;
+                                     NSMutableArray *Route = [[NSMutableArray alloc] init];
+                                     [Route addObject:poiitem];
+                                     [Route addObject:self.Poi];
+                                     controller.Route = Route;
+                                     [controller setModalPresentationStyle:UIModalPresentationFullScreen];
+                                     [self presentViewController:controller animated:YES completion:nil];
+                                 }];
+        
+        [alertPickOrigin addAction:action];
+    }
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
+                                                           style:UIAlertActionStyleCancel
+                                                         handler:^(UIAlertAction *action) {
+                                                         }];
+    
+    [alertPickOrigin addAction:cancelAction];
+    [self presentViewController:alertPickOrigin animated:YES completion:nil];
+
+}
+
+
+
+
 
 @end

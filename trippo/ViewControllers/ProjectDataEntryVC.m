@@ -61,22 +61,22 @@
 
 /*
  created date:      29/04/2018
- last modified:     07/10/2018
+ last modified:     08/10/2018
  remarks:
  */
 -(void) LoadExistingData {
     
     self.TextFieldName.text = self.Trip.name;
     self.TextViewNotes.text = self.Trip.privatenotes;
-    
-    
-    
+
     NSDateFormatter *dtformatter = [[NSDateFormatter alloc] init];
     [dtformatter setDateFormat:@"EEE, dd MMM yyyy HH:mm"];
    
     NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
     nf.numberStyle = NSNumberFormatterDecimalStyle;
     nf.maximumFractionDigits = 2;
+    
+    
     
     if (self.Trip.routeactualcalculateddt==nil) {
         self.LabelActCalcDist.hidden = true;
@@ -88,8 +88,10 @@
         self.LabelActCalcTravelTime.hidden = false;
         self.LabelActCalcTitle.hidden = false;
         self.LabelActCalcTitle.text = [NSString stringWithFormat:@"Actual Summary generated on:\n%@",[dtformatter stringFromDate:self.Trip.routeactualcalculateddt]];
-        self.LabelActCalcTravelTime.text = [NSString stringWithFormat:@"%@ Hours",[self stringFromTimeInterval:self.Trip.routeactualtotaltravelminutes]];
-        self.LabelActCalcDist.text = [NSString stringWithFormat:@"%@ km", [nf stringFromNumber:self.Trip.routeactualtotaltraveldistance]];
+        self.LabelActCalcTravelTime.text = [NSString stringWithFormat:@"%@ hours",[self stringFromTimeInterval:self.Trip.routeactualtotaltravelminutes]];
+        
+        self.LabelActCalcDist.text = [NSString stringWithFormat:@"%@", [self formattedDistanceForMeters :[self.Trip.routeactualtotaltraveldistance doubleValue]]];
+                                      
     }
     if (self.Trip.routeplannedcalculateddt==nil) {
         self.LabelEstCalcDist.hidden = true;
@@ -101,8 +103,9 @@
         self.LabelEstCalcTravelTime.hidden = false;
         self.LabelEstCalcTitle.hidden = false;
         self.LabelEstCalcTitle.text = [NSString stringWithFormat:@"Planned Summary generated on:\n%@",[dtformatter stringFromDate:self.Trip.routeplannedcalculateddt]];
-        self.LabelEstCalcTravelTime.text = [NSString stringWithFormat:@"%@ Hours",[self stringFromTimeInterval:self.Trip.routeplannedtotaltravelminutes]];
-        self.LabelEstCalcDist.text = [NSString stringWithFormat:@"%@ km", [nf stringFromNumber:self.Trip.routeplannedtotaltraveldistance]];
+       
+        self.LabelEstCalcTravelTime.text = [NSString stringWithFormat:@"%@ hours",[self stringFromTimeInterval:self.Trip.routeplannedtotaltravelminutes]];
+        self.LabelEstCalcDist.text = [NSString stringWithFormat:@"%@", [self formattedDistanceForMeters :[self.Trip.routeplannedtotaltraveldistance doubleValue]]];
     }
    
     /* generate the flags */
@@ -507,6 +510,24 @@
     return [[NSString alloc] initWithBytes:bytes
                                     length:countryCode.length *sizeof(wchar_t)
                                   encoding:NSUTF32LittleEndianStringEncoding];
+}
+
+/*
+ created date:      08/10/2018
+ last modified:     08/10/2018
+ remarks:
+ */
+-(NSString *)formattedDistanceForMeters:(double)distance
+{
+    NSLengthFormatter *lengthFormatter = [NSLengthFormatter new];
+    [lengthFormatter.numberFormatter setMaximumFractionDigits:2];
+    
+    if ([[AppDelegateDef MeasurementSystem] isEqualToString:@"U.K."] || ![AppDelegateDef MetricSystem]) {
+        return [lengthFormatter stringFromValue:distance / 1609.34 unit:NSLengthFormatterUnitMile];
+        
+    } else {
+        return [lengthFormatter stringFromValue:distance / 1000 unit:NSLengthFormatterUnitKilometer];
+    }
 }
 
 @end

@@ -23,8 +23,10 @@
 		3A224CC92097950600075457 /* ActivityDataEntryVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CC82097950600075457 /* ActivityDataEntryVC.m */; };
 		3A224CCC2097B39F00075457 /* DatePickerRangeVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CCB2097B39F00075457 /* DatePickerRangeVC.m */; };
 		3A224CCF209A178700075457 /* ToolBoxNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CCE209A178700075457 /* ToolBoxNSO.m */; };
+		3A273B95214CD95E00E3793E /* PaymentRLM.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A273B94214CD95E00E3793E /* PaymentRLM.m */; };
 		3A291BD5213D917500FDFDFB /* ExchangeRateRLM.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A291BD4213D917500FDFDFB /* ExchangeRateRLM.m */; };
 		3A291BD8213D949F00FDFDFB /* ExpenseRLM.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A291BD7213D949F00FDFDFB /* ExpenseRLM.m */; };
+		3A2D8D7C215AA4DD009CDB32 /* tessdata in Resources */ = {isa = PBXBuildFile; fileRef = 3A2D8D7B215AA4DD009CDB32 /* tessdata */; };
 		3A3075DE21220446007D53C9 /* HCSStarRatingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A3075DC21220445007D53C9 /* HCSStarRatingView.m */; };
 		3A374EE620936A9300E5A652 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374EE520936A9300E5A652 /* AppDelegate.m */; };
 		3A374EEC20936A9300E5A652 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3A374EEA20936A9300E5A652 /* Main.storyboard */; };
@@ -124,10 +126,13 @@
 		3A224CCB2097B39F00075457 /* DatePickerRangeVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DatePickerRangeVC.m; sourceTree = "<group>"; };
 		3A224CCD209A178700075457 /* ToolBoxNSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ToolBoxNSO.h; sourceTree = "<group>"; };
 		3A224CCE209A178700075457 /* ToolBoxNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ToolBoxNSO.m; sourceTree = "<group>"; };
+		3A273B93214CD95E00E3793E /* PaymentRLM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PaymentRLM.h; sourceTree = "<group>"; };
+		3A273B94214CD95E00E3793E /* PaymentRLM.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PaymentRLM.m; sourceTree = "<group>"; };
 		3A291BD3213D917500FDFDFB /* ExchangeRateRLM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExchangeRateRLM.h; sourceTree = "<group>"; };
 		3A291BD4213D917500FDFDFB /* ExchangeRateRLM.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExchangeRateRLM.m; sourceTree = "<group>"; };
 		3A291BD6213D949F00FDFDFB /* ExpenseRLM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpenseRLM.h; sourceTree = "<group>"; };
 		3A291BD7213D949F00FDFDFB /* ExpenseRLM.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExpenseRLM.m; sourceTree = "<group>"; };
+		3A2D8D7B215AA4DD009CDB32 /* tessdata */ = {isa = PBXFileReference; lastKnownFileType = folder; path = tessdata; sourceTree = SOURCE_ROOT; };
 		3A3075DC21220445007D53C9 /* HCSStarRatingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HCSStarRatingView.m; sourceTree = "<group>"; };
 		3A3075DD21220445007D53C9 /* HCSStarRatingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HCSStarRatingView.h; sourceTree = "<group>"; };
 		3A374EE120936A9300E5A652 /* trippo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = trippo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -303,6 +308,7 @@
 		3A374EE320936A9300E5A652 /* trippo */ = {
 			isa = PBXGroup;
 			children = (
+				3A2D8D7B215AA4DD009CDB32 /* tessdata */,
 				3AF785D3213129A600DD5A5B /* Realm */,
 				3A9F73A420A1FFC900D61666 /* JSON data */,
 				3A224CB12095917300075457 /* CollectionViewCells */,
@@ -452,6 +458,8 @@
 				3A291BD4213D917500FDFDFB /* ExchangeRateRLM.m */,
 				3A291BD6213D949F00FDFDFB /* ExpenseRLM.h */,
 				3A291BD7213D949F00FDFDFB /* ExpenseRLM.m */,
+				3A273B93214CD95E00E3793E /* PaymentRLM.h */,
+				3A273B94214CD95E00E3793E /* PaymentRLM.m */,
 			);
 			path = Realm;
 			sourceTree = "<group>";
@@ -477,6 +485,7 @@
 				3A374EDE20936A9200E5A652 /* Frameworks */,
 				3A374EDF20936A9200E5A652 /* Resources */,
 				3AF785D0213091AB00DD5A5B /* Embed Frameworks */,
+				7DB7FE557E8AA556D98651AF /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -529,12 +538,35 @@
 				3A9F73A620A1FFE400D61666 /* country.json in Resources */,
 				3A374EEE20936A9600E5A652 /* Assets.xcassets in Resources */,
 				3A374EEC20936A9300E5A652 /* Main.storyboard in Resources */,
+				3A2D8D7C215AA4DD009CDB32 /* tessdata in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		7DB7FE557E8AA556D98651AF /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-trippo/Pods-trippo-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/TOCropViewController/TOCropViewControllerBundle.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TOCropViewControllerBundle.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-trippo/Pods-trippo-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		E28FF09E8ED325E5DEDE9B66 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -598,6 +630,7 @@
 				3A224CA62094338D00075457 /* PoiImageCell.m in Sources */,
 				3AF785D6213129E400DD5A5B /* TripRLM.m in Sources */,
 				3AB915F220CDB3E5001A08A9 /* ImageNSO.m in Sources */,
+				3A273B95214CD95E00E3793E /* PaymentRLM.m in Sources */,
 				3AB915F520D1917B001A08A9 /* WikiVC.m in Sources */,
 				3A58B4C0211F534E00699008 /* TypeCell.m in Sources */,
 				3AB915EF20CD9BE4001A08A9 /* ImageCollectionCell.m in Sources */,
@@ -680,6 +713,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -738,6 +772,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;

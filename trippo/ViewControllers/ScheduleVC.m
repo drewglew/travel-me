@@ -379,6 +379,7 @@
         }
         controller.ActivityState = self.ActivityState;
         controller.Route = Route;
+        controller.FromScheduler = true;
         controller.realm = self.realm;
         controller.Trip = self.Trip;
         controller.scheduleitems = self.scheduleitems;

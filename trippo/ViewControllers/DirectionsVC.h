@@ -22,17 +22,17 @@
 @interface DirectionsVC : UIViewController <MKMapViewDelegate,CLLocationManagerDelegate>
 @property (weak, nonatomic) IBOutlet MKMapView *MapView;
 @property (strong, nonatomic)  CLLocationManager *locationManager;
-@property (nonatomic, retain) MKPolyline *routeLine; 
+@property (nonatomic, retain) MKPolyline *routeLine;
+
 @property (nonatomic, retain) MKPolylineView *routeLineView;
 @property (nonatomic, retain) MKPlacemark *startlocation;
 @property (nonatomic, retain) MKPlacemark *destination;
 @property (nonatomic, weak) id <DirectionsDelegate> delegate;
-@property (nonatomic, readwrite) CLLocationCoordinate2D LocationFromCoord;
-@property (nonatomic, readwrite) CLLocationCoordinate2D LocationToCoord;
 @property (weak, nonatomic) IBOutlet UILabel *LabelJourneyDetail;
 @property (strong, nonatomic) NSMutableArray *Route;
 @property (assign) double Distance;
 @property (assign) long TravelTime;
+@property (assign) bool FromScheduler;
 @property (strong, nonatomic) NSMutableArray *scheduleitems;
 @property (nonatomic) NSNumber *ActivityState;
 @property RLMRealm *realm;
@@ -41,5 +41,6 @@
 @property (weak, nonatomic) IBOutlet UIButton *ButtonOpenMap;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonUpdateCalc;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonOpenGMap;
 
 @end

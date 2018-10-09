@@ -35,25 +35,36 @@
     [super viewWillAppear:animated];
     /* if coming from activity window we need to find our current position
      which in turn once found will goto processMultiRouting method. */
-    if (self.Route.count==1) {
+
+    if (!self.FromScheduler) {
         self.ButtonOpenMap.hidden = false;
         self.ButtonOpenMap.layer.cornerRadius = 25;
         self.ButtonOpenMap.clipsToBounds = YES;
         self.ButtonOpenMap.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+        self.ButtonOpenGMap.hidden = false;
+        self.ButtonOpenGMap.layer.cornerRadius = 25;
+        self.ButtonOpenGMap.clipsToBounds = YES;
+        self.ButtonOpenGMap.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
         self.ButtonUpdateCalc.hidden = true;
-        [self startUserLocationSearch];
     } else {
         self.ButtonOpenMap.hidden = true;
+        self.ButtonOpenGMap.hidden = true;
         self.ButtonUpdateCalc.hidden = false;
         self.ButtonUpdateCalc.layer.cornerRadius = 25;
         self.ButtonUpdateCalc.clipsToBounds = YES;
         self.ButtonUpdateCalc.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    }
+    
+    if (self.Route.count ==1) {
+        [self startUserLocationSearch];
+    } else {
         [self processMultiRouting];
     }
+    
 }
 /*
  created date:      08/05/2018
- last modified:     06/10/2018
+ last modified:     09/10/2018
  remarks:
  */
 -(void)processMultiRouting {
@@ -66,10 +77,7 @@
     for (PoiRLM *route in self.Route) {
 
         AnnotationMK *annotation = [[AnnotationMK alloc] init];
-        //PoiRLM* poi;
-        //if ([route.name isEqualToString:@"My Current Location"]) {
-        //    poi = route;
-        //}
+
         annotation.coordinate = CLLocationCoordinate2DMake([route.lat doubleValue], [route.lon doubleValue]);
         annotation.title = route.name;
         annotation.subtitle = route.administrativearea;
@@ -86,7 +94,9 @@
             request.requestsAlternateRoutes = NO;
             //request.transportType
             
-            if (route.transportid==[NSNumber numberWithInt:1]) {
+            if (route.transportid==nil) {
+               request.transportType = MKDirectionsTransportTypeAny;
+            } else if (route.transportid==[NSNumber numberWithInt:1]) {
                 request.transportType = MKDirectionsTransportTypeWalking;
             } else  if (route.transportid==[NSNumber numberWithInt:2]) {
                 request.transportType = MKDirectionsTransportTypeTransit;
@@ -130,13 +140,13 @@
 }
 /*
  created date:      06/05/2018
- last modified:     08/05/2018
+ last modified:     09/10/2018
  remarks:
  */
 -(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations{
     
     [self.locationManager stopUpdatingLocation];
-    PoiNSO *mylocation = [[PoiNSO alloc] init];
+    PoiRLM *mylocation = [[PoiRLM alloc] init];
     
     mylocation.name = @"My Current Location";
     mylocation.lat = [NSNumber numberWithDouble: self.locationManager.location.coordinate.latitude];
@@ -148,7 +158,7 @@
 }
 /*
  created date:      06/05/2018
- last modified:     08/05/2018
+ last modified:     09/10/2018
  remarks:
  */
 -(void)showRoute:(MKDirectionsResponse *)response
@@ -160,19 +170,48 @@
         [self.MapView
          addOverlay:route.polyline level:MKOverlayLevelAboveRoads];
         
-        NSLog(@"EXPRECTED TRAVELTIME:%f", route.expectedTravelTime);
-        
-        //[self.MapView
-        // addOverlay:route.polyline level:MKOverlayLevelAboveRoads];
         for (MKRouteStep *step in route.steps)
         {
             NSLog(@"%@", step.instructions);
         }
-        self.Distance += (route.distance / 1000);
+        
+        self.Distance += route.distance;
         self.TravelTime += (route.expectedTravelTime);
-        self.LabelDistance.text = [NSString stringWithFormat:@"Distance = %.02f km", self.Distance];
+
+        self.LabelJourneyDetail.text = [NSString stringWithFormat:@"Journey = %@ hrs",[self stringFromTimeInterval:[NSNumber numberWithLong:self.TravelTime]]];
+
+        self.LabelDistance.text = [NSString stringWithFormat:@"Distance = %@", [self formattedDistanceForMeters :self.Distance]];
+ 
     }
 }
+
+
+- (NSString *)stringFromTimeInterval:(NSNumber*)interval {
+    long ti = [interval longValue];
+    long seconds = ti % 60;
+    long minutes = (ti / 60) % 60;
+    long hours = (ti / 3600);
+    return [NSString stringWithFormat:@"%02ld:%02ld:%02ld", (long)hours, (long)minutes, (long)seconds];
+}
+
+/*
+ created date:      08/10/2018
+ last modified:     08/10/2018
+ remarks:
+ */
+-(NSString *)formattedDistanceForMeters:(double)distance
+{
+    NSLengthFormatter *lengthFormatter = [NSLengthFormatter new];
+    [lengthFormatter.numberFormatter setMaximumFractionDigits:1];
+    
+    if ([[AppDelegateDef MeasurementSystem] isEqualToString:@"U.K."] || ![AppDelegateDef MetricSystem]) {
+        return [lengthFormatter stringFromValue:distance / 1609.34 unit:NSLengthFormatterUnitMile];
+        
+    } else {
+        return [lengthFormatter stringFromValue:distance / 1000 unit:NSLengthFormatterUnitKilometer];
+    }
+}
+
 /*
  created date:      08/05/2018
  last modified:     08/05/2018
@@ -275,26 +314,55 @@
     [self dismissViewControllerAnimated:YES completion:Nil];
     
 }
-/*
-- (void)sendScheduledItemsBack :(NSDate*)Start :(NSDate*)End {
-    
-    
-}
- */
 
 /*
  created date:      16/06/2018
- last modified:     16/06/2018
- remarks:           not used
+ last modified:     09/10/2018
+ remarks:           Used
  */
 - (IBAction)OpenMapsPressed:(id)sender {
     
+    NSString* directionsURL;
     PoiNSO *poi = [self.Route lastObject];
-    NSString* directionsURL = [NSString stringWithFormat:@"http://maps.apple.com/?saddr=%f,%f&daddr=%@,%@",self.locationManager.location.coordinate.latitude, self.locationManager.location.coordinate.longitude, poi.lat, poi.lon];
+    if (self.Route.count==1) {
+        directionsURL = [NSString stringWithFormat:@"http://maps.apple.com/?saddr=%f,%f&daddr=%@,%@",self.locationManager.location.coordinate.latitude, self.locationManager.location.coordinate.longitude, poi.lat, poi.lon];
+    } else {
+        PoiNSO *originpoi = [self.Route firstObject];
+        directionsURL = [NSString stringWithFormat:@"http://maps.apple.com/?saddr=%@,%@&daddr=%@,%@",originpoi.lat, originpoi.lon, poi.lat, poi.lon];
+    }
+    
     if ([[UIApplication sharedApplication] respondsToSelector:@selector(openURL:options:completionHandler:)]) {
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString: directionsURL] options:@{} completionHandler:^(BOOL success) {}];
     }
 }
+
+/*
+ created date:      09/10/2018
+ last modified:     09/10/2018
+ remarks:           Open Google Map App (if it exists)
+ */
+- (IBAction)OpenGoogleMapsPressed:(id)sender {
+    
+    NSString *directionsURL;
+    PoiNSO *poi = [self.Route lastObject];
+    if (self.Route.count==1) {
+        directionsURL = [NSString stringWithFormat:@"http://maps.google.com/maps?saddr=%f,%f&daddr=%@,%@",self.locationManager.location.coordinate.latitude, self.locationManager.location.coordinate.longitude, poi.lat, poi.lon];
+    } else {
+        PoiNSO *originpoi = [self.Route firstObject];
+        directionsURL = [NSString stringWithFormat:@"http://maps.google.com/maps?saddr=%@,%@&daddr=%@,%@",originpoi.lat, originpoi.lon, poi.lat, poi.lon];
+    }
+    
+    if ([[UIApplication sharedApplication] respondsToSelector:@selector(openURL:options:completionHandler:)]) {
+        if (@available(iOS 10.0, *)) {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString: directionsURL] options:@{} completionHandler:^(BOOL success) {}];
+        } else {
+            // Fallback on earlier versions
+            
+        }
+    }
+    
+}
+
 
 /*
  created date:      07/10/2018
@@ -317,6 +385,7 @@
     [self.realm commitWriteTransaction];
     
 }
+
 
 
 
