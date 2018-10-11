@@ -23,15 +23,36 @@
     
     NSURL *url = launchOptions[UIApplicationLaunchOptionsURLKey];
     
-    self.databasename = @"travelme_003.db";
-    self.Db = [[Dal alloc] init];
+    //self.databasename = @"travelme_003.db";
+    //self.Db = [[Dal alloc] init];
     NSLocale *theLocale = [NSLocale currentLocale];
     self.HomeCurrencyCode = [theLocale objectForKey:NSLocaleCurrencyCode];
     self.MeasurementSystem = [theLocale objectForKey:NSLocaleMeasurementSystem];
     self.MetricSystem = [theLocale objectForKey:NSLocaleUsesMetricSystem];
     self.poiitems = [[NSMutableArray alloc] init];
-    [self.Db InitDb:self.databasename];
+    /* countries / language dictionary */
     
+    self.CountryDictionary = [[NSMutableDictionary alloc] init];
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"country" ofType:@"json"];
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
+    
+    for (NSDictionary *country in dict) {
+        NSString *CountryCode = [country objectForKey:@"alpha2Code"];
+        NSArray *Languages = [country objectForKey:@"languages"];
+        NSString *LanguageCode = @"";
+        if (Languages.count>0) {
+            for (NSDictionary *language in Languages) {
+                LanguageCode = [language objectForKey:@"iso639_1"];
+                NSLog(@"%@-%@",LanguageCode,CountryCode);
+                break;
+            }
+            if (CountryCode != nil && LanguageCode != nil) {
+                [self.CountryDictionary setObject:LanguageCode forKey:CountryCode];
+            }
+        }
+    }
+
     if (url){
         [self InitRealm :url];
     } else {
@@ -83,15 +104,12 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-    /* close db */
-    [self.Db CloseDb];
 }
 
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
-    
-        [self.Db InitDb:self.databasename];
+
 }
 
 
@@ -129,8 +147,6 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-    /* close db */
-    [self.Db CloseDb];
 }
 
 

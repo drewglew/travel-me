@@ -445,10 +445,10 @@ remarks:
  remarks:           Might not be totally necessary, but seperated out from editActionsForRowAtIndexPath method above.
  */
 - (void)tableView:(UITableView *)tableView deletePayment:(NSIndexPath *)indexPath  {
-    if ([AppDelegateDef.Db DeletePayment:[[self.paymentsections objectAtIndex:indexPath.section] objectAtIndex:indexPath.row]] == true)
-    {
-        [self LoadPaymentData];
-    }
+ //   if ([AppDelegateDef.Db DeletePayment:[[self.paymentsections objectAtIndex:indexPath.section] objectAtIndex:indexPath.row]] == true)
+   // {
+   //     [self LoadPaymentData];
+   // }
 }
 
 /*

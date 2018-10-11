@@ -1153,7 +1153,7 @@
 
 /*
  created date:      13/06/2018
- last modified:     16/06/2018
+ last modified:     09/10/2018
  remarks:           segue controls .
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -1167,6 +1167,7 @@
         poi.lat = self.PointOfInterest.lat;
         poi.lon = self.PointOfInterest.lon;
         poi.wikititle = self.PointOfInterest.wikititle;
+        poi.countrycode = self.PointOfInterest.countrycode;
         poi.key = self.PointOfInterest.key;
         
         controller.PointOfInterest = poi;
@@ -1178,7 +1179,7 @@
 
 /*
  created date:      26/09/2018
- last modified:     26/09/2018
+ last modified:     09/10/2018
  remarks:
  */
 - (IBAction)ButtonWikiPressed:(id)sender {
@@ -1197,6 +1198,7 @@
         poi.lon = self.PointOfInterest.lon;
         poi.wikititle = self.PointOfInterest.wikititle;
         poi.key = self.PointOfInterest.key;
+        poi.countrycode = self.PointOfInterest.countrycode;
         
         controller.PointOfInterest = poi;
         controller.PointOfInterest.name = self.TextFieldTitle.text;

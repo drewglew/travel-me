@@ -35,7 +35,6 @@
 		3A374EF420936A9600E5A652 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374EF320936A9600E5A652 /* main.m */; };
 		3A374EFC209372CC00E5A652 /* MenuVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374EFB209372CC00E5A652 /* MenuVC.m */; };
 		3A374F032093735300E5A652 /* ProjectListVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F022093735300E5A652 /* ProjectListVC.m */; };
-		3A374F0A2093754200E5A652 /* Dal.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F092093754200E5A652 /* Dal.m */; };
 		3A374F0F2093764C00E5A652 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A374F0E2093764B00E5A652 /* libsqlite3.tbd */; };
 		3A374F12209386F700E5A652 /* PoiListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F11209386F700E5A652 /* PoiListCell.m */; };
 		3A374F152093877F00E5A652 /* PoiNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F142093877F00E5A652 /* PoiNSO.m */; };
@@ -47,7 +46,6 @@
 		3A634970212F12AA00BE53FC /* SettingsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A63496F212F12AA00BE53FC /* SettingsVC.m */; };
 		3A81B509209D80B8005CABDA /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A81B508209D80B8005CABDA /* Photos.framework */; };
 		3A81B50C209D90CA005CABDA /* AlphaView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A81B50B209D90CA005CABDA /* AlphaView.m */; };
-		3A910FF02131E0B9004AE3C0 /* RealmDAL.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A910FEF2131E0B9004AE3C0 /* RealmDAL.m */; };
 		3A9EA18620AE17DF0052CC4F /* ScheduleBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9EA18520AE17DF0052CC4F /* ScheduleBackgroundView.m */; };
 		3A9F73A320A0FB5A00D61666 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 3A9F73A220A0FB5A00D61666 /* Settings.bundle */; };
 		3A9F73A620A1FFE400D61666 /* country.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A9F73A520A1FFE400D61666 /* country.json */; };
@@ -147,8 +145,6 @@
 		3A374EFB209372CC00E5A652 /* MenuVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MenuVC.m; sourceTree = "<group>"; };
 		3A374F012093735300E5A652 /* ProjectListVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProjectListVC.h; sourceTree = "<group>"; };
 		3A374F022093735300E5A652 /* ProjectListVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ProjectListVC.m; sourceTree = "<group>"; };
-		3A374F082093754200E5A652 /* Dal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Dal.h; sourceTree = "<group>"; };
-		3A374F092093754200E5A652 /* Dal.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Dal.m; sourceTree = "<group>"; };
 		3A374F0C2093762F00E5A652 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
 		3A374F0E2093764B00E5A652 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		3A374F10209386F700E5A652 /* PoiListCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PoiListCell.h; sourceTree = "<group>"; };
@@ -170,8 +166,6 @@
 		3A81B508209D80B8005CABDA /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		3A81B50A209D90CA005CABDA /* AlphaView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AlphaView.h; sourceTree = "<group>"; };
 		3A81B50B209D90CA005CABDA /* AlphaView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AlphaView.m; sourceTree = "<group>"; };
-		3A910FEE2131E0B9004AE3C0 /* RealmDAL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RealmDAL.h; sourceTree = "<group>"; };
-		3A910FEF2131E0B9004AE3C0 /* RealmDAL.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RealmDAL.m; sourceTree = "<group>"; };
 		3A9EA18420AE17DF0052CC4F /* ScheduleBackgroundView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScheduleBackgroundView.h; sourceTree = "<group>"; };
 		3A9EA18520AE17DF0052CC4F /* ScheduleBackgroundView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScheduleBackgroundView.m; sourceTree = "<group>"; };
 		3A9F73A220A0FB5A00D61666 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
@@ -376,10 +370,6 @@
 		3A374F072093738F00E5A652 /* GenericObjects */ = {
 			isa = PBXGroup;
 			children = (
-				3A910FEE2131E0B9004AE3C0 /* RealmDAL.h */,
-				3A910FEF2131E0B9004AE3C0 /* RealmDAL.m */,
-				3A374F082093754200E5A652 /* Dal.h */,
-				3A374F092093754200E5A652 /* Dal.m */,
 				3A224CB22095E13600075457 /* ProjectNSO.h */,
 				3A224CB32095E13600075457 /* ProjectNSO.m */,
 				3A374F132093877F00E5A652 /* PoiNSO.h */,
@@ -615,11 +605,9 @@
 				3A9F73AC20A36A1D00D61666 /* PaymentDataEntryVC.m in Sources */,
 				3A6349432129C61500BE53FC /* ActivityImageCell.m in Sources */,
 				3AB915EC20CD972F001A08A9 /* ImagePickerVC.m in Sources */,
-				3A374F0A2093754200E5A652 /* Dal.m in Sources */,
 				3A374EF420936A9600E5A652 /* main.m in Sources */,
 				3ACDD0F4213858B00017E765 /* CountryRLM.m in Sources */,
 				3A9EA18620AE17DF0052CC4F /* ScheduleBackgroundView.m in Sources */,
-				3A910FF02131E0B9004AE3C0 /* RealmDAL.m in Sources */,
 				3A224CAC2094736200075457 /* SearchResultListCell.m in Sources */,
 				3AAB60C520FCFEA600A22047 /* NearbyPoiNSO.m in Sources */,
 				3A3075DE21220446007D53C9 /* HCSStarRatingView.m in Sources */,

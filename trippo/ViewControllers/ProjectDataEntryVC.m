@@ -495,7 +495,7 @@
 /*
  created date:      07/10/2018
  last modified:     07/10/2018
- remarks:
+ remarks:           Obtain flag of country where Poi is located.
  */
 - (NSString *)emojiFlagForISOCountryCode:(NSString *)countryCode {
     NSAssert(countryCode.length == 2, @"Expecting ISO country code");

@@ -107,10 +107,12 @@
     if (self.SegmentWikiLanguageOption.selectedSegmentIndex == 0) {
         NSLocale *theLocale = [NSLocale currentLocale];
         NSString *countryCode = [theLocale objectForKey:NSLocaleCountryCode];
-        Country = [AppDelegateDef.Db GetCountryByCode:countryCode];
+        
+        
+        //Country = [AppDelegateDef.Db GetCountryByCode:countryCode];
         language = Country.language;
     } else if (self.SegmentWikiLanguageOption.selectedSegmentIndex == 1) {
-        Country = [AppDelegateDef.Db GetCountryByCode:self.PointOfInterest.countrycode];
+        //Country = [AppDelegateDef.Db GetCountryByCode:self.PointOfInterest.countrycode];
         language = Country.language;
     } else {
         language = @"en";

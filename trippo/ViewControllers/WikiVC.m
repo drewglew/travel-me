@@ -28,23 +28,21 @@
     NSString *documentDirectory = [paths objectAtIndex:0];
     
     /*
-    NSArray *parms = [self.PointOfInterest.wikititle componentsSeparatedByString:@"~"];
-    NSString *url = [NSString stringWithFormat:@"https://%@.wikipedia.org/api/rest_v1/page/media/%@",[parms objectAtIndex:0] , [parms objectAtIndex:1]];
-    
-    (self.PointOfInterest.wikititle)
-    */
+     NSArray *parms = [self.PointOfInterest.wikititle componentsSeparatedByString:@"~"];
+     NSString *url = [NSString stringWithFormat:@"https://%@.wikipedia.org/api/rest_v1/page/media/%@",[parms objectAtIndex:0] , [parms objectAtIndex:1]];
+     
+     (self.PointOfInterest.wikititle)
+     */
     
     NSString *wikiDataFilePath = [documentDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/WikiDocs/%@.pdf",self.PointOfInterest.key]];
     
-    NSLocale *theLocale = [NSLocale currentLocale];
-    NSString *countryCode = [theLocale objectForKey:NSLocaleCountryCode];
-    CountryNSO *HomeCountry = [AppDelegateDef.Db GetCountryByCode:countryCode];
+    NSString *homeCountryCode = self.PointOfInterest.countrycode;
 
     if (![fileManager fileExistsAtPath:wikiDataFilePath]){
         /* generate a PDF of WikiPage */
-       if ([self checkInternet]) {
+        if ([self checkInternet]) {
             NSString *TitleText = [self.PointOfInterest.name stringByReplacingOccurrencesOfString:@" " withString:@"_"];
-            [self MakeWikiFile :TitleText :wikiDataFilePath :HomeCountry.language];
+            [self MakeWikiFile :TitleText :wikiDataFilePath :[AppDelegateDef.CountryDictionary objectForKey:homeCountryCode]];
         } else {
             NSLog(@"Device is not connected to the Internet");
         }
@@ -59,7 +57,7 @@
     
     self.ButtonBack.layer.cornerRadius = 25;
     self.ButtonBack.clipsToBounds = YES;
-
+    
     self.ButtonSearchByName.layer.cornerRadius = 25;
     self.ButtonSearchByName.clipsToBounds = YES;
     self.ButtonSearchByName.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
@@ -67,6 +65,7 @@
     self.ButtonSearchByLocation.layer.cornerRadius = 25;
     self.ButtonSearchByLocation.clipsToBounds = YES;
     self.ButtonSearchByLocation.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
     
     
     // Do any additional setup after loading the view.
@@ -187,7 +186,7 @@ NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
 
 /*
  created date:      15/06/2018
- last modified:     07/08/2018
+ last modified:     09/10/2018
  remarks:
  */
 - (IBAction)UpdateWikiPagePressed:(id)sender {
@@ -204,21 +203,17 @@ NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
         NSError *error = nil;
         [fileManager removeItemAtPath:wikiDataFilePath error:&error];
         
-        CountryNSO *Country;
+        NSString *PreferredLanguage;
         if (self.SegmentLanguageOption.selectedSegmentIndex == 0) {
-            
-            NSLocale *theLocale = [NSLocale currentLocale];
-            NSString *countryCode = [theLocale objectForKey:NSLocaleCountryCode];
-            Country = [AppDelegateDef.Db GetCountryByCode:countryCode];
-        }
-        else if (self.SegmentLanguageOption.selectedSegmentIndex == 1) {
-            Country = [AppDelegateDef.Db GetCountryByCode:self.PointOfInterest.countrycode];
+            PreferredLanguage = [[NSLocale preferredLanguages] objectAtIndex:0];
+        } else if (self.SegmentLanguageOption.selectedSegmentIndex == 1) {
+            PreferredLanguage = [AppDelegateDef.CountryDictionary objectForKey:self.PointOfInterest.countrycode];
         } else {
-            Country = [AppDelegateDef.Db GetCountryByCode:@"GB"];
+            PreferredLanguage = @"en";
         }
         
         if (![fileManager fileExistsAtPath:wikiDataFilePath]){
-            [self SearchWikiDocByLocation :wikiDataFilePath  :Country.language];
+            [self SearchWikiDocByLocation :wikiDataFilePath  :PreferredLanguage];
         }
     } else {
         NSLog(@"Device is not connected to the Internet");
@@ -228,7 +223,7 @@ NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
 
 /*
  created date:      16/06/2018
- last modified:     19/07/2018
+ last modified:     09/10/2018
  remarks:
  */
 - (IBAction)UpdateWikiPageByTitlePressed:(id)sender {
@@ -245,25 +240,23 @@ NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
         NSError *error = nil;
         [fileManager removeItemAtPath:wikiDataFilePath error:&error];
         
-        CountryNSO *Country;
-        if (self.SegmentLanguageOption.selectedSegmentIndex == 0) {
+        NSString *PreferredLanguage;
         
-            NSLocale *theLocale = [NSLocale currentLocale];
-            NSString *countryCode = [theLocale objectForKey:NSLocaleCountryCode];
-            Country = [AppDelegateDef.Db GetCountryByCode:countryCode];
+        if (self.SegmentLanguageOption.selectedSegmentIndex == 0) {
+            PreferredLanguage = [[NSLocale preferredLanguages] objectAtIndex:0];
         } else if (self.SegmentLanguageOption.selectedSegmentIndex == 1) {
-            Country = [AppDelegateDef.Db GetCountryByCode:self.PointOfInterest.countrycode];
+            PreferredLanguage = [AppDelegateDef.CountryDictionary objectForKey:self.PointOfInterest.countrycode];
         } else {
-            Country = [AppDelegateDef.Db GetCountryByCode:@"GB"];
+            PreferredLanguage = @"en";
         }
         
         NSString *TitleText = [self.PointOfInterest.name stringByReplacingOccurrencesOfString:@" " withString:@"_"];
 
-        self.PointOfInterest.wikititle = [NSString stringWithFormat:@"%@~%@",Country.language,TitleText];
+        self.PointOfInterest.wikititle = [NSString stringWithFormat:@"%@~%@",PreferredLanguage,TitleText];
         
         [self.delegate updatePoiFromWikiActvity :self.PointOfInterest];
 
-        [self MakeWikiFile :TitleText :wikiDataFilePath :Country.language];
+        [self MakeWikiFile :TitleText :wikiDataFilePath :PreferredLanguage];
     } else {
         NSLog(@"Device is not connected to the Internet");
     }
