@@ -11,4 +11,5 @@
 
 @interface ToolBoxNSO : NSObject
 +(UIImage *)imageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize;
++(NSString*)PrettyDateDifference :(NSDate*)Start :(NSDate*)End :(NSString*) PostFixText;
 @end

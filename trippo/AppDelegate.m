@@ -27,6 +27,7 @@
     //self.Db = [[Dal alloc] init];
     NSLocale *theLocale = [NSLocale currentLocale];
     self.HomeCurrencyCode = [theLocale objectForKey:NSLocaleCurrencyCode];
+    self.HomeCountryCode = [theLocale objectForKey:NSLocaleCountryCode];
     self.MeasurementSystem = [theLocale objectForKey:NSLocaleMeasurementSystem];
     self.MetricSystem = [theLocale objectForKey:NSLocaleUsesMetricSystem];
     self.poiitems = [[NSMutableArray alloc] init];

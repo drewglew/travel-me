@@ -31,10 +31,6 @@
     else
         NSLog(@"Device is not connected to the Internet");
     
-    self.ButtonBack.layer.cornerRadius = 25;
-    self.ButtonBack.clipsToBounds = YES;
-    self.ButtonBack.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-   
     self.TableViewNearbyPoi.delegate = self;
     self.TableViewNearbyPoi.rowHeight = 100;
     // Do any additional setup after loading the view.
@@ -94,31 +90,28 @@
     
 }
 
+-(UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
+}
+
 /*
  created date:      16/07/2018
- last modified:     16/07/2018
+ last modified:     11/10/2018
  remarks:  calls the wiki API and gets Array of results
  */
 -(void) LoadNearbyPoiItemsData {
     self.nearbyitems = [[NSMutableArray alloc] init];
-    CountryNSO *Country;
-    NSString *language;
     
+    NSString *PreferredLanguage;
     if (self.SegmentWikiLanguageOption.selectedSegmentIndex == 0) {
-        NSLocale *theLocale = [NSLocale currentLocale];
-        NSString *countryCode = [theLocale objectForKey:NSLocaleCountryCode];
-        
-        
-        //Country = [AppDelegateDef.Db GetCountryByCode:countryCode];
-        language = Country.language;
+        PreferredLanguage = [AppDelegateDef.CountryDictionary objectForKey:AppDelegateDef.HomeCountryCode];
     } else if (self.SegmentWikiLanguageOption.selectedSegmentIndex == 1) {
-        //Country = [AppDelegateDef.Db GetCountryByCode:self.PointOfInterest.countrycode];
-        language = Country.language;
+        PreferredLanguage = [AppDelegateDef.CountryDictionary objectForKey:self.PointOfInterest.countrycode];
     } else {
-        language = @"en";
+        PreferredLanguage = @"en";
     }
-        
-        
+  
     /*
      Obtain Wiki records based on coordinates & local language.  (radius is in meters, we should use same range as type used to search photos)
      https://en.wikipedia.org/w/api.php?action=query&list=geosearch&gsradius=1000&gscoord=52.5208626606277|13.4094035625458&format=json
@@ -127,7 +120,7 @@
      https://en.wikipedia.org/w/api.php?action=query&titles=Göteborg&redirects&format=jsonfm&formatversion=2
      */
     
-    NSString *url = [NSString stringWithFormat:@"https://%@.wikipedia.org/w/api.php?action=query&list=geosearch&gsprop=type|name|dim|country|region|globe&gsradius=10000&gscoord=%@|%@&format=json&redirects&gslimit=120",language ,self.PointOfInterest.lat, self.PointOfInterest.lon];
+    NSString *url = [NSString stringWithFormat:@"https://%@.wikipedia.org/w/api.php?action=query&list=geosearch&gsprop=type|name|dim|country|region|globe&gsradius=10000&gscoord=%@|%@&format=json&redirects&gslimit=120",PreferredLanguage ,self.PointOfInterest.lat, self.PointOfInterest.lon];
     
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     [self fetchFromWikiApi:url withDictionary:^(NSDictionary *data) {
@@ -141,7 +134,7 @@
         for (NSDictionary *item in geosearch) {
             NearbyPoiNSO *poi = [[NearbyPoiNSO alloc] init];
             
-            poi.wikititle = [NSString stringWithFormat:@"%@~%@",language,[[item valueForKey:@"title"] stringByReplacingOccurrencesOfString:@" " withString:@"_"]];
+            poi.wikititle = [NSString stringWithFormat:@"%@~%@",PreferredLanguage,[[item valueForKey:@"title"] stringByReplacingOccurrencesOfString:@" " withString:@"_"]];
             poi.title = [item valueForKey:@"title"];
             poi.dist = [item valueForKey:@"dist"];
             poi.Coordinates = CLLocationCoordinate2DMake([[item valueForKey:@"lat"] doubleValue], [[item valueForKey:@"lon"] doubleValue]);

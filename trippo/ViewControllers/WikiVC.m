@@ -36,13 +36,11 @@
     
     NSString *wikiDataFilePath = [documentDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/WikiDocs/%@.pdf",self.PointOfInterest.key]];
     
-    NSString *homeCountryCode = self.PointOfInterest.countrycode;
-
     if (![fileManager fileExistsAtPath:wikiDataFilePath]){
         /* generate a PDF of WikiPage */
         if ([self checkInternet]) {
             NSString *TitleText = [self.PointOfInterest.name stringByReplacingOccurrencesOfString:@" " withString:@"_"];
-            [self MakeWikiFile :TitleText :wikiDataFilePath :[AppDelegateDef.CountryDictionary objectForKey:homeCountryCode]];
+            [self MakeWikiFile :TitleText :wikiDataFilePath :[AppDelegateDef.CountryDictionary objectForKey:AppDelegateDef.HomeCountryCode]];
         } else {
             NSLog(@"Device is not connected to the Internet");
         }
@@ -54,26 +52,17 @@
     }
     
     self.webView.hidden=false;
-    
-    self.ButtonBack.layer.cornerRadius = 25;
-    self.ButtonBack.clipsToBounds = YES;
-    
-    self.ButtonSearchByName.layer.cornerRadius = 25;
-    self.ButtonSearchByName.clipsToBounds = YES;
-    self.ButtonSearchByName.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    self.ButtonSearchByLocation.layer.cornerRadius = 25;
-    self.ButtonSearchByLocation.clipsToBounds = YES;
-    self.ButtonSearchByLocation.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    
-    
     // Do any additional setup after loading the view.
+}
+
+-(UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
 }
 
 /*
  created date:      13/06/2018
- last modified:     14/07/2018
+ last modified:     12/10/2018
  remarks:  search by name first?  if nothing found then by closest location?
  */
 -(bool)SearchWikiDocByLocation :(NSString *)wikiPathName :(NSString *)language {
@@ -103,10 +92,14 @@
             for (NSDictionary *item in geosearch) {
 
                 titleText = [[item valueForKey:@"title"] stringByReplacingOccurrencesOfString:@" " withString:@"_"];
-                self.PointOfInterest.wikititle =  [NSString stringWithFormat:@"%@~%@",language,titleText];
-                [self.delegate updatePoiFromWikiActvity :self.PointOfInterest];
-                [self MakeWikiFile:titleText :wikiPathName :language];
                 
+                dispatch_async(dispatch_get_main_queue(), ^(void){
+                    self.PointOfInterest.wikititle =  [NSString stringWithFormat:@"%@~%@",language,titleText];
+                    
+                    [self.delegate updatePoiFromWikiActvity :self.PointOfInterest];
+                    [self MakeWikiFile:titleText :wikiPathName :language];
+                });
+                    
                 /*
                  https://en.wikipedia.org/api/rest_v1/page/pdf/Berlin_Alexanderplatz_station
                  */
@@ -205,7 +198,7 @@ NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
         
         NSString *PreferredLanguage;
         if (self.SegmentLanguageOption.selectedSegmentIndex == 0) {
-            PreferredLanguage = [[NSLocale preferredLanguages] objectAtIndex:0];
+            PreferredLanguage = [AppDelegateDef.CountryDictionary objectForKey:AppDelegateDef.HomeCountryCode];
         } else if (self.SegmentLanguageOption.selectedSegmentIndex == 1) {
             PreferredLanguage = [AppDelegateDef.CountryDictionary objectForKey:self.PointOfInterest.countrycode];
         } else {
@@ -223,7 +216,7 @@ NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
 
 /*
  created date:      16/06/2018
- last modified:     09/10/2018
+ last modified:     12/10/2018
  remarks:
  */
 - (IBAction)UpdateWikiPageByTitlePressed:(id)sender {
@@ -241,9 +234,8 @@ NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
         [fileManager removeItemAtPath:wikiDataFilePath error:&error];
         
         NSString *PreferredLanguage;
-        
         if (self.SegmentLanguageOption.selectedSegmentIndex == 0) {
-            PreferredLanguage = [[NSLocale preferredLanguages] objectAtIndex:0];
+            PreferredLanguage = [AppDelegateDef.CountryDictionary objectForKey:AppDelegateDef.HomeCountryCode];
         } else if (self.SegmentLanguageOption.selectedSegmentIndex == 1) {
             PreferredLanguage = [AppDelegateDef.CountryDictionary objectForKey:self.PointOfInterest.countrycode];
         } else {

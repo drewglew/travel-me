@@ -51,13 +51,11 @@
     [self.PickerCurrencies setValue:[UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0] forKey:@"textColor"];
     
     [self.PickerCurrencies selectRow:selectedRow inComponent:0 animated:YES];
-    
-    self.ButtonCancel.layer.cornerRadius = 25;
-    self.ButtonCancel.clipsToBounds = YES;
-    self.ButtonSelect.layer.cornerRadius = 25;
-    self.ButtonSelect.clipsToBounds = YES;
-    
-    
+}
+
+-(UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
 }
 
 - (void)didReceiveMemoryWarning {

@@ -24,11 +24,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.CollectionViewProjects.delegate = self;
-    self.editmode = false;
     
-    self.ButtonBack.layer.cornerRadius = 25;
-    self.ButtonBack.clipsToBounds = YES;
-    self.ButtonBack.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    self.editmode = true;
     
     /* user selected specific option from startup view */
     
@@ -42,17 +39,29 @@
     self.ImageCollection = [[NSMutableArray alloc] init];
     
     [self LoadSupportingData];
+    
+ 
+    
+    
 }
 
 
+-(UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
+}
+
 /*
  created date:      29/04/2018
- last modified:     09/09/2018
+ last modified:     20/10/2018
  remarks:
  */
 -(void) LoadSupportingData {
     /* 1. Get Images from file. */
     self.tripcollection = [TripRLM allObjects];
+    
+    
+    
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *imagesDirectory = [paths objectAtIndex:0];
@@ -120,10 +129,7 @@
         if (trip.startdt != nil) {
             NSDateFormatter *dtformatter = [[NSDateFormatter alloc] init];
             [dtformatter setDateFormat:@"EEE, dd MMM HH:mm"];
-            cell.LabelDateRange.text = [NSString stringWithFormat:@"%@\n%@",[dtformatter stringFromDate:trip.startdt], [dtformatter stringFromDate:trip.enddt]];
-        } else {
-            cell.LabelDateRange.text = @"";
-        }
+        } 
         /*
         int TotalDataPoints = [project.numberofactivitiesonlyactual intValue] +  [project.numberofactivities intValue] + [project.numberofactivitiesonlyplanned intValue];
         
@@ -276,6 +282,7 @@
                 }
             }
         }
+        controller.realm = self.realm;
         controller.newitem = false;
         controller.deleteitem = true;
 
@@ -300,24 +307,38 @@
 }
 /*
  created date:      24/06/2018
- last modified:     29/08/2018
+ last modified:     20/10/2018
  remarks:
  */
 -(void)FilterProjectCollectionView {
+
+    NSDate* currentDate = [NSDate date];
     
-     NSDate* currentDate = [NSDate date];
+    self.tripcollection = [TripRLM allObjects];
     
     if (self.SegmentFilterProjects.selectedSegmentIndex == 0) {
         NSLog(@"All - %d",0);
-        self.tripcollection = [TripRLM allObjects];
     } else if (self.SegmentFilterProjects.selectedSegmentIndex == 1) {
         NSLog(@"Past - %d",1);
-        self.tripcollection = [TripRLM objectsInRealm:self.realm where:@"enddt < %@",currentDate];
+
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"enddt < %@", currentDate];
+        self.tripcollection = [self.tripcollection objectsWithPredicate:predicate];
+        
+        //self.tripcollection = [TripRLM objectsInRealm:self.realm where:@"enddt < %@",currentDate];
     } else if (self.SegmentFilterProjects.selectedSegmentIndex == 2) {
         NSLog(@"Future - %d",2);
-        self.tripcollection = [TripRLM objectsInRealm:self.realm where:@"startdt > %@",currentDate];
+        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"startdt > %@", currentDate];
+        self.tripcollection = [self.tripcollection objectsWithPredicate:predicate];
+        
+        
+        //self.tripcollection = [TripRLM objectsInRealm:self.realm where:@"startdt > %@",currentDate];
     } else {
-        self.tripcollection = [TripRLM objectsInRealm:self.realm where:@"startdt > %@ && enddt < %@",currentDate,currentDate];
+        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"startdt >= %@ AND enddt <= %@", currentDate,currentDate];
+        
+        self.tripcollection = [self.tripcollection objectsWithPredicate:predicate];
+        // date BETWEEN {%@, %@}
     }
     [self.CollectionViewProjects reloadData];
 }

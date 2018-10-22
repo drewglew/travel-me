@@ -7,9 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		038191F074ACF477D206CE17 /* libPods-trippo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBF13E1E7717E50216657244 /* libPods-trippo.a */; };
 		3A082776211B4EBE00363BB7 /* CurrencyPickerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A082775211B4EBE00363BB7 /* CurrencyPickerVC.m */; };
+		3A0BDE34217E299D006A746E /* TextFieldDatePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A0BDE33217E299D006A746E /* TextFieldDatePicker.m */; };
+		3A0BDE37217E4EDD006A746E /* OptionButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A0BDE36217E4EDD006A746E /* OptionButton.m */; };
 		3A12B8DA21010680006B621D /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A12B8D921010680006B621D /* SystemConfiguration.framework */; };
 		3A12B8DD21010BF4006B621D /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A12B8DC21010BF4006B621D /* Reachability.m */; };
+		3A1446E2217B9AD800A9C2C8 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A6295A92171CA76006B083C /* libc++.tbd */; };
 		3A224CA62094338D00075457 /* PoiImageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CA52094338D00075457 /* PoiImageCell.m */; };
 		3A224CAC2094736200075457 /* SearchResultListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CAB2094736200075457 /* SearchResultListCell.m */; };
 		3A224CAF2094946800075457 /* PoiImageNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CAE2094946800075457 /* PoiImageNSO.m */; };
@@ -21,7 +25,6 @@
 		3A224CC320976B1100075457 /* ActivityNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CC220976B1100075457 /* ActivityNSO.m */; };
 		3A224CC62097792800075457 /* PoiSearchVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CC52097792800075457 /* PoiSearchVC.m */; };
 		3A224CC92097950600075457 /* ActivityDataEntryVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CC82097950600075457 /* ActivityDataEntryVC.m */; };
-		3A224CCC2097B39F00075457 /* DatePickerRangeVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CCB2097B39F00075457 /* DatePickerRangeVC.m */; };
 		3A224CCF209A178700075457 /* ToolBoxNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CCE209A178700075457 /* ToolBoxNSO.m */; };
 		3A273B95214CD95E00E3793E /* PaymentRLM.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A273B94214CD95E00E3793E /* PaymentRLM.m */; };
 		3A291BD5213D917500FDFDFB /* ExchangeRateRLM.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A291BD4213D917500FDFDFB /* ExchangeRateRLM.m */; };
@@ -35,7 +38,6 @@
 		3A374EF420936A9600E5A652 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374EF320936A9600E5A652 /* main.m */; };
 		3A374EFC209372CC00E5A652 /* MenuVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374EFB209372CC00E5A652 /* MenuVC.m */; };
 		3A374F032093735300E5A652 /* ProjectListVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F022093735300E5A652 /* ProjectListVC.m */; };
-		3A374F0F2093764C00E5A652 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A374F0E2093764B00E5A652 /* libsqlite3.tbd */; };
 		3A374F12209386F700E5A652 /* PoiListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F11209386F700E5A652 /* PoiListCell.m */; };
 		3A374F152093877F00E5A652 /* PoiNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F142093877F00E5A652 /* PoiNSO.m */; };
 		3A374F1E2093939400E5A652 /* LocatorVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F1D2093939400E5A652 /* LocatorVC.m */; };
@@ -76,7 +78,6 @@
 		3AFE356D209E462500C46180 /* ScheduleVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AFE356C209E462500C46180 /* ScheduleVC.m */; };
 		3AFE3570209E4ADA00C46180 /* ScheduleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AFE356F209E4ADA00C46180 /* ScheduleCell.m */; };
 		3AFE3573209E504F00C46180 /* ScheduleNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AFE3572209E504F00C46180 /* ScheduleNSO.m */; };
-		C621BF53303E675219274A2B /* libPods-trippo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B5EAC31EC9C10AD7ADC30220 /* libPods-trippo.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -95,6 +96,10 @@
 /* Begin PBXFileReference section */
 		3A082774211B4EBE00363BB7 /* CurrencyPickerVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurrencyPickerVC.h; sourceTree = "<group>"; };
 		3A082775211B4EBE00363BB7 /* CurrencyPickerVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CurrencyPickerVC.m; sourceTree = "<group>"; };
+		3A0BDE32217E299D006A746E /* TextFieldDatePicker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TextFieldDatePicker.h; sourceTree = "<group>"; };
+		3A0BDE33217E299D006A746E /* TextFieldDatePicker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TextFieldDatePicker.m; sourceTree = "<group>"; };
+		3A0BDE35217E4EDD006A746E /* OptionButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OptionButton.h; sourceTree = "<group>"; };
+		3A0BDE36217E4EDD006A746E /* OptionButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OptionButton.m; sourceTree = "<group>"; };
 		3A12B8D921010680006B621D /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		3A12B8DB21010BF4006B621D /* Reachability.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		3A12B8DC21010BF4006B621D /* Reachability.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
@@ -120,8 +125,6 @@
 		3A224CC52097792800075457 /* PoiSearchVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PoiSearchVC.m; sourceTree = "<group>"; };
 		3A224CC72097950600075457 /* ActivityDataEntryVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActivityDataEntryVC.h; sourceTree = "<group>"; };
 		3A224CC82097950600075457 /* ActivityDataEntryVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ActivityDataEntryVC.m; sourceTree = "<group>"; };
-		3A224CCA2097B39F00075457 /* DatePickerRangeVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DatePickerRangeVC.h; sourceTree = "<group>"; };
-		3A224CCB2097B39F00075457 /* DatePickerRangeVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DatePickerRangeVC.m; sourceTree = "<group>"; };
 		3A224CCD209A178700075457 /* ToolBoxNSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ToolBoxNSO.h; sourceTree = "<group>"; };
 		3A224CCE209A178700075457 /* ToolBoxNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ToolBoxNSO.m; sourceTree = "<group>"; };
 		3A273B93214CD95E00E3793E /* PaymentRLM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PaymentRLM.h; sourceTree = "<group>"; };
@@ -145,8 +148,6 @@
 		3A374EFB209372CC00E5A652 /* MenuVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MenuVC.m; sourceTree = "<group>"; };
 		3A374F012093735300E5A652 /* ProjectListVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProjectListVC.h; sourceTree = "<group>"; };
 		3A374F022093735300E5A652 /* ProjectListVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ProjectListVC.m; sourceTree = "<group>"; };
-		3A374F0C2093762F00E5A652 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
-		3A374F0E2093764B00E5A652 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		3A374F10209386F700E5A652 /* PoiListCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PoiListCell.h; sourceTree = "<group>"; };
 		3A374F11209386F700E5A652 /* PoiListCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PoiListCell.m; sourceTree = "<group>"; };
 		3A374F132093877F00E5A652 /* PoiNSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PoiNSO.h; sourceTree = "<group>"; };
@@ -159,6 +160,7 @@
 		3A58B4BF211F534E00699008 /* TypeCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TypeCell.m; sourceTree = "<group>"; };
 		3A58B4C1211F547100699008 /* TypeNSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TypeNSO.h; sourceTree = "<group>"; };
 		3A58B4C2211F547100699008 /* TypeNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TypeNSO.m; sourceTree = "<group>"; };
+		3A6295A92171CA76006B083C /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		3A6349412129C61500BE53FC /* ActivityImageCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActivityImageCell.h; sourceTree = "<group>"; };
 		3A6349422129C61500BE53FC /* ActivityImageCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ActivityImageCell.m; sourceTree = "<group>"; };
 		3A63496E212F12AA00BE53FC /* SettingsVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingsVC.h; sourceTree = "<group>"; };
@@ -224,8 +226,8 @@
 		3AFE3571209E504F00C46180 /* ScheduleNSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScheduleNSO.h; sourceTree = "<group>"; };
 		3AFE3572209E504F00C46180 /* ScheduleNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScheduleNSO.m; sourceTree = "<group>"; };
 		610267118C76A96DC618F6D3 /* Pods-trippo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-trippo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-trippo/Pods-trippo.debug.xcconfig"; sourceTree = "<group>"; };
-		B5EAC31EC9C10AD7ADC30220 /* libPods-trippo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-trippo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB9BC9D6C304F161BD858309 /* Pods-trippo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-trippo.release.xcconfig"; path = "Pods/Target Support Files/Pods-trippo/Pods-trippo.release.xcconfig"; sourceTree = "<group>"; };
+		FBF13E1E7717E50216657244 /* libPods-trippo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-trippo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -236,8 +238,8 @@
 				3A12B8DA21010680006B621D /* SystemConfiguration.framework in Frameworks */,
 				3AB915F720D1979F001A08A9 /* WebKit.framework in Frameworks */,
 				3A81B509209D80B8005CABDA /* Photos.framework in Frameworks */,
-				3A374F0F2093764C00E5A652 /* libsqlite3.tbd in Frameworks */,
-				C621BF53303E675219274A2B /* libPods-trippo.a in Frameworks */,
+				038191F074ACF477D206CE17 /* libPods-trippo.a in Frameworks */,
+				3A1446E2217B9AD800A9C2C8 /* libc++.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -339,8 +341,6 @@
 				3A224CBC2095F1FD00075457 /* ActivityListVC.m */,
 				3A224CC72097950600075457 /* ActivityDataEntryVC.h */,
 				3A224CC82097950600075457 /* ActivityDataEntryVC.m */,
-				3A224CCA2097B39F00075457 /* DatePickerRangeVC.h */,
-				3A224CCB2097B39F00075457 /* DatePickerRangeVC.m */,
 				3AFE356B209E462500C46180 /* ScheduleVC.h */,
 				3AFE356C209E462500C46180 /* ScheduleVC.m */,
 				3AEE0189209F3BC600AE260E /* DirectionsVC.h */,
@@ -406,6 +406,10 @@
 				3AA4DA6721267FE900F7CAC9 /* CirclePart.m */,
 				3AA4DA692126807300F7CAC9 /* GraphView.h */,
 				3AA4DA6A2126807400F7CAC9 /* GraphView.m */,
+				3A0BDE32217E299D006A746E /* TextFieldDatePicker.h */,
+				3A0BDE33217E299D006A746E /* TextFieldDatePicker.m */,
+				3A0BDE35217E4EDD006A746E /* OptionButton.h */,
+				3A0BDE36217E4EDD006A746E /* OptionButton.m */,
 			);
 			path = GenericObjects;
 			sourceTree = "<group>";
@@ -413,12 +417,11 @@
 		3A374F0B2093762E00E5A652 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3A6295A92171CA76006B083C /* libc++.tbd */,
 				3A12B8D921010680006B621D /* SystemConfiguration.framework */,
 				3AB915F620D1979F001A08A9 /* WebKit.framework */,
 				3A81B508209D80B8005CABDA /* Photos.framework */,
-				3A374F0E2093764B00E5A652 /* libsqlite3.tbd */,
-				3A374F0C2093762F00E5A652 /* libsqlite3.0.tbd */,
-				B5EAC31EC9C10AD7ADC30220 /* libPods-trippo.a */,
+				FBF13E1E7717E50216657244 /* libPods-trippo.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -619,6 +622,7 @@
 				3AF785D6213129E400DD5A5B /* TripRLM.m in Sources */,
 				3AB915F220CDB3E5001A08A9 /* ImageNSO.m in Sources */,
 				3A273B95214CD95E00E3793E /* PaymentRLM.m in Sources */,
+				3A0BDE34217E299D006A746E /* TextFieldDatePicker.m in Sources */,
 				3AB915F520D1917B001A08A9 /* WikiVC.m in Sources */,
 				3A58B4C0211F534E00699008 /* TypeCell.m in Sources */,
 				3AB915EF20CD9BE4001A08A9 /* ImageCollectionCell.m in Sources */,
@@ -633,11 +637,11 @@
 				3A224CB72095E5D900075457 /* ProjectListCell.m in Sources */,
 				3A9F73A920A2444A00D61666 /* PaymentListingVC.m in Sources */,
 				3AFE3570209E4ADA00C46180 /* ScheduleCell.m in Sources */,
-				3A224CCC2097B39F00075457 /* DatePickerRangeVC.m in Sources */,
 				3A9F73B520A3784400D61666 /* PaymentListCell.m in Sources */,
 				3A374F212093D55500E5A652 /* PoiDataEntryVC.m in Sources */,
 				3A224CB42095E13600075457 /* ProjectNSO.m in Sources */,
 				3AAF154820A8AD9800F8DE0C /* InfoVC.m in Sources */,
+				3A0BDE37217E4EDD006A746E /* OptionButton.m in Sources */,
 				3A374EE620936A9300E5A652 /* AppDelegate.m in Sources */,
 				3AEE018B209F3BC700AE260E /* DirectionsVC.m in Sources */,
 				3A81B50C209D90CA005CABDA /* AlphaView.m in Sources */,
@@ -783,12 +787,34 @@
 			baseConfigurationReference = 610267118C76A96DC618F6D3 /* Pods-trippo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6QW2ZP6GTA;
 				INFOPLIST_FILE = trippo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-weak_library",
+					"/usr/lib/libc++.1.dylib",
+					"-l\"Realm\"",
+					"-l\"TOCropViewController\"",
+					"-l\"TesseractOCRiOS\"",
+					"-l\"c++\"",
+					"-l\"lept\"",
+					"-l\"realmcore-ios\"",
+					"-l\"stdc++\"",
+					"-l\"tesseract_all\"",
+					"-l\"z\"",
+					"-framework",
+					"\"Foundation\"",
+					"-framework",
+					"\"Security\"",
+					"-framework",
+					"\"UIKit\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = DREW.trippo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -802,12 +828,34 @@
 			baseConfigurationReference = DB9BC9D6C304F161BD858309 /* Pods-trippo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6QW2ZP6GTA;
 				INFOPLIST_FILE = trippo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-weak_library",
+					"/usr/lib/libc++.1.dylib",
+					"-l\"Realm\"",
+					"-l\"TOCropViewController\"",
+					"-l\"TesseractOCRiOS\"",
+					"-l\"c++\"",
+					"-l\"lept\"",
+					"-l\"realmcore-ios\"",
+					"-l\"stdc++\"",
+					"-l\"tesseract_all\"",
+					"-l\"z\"",
+					"-framework",
+					"\"Foundation\"",
+					"-framework",
+					"\"Security\"",
+					"-framework",
+					"\"UIKit\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = DREW.trippo;
 				PRODUCT_NAME = "$(TARGET_NAME)";

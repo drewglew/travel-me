@@ -11,6 +11,8 @@
 #import "AppDelegate.h"
 #import "DirectionsVC.h"
 #import "TripRLM.h"
+#import "TextFieldDatePicker.h"
+#import "ToolBoxNSO.h"
 
 @protocol ScheduleListDelegate <NSObject>
 @end
@@ -32,5 +34,8 @@
 @property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonReset;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonDirections;
-
+// below are used exclusively in the date picker input view
+@property (nonatomic, strong)IBOutlet UIDatePicker *datePicker;
+@property (nonatomic, strong)IBOutlet UITextField  *TextFieldDt;
+@property (nonatomic, strong)IBOutlet UILabel  *LabelDuration;
 @end

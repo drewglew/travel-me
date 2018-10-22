@@ -93,6 +93,11 @@
     
 }
 
+-(UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
+}
+
 - (IBAction)BackButtonPressed:(id)sender {
      [self dismissViewControllerAnimated:YES completion:Nil];
     

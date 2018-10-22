@@ -17,12 +17,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.MapView.delegate = self;
-    
-    self.ButtonBack.layer.cornerRadius = 25;
-    self.ButtonBack.clipsToBounds = YES;
-    self.ButtonBack.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    
     // Do any additional setup after loading the view.
 }
 
@@ -62,6 +56,12 @@
     }
     
 }
+
+-(UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
+}
+
 /*
  created date:      08/05/2018
  last modified:     09/10/2018

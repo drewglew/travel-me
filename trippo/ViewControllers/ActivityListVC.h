@@ -18,6 +18,7 @@
 #import "ActivityRLM.h"
 #import "TripRLM.h"
 #import "ImageCollectionRLM.h"
+#import "ToolboxNSO.h"
 
 @protocol ActivityListDelegate <NSObject>
 @end

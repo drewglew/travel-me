@@ -22,6 +22,8 @@
 @property (nonatomic) NSNumber *categoryid;
 @property (nonatomic) NSNumber *transportid;
 @property (nonatomic) NSNumber *sortorder;
+@property (assign) bool enddatesameasstart;
+@property ActivityRLM *activityitem;
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;
 @property (strong, nonatomic) TripRLM *trip;
 @property PoiRLM *poi;

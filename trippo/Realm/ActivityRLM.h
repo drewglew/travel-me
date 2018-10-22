@@ -17,6 +17,7 @@
 @property NSString *compondkey;  // 12345-67890~0
 @property NSString *name;
 @property NSString *privatenotes;
+@property NSString *reference;
 @property NSString *tripkey;
 @property NSString *poikey;
 @property PoiRLM *poi;

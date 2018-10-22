@@ -47,12 +47,6 @@
     self.TableViewPayment.sectionFooterHeight = 50+75;
     // Do any additional setup after loading the view.
     
-    self.ButtonAction.layer.cornerRadius = 25;
-    self.ButtonAction.clipsToBounds = YES;
-    self.ButtonBack.layer.cornerRadius = 25;
-    self.ButtonBack.clipsToBounds = YES;
-    self.ButtonBack.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
     __weak typeof(self) weakSelf = self;
     self.notification = [self.realm addNotificationBlock:^(NSString *note, RLMRealm *realm) {
         [weakSelf LoadPaymentData];
@@ -68,6 +62,11 @@
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self LoadPaymentData];
+}
+
+-(UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
 }
 
 /*

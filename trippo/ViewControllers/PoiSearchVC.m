@@ -61,22 +61,6 @@
         }
     }
     
-    self.ButtonNew.layer.cornerRadius = 25;
-    self.ButtonNew.clipsToBounds = YES;
-    self.ButtonBack.layer.cornerRadius = 25;
-    
-    self.ButtonBack.clipsToBounds = YES;
-    self.ButtonBack.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    
-    self.ButtonResetFilter.layer.cornerRadius = 25;
-    self.ButtonResetFilter.clipsToBounds = YES;
-    self.ButtonResetFilter.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    self.ButtonFilter.layer.cornerRadius = 25;
-    self.ButtonFilter.clipsToBounds = YES;
-    self.ButtonFilter.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-
     /* user selected specific option from startup view */
     __weak typeof(self) weakSelf = self;
     
@@ -121,7 +105,9 @@
                        @"Cat-Trek",
                        @"Cat-Venue",
                        @"Cat-Village",
-                       @"Cat-Zoo"
+                       @"Cat-Zoo",
+                       @"Cat-CarPark",
+                       @"Cat-PetrolStation"
                        ];
     
     
@@ -137,6 +123,11 @@
     lpgr.delaysTouchesBegan = YES;
     [self.CollectionViewTypes addGestureRecognizer:lpgr];
     
+}
+
+-(UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
 }
 
 /*
@@ -183,7 +174,7 @@
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
 
-    [UISearchBar appearance].tintColor = [UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0]; [[UITextField appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setDefaultTextAttributes:@{NSForegroundColorAttributeName: [UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0]}];
+    [UISearchBar appearance].tintColor = [UIColor colorWithRed:130.0f/255.0f green:190.0f/255.0f blue:234.0f/255.0f alpha:1.0]; [[UITextField appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setDefaultTextAttributes:@{NSForegroundColorAttributeName: [UIColor colorWithRed:130.0f/255.0f green:190.0f/255.0f blue:234.0f/255.0f alpha:1.0]}];
     
 }
 
@@ -202,12 +193,14 @@
     
     self.poifilteredcollection = [PoiRLM allObjects];
     
-    if (self.SegmentPoiFilterList.selectedSegmentIndex != 1) {
+    if (self.SegmentPoiFilterList.selectedSegmentIndex != 1 && self.SegmentPoiFilterList.selectedSegmentIndex != 3) {
         /* get distinct poi items from activities */
         NSArray *keypaths  = [[NSArray alloc] initWithObjects:@"poikey", nil];
+        
         RLMResults<ActivityRLM*> *used = [[ActivityRLM allObjects] distinctResultsUsingKeyPaths:keypaths];
         
         NSMutableArray *poiitems = [[NSMutableArray alloc] init];
+        
         for (ActivityRLM *usedPois in used) {
             [poiitems addObject:usedPois.poikey];
         }
@@ -224,6 +217,23 @@
             self.poifilteredcollection = [self.poifilteredcollection objectsWithPredicate:[NSPredicate predicateWithFormat:@"key IN %@",typeset]];
             
         }
+    } else if (self.SegmentPoiFilterList.selectedSegmentIndex == 3) {
+        NSLog(@"visited");
+        
+        NSArray *keypaths  = [[NSArray alloc] initWithObjects:@"poikey", nil];
+        
+        RLMResults<ActivityRLM*> *used = [[ActivityRLM objectsWhere:@"state = 1"]  distinctResultsUsingKeyPaths:keypaths];
+        
+        NSMutableArray *poiitems = [[NSMutableArray alloc] init];
+        
+        for (ActivityRLM *usedPois in used) {
+            [poiitems addObject:usedPois.poikey];
+        }
+        NSSet *typeset = [[NSSet alloc] initWithArray:poiitems];
+        
+        self.poifilteredcollection = [self.poifilteredcollection objectsWithPredicate:[NSPredicate predicateWithFormat:@"key IN %@",typeset]];
+        
+        
     }
 
     if (self.TripItem != nil && self.SegmentCountries.selectedSegmentIndex == 0) {
@@ -408,7 +418,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     31/08/2018
+ last modified:     20/10/2018
  remarks:
  */
 - (PoiListCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -441,8 +451,9 @@
     
     
     cell.AdministrativeArea.text = poi.administrativearea;
-    cell.LabelFlag.text = [self emojiFlagForISOCountryCode:poi.countrycode];
-    
+    if (poi.countrycode != nil && ![poi.countrycode isEqualToString:@""]) {
+        cell.LabelFlag.text = [self emojiFlagForISOCountryCode:poi.countrycode];
+    }
     
     cell.ImageCategory.image = [UIImage imageNamed:[self.TypeItems objectAtIndex:[cell.poi.categoryid integerValue]]];
     

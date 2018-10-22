@@ -23,7 +23,7 @@ int Adjustment;
 
 /*
  created date:      27/04/2018
- last modified:     08/09/2018
+ last modified:     21/10/2018
  remarks:           Simple delete action that initially can be triggered by user on a button.
  */
 - (void)viewDidLoad {
@@ -39,6 +39,9 @@ int Adjustment;
     // New item
     
     [self LocateTripContent];
+    
+
+    
     [self.CollectionViewPreviewPanel reloadData];
     
     
@@ -99,20 +102,34 @@ int Adjustment;
 
 /*
  created date:      18/08/2018
- last modified:     31/08/2018
+ last modified:     21/10/2018
  remarks:
  */
 -(void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self.ActivityView stopAnimating];
     [self LoadFeaturedPoi];
+    
+    self.alltripitems = [TripRLM allObjects];
+    
+    for (TripRLM *item in self.alltripitems) {
+        RLMResults <ActivityRLM*> *activities = [ActivityRLM objectsWhere:@"tripkey = %@", item.key];
+        
+        NSDate *startdt = [activities minOfProperty:@"startdt"];
+        NSDate *enddt = [activities maxOfProperty:@"enddt"];
+        
+        [self.realm transactionWithBlock:^{
+            item.startdt = startdt;
+            item.enddt = enddt;
+        }];
+    }
 }
 
 
 
 /*
  created date:      15/08/2018
- last modified:     09/09/2018
+ last modified:     20/10/2018
  remarks:
  */
 -(void)LocateTripContent {
@@ -122,6 +139,7 @@ int Adjustment;
     NSString *imagesDirectory = [paths objectAtIndex:0];
     
     self.alltripitems = [TripRLM allObjects];
+  
     self.selectedtripitems = [[NSMutableArray alloc] init];
 
     NSDate* currentDate = [NSDate date];
@@ -258,15 +276,26 @@ int Adjustment;
 }
 
 
+-(UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleDefault;
+}
+
 /*
  created date:      18/08/2018
- last modified:     02/09/2018
+ last modified:     11/10/2018
  remarks:
  */
 -(void) LoadFeaturedPoi {
     
-    RLMResults *poicollection = [PoiRLM allObjects];
+    NSArray *types = [NSArray arrayWithObjects: @2,@3,@7,@8,@9,@10,@12,@13,@15,@16,@17,@18,@19,@20,@21,@23,@24,@25,@26,@28,@30,@31,@33,@35,@36,nil];
     
+    NSSet *typeset = [[NSSet alloc] initWithArray:types];
+    
+    RLMResults *poicollection = [[PoiRLM allObjects] objectsWithPredicate:[NSPredicate predicateWithFormat:@"categoryid IN %@",typeset]];
+    
+    //RLMResults *poicollection = [PoiRLM allObjects];
+ 
     if (poicollection.count==0) { return; }
     int featuredIndex = arc4random_uniform((int)poicollection.count);
     self.FeaturedPoi = [poicollection objectAtIndex:featuredIndex];

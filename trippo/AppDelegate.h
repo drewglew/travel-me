@@ -13,6 +13,7 @@
 @property (strong, nonatomic) UIWindow *window;
 @property (nonatomic) NSString *databasename;
 @property (nonatomic) NSString *HomeCurrencyCode;
+@property (nonatomic) NSString *HomeCountryCode;
 @property (nonatomic) NSString *MeasurementSystem;
 @property (assign) bool MetricSystem;
 @property (strong, nonatomic) NSMutableArray *poiitems;

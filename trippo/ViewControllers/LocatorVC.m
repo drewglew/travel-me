@@ -57,19 +57,6 @@ MKLocalSearchResponse *results;
     txfSearchField.layer.cornerRadius = 5;
     txfSearchField.layer.masksToBounds = true;
     
-    
-    self.ButtonBack.layer.cornerRadius = 25;
-    self.ButtonBack.clipsToBounds = YES;
-    //self.ButtonBack.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    self.ButtonNext.layer.cornerRadius = 25;
-    self.ButtonNext.clipsToBounds = YES;
-    
-    self.ButtonSkip.layer.cornerRadius = 25;
-    self.ButtonSkip.clipsToBounds = YES;
-
-    self.ButtonClear.layer.cornerRadius = 25;
-    self.ButtonClear.clipsToBounds = YES;
-    
     self.TableViewSearchResult.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 
 }
@@ -78,6 +65,12 @@ MKLocalSearchResponse *results;
     [super viewDidDisappear:animated];
 
 }
+
+-(UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
+}
+
 
 /*
  created date:      11/05/2018

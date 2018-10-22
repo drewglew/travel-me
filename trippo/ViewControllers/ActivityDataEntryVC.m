@@ -34,7 +34,7 @@ int BlurredImageViewPresentedHeight=60;
     
     self.TextViewNotes.layer.cornerRadius=8.0f;
     self.TextViewNotes.layer.masksToBounds=YES;
-    self.TextViewNotes.layer.borderColor=[[UIColor colorWithRed:246.0f/255.0f green:247.0f/255.0f blue:235.0f/255.0f alpha:1.0]CGColor];
+    self.TextViewNotes.layer.borderColor=[[UIColor colorWithRed:175.0f/255.0f green:46.0f/255.0f blue:17.0f/255.0f alpha:1.0]CGColor];
     self.TextViewNotes.layer.borderWidth= 1.0f;
     
     self.ViewSelectedKey.layer.cornerRadius=28;
@@ -80,7 +80,9 @@ int BlurredImageViewPresentedHeight=60;
                                 @10000, // trekking, 33
                                 @150, // venue, 34
                                 @1000, // village 35
-                                @1000 // zoo, 36
+                                @1000, // zoo, 36
+                                @250, // car park, 37
+                                @100 // fuel pump, 38
                                 ];
     
     NSDate *today = [NSDate date];
@@ -156,38 +158,7 @@ int BlurredImageViewPresentedHeight=60;
     [self addDoneToolBarToKeyboard:self.TextViewNotes];
     self.TextFieldName.delegate = self;
     self.TextViewNotes.delegate = self;
-    
-    self.ButtonUploadImage.layer.cornerRadius = 25;
-    self.ButtonUploadImage.clipsToBounds = YES;
-    self.ButtonUploadImage.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    self.ButtonScan.layer.cornerRadius = 25;
-    self.ButtonScan.clipsToBounds = YES;
-    self.ButtonScan.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    self.ButtonPayment.layer.cornerRadius = 25;
-    self.ButtonPayment.clipsToBounds = YES;
-    self.ButtonPayment.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    
-    //self.ButtonCheckInOut.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    self.ButtonAction.layer.cornerRadius = 25;
-    self.ButtonAction.clipsToBounds = YES;
-    self.ButtonAction.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    self.ButtonDateRange.layer.cornerRadius = 25;
-    self.ButtonDateRange.clipsToBounds = YES;
-    self.ButtonDateRange.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    self.ButtonDirections.layer.cornerRadius = 25;
-    self.ButtonDirections.clipsToBounds = YES;
-    self.ButtonDirections.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    self.ButtonCancel.layer.cornerRadius = 25;
-    self.ButtonCancel.clipsToBounds = YES;
-    self.ButtonCancel.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
+ 
     if (self.Activity.state==[NSNumber numberWithInteger:1]) {
         self.ImageViewIdeaWidthConstraint.constant = 0;
         BlurredMainViewPresentedHeight = 140;
@@ -212,6 +183,11 @@ int BlurredImageViewPresentedHeight=60;
 
 }
 
+-(UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
+}
+
 /*
  created date:      01/05/2018
  last modified:     01/09/2018
@@ -221,6 +197,7 @@ int BlurredImageViewPresentedHeight=60;
     /* set text data */
     self.TextFieldName.text = self.Activity.name;
     self.TextViewNotes.text = self.Activity.privatenotes;
+    self.TextFieldReference.text = self.Activity.reference;
     //self.LabelStartDT.text = self.Activity.startdt;
     //self.Activity.enddt = self.Activity.enddt;
     [self FormatPrettyDates:self.Activity.startdt :self.Activity.enddt];
@@ -369,6 +346,7 @@ int BlurredImageViewPresentedHeight=60;
         /* working */
         self.Activity.name = self.TextFieldName.text;
         self.Activity.privatenotes = self.TextViewNotes.text;
+        self.Activity.reference = self.TextFieldReference.text;
         self.Activity.rating = [NSNumber numberWithFloat: self.ViewStarRating.value];
         self.Activity.modifieddt = [NSDate date];
         self.Activity.createddt = [NSDate date];
@@ -413,6 +391,7 @@ int BlurredImageViewPresentedHeight=60;
         [self.realm beginWriteTransaction];
         self.Activity.name = self.TextFieldName.text;
         self.Activity.privatenotes = self.TextViewNotes.text;
+        self.Activity.reference = self.TextFieldReference.text;
         self.Activity.rating = [NSNumber numberWithFloat: self.ViewStarRating.value];
         self.Activity.modifieddt = [NSDate date];
         
@@ -485,12 +464,14 @@ int BlurredImageViewPresentedHeight=60;
         controller.newitem = false;
         controller.readonlyitem = true;
         controller.fromproject = false;
-    } else if ([segue.identifier isEqualToString:@"ShowDateRangePicker"]){
+    }
+    
+    /*else if ([segue.identifier isEqualToString:@"ShowDateRangePicker"]){
         DatePickerRangeVC *controller = (DatePickerRangeVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.Activity = self.Activity;
         
-    } else if ([segue.identifier isEqualToString:@"ShowPayments"]){
+    }*/ else if ([segue.identifier isEqualToString:@"ShowPayments"]){
         PaymentListingVC *controller = (PaymentListingVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.ActivityItem = self.Activity;
@@ -512,10 +493,40 @@ int BlurredImageViewPresentedHeight=60;
 
 /*
  created date:      30/04/2018
- last modified:     30/04/2018
+ last modified:     21/10/2018
  remarks:
  */
 - (IBAction)BackPressed:(id)sender {
+    if (self.newitem) {
+        /* manage the images if any exist */
+        if (self.Activity.images.count>0) {
+            /* delete all */
+            [self.realm transactionWithBlock:^{
+                [self.realm deleteObjects:self.Activity.images];
+            }];
+        }
+    } else {
+        if (self.Activity.images.count > 0) {
+            NSInteger count = [self.Activity.images count];
+            [self.realm beginWriteTransaction];
+            for (NSInteger index = (count - 1); index >= 0; index--) {
+                ImageCollectionRLM *imgobject = self.Activity.images[index];
+                if (imgobject.ImageFlaggedDeleted) {
+                    imgobject.ImageFlaggedDeleted = false;
+                    NSLog(@"undone deleted image");
+                } else if ([imgobject.ImageFileReference isEqualToString:@""] || imgobject.ImageFileReference==nil) {
+                    /* here we add the attachment to file system and dB */
+                    [self.realm deleteObject:imgobject];
+                    NSLog(@"undone new image");
+                } else if (imgobject.UpdateImage) {
+                    /* we might swap it out as user has replaced the original file */
+                    imgobject.UpdateImage = false;
+                    NSLog(@"undone updated image");
+                }
+            }
+            [self.realm commitWriteTransaction];
+        }
+    }
     [self dismissViewControllerAnimated:YES completion:Nil];
 }
 
@@ -532,10 +543,25 @@ int BlurredImageViewPresentedHeight=60;
     [self.realm commitWriteTransaction];
     [self FormatPrettyDates:Start :End];
 }
+
+/*
+ created date:      22/10/2018
+ last modified:     22/10/2018
+ remarks:
+ */
+-(NSString*)FormatPrettyDate :(NSDate*)Dt {
+    NSDateFormatter *dateformatter = [[NSDateFormatter alloc] init];
+    [dateformatter setDateFormat:@"EEE, dd MMM yyyy"];
+    NSDateFormatter *timeformatter = [[NSDateFormatter alloc] init];
+    [timeformatter setDateFormat:@"HH:mm"];
+   return [NSString stringWithFormat:@"%@ %@",[dateformatter stringFromDate:Dt], [timeformatter stringFromDate:Dt]];
+}
+
+
 /*
  created date:      04/05/2018
- last modified:     04/05/2018
- remarks:
+ last modified:     22/10/2018
+ remarks:           Present the pretty date formats of start and end.  If activity is checked out give the user detail of how long instead of duplicated date.
  */
 -(void)FormatPrettyDates :(NSDate*)Start :(NSDate*)End {
     NSDateFormatter *dateformatter = [[NSDateFormatter alloc] init];
@@ -544,13 +570,24 @@ int BlurredImageViewPresentedHeight=60;
     [timeformatter setDateFormat:@"HH:mm"];
     
     self.LabelStartDT.text = [NSString stringWithFormat:@"%@ %@",[dateformatter stringFromDate:Start], [timeformatter stringFromDate:Start]];
-     self.LabelEndDT.text = [NSString stringWithFormat:@"%@ %@",[dateformatter stringFromDate:End], [timeformatter stringFromDate :End]];
+
+    // firstly test the start and end dates.  Remember the start and end are the same if activity is checked in.
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute fromDate:Start toDate:End options:0];
     
+    if ((components.day!=0 || components.hour!=0 || components.minute!=0) || self.Activity.state==[NSNumber numberWithInteger:0]) {
+        self.LabelEndDT.text = [NSString stringWithFormat:@"%@ %@",[dateformatter stringFromDate:End], [timeformatter stringFromDate :End]];
+    } else {
+        // now using same exponent, we can write out the time that has passed since user checked into activity.
+        NSString *PrettyDateDifference = [ToolBoxNSO PrettyDateDifference :Start :[NSDate date] :@" ago"];
+        if (![PrettyDateDifference isEqualToString:@""]) {
+            self.LabelEndDT.text = PrettyDateDifference;
+        }
+    }
 }
 
 /*
  created date:      13/05/2018
- last modified:     13/05/2018
+ last modified:     21/10/2018
  remarks:
  */
 - (IBAction)CheckInOutPressed:(id)sender {
@@ -561,6 +598,8 @@ int BlurredImageViewPresentedHeight=60;
         
         self.Activity.startdt = today;
         self.Activity.enddt = today;
+        
+        self.Activity.poi = self.Poi;
         
         if (self.newitem) self.Activity.key = [[NSUUID UUID] UUIDString];
         [self.realm beginWriteTransaction];
@@ -583,6 +622,7 @@ int BlurredImageViewPresentedHeight=60;
         [self dismissViewControllerAnimated:YES completion:Nil];
     }
 }
+
 
 
 -(void)addDoneToolBarToKeyboard:(UITextView *)textView
@@ -801,18 +841,23 @@ int BlurredImageViewPresentedHeight=60;
                                                   CGSize size = CGSizeMake(self.ScrollViewImage.frame.size.width * 2, self.ScrollViewImage.frame.size.width * 2);
                                                   
                                                   if (self.imagestate==1) {
+                                                      
                                                       ImageCollectionRLM *imgobject = [[ImageCollectionRLM alloc] init];
                                                       imgobject.key = [[NSUUID UUID] UUIDString];
                                                       
                                                       UIImage *image = [ToolBoxNSO imageWithImage:result scaledToSize:size];
+                                                      
                                                       if (self.Activity.images.count==0) {
                                                           imgobject.KeyImage = 1;
+                                                      } else {
+                                                          imgobject.KeyImage = 0;
                                                       }
-                                                      [self.ActivityImageDictionary setObject:image forKey:imgobject.key];
                                                       
                                                       [self.realm beginWriteTransaction];
-                                                      [self.Activity.images.realm addObject:imgobject];
+                                                      [self.Activity.images addObject:imgobject];
                                                       [self.realm commitWriteTransaction];
+                                                      
+                                                      [self.ActivityImageDictionary setObject:image forKey:imgobject.key];
                                                       
                                                   } else if (self.imagestate==2) {
                                                       
@@ -863,7 +908,7 @@ int BlurredImageViewPresentedHeight=60;
 
 /*
  created date:      19/08/2018
- last modified:     29/09/2018
+ last modified:     21/10/2018
  remarks:
  */
 
@@ -1388,6 +1433,182 @@ int BlurredImageViewPresentedHeight=60;
 
 }
 
+/*
+ created date:      22/10/2018
+ last modified:     22/10/2018
+ remarks:
+ */
+- (IBAction)DateSelectionPressed:(id)sender {
+    
+    self.datePickerStart = [[UIDatePicker alloc] initWithFrame:CGRectZero];
+    [self.datePickerStart setDatePickerMode:UIDatePickerModeDateAndTime];
+    [self.datePickerStart addTarget:self action:@selector(onDatePickerStartValueChanged:) forControlEvents:UIControlEventValueChanged];
+    [self.datePickerStart setDate:self.Activity.startdt];
+    [self.datePickerStart setMaximumDate:self.datePickerEnd.date];
+    
+    self.datePickerEnd = [[UIDatePicker alloc] initWithFrame:CGRectZero];
+    [self.datePickerEnd setDatePickerMode:UIDatePickerModeDateAndTime];
+    [self.datePickerEnd addTarget:self action:@selector(onDatePickerEndValueChanged:) forControlEvents:UIControlEventValueChanged];
+    [self.datePickerEnd setDate:self.Activity.enddt];
+    [self.datePickerEnd setMinimumDate:self.datePickerStart.date];
+    
+    /* set rectangles which control the position in new temporary view */
+    CGRect ViewRect = CGRectMake(0.0, 0.0, self.view.bounds.size.width, self.view.bounds.size.height);
+    CGRect CancelButtonRect = CGRectMake(10.0, 50.0, 50.0, 50.0);
+    CGRect NameLabelRect = CGRectMake(70.0, 50.0, self.view.bounds.size.width - 140, 30.0);
+    CGRect DurationLabelRect = CGRectMake(70.0, 90.0, self.view.bounds.size.width - 140, 10.0);
+    CGRect AcceptButtonRect = CGRectMake(self.view.bounds.size.width - 60.0, 50.0, 50.0, 50.0);
+    CGRect StartDtTextFieldRect = CGRectMake(10.0, 135.0, self.view.bounds.size.width - 20, 40.0);
+    CGRect BadgeImageViewRect = CGRectMake((self.view.bounds.size.width / 2) - 50, 200.0, 100, 100);
+    CGRect EndDtTextFieldRect = CGRectMake(10.0, 325.0, self.view.bounds.size.width - 20, 40.0);
+    
+    /* Temporary Image Badge setup - uses same image as the main image for activity */
+    UIImageView *BadgeImageView = [[UIImageView alloc] initWithFrame:BadgeImageViewRect];
+    [BadgeImageView setImage:self.ImagePicture.image];
+    [BadgeImageView setBackgroundColor:[UIColor yellowColor]];
+    BadgeImageView.layer.cornerRadius = 50;
+    BadgeImageView.clipsToBounds = YES;
+    
+    /* Temporary Cancel button setup - positioned top left of view */
+    UIButton *CancelButton = [[UIButton alloc] initWithFrame:CancelButtonRect];
+    CancelButton.backgroundColor = [UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0];
+    [CancelButton addTarget:self action:@selector(cancelButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [CancelButton setImage:[UIImage imageNamed:@"Cancel"] forState:UIControlStateNormal];
+    CancelButton.layer.cornerRadius = 25;
+    CancelButton.clipsToBounds = YES;
+    CancelButton.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    
+    /* Temporary Ok button */
+    UIButton *AcceptButton = [[UIButton alloc] initWithFrame:AcceptButtonRect];
+    AcceptButton.backgroundColor = [UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0];
+    [AcceptButton setTitle:@"OK" forState:UIControlStateNormal];
+    [AcceptButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [AcceptButton addTarget:self action:@selector(acceptButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    AcceptButton.layer.cornerRadius = 25;
+    AcceptButton.clipsToBounds = YES;
+    
+    /* TextField Start Date Time - used as an accessor for the datepicker input view */
+    self.TextFieldStartDt = [[TextFieldDatePicker alloc] initWithFrame:StartDtTextFieldRect];
+    self.TextFieldStartDt.text = [NSString stringWithFormat:@"%@", [self FormatPrettyDate :self.Activity.startdt]];
+    
+    [[self.TextFieldStartDt layer] setBorderColor:[[UIColor whiteColor] CGColor]];
+    [[self.TextFieldStartDt layer] setBorderWidth:2.3];
+    [[self.TextFieldStartDt layer] setCornerRadius:15];
+    [self.TextFieldStartDt setClipsToBounds: YES];
+    self.TextFieldStartDt.inputView = self.datePickerStart;
+    [self.TextFieldStartDt setTextAlignment:NSTextAlignmentCenter];
+    [self.TextFieldStartDt setTextColor:[UIColor whiteColor]];
+    
+    /* TextField End Date Time - used as an accessor for the datepicker input view */
+    self.TextFieldEndDt = [[TextFieldDatePicker alloc] initWithFrame:EndDtTextFieldRect];
+    self.TextFieldEndDt.text = [NSString stringWithFormat:@"%@", [self FormatPrettyDate :self.Activity.enddt]];
+    [[self.TextFieldEndDt layer] setBorderColor:[[UIColor whiteColor] CGColor]];
+    [[self.TextFieldEndDt layer] setBorderWidth:2.3];
+    [[self.TextFieldEndDt layer] setCornerRadius:15];
+    [self.TextFieldEndDt setClipsToBounds: YES];
+    self.TextFieldEndDt.inputView = self.datePickerEnd;
+    [self.TextFieldEndDt setTextAlignment:NSTextAlignmentCenter];
+    [self.TextFieldEndDt setTextColor:[UIColor whiteColor]];
+    
+    /* Label Duration - used to present the duration between the 2 dates */
+    self.LabelDuration = [[UILabel alloc] initWithFrame:DurationLabelRect];
+    self.LabelDuration.text = [ToolBoxNSO PrettyDateDifference:self.datePickerStart.date :self.datePickerEnd.date :@""];
+    [self.LabelDuration setFont:[UIFont systemFontOfSize:12.0]];
+    [self.LabelDuration setTextColor:[UIColor whiteColor]];
+    [self.LabelDuration setTextAlignment:NSTextAlignmentCenter];
+    
+    /* Label Name - temporarily used to present the name  */
+    UILabel *LabelName = [[UILabel alloc] initWithFrame:NameLabelRect];
+    LabelName.text = self.TextFieldName.text;
+    [LabelName setFont:[UIFont systemFontOfSize:16.0]];
+    [LabelName setTextColor:[UIColor whiteColor]];
+    [LabelName setTextAlignment:NSTextAlignmentCenter];
+   
+    /* Lastly the temporary view itself */
+    UIView* view = [[UIView alloc] initWithFrame:ViewRect];
+    view.backgroundColor = [UIColor colorWithRed:11.0f/255.0f green:110.0f/255.0f blue:79.0f/255.0f alpha:1.0];
+    [view addSubview:self.TextFieldStartDt];
+    [view addSubview:self.TextFieldEndDt];
+    [view addSubview:LabelName];
+    [view addSubview:BadgeImageView];
+    [view addSubview:CancelButton];
+    [view addSubview:AcceptButton];
+    [view addSubview:self.LabelDuration];
+    
+    [self addDoneToolBarToDatePicker:self.TextFieldStartDt];
+    [self addDoneToolBarToDatePicker:self.TextFieldEndDt];
+    
+    [self.view addSubview:view];
+
+}
+
+/*
+ created date:      22/10/2018
+ last modified:     22/10/2018
+ remarks:
+ */
+- (void)onDatePickerStartValueChanged:(UIDatePicker *)datePicker
+{
+    self.TextFieldStartDt.text = [self FormatPrettyDate:datePicker.date];
+    self.LabelDuration.text = [ToolBoxNSO PrettyDateDifference:datePicker.date :self.Activity.enddt :@""];
+    [self.datePickerEnd setMinimumDate:self.datePickerStart.date];
+}
+
+/*
+ created date:      22/10/2018
+ last modified:     22/10/2018
+ remarks:
+ */
+- (void)onDatePickerEndValueChanged:(UIDatePicker *)datePicker
+{
+    self.TextFieldEndDt.text = [self FormatPrettyDate:datePicker.date];
+    self.LabelDuration.text = [ToolBoxNSO PrettyDateDifference:self.Activity.startdt :datePicker.date :@""];
+    [self.datePickerStart setMaximumDate:self.datePickerEnd.date];
+}
+
+
+/*
+ created date:      22/10/2018
+ last modified:     22/10/2018
+ remarks:
+ */
+- (void)cancelButtonPressed:(UIButton *)sender {
+    NSLog(@"Button cancelled Pressed!");
+    [[self.view.subviews objectAtIndex:(self.view.subviews.count - 1)]removeFromSuperview];
+}
+
+/*
+ created date:      22/10/2018
+ last modified:     22/10/2018
+ remarks:
+ */
+- (void)acceptButtonPressed:(UIButton *)sender {
+    [self.realm beginWriteTransaction];
+    self.Activity.startdt = self.datePickerStart.date;
+    self.Activity.enddt = self.datePickerEnd.date;
+    [self.realm commitWriteTransaction];
+    
+    [self FormatPrettyDates:self.datePickerStart.date :self.datePickerEnd.date];
+    [[self.view.subviews objectAtIndex:(self.view.subviews.count - 1)]removeFromSuperview];
+}
+
+-(void)addDoneToolBarToDatePicker:(UITextField *)textField
+{
+    UIToolbar* doneToolbar = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, 320, 50)];
+    doneToolbar.barStyle = UIBarStyleDefault;
+    doneToolbar.items = [NSArray arrayWithObjects:
+                         [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
+                         [[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(doneButtonClickedDismissDatePicker)],
+                         nil];
+    [doneToolbar sizeToFit];
+    textField.inputAccessoryView = doneToolbar;
+}
+
+-(void)doneButtonClickedDismissDatePicker
+{
+    [self.TextFieldStartDt resignFirstResponder];
+    [self.TextFieldEndDt resignFirstResponder];
+}
 
 
 

@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "trippo/ViewControllers/LoginVC.m"
-            timestampString = "557562460.975825"
+            timestampString = "561930018.972245"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "131"
-            endingLineNumber = "131"
+            startingLineNumber = "134"
+            endingLineNumber = "134"
             landmarkName = "-RegisterPressed:"
             landmarkType = "7">
          </BreakpointContent>
@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "trippo/ViewControllers/LoginVC.m"
-            timestampString = "557562460.9759049"
+            timestampString = "561930018.9723099"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "134"
-            endingLineNumber = "134"
+            startingLineNumber = "137"
+            endingLineNumber = "137"
             landmarkName = "LoginVC"
             landmarkType = "3">
          </BreakpointContent>
@@ -42,11 +42,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "trippo/ViewControllers/LoginVC.m"
-            timestampString = "557562460.975963"
+            timestampString = "561930018.97236"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "68"
-            endingLineNumber = "68"
+            startingLineNumber = "71"
+            endingLineNumber = "71"
             landmarkName = "-LoginPressed:"
             landmarkType = "7">
          </BreakpointContent>
@@ -58,11 +58,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "trippo/ViewControllers/LoginVC.m"
-            timestampString = "557562460.976015"
+            timestampString = "561930018.972407"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "70"
-            endingLineNumber = "70"
+            startingLineNumber = "73"
+            endingLineNumber = "73"
             landmarkName = "-LoginPressed:"
             landmarkType = "7">
             <Locations>
@@ -74,11 +74,11 @@
                   moduleName = "trippo"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/drew/Development/iOS/Trippo/trippo/trippo/ViewControllers/LoginVC.m"
-                  timestampString = "560811063.567361"
+                  timestampString = "561931316.445752"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "70"
-                  endingLineNumber = "70"
+                  startingLineNumber = "73"
+                  endingLineNumber = "73"
                   offsetFromSymbolStart = "648">
                </Location>
                <Location
@@ -89,11 +89,11 @@
                   moduleName = "trippo"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/drew/Development/iOS/Trippo/trippo/trippo/ViewControllers/LoginVC.m"
-                  timestampString = "560811063.569575"
+                  timestampString = "561931316.447908"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "52"
-                  endingLineNumber = "52"
+                  startingLineNumber = "55"
+                  endingLineNumber = "55"
                   offsetFromSymbolStart = "24">
                </Location>
             </Locations>
@@ -138,11 +138,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "trippo/ViewControllers/ActivityDataEntryVC.m"
-            timestampString = "560811063.278802"
+            timestampString = "561931316.161353"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1161"
-            endingLineNumber = "1161"
+            startingLineNumber = "1205"
+            endingLineNumber = "1205"
             landmarkName = "-DeleteImageButtonPressed:"
             landmarkType = "7">
          </BreakpointContent>
@@ -154,11 +154,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "trippo/ViewControllers/PaymentDataEntryVC.m"
-            timestampString = "559083416.914731"
+            timestampString = "561931316.161424"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "363"
-            endingLineNumber = "363"
+            startingLineNumber = "357"
+            endingLineNumber = "357"
             landmarkName = "-GetExchangeRates"
             landmarkType = "7">
          </BreakpointContent>
@@ -170,11 +170,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "trippo/ViewControllers/PaymentListingVC.m"
-            timestampString = "560811063.278904"
+            timestampString = "561931316.161477"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "434"
-            endingLineNumber = "434"
+            startingLineNumber = "433"
+            endingLineNumber = "433"
             landmarkName = "-tableView:editActionsForRowAtIndexPath:"
             landmarkType = "7">
          </BreakpointContent>
@@ -218,11 +218,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "trippo/ViewControllers/ActivityDataEntryVC.m"
-            timestampString = "560811063.2789921"
+            timestampString = "561931316.1615601"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "927"
-            endingLineNumber = "927"
+            startingLineNumber = "971"
+            endingLineNumber = "971"
             landmarkName = "-imagePickerController:didFinishPickingMediaWithInfo:"
             landmarkType = "7">
          </BreakpointContent>
@@ -234,11 +234,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "trippo/ViewControllers/ScheduleVC.m"
-            timestampString = "560811063.279058"
+            timestampString = "561931316.161616"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "360"
-            endingLineNumber = "360"
+            startingLineNumber = "375"
+            endingLineNumber = "375"
             landmarkName = "ScheduleVC"
             landmarkType = "3">
          </BreakpointContent>
@@ -250,11 +250,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "trippo/ViewControllers/ScheduleVC.m"
-            timestampString = "560811063.279109"
+            timestampString = "561931316.161666"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "361"
-            endingLineNumber = "361"
+            startingLineNumber = "376"
+            endingLineNumber = "376"
             landmarkName = "ScheduleVC"
             landmarkType = "3">
          </BreakpointContent>
@@ -266,12 +266,140 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "trippo/ViewControllers/ActivityDataEntryVC.m"
-            timestampString = "560811063.279394"
+            timestampString = "561931316.161716"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1335"
-            endingLineNumber = "1335"
+            startingLineNumber = "1379"
+            endingLineNumber = "1379"
             landmarkName = "-ShowDirectionsPressed:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "trippo/ViewControllers/NearbyListingVC.m"
+            timestampString = "561931316.161767"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "64"
+            endingLineNumber = "64"
+            landmarkName = "-locationManager:didUpdateLocations:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "trippo/ViewControllers/NearbyListingVC.m"
+            timestampString = "561931316.1618119"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "46"
+            endingLineNumber = "46"
+            landmarkName = "-startUserLocationSearch"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "trippo/ViewControllers/WikiVC.m"
+            timestampString = "561931316.161857"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "224"
+            endingLineNumber = "224"
+            landmarkName = "-UpdateWikiPageByTitlePressed:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "trippo/ViewControllers/WikiVC.m"
+            timestampString = "561931316.1619101"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "127"
+            endingLineNumber = "127"
+            landmarkName = "-MakeWikiFile:::"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "trippo/AppDelegate.m"
+            timestampString = "561073552.395545"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "166"
+            endingLineNumber = "166"
+            landmarkName = "-ProcessImportFile"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "trippo/ViewControllers/LoginVC.m"
+            timestampString = "561930018.973881"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "33"
+            endingLineNumber = "33"
+            landmarkName = "-LoginPressed:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "trippo/ViewControllers/ProjectDataEntryVC.m"
+            timestampString = "561931316.162014"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "188"
+            endingLineNumber = "188"
+            landmarkName = "-ProjectActionPressed:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "trippo/ViewControllers/ActivityDataEntryVC.m"
+            timestampString = "561931316.162087"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "352"
+            endingLineNumber = "352"
+            landmarkName = "-ActionButtonPressed:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

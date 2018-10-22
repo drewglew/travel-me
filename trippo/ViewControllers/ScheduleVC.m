@@ -12,6 +12,8 @@
 
 @end
 
+NSIndexPath *activeCellIndexPath;
+
 @implementation ScheduleVC
 
 /*
@@ -31,22 +33,13 @@
         self.labelHeader.text = [NSString stringWithFormat:@"%@ - Actual Schedule", self.Trip.name];;
     }
     [self LoadScheduleData];
-    
-    
-    self.ButtonBack.layer.cornerRadius = 25;
-    self.ButtonBack.clipsToBounds = YES;
-    self.ButtonBack.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    self.ButtonReset.layer.cornerRadius = 25;
-    self.ButtonReset.clipsToBounds = YES;
-    self.ButtonReset.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    self.ButtonDirections.layer.cornerRadius = 25;
-    self.ButtonDirections.clipsToBounds = YES;
-    self.ButtonDirections.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
     // Do any additional setup after loading the view.
 }
 
+-(UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
+}
 
 /*
  created date:      28/04/2018
@@ -60,7 +53,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     06/10/2018
+ last modified:     22/10/2018
  remarks:
  */
 -(void) LoadScheduleData {
@@ -88,10 +81,12 @@
         itemBegin.name = activityobj.name;
         itemBegin.poi = [PoiRLM objectForPrimaryKey:activityobj.poikey];
         itemBegin.type = @"begin";
+        itemBegin.enddatesameasstart = false;
         itemBegin.transportid = [NSNumber numberWithInt:0]; // car
         itemBegin.sortorder = [NSNumber numberWithInt:SortOrder];
         itemBegin.Coordinates = CLLocationCoordinate2DMake([itemBegin.poi.lat doubleValue], [itemBegin.poi.lon doubleValue]);
         itemBegin.categoryid = itemBegin.poi.categoryid;
+        itemBegin.activityitem = activityobj;
         
         // try to get image reference.
         [self.scheduleitems addObject:itemBegin];
@@ -101,6 +96,14 @@
         itemEnd.name = activityobj.name;
         itemEnd.poi = itemBegin.poi;
         itemEnd.type = @"end";
+        itemEnd.activityitem = activityobj;
+        
+        NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute fromDate:activityobj.startdt toDate:activityobj.enddt options:0];
+        if (components.day==0 && components.hour==0 && components.minute==0) {
+            itemEnd.enddatesameasstart = true;
+        } else {
+            itemEnd.enddatesameasstart = false;
+        }
         itemBegin.transportid = [NSNumber numberWithInt:0]; // car
         itemEnd.sortorder = [NSNumber numberWithInt:SortOrder];
         itemEnd.Coordinates = CLLocationCoordinate2DMake([itemEnd.poi.lat doubleValue], [itemEnd.poi.lon doubleValue]);
@@ -133,16 +136,28 @@
         }
     }
     
+    [self RedrawHierarcy];
+    
+    self.LabelItemCounter.text = [NSString stringWithFormat:@"%lu Items",(unsigned long)self.scheduleitems.count];
+    [self.TableViewScheduleItems reloadData];
+}
+
+/*
+ created date:      21/10/2018
+ last modified:     21/10/2018
+ remarks:
+ */
+-(void) RedrawHierarcy {
     /* now sort the scheduleitems */
     NSSortDescriptor *sortDescriptorDate = [[NSSortDescriptor alloc] initWithKey:@"dt" ascending:YES];
     NSSortDescriptor *sortDescriptorOrder = [[NSSortDescriptor alloc] initWithKey:@"sortorder" ascending:YES];
-    
+
     [self.scheduleitems sortUsingDescriptors:@[sortDescriptorDate,sortDescriptorOrder]];
     self.MaxNbrOfHierarcyLevels=0;
     int index = 0;
     ScheduleNSO *LastSchedule = [[ScheduleNSO alloc] init];
     for (ScheduleNSO *schedule in self.scheduleitems) {
-
+        
         if([schedule.type isEqualToString:@"begin"]) {
             index ++;
             schedule.hierarcyindex = index;
@@ -159,10 +174,10 @@
             self.MaxNbrOfHierarcyLevels = schedule.hierarcyindex;
         }
     }
-    
-    self.LabelItemCounter.text = [NSString stringWithFormat:@"%lu Items",(unsigned long)self.scheduleitems.count];
-    [self.TableViewScheduleItems reloadData];
 }
+
+
+
 
 
 
@@ -432,7 +447,7 @@
 
 /*
  created date:      04/10/2018
- last modified:     05/10/2018
+ last modified:     22/10/2018
  remarks:           when badge is pressed present a view
  */
 -(void)ScheduleBadgePressed:(id)sender {
@@ -453,13 +468,13 @@
                                              preferredStyle:UIAlertControllerStyleAlert];
                 
                 NSString *key = cell.schedule.compondkey;
-                NSIndexPath *indexPath = [self.TableViewScheduleItems indexPathForCell:cell];
+                activeCellIndexPath = [self.TableViewScheduleItems indexPathForCell:cell];
                 // Remove end node
                 if ([cell.schedule.type isEqualToString:@"end"] || [cell.schedule.type isEqualToString:@"middle"]) {
                 
                     bool OkToDelete = false;
                 
-                    ScheduleNSO *item = [self.scheduleitems objectAtIndex:(int)indexPath.row - 1];
+                    ScheduleNSO *item = [self.scheduleitems objectAtIndex:(int)activeCellIndexPath.row - 1];
                     if ([key isEqualToString:item.compondkey]) {
                         OkToDelete = true;
                     }
@@ -491,8 +506,8 @@
                 if ([cell.schedule.type isEqualToString:@"begin"]) {
                     
                     bool noChild = true;
-                    if (self.scheduleitems.count > indexPath.row + 1) {
-                        ScheduleNSO *childitem = [self.scheduleitems objectAtIndex:(int)indexPath.row + 1];
+                    if (self.scheduleitems.count > activeCellIndexPath.row + 1) {
+                        ScheduleNSO *childitem = [self.scheduleitems objectAtIndex:(int)activeCellIndexPath.row + 1];
                         if (childitem.hierarcyindex > currentHirarcyIndex) {
                             noChild = false;
                         }
@@ -521,10 +536,12 @@
                 if (currentHirarcyIndex>1 && [cell.schedule.type isEqualToString:@"end"]) {
                     
                     int hiaracyIndex = cell.schedule.hierarcyindex;
-                    NSIndexPath *indexPath = [self.TableViewScheduleItems indexPathForCell:cell];
+                    //NSIndexPath *indexPath = [self.TableViewScheduleItems indexPathForCell:cell];
+                    
+                    // might not be strong enough..
                     
                     ScheduleNSO *parentObject = [[ScheduleNSO alloc] init];
-                    for (int i = (int)indexPath.row; i >= 0; i--) {
+                    for (int i = (int)activeCellIndexPath.row; i >= 0; i--) {
                         ScheduleNSO *item = [self.scheduleitems objectAtIndex:i];
                         if (item.hierarcyindex < hiaracyIndex) {
                             parentObject = item;
@@ -536,8 +553,8 @@
                     }
                     
                     bool midJourneyFromParent = false;
-                    if (self.scheduleitems.count > indexPath.row + 1) {
-                        ScheduleNSO *followingitem = [self.scheduleitems objectAtIndex:(int)indexPath.row + 1];
+                    if (self.scheduleitems.count > activeCellIndexPath.row + 1) {
+                        ScheduleNSO *followingitem = [self.scheduleitems objectAtIndex:(int)activeCellIndexPath.row + 1];
                         if (followingitem.hierarcyindex == currentHirarcyIndex) {
                             midJourneyFromParent = true;
                         }
@@ -560,7 +577,7 @@
                                                item.sortorder = parentObject.sortorder;
                                                item.Coordinates = parentObject.Coordinates;
                                                item.categoryid = parentObject.poi.categoryid;
-                                               [self.scheduleitems replaceObjectAtIndex:indexPath.row withObject:item];
+                                               [self.scheduleitems replaceObjectAtIndex:activeCellIndexPath.row withObject:item];
                                                
                                                dispatch_async(dispatch_get_main_queue(), ^{
                                                    NSArray *indexPaths = self.TableViewScheduleItems.indexPathsForVisibleRows;
@@ -574,6 +591,146 @@
                         PresentAlertController = true;
                     }
                 }
+                
+               // NEW - only shown if there is a match between start and end dt's as well as on Actual and it is the 'end' node!
+               if ([cell.schedule.type isEqualToString:@"end"] && cell.schedule.enddatesameasstart && self.ActivityState == [NSNumber numberWithLong:1]) {
+                   
+                   NSLog(@"we can offer the user to change the date and time here!");
+                   
+                   UIAlertAction* SetEndDateButton = [UIAlertAction
+                                                   actionWithTitle:@"Manually set end date"
+                                                   style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction * action) {
+                                                       //Handle no, thanks button
+                                                       
+                                                       NSLog(@"Set end date somehow");
+                                                      
+                                                       //Initialise date picker
+                                                       dispatch_async(dispatch_get_main_queue(), ^{
+                                                           self.datePicker = [[UIDatePicker alloc] initWithFrame:CGRectZero];
+                                                           [self.datePicker setDatePickerMode:UIDatePickerModeDateAndTime];
+                                                           [self.datePicker addTarget:self action:@selector(onDatePickerValueChanged:) forControlEvents:UIControlEventValueChanged];
+                                                           
+                                                           [self.datePicker setMinimumDate:cell.schedule.activityitem.startdt];
+                                                           [self.datePicker setDate:cell.schedule.dt];
+                                                           /* locate the maximum end date this node can logically have */
+                                                           if (cell.schedule.hierarcyindex>0) {
+                                                               ScheduleNSO *parentObject = [[ScheduleNSO alloc] init];
+                                                               
+                                                               for (int i = (int)activeCellIndexPath.row; i >= 0; i--) {
+                                                                   ScheduleNSO *item = [self.scheduleitems objectAtIndex:i];
+                                                                   if (item.hierarcyindex < cell.schedule.hierarcyindex) {
+                                                                       
+                                                                       parentObject = item;
+                                                                       
+                                                                       for (int x = (int)activeCellIndexPath.row; x <= self.scheduleitems.count; x++) {
+                                                                           ScheduleNSO *item = [self.scheduleitems objectAtIndex:x];
+                                                                       
+                                                                           if ([item.compondkey isEqualToString:parentObject.compondkey] && !item.enddatesameasstart) {
+                                                                               
+                                                                             [self.datePicker setMaximumDate:item.dt];
+                                                                               break;
+                                                                           }
+                                                                       }
+                                                                       break;
+                                                                   }
+                                                               }
+                                                           }
+                                                           
+                                                          
+                                                           
+                                                           CGRect ViewRect = CGRectMake(0.0, 0.0, self.view.bounds.size.width, self.view.bounds.size.height);
+                                                           CGRect CancelButtonRect = CGRectMake(10.0, 50.0, 50.0, 50.0);
+                                                           CGRect DurationLabelRect = CGRectMake(70.0, 50.0, self.view.bounds.size.width - 140, 10.0);
+                                                           CGRect NameLabelRect = CGRectMake(70.0, 50.0, self.view.bounds.size.width - 140, 30.0);
+                                                           CGRect AcceptButtonRect = CGRectMake(self.view.bounds.size.width - 60.0, 50.0, 50.0, 50.0);
+                                                           CGRect StartDtLabelRect = CGRectMake(10.0, 135.0, self.view.bounds.size.width - 20, 40.0);
+                                                           CGRect BadgeImageViewRect = CGRectMake((self.view.bounds.size.width / 2) - 50, 200.0, 100, 100);
+                                                           CGRect TextFieldRect = CGRectMake(10.0, 325.0, self.view.bounds.size.width - 20, 40.0);
+                                                       
+                                                           UIImageView *BadgeImageView = [[UIImageView alloc] initWithFrame:BadgeImageViewRect];
+                                                           
+                                                           [BadgeImageView setImage:[self.ActivityImageDictionary objectForKey:cell.schedule.compondkey]];
+                                                           
+                                                           BadgeImageView.layer.cornerRadius = 50;
+                                                           BadgeImageView.clipsToBounds = YES;
+                                                           
+                                                           UIButton *CancelButton = [[UIButton alloc] initWithFrame:CancelButtonRect];
+                                                           
+                                                           CancelButton.backgroundColor = [UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0];
+                                                           
+                                                           [CancelButton addTarget:self action:@selector(cancelButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+                                                           
+                                                           [CancelButton setImage:[UIImage imageNamed:@"Cancel"] forState:UIControlStateNormal];
+                                                           
+                                                           
+                                                           CancelButton.layer.cornerRadius = 25;
+                                                           CancelButton.clipsToBounds = YES;
+                                                           CancelButton.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+                                                           
+                                                           UIButton *AcceptButton = [[UIButton alloc] initWithFrame:AcceptButtonRect];
+                                                           AcceptButton.backgroundColor = [UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0];
+                                                           [AcceptButton setTitle:@"OK" forState:UIControlStateNormal];
+                                                           [AcceptButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+                                                           [AcceptButton addTarget:self action:@selector(acceptButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+                                                           
+                                                           AcceptButton.layer.cornerRadius = 25;
+                                                           AcceptButton.clipsToBounds = YES;
+                                                           
+                                                           self.TextFieldDt = [[TextFieldDatePicker alloc] initWithFrame:TextFieldRect];
+                                                        
+                                                          
+                                                           self.TextFieldDt.text = [NSString stringWithFormat:@"%@", [self FormatPrettyDates :cell.schedule.dt]];
+                                                           
+                                                           [[self.TextFieldDt layer] setBorderColor:[[UIColor whiteColor] CGColor]];
+                                                           [[self.TextFieldDt layer] setBorderWidth:2.3];
+                                                           [[self.TextFieldDt layer] setCornerRadius:15];
+                                                           [self.TextFieldDt setClipsToBounds: YES];
+                                                           
+                                                           self.TextFieldDt.inputView = self.datePicker;
+                                                           [self.TextFieldDt setTextAlignment:NSTextAlignmentCenter];
+                                                           [self.TextFieldDt setTextColor:[UIColor whiteColor]];
+                                                        
+                                                           self.LabelDuration = [[UILabel alloc] initWithFrame:DurationLabelRect];
+                                                           self.LabelDuration.text = @"No Duration";
+                                                           [self.LabelDuration setFont:[UIFont systemFontOfSize:12.0]];
+                                                           [self.LabelDuration setTextColor:[UIColor whiteColor]];
+                                                           [self.LabelDuration setTextAlignment:NSTextAlignmentCenter];
+                                                           
+                                                           /* Label Name - temporarily used to present the name  */
+                                                           UILabel *LabelName = [[UILabel alloc] initWithFrame:NameLabelRect];
+                                                           LabelName.text = cell.schedule.activityitem.name;
+                                                           [LabelName setFont:[UIFont systemFontOfSize:16.0]];
+                                                           [LabelName setTextColor:[UIColor whiteColor]];
+                                                           [LabelName setTextAlignment:NSTextAlignmentCenter];
+                                                           
+                                                           UILabel *StartDtLabel = [[UILabel alloc] initWithFrame:StartDtLabelRect];
+                                                           
+                                                           [StartDtLabel setTextColor:[UIColor whiteColor]];
+                                                           StartDtLabel.text = [NSString stringWithFormat:@"%@", [self FormatPrettyDates :cell.schedule.activityitem.startdt]];
+                                                           [StartDtLabel setTextAlignment:NSTextAlignmentCenter];
+                                                           
+                                                           UIView* view = [[UIView alloc] initWithFrame:ViewRect];
+                                                           view.backgroundColor = [UIColor colorWithRed:11.0f/255.0f green:110.0f/255.0f blue:79.0f/255.0f alpha:1.0];
+                                                           
+                                                           [view addSubview:self.TextFieldDt];
+                                                           [view addSubview:BadgeImageView];
+                                                               [view addSubview:StartDtLabel];
+                                                           [view addSubview:CancelButton];
+                                                           [view addSubview:AcceptButton];
+                                                           [view addSubview:self.LabelDuration];
+                                                           [view addSubview:LabelName];
+                                                           
+                                                           [self addDoneToolBarToDatePicker:self.TextFieldDt];
+                                                           
+                                                           [self.view addSubview:view];
+                                                        });
+                                                       
+                                                   }];
+                   [alert addAction:SetEndDateButton];
+                   PresentAlertController = true;
+               }
+ 
                 //Add  buttons to alert controller
                 if (PresentAlertController) {
                     
@@ -587,6 +744,71 @@
     }
 }
 
+/*
+ created date:      21/10/2018
+ last modified:     21/10/2018
+ remarks:
+ */
+- (void)onDatePickerValueChanged:(UIDatePicker *)datePicker
+{
+    
+    self.TextFieldDt.text = [self FormatPrettyDates:datePicker.date];
+    
+    ScheduleNSO *item = [self.scheduleitems objectAtIndex:activeCellIndexPath.row];
+    self.LabelDuration.text = [ToolBoxNSO PrettyDateDifference:item.activityitem.startdt :self.datePicker.date :@""];
+    
+}
+
+/*
+ created date:      21/10/2018
+ last modified:     21/10/2018
+ remarks:
+ */
+- (void)cancelButtonPressed:(UIButton *)sender {
+    NSLog(@"Button cancelled Pressed!");
+    [[self.view.subviews objectAtIndex:(self.view.subviews.count - 1)]removeFromSuperview];
+}
+
+/*
+ created date:      21/10/2018
+ last modified:     21/10/2018
+ remarks:
+ */
+- (void)acceptButtonPressed:(UIButton *)sender {
+
+    ScheduleNSO *item = [self.scheduleitems objectAtIndex:activeCellIndexPath.row];
+    item.dt = self.datePicker.date;
+    item.enddatesameasstart = false;
+    NSLog(@"Button accept Pressed!");
+    [[self.view.subviews objectAtIndex:(self.view.subviews.count - 1)]removeFromSuperview];
+
+    [self RedrawHierarcy];
+    
+    NSArray *indexPaths = self.TableViewScheduleItems.indexPathsForVisibleRows;
+    [self.TableViewScheduleItems reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
+    
+    self.LabelItemCounter.text = [NSString stringWithFormat:@"%lu Items",(unsigned long)self.scheduleitems.count];
+}
+
+
+
+
+-(void)addDoneToolBarToDatePicker:(UITextField *)textField
+{
+    UIToolbar* doneToolbar = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, 320, 50)];
+    doneToolbar.barStyle = UIBarStyleDefault;
+    doneToolbar.items = [NSArray arrayWithObjects:
+                         [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
+                         [[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(doneButtonClickedDismissDatePicker)],
+                         nil];
+    [doneToolbar sizeToFit];
+    textField.inputAccessoryView = doneToolbar;
+}
+
+-(void)doneButtonClickedDismissDatePicker
+{
+    [self.TextFieldDt resignFirstResponder];
+}
 
 
 @end

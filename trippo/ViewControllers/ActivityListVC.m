@@ -25,20 +25,8 @@
     self.ActivityImageDictionary = [[NSMutableDictionary alloc] init];
     self.CollectionViewActivities.delegate = self;
     
-    self.editmode = false;
+    self.editmode = true;
     // Do any additional setup after loading the view.
-    
-    self.ButtonBack.layer.cornerRadius = 25;
-    self.ButtonBack.clipsToBounds = YES;
-    self.ButtonBack.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    self.ButtonPayment.layer.cornerRadius = 25;
-    self.ButtonPayment.clipsToBounds = YES;
-    self.ButtonPayment.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    self.ButtonRouting.layer.cornerRadius = 25;
-    self.ButtonRouting.clipsToBounds = YES;
-    self.ButtonRouting.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
     
     if (self.Trip.itemgrouping==[NSNumber numberWithInt:1]) {
         self.SegmentState.selectedSegmentIndex = 1;
@@ -68,51 +56,9 @@
     [self.CollectionViewActivities addGestureRecognizer:longPressRecognizer];
 }
 
-/*
- created date:      27/09/2018
- last modified:     27/09/2018
- remarks:
- */
--(NSString*)remainingTime:(NSDate*)startDate endDate:(NSDate*)endDate
+-(UIStatusBarStyle)preferredStatusBarStyle
 {
-    NSDateComponents *components;
-    NSInteger days;
-    NSInteger hour;
-    NSInteger minutes;
-    NSString *durationString;
-    
-    components = [[NSCalendar currentCalendar] components: NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute fromDate: startDate toDate: endDate options: 0];
-    
-    days = [components day];
-    hour = [components hour];
-    minutes = [components minute];
-    
-    if(days>0)
-    {
-        if(days>1)
-            durationString=[NSString stringWithFormat:@"%@ days",[NSNumber numberWithInteger:days]];
-        else
-            durationString=[NSString stringWithFormat:@"%@ day",[NSNumber numberWithInteger:days]];
-        return durationString;
-    }
-    if(hour>0)
-    {
-        if(hour>1)
-            durationString=[NSString stringWithFormat:@"%@ hours",[NSNumber numberWithInteger:hour]];
-        else
-            durationString=[NSString stringWithFormat:@"%@ hour",[NSNumber numberWithInteger:hour]];
-        return durationString;
-    }
-    if(minutes>0)
-    {
-        if(minutes>1)
-            durationString = [NSString stringWithFormat:@"%@ minutes",[NSNumber numberWithInteger:minutes]];
-        else
-            durationString = [NSString stringWithFormat:@"%@ minute",[NSNumber numberWithInteger:minutes]];
-        
-        return durationString;
-    }
-    return @"";
+    return UIStatusBarStyleLightContent;
 }
 
 
@@ -293,7 +239,7 @@
         if (cell.activity.enddt!=nil && resultSameStartEndDt != NSOrderedSame ) {
             cell.LabelEndTimePlusWeekDay.text = [NSString stringWithFormat:@"%@",[TimePlusDayOfWeekFormatter stringFromDate:cell.activity.enddt]];
             cell.LabelEndDate.text = [NSString stringWithFormat:@"%@",[DateFormatter stringFromDate:cell.activity.enddt]];
-            cell.LabelDuration.text = [self remainingTime:cell.activity.startdt endDate:cell.activity.enddt];
+            cell.LabelDuration.text = [ToolBoxNSO PrettyDateDifference :cell.activity.startdt :cell.activity.enddt :@""];
         } else {
             cell.LabelEndTimePlusWeekDay.text = @"";
             cell.LabelEndDate.text = @"";
@@ -395,7 +341,9 @@
                                @"Cat-Trek",
                                @"Cat-Venue",
                                @"Cat-Village",
-                               @"Cat-Zoo"
+                               @"Cat-Zoo",
+                               @"Cat-CarPark",
+                               @"Cat-PetrolStation"
                                ];
         
         PoiRLM *poiobject = [PoiRLM objectForPrimaryKey:cell.activity.poikey];

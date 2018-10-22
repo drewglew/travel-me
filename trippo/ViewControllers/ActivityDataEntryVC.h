@@ -22,6 +22,7 @@
 #import "ActivityImageCell.h"
 #import <TesseractOCR/TesseractOCR.h>
 #import "TOCropViewController.h"
+#import "TextFieldDatePicker.h"
 
 @protocol ActivityDataEntryDelegate <NSObject>
 - (void)didUpdateActivityImages :(bool) ForceUpdate;
@@ -76,7 +77,12 @@
 @property (strong, nonatomic) NSArray *TypeDistanceItems;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewKeyActivity;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonUploadImage;
+@property (weak, nonatomic) IBOutlet UITextField *TextFieldReference;
 
-
+@property (nonatomic, strong)IBOutlet UIDatePicker *datePickerStart;
+@property (nonatomic, strong)IBOutlet UIDatePicker *datePickerEnd;
+@property (nonatomic, strong)IBOutlet TextFieldDatePicker  *TextFieldStartDt;
+@property (nonatomic, strong)IBOutlet TextFieldDatePicker  *TextFieldEndDt;
+@property (nonatomic, strong)IBOutlet UILabel  *LabelDuration;
 @end
 

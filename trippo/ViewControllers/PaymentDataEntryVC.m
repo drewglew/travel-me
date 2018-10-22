@@ -65,17 +65,11 @@
         self.LabelTitle.text = self.ActivityItem.name;
     }
     self.TextFieldCurrency.delegate = self;
-    
-    self.ButtonAction.layer.cornerRadius = 25;
-    self.ButtonAction.clipsToBounds = YES;
-    self.ButtonCancel.layer.cornerRadius = 25;
-    self.ButtonCancel.clipsToBounds = YES;
-    self.ButtonCancel.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    self.ButtonHomeCurrency.layer.cornerRadius = 25;
-    self.ButtonHomeCurrency.clipsToBounds = YES;
-    self.ButtonLocalCurrency.layer.cornerRadius = 25;
-    self.ButtonLocalCurrency.clipsToBounds = YES;
+}
+
+-(UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
 }
 
 /*

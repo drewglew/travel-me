@@ -33,7 +33,7 @@
             
             self.ButtonEditImage.hidden = true;
             self.LabelInfo.hidden = false;
-            self.LabelInfo.text = @"Confirm Deletion";
+            self.LabelInfo.text = @"Confirm Deletion of this trip and any activities attached.";
         } else {
             [self.ButtonAction setTitle:@"Update" forState:UIControlStateNormal];
         }
@@ -45,18 +45,11 @@
     [self addDoneToolBarToKeyboard:self.TextViewNotes];
     self.TextViewNotes.delegate = self;
     self.TextFieldName.delegate = self;
-    
-    self.ButtonBack.layer.cornerRadius = 25;
-    self.ButtonBack.clipsToBounds = YES;
-    self.ButtonBack.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    self.ButtonUploadImage.layer.cornerRadius = 25;
-    self.ButtonUploadImage.clipsToBounds = YES;
-    self.ButtonUploadImage.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    self.ButtonAction.layer.cornerRadius = 25;
-    self.ButtonAction.clipsToBounds = YES;
-    self.ButtonAction.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+}
+
+-(UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
 }
 
 /*
@@ -113,7 +106,7 @@
     RLMResults <ActivityRLM*> *activities = [ActivityRLM objectsWhere:@"tripkey = %@",self.Trip.key];
     
     for (ActivityRLM *activity in activities) {
-        if (activity.poi != nil) {
+        if (activity.poi != nil && activity.poi.countrycode != nil && ![activity.poi.countrycode isEqualToString:@""]) {
             [dictionary setObject:[self emojiFlagForISOCountryCode:activity.poi.countrycode] forKey:activity.poi.countrycode];
         }
     }
@@ -194,13 +187,18 @@
     }
     else if (self.deleteitem) {
         /* TODO - are you sure?? */
-        [self.realm beginWriteTransaction];
+        //[self.realm beginWriteTransaction];
         RLMResults <ActivityRLM*> *activities = [ActivityRLM objectsWhere:@"tripkey=%@",self.Trip.key];
-        [self.realm deleteObjects:activities];
-        [self.realm deleteObject:self.Trip];
-        [self.realm commitWriteTransaction];
         
-        //[AppDelegateDef.Db DeleteProject:self.Project];
+        [self.realm transactionWithBlock:^{
+            [self.realm deleteObjects:activities];
+        }];
+        
+        NSLog(@"Trip to delete= %@",self.Trip.key);
+        [self.realm transactionWithBlock:^{
+            [self.realm deleteObject:self.Trip];
+        }];
+        
     }
     else
     {

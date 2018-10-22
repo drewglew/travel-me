@@ -85,46 +85,17 @@
     self.TextFieldTitle.delegate = self;
     self.TextViewNotes.delegate = self;
     
-    self.ButtonUpdate.layer.cornerRadius = 25;
-    self.ButtonUpdate.clipsToBounds = YES;
-    
-    self.ButtonCancel.layer.cornerRadius = 25;
-    self.ButtonCancel.clipsToBounds = YES;
-    self.ButtonCancel.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
     
     if (self.checkInternet) {
         if ([self.PointOfInterest.countrycode isEqualToString:@""]) {
-            self.ButtonGeo.layer.cornerRadius = 25;
-            self.ButtonGeo.clipsToBounds = YES;
             self.ButtonGeo.hidden = false;
         }
         // TODO we need to check if Poi has missing data and that the internet is available...
         
     }
     
-    self.ButtonWiki.layer.cornerRadius = 25;
-    self.ButtonWiki.clipsToBounds = YES;
-    self.ButtonWiki.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    self.ButtonScan.layer.cornerRadius = 25;
-    self.ButtonScan.clipsToBounds = YES;
-    self.ButtonScan.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    self.ButtonUploadImages.layer.cornerRadius = 25;
-    self.ButtonUploadImages.clipsToBounds = YES;
-    self.ButtonUploadImages.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
     self.ButtonUploadImages.hidden = true;
-    /*
-    if (self.PointOfInterest.averageactivityrating!=0) {
-        self.LabelOccurances.text = [NSString stringWithFormat:@"%@ Occurances", self.PointOfInterest.connectedactivitycount];
-        self.LabelOccurances.hidden=false;
-        
-        self.ViewStarRatings.allowsHalfStars=TRUE;
-        self.ViewStarRatings.accurateHalfStars=TRUE;
-        self.ViewStarRatings.value = [self.PointOfInterest.averageactivityrating floatValue];
-        self.ViewStarRatings.hidden=false;
-    }
-    */
+    
     NSIndexPath *indexPath = [NSIndexPath indexPathForItem:[self.PointOfInterest.categoryid unsignedLongValue] inSection:0];
     [self.CollectionViewTypes scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
     
@@ -145,6 +116,10 @@
     }
 }
 
+-(UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
+}
 
 /*
  created date:      11/06/2018
@@ -189,7 +164,9 @@
                        @"Cat-Trek",
                        @"Cat-Venue",
                        @"Cat-Village",
-                       @"Cat-Zoo"
+                       @"Cat-Zoo",
+                       @"Cat-CarPark",
+                       @"Cat-PetrolStation"
                        ];
     
     self.TypeLabelItems  = @[
@@ -229,7 +206,9 @@
                              @"Trekking",
                              @"Venue",
                              @"Village",
-                             @"Zoo"
+                             @"Zoo",
+                             @"Car Park",
+                             @"Fuel Station"
                              ];
     
     self.TypeDistanceItems  = @[
@@ -269,7 +248,9 @@
                              @10000, // trekking, 33
                              @150, // venue, 34
                              @1000, // village 35
-                             @1000 // zoo, 35
+                             @1000, // zoo, 36
+                             @250, // car park, 37
+                             @100 // fuel pump, 38
                              ];
 
     self.LabelPoi.text = [self GetPoiLabelWithType:self.PointOfInterest.categoryid];
@@ -392,7 +373,7 @@
         PoiImageCell *cell=[collectionView dequeueReusableCellWithReuseIdentifier:@"PoiImageId" forIndexPath:indexPath];
         NSInteger NumberOfItems = self.PointOfInterest.images.count + 1;
         if (indexPath.row == NumberOfItems -1) {
-            cell.ImagePoi.image = [UIImage imageNamed:@"AddItem"];
+            cell.ImagePoi.image = [UIImage imageNamed:@"Add-blue"];
         } else {
             ImageCollectionRLM *imgreference = [self.PointOfInterest.images objectAtIndex:indexPath.row];
             cell.ImagePoi.image = [self.PoiImageDictionary objectForKey:imgreference.key];
@@ -496,7 +477,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     30/08/2018
+ last modified:     21/10/2018
  remarks:
  */
 -(void)InsertPoiImage {
@@ -646,23 +627,28 @@
                                             options:options
                                             resultHandler:^(UIImage *result, NSDictionary *info) {
                                                                                                                   
-                                                dispatch_async(dispatch_get_main_queue(), ^{
+                                               dispatch_async(dispatch_get_main_queue(), ^{
                                                                                                                      
                                                     CGSize size = CGSizeMake(self.TextViewNotes.frame.size.width * 2, self.TextViewNotes.frame.size.width * 2);
 
                                                     if (self.imagestate==1) {
+                                                        
                                                         ImageCollectionRLM *imgobject = [[ImageCollectionRLM alloc] init];
                                                         imgobject.key = [[NSUUID UUID] UUIDString];
                                                         
-                                                        UIImage *image = [ToolBoxNSO imageWithImage:result scaledToSize:size];
+                                                         UIImage *image = [ToolBoxNSO imageWithImage:result scaledToSize:size];
+                                                        
                                                         if (self.PointOfInterest.images.count==0) {
-                                                           imgobject.KeyImage = 1;
+                                                            imgobject.KeyImage = 1;
+                                                        } else {
+                                                            imgobject.KeyImage = 0;
                                                         }
-                                                        [self.PoiImageDictionary setObject:image forKey:imgobject.key];
                                                         
                                                         [self.realm beginWriteTransaction];
-                                                        [self.PointOfInterest.images.realm addObject:imgobject];
+                                                        [self.PointOfInterest.images addObject:imgobject];
                                                         [self.realm commitWriteTransaction];
+                                                        
+                                                        [self.PoiImageDictionary setObject:image forKey:imgobject.key];
                                                         
                                                     } else if (self.imagestate==2) {
                                                         
@@ -1403,13 +1389,13 @@
 
 /*
  created date:      28/04/2018
- last modified:     19/07/2018
+ last modified:     21/10/2018
  remarks:
  */
 - (IBAction)BackPressed:(id)sender {
-    
+
     if (self.newitem) {
-        // discard wikipage if it exists!
+        /* wiki reference */
         NSFileManager *fileManager = [NSFileManager defaultManager];
         
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -1419,7 +1405,42 @@
         
         NSError *error = nil;
         [fileManager removeItemAtPath:wikiDataFilePath error:&error];
+        
+        /* manage the images if any exist */
+        if (self.PointOfInterest.images.count>0) {
+            /* delete all */
+            [self.realm transactionWithBlock:^{
+               [self.realm deleteObjects:self.PointOfInterest.images];
+            }];
+        }
+    } else {
+        
+        if (self.PointOfInterest.images.count > 0) {
+            
+            NSInteger count = [self.PointOfInterest.images count];
+            
+            [self.realm beginWriteTransaction];
+            for (NSInteger index = (count - 1); index >= 0; index--) {
+                ImageCollectionRLM *imgobject = self.PointOfInterest.images[index];
+                if (imgobject.ImageFlaggedDeleted) {
+                    imgobject.ImageFlaggedDeleted = false;
+                    NSLog(@"undone deleted image");
+                } else if ([imgobject.ImageFileReference isEqualToString:@""] || imgobject.ImageFileReference==nil) {
+                    /* here we add the attachment to file system and dB */
+                    [self.realm deleteObject:imgobject];
+                    NSLog(@"undone new image");
+                } else if (imgobject.UpdateImage) {
+                    /* we might swap it out as user has replaced the original file */
+                    imgobject.UpdateImage = false;
+                    NSLog(@"undone updated image");
+                }
+            }
+            [self.realm commitWriteTransaction];
+        }
+
+        //[self dismissViewControllerAnimated:YES completion:Nil];
     }
+   
     [self dismissViewControllerAnimated:YES completion:Nil];
 }
 
@@ -1439,7 +1460,7 @@
 
 /*
  created date:      10/08/2018
- last modified:     10/08/2018
+ last modified:     20/10/2018
  remarks: TODO add all items that might have originally been added on insert.
  */
 - (IBAction)GeoButtonPressed:(id)sender {
@@ -1452,33 +1473,42 @@
         if (error) {
             NSLog(@"%@", [NSString stringWithFormat:@"%@", error.localizedDescription]);
         } else {
-            if ([placemarks count]>0) {
-                CLPlacemark *placemark = [placemarks firstObject];
-                NSString *AdminArea = placemark.subAdministrativeArea;
-                if ([AdminArea isEqualToString:@""] || AdminArea == NULL) {
-                    AdminArea = placemark.administrativeArea;
-                }
+            
+           // dispatch_sync(dispatch_get_main_queue(), ^(void){
+            
+                [self.realm beginWriteTransaction];
                 
-                NSLog(@"%@",placemark);
-                self.PointOfInterest.administrativearea = placemark.administrativeArea;
-                self.PointOfInterest.lat = [NSNumber numberWithDouble:self.Coordinates.latitude];
-                self.PointOfInterest.lon = [NSNumber numberWithDouble:self.Coordinates.longitude];
-                self.PointOfInterest.country = placemark.country;
-                self.PointOfInterest.countrycode = placemark.ISOcountryCode;
-                self.PointOfInterest.locality = placemark.locality;
-                self.PointOfInterest.sublocality = placemark.subLocality;
-                self.PointOfInterest.fullthoroughfare = placemark.thoroughfare;
-                self.PointOfInterest.postcode = placemark.postalCode;
-                self.PointOfInterest.subadministrativearea = placemark.subAdministrativeArea;
-                self.ButtonGeo.hidden = true;
-                /* reset note if it contains autotext detail */
+                if ([placemarks count]>0) {
+                    CLPlacemark *placemark = [placemarks firstObject];
+                    NSString *AdminArea = placemark.subAdministrativeArea;
+                    if ([AdminArea isEqualToString:@""] || AdminArea == NULL) {
+                        AdminArea = placemark.administrativeArea;
+                    }
+                    
+                    NSLog(@"%@",placemark);
+                    
+                    self.PointOfInterest.administrativearea = placemark.administrativeArea;
+                    self.PointOfInterest.lat = [NSNumber numberWithDouble:self.Coordinates.latitude];
+                    self.PointOfInterest.lon = [NSNumber numberWithDouble:self.Coordinates.longitude];
+                    self.PointOfInterest.country = placemark.country;
+                    self.PointOfInterest.countrycode = placemark.ISOcountryCode;
+                    self.PointOfInterest.locality = placemark.locality;
+                    self.PointOfInterest.sublocality = placemark.subLocality;
+                    self.PointOfInterest.fullthoroughfare = placemark.thoroughfare;
+                    self.PointOfInterest.postcode = placemark.postalCode;
+                    self.PointOfInterest.subadministrativearea = placemark.subAdministrativeArea;
+                    self.ButtonGeo.hidden = true;
+                    /* reset note if it contains autotext detail */
 
-                [self.TextViewNotes setText:[self.TextViewNotes.text stringByReplacingOccurrencesOfString:@"No GeoData has been supplied except coordinates. Please press 'Geo' button when internet connectivity is next available!" withString:@""]];
-                
-            } else {
-                self.PointOfInterest.administrativearea = @"Unknown Place";
-            }
+                    [self.TextViewNotes setText:[self.TextViewNotes.text stringByReplacingOccurrencesOfString:@"No GeoData has been supplied except coordinates. Please press 'Geo' button when internet connectivity is next available!" withString:@""]];
+                    
+                } else {
+                    self.PointOfInterest.administrativearea = @"Unknown Place";
+                }
+                [self.realm commitWriteTransaction];
            
+           // });
+            
         }
     }];
     

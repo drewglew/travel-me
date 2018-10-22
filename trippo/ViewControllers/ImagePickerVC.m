@@ -29,20 +29,6 @@
     } else {
         self.LabelPoiName.text = [NSString stringWithFormat:@"Web Photos of %@",self.PointOfInterest.name];
     }
-    
-    self.ButtonCancel.layer.cornerRadius = 25;
-    self.ButtonCancel.clipsToBounds = YES;
-    self.ButtonCancel.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    self.ButtonStopSearching.layer.cornerRadius = 25;
-    self.ButtonStopSearching.clipsToBounds = YES;
-    self.ButtonStopSearching.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    self.ButtonSelect.layer.cornerRadius = 25;
-    self.ButtonSelect.clipsToBounds = YES;
-    self.ButtonSelect.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    
     // Do any additional setup after loading the view.
 }
 
@@ -53,6 +39,11 @@
                                                      object:nil ];
     
     [queueThread start ];
+}
+
+-(UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
 }
 
 /*
