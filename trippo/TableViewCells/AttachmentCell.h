@@ -18,8 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIButton *ButtonAddNew;
 @property (strong, nonatomic) AttachmentRLM *document;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewChecked;
-
-
+//@property (assign) bool isAttachmentSelected;
 @end
 
 NS_ASSUME_NONNULL_END

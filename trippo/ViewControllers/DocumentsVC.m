@@ -42,21 +42,11 @@ CGFloat DocumentFooterFilterHeightConstant;
     
 }
 
+
 -(void)loadAttachmentListing {
     self.DocumentCollection = [AttachmentRLM allObjects];
-    NSLog(@"%lu", (unsigned long)self.DocumentCollection.count);
 }
 
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 /*
  created date:      25/02/2019
@@ -80,19 +70,17 @@ CGFloat DocumentFooterFilterHeightConstant;
 
 /*
  created date:      25/02/2019
- last modified:     25/02/2019
+ last modified:     27/02/2019
  remarks:           table view with sections.
  */
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     AttachmentCell *cell = [tableView dequeueReusableCellWithIdentifier:@"AttachmentCellId"];
     AttachmentRLM *document = [self.DocumentCollection objectAtIndex:indexPath.row];
-
     cell.LabelNotes.text = document.notes;
     cell.LabelUploadedDt.text = [NSString stringWithFormat:@"%@", [ToolBoxNSO FormatPrettyDate:document.importeddate]];
     cell.document = document;
-    
-    return cell;
+       return cell;
 }
 
 /*
@@ -103,15 +91,31 @@ CGFloat DocumentFooterFilterHeightConstant;
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(AttachmentCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    RLMResults <AttachmentRLM*> *items = [self.Activity.attachments objectsWhere:@"key=%@",cell.document.key];
+    AttachmentRLM *document = [self.DocumentCollection objectAtIndex:indexPath.row];
+    RLMResults <AttachmentRLM*> *items = [self.Activity.attachments objectsWhere:@"key=%@",document.key];
     if (items.count==0) {
-        [cell setSelected:false animated:NO];
+        [cell setSelected: false];
+        [tableView deselectRowAtIndexPath:indexPath animated:NO];
     } else {
-        [cell setSelected:true animated:NO];
+        
+        [cell setSelected: true];
+        [tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
     }
 }
 
+
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    AttachmentRLM *document = [self.DocumentCollection objectAtIndex:indexPath.row];
+    document.isselected = [NSNumber numberWithInt:1];
+}
+
+
+- (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath  {
+    AttachmentRLM *document = [self.DocumentCollection objectAtIndex:indexPath.row];
+    document.isselected = [NSNumber numberWithInt:0];
+    
 }
 
 /*
@@ -154,6 +158,58 @@ CGFloat DocumentFooterFilterHeightConstant;
 
 
 /*
+ created date:      27/02/2019
+ last modified:     27/02/2019
+ remarks:           User can only delete unused Poi items
+ */
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    BOOL edit = YES;
+    return edit;
+}
+
+
+
+/*
+ created date:      27/02/2019
+ last modified:     27/02/2019
+ remarks:
+ */
+-(NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    UITableViewRowAction *deleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Delete" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath)
+                                          {
+                                              [self tableView:tableView deleteDocument:indexPath];
+                                              self.TableViewDocuments.editing = NO;
+                                              
+                                          }];
+    
+    deleteAction.backgroundColor = [UIColor redColor];
+    return @[deleteAction];
+    
+}
+/*
+ created date:      27/02/2019
+ last modified:     27/02/2019
+ remarks:           Might not be totally necessary, but seperated out from editActionsForRowAtIndexPath method above.
+ */
+- (void)tableView:(UITableView *)tableView deleteDocument:(NSIndexPath *)indexPath  {
+    
+    AttachmentRLM *item = [self.DocumentCollection objectAtIndex:indexPath.row];
+    
+    RLMResults *usedactivities = [ActivityRLM objectsWhere:@"ANY attachments.key = %@",item.key];
+    
+    if (usedactivities.count == 0) {
+        [self.realm transactionWithBlock:^{
+            [self.realm deleteObject:item];
+        }];
+    }
+    
+    NSLog(@"delete called!");
+}
+
+
+/*
  created date:      26/02/2019
  last modified:     26/02/2019
  remarks:
@@ -185,7 +241,7 @@ CGFloat DocumentFooterFilterHeightConstant;
 
 /*
  created date:      25/02/2019
- last modified:     25/02/2019
+ last modified:     27/02/2019
  remarks:
  */
 - (IBAction)BackPressed:(id)sender {
@@ -195,15 +251,31 @@ CGFloat DocumentFooterFilterHeightConstant;
 
 - (IBAction)ActionPressed:(id)sender {
     
+    NSArray *selectedIndexPathArray = [self.TableViewDocuments indexPathsForSelectedRows];
+    
+    
     [self.Activity.realm beginWriteTransaction];
     [self.Activity.attachments removeAllObjects];
     [self.Activity.realm commitWriteTransaction];
     
     [self.Activity.realm beginWriteTransaction];
+    
+    //NSArray *selectedIndexPathArray = [self.TableViewDocuments indexPathsForSelectedRows];
+    
+    for (NSIndexPath *indexPath in selectedIndexPathArray) {
+        AttachmentRLM *item = [self.DocumentCollection objectAtIndex:indexPath.row];
+        
+        [self.Activity.attachments addObject:item];
+        NSLog(@"%@", item.notes);
+    }
+    
+    /*
     for (int section = 0; section < [self.TableViewDocuments numberOfSections]; section++) {
         for (int row = 0; row < [self.TableViewDocuments numberOfRowsInSection:section]; row++) {
             NSIndexPath* cellPath = [NSIndexPath indexPathForRow:row inSection:section];
             AttachmentCell* cell = [self.TableViewDocuments cellForRowAtIndexPath:cellPath];
+            
+            
             if (cell.isSelected) {
                  [self.Activity.attachments addObject:cell.document];
             } else {
@@ -211,6 +283,7 @@ CGFloat DocumentFooterFilterHeightConstant;
             }
         }
     }
+     */
     [self.Activity.realm commitWriteTransaction];
     
     [self dismissViewControllerAnimated:YES completion:Nil];
