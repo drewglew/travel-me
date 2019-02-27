@@ -13,7 +13,9 @@
 @end
 
 
+
 @implementation ProjectListVC
+CGFloat ProjectListFooterFilterHeightConstant;
 @synthesize delegate;
 
 /*
@@ -28,8 +30,7 @@
     self.editmode = true;
     
     /* user selected specific option from startup view */
-    
-    
+
     __weak typeof(self) weakSelf = self;
     self.notification = [self.realm addNotificationBlock:^(NSString *note, RLMRealm *realm) {
         [weakSelf LoadSupportingData];
@@ -40,16 +41,11 @@
     
     [self LoadSupportingData];
     
- 
+    ProjectListFooterFilterHeightConstant = self.FooterWithSegmentConstraint.constant;
     
     
 }
 
-
--(UIStatusBarStyle)preferredStatusBarStyle
-{
-    return UIStatusBarStyleLightContent;
-}
 
 /*
  created date:      29/04/2018
@@ -103,7 +99,7 @@
     
     NSInteger NumberOfItems = self.tripcollection.count + 1;
     if (indexPath.row == NumberOfItems -1) {
-        cell.ImageViewProject.image = [UIImage imageNamed:@"Add-orange"];
+        cell.ImageViewProject.image = [UIImage imageNamed:@"AddItem"];
         cell.isNewAccessor = true;
         cell.VisualEffectsViewBlur.hidden = true;
     } else {
@@ -116,7 +112,7 @@
         } else {
             cell.ImageViewProject.image = image;
         }
-
+/*
         cell.LabelProjectName.attributedText=[[NSAttributedString alloc]
                                        initWithString:trip.name
                                        attributes:@{
@@ -125,41 +121,13 @@
                                                     NSForegroundColorAttributeName:[UIColor whiteColor]
                                                     }
                                        ];
+        */
+        cell.LabelProjectName.text = trip.name;
         
         if (trip.startdt != nil) {
             NSDateFormatter *dtformatter = [[NSDateFormatter alloc] init];
             [dtformatter setDateFormat:@"EEE, dd MMM HH:mm"];
         } 
-        /*
-        int TotalDataPoints = [project.numberofactivitiesonlyactual intValue] +  [project.numberofactivities intValue] + [project.numberofactivitiesonlyplanned intValue];
-        
-        if (TotalDataPoints >0 && self.editmode) {
-            
-            float degreesPart1 = ([project.numberofactivitiesonlyactual floatValue] / TotalDataPoints)*360.0f;
-            float degreesPart2 = ([project.numberofactivities floatValue] / TotalDataPoints)*360.0f;
-            
-            
-            CirclePart *part1 = [[CirclePart alloc] initWithStartDegree:0 endDegree:degreesPart1 partColor:[UIColor colorWithRed:114.0f/255.0f green:24.0f/255.0f blue:23.0f/255.0f alpha:1.0]];
-            CirclePart *part2 = [[CirclePart alloc] initWithStartDegree:degreesPart1 endDegree:degreesPart1 + degreesPart2 partColor:[UIColor colorWithRed:250.0f/255.0f green:159.0f/255.0f blue:66.0f/255.0f alpha:1.0]];
-            CirclePart *part3 = [[CirclePart alloc] initWithStartDegree:degreesPart1 + degreesPart2 endDegree:360 partColor:[UIColor colorWithRed:43.0f/255.0f green:65.0f/255.0f blue:98.0f/255.0f alpha:1.0]];
-            
-            NSArray *circleParts = [[NSArray alloc] initWithObjects:part1, part2, part3, nil];
-            
-            CGRect rect = CGRectMake(10, 10, 50, 50);
-            CGPoint circleCenter = CGPointMake(rect.size.width / 2, rect.size.height / 2);
-            
-            GraphView *graphView = [[GraphView alloc] initWithFrame:rect CentrePoint:circleCenter radius:80 lineWidth:2 circleParts:circleParts];
-            graphView.backgroundColor = [UIColor clearColor];
-            graphView.layer.borderColor = [UIColor clearColor].CGColor;
-            graphView.layer.cornerRadius = 25;
-            graphView.clipsToBounds = YES;
-            
-            graphView.layer.borderWidth = 1.0f;
-            
-            [cell.VisualEffectsViewBlur addSubview:graphView];
-        
-        }
-        */
         
         cell.isNewAccessor = false;
         if (self.editmode) {
@@ -194,12 +162,53 @@
         ActivityListVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ActivityListViewController"];
         controller.delegate = self;
         controller.realm = self.realm;
+        
         controller.Trip = [self.tripcollection objectAtIndex:indexPath.row];
+        NSLog(@"startdt = %@",controller.Trip.startdt);
         [controller setModalPresentationStyle:UIModalPresentationFullScreen];
         [self presentViewController:controller animated:YES completion:nil];
         
     }
 }
+
+/*
+ created date:      05/02/2019
+ last modified:     05/02/2019
+ remarks:
+ */
+-(void)scrollViewWillEndDragging:(UIScrollView *)scrollView
+                    withVelocity:(CGPoint)velocity
+             targetContentOffset:(inout CGPoint *)targetContentOffset{
+        
+    if (velocity.y > 0 && self.FooterWithSegmentConstraint.constant == ProjectListFooterFilterHeightConstant){
+        NSLog(@"scrolling down");
+        
+        [UIView animateWithDuration:0.4f
+                              delay:0.0f
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             self.FooterWithSegmentConstraint.constant = 0.0f;
+                             [self.view layoutIfNeeded];
+                         } completion:^(BOOL finished) {
+                             
+                         }];
+    }
+    if (velocity.y < 0  && self.FooterWithSegmentConstraint.constant == 0.0f){
+        NSLog(@"scrolling up");
+        [UIView animateWithDuration:0.4f
+                              delay:0.0f
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             
+                             self.FooterWithSegmentConstraint.constant = ProjectListFooterFilterHeightConstant;
+                             [self.view layoutIfNeeded];
+                             
+                         } completion:^(BOOL finished) {
+                             
+                         }];
+    }
+}
+
 
 /*
  created date:      29/04/2018

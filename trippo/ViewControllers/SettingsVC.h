@@ -9,9 +9,20 @@
 #import <UIKit/UIKit.h>
 #import <Photos/Photos.h>
 #import <Realm/Realm.h>
+#import "SettingsRLM.h"
 
-@interface SettingsVC : UIViewController
+@protocol SettingsDelegate <NSObject>
+@end
+
+@interface SettingsVC : UIViewController <UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UIButton *ButtonUpdateSharedAlbum;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
+@property (weak, nonatomic) IBOutlet UITextField *TextFieldNickName;
+@property (weak, nonatomic) IBOutlet UITextField *TextFieldEmail;
+@property (nonatomic, weak) id <SettingsDelegate> delegate;
+@property (strong, nonatomic) SettingsRLM *Settings;
+@property (strong, nonatomic) RLMRealm *realm;
+@property (weak, nonatomic) IBOutlet UIView *ViewUserName;
+@property (weak, nonatomic) IBOutlet UIView *ViewEmailInfo;
 
 @end

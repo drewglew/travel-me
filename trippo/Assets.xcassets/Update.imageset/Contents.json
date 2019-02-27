@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "update-filled-100x100.png",
+      "filename" : "update-50x50.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "update-filled-100x100-1.png",
+      "filename" : "update-100x100.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "update-filled-100x100-2.png",
+      "filename" : "update-150x150.png",
       "scale" : "3x"
     }
   ],

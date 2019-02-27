@@ -8,6 +8,7 @@
 
 #import <Realm/Realm.h>
 #import "ImageCollectionRLM.h"
+#import "AttachmentRLM.h"
 #import "ExpenseRLM.h"
 #import "PoiRLM.h"
 
@@ -27,8 +28,11 @@
 @property NSNumber<RLMInt> *legendref;
 @property NSDate *startdt;
 @property NSDate *enddt;
+@property NSString *identitystartdate;
+@property NSString *identityenddate;
+
 @property RLMArray<ImageCollectionRLM *><ImageCollectionRLM> *images;
-//@property RLMArray<ExpenseRLM *><ExpenseRLM> *expenses;
+@property RLMArray<AttachmentRLM *><AttachmentRLM> *attachments;
 @end
 
 RLM_ARRAY_TYPE(ActivityRLM)

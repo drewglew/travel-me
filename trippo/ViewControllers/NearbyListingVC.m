@@ -13,7 +13,7 @@
 @end
 
 @implementation NearbyListingVC
-
+CGFloat NearbyListingFooterFilterHeightConstant;
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -33,7 +33,23 @@
     
     self.TableViewNearbyPoi.delegate = self;
     self.TableViewNearbyPoi.rowHeight = 100;
+    NearbyListingFooterFilterHeightConstant = self.FooterWithSegmentConstraint.constant;
+    
+
+    self.ViewLoading.layer.cornerRadius=8.0f;
+    self.ViewLoading.layer.masksToBounds=YES;
+    self.ViewLoading.layer.borderWidth = 1.0f;
+    self.ViewLoading.layer.borderColor=[[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]CGColor];
+    
+    
     // Do any additional setup after loading the view.
+}
+
+
+-(void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    self.TableViewNearbyPoi.allowsSelection = YES;
 }
 
 /*
@@ -85,23 +101,19 @@
             
         }
     }];
-    
-    
-    
+
 }
 
--(UIStatusBarStyle)preferredStatusBarStyle
-{
-    return UIStatusBarStyleLightContent;
-}
 
 /*
  created date:      16/07/2018
- last modified:     11/10/2018
+ last modified:     02/02/2019
  remarks:  calls the wiki API and gets Array of results
  */
 -(void) LoadNearbyPoiItemsData {
     self.nearbyitems = [[NSMutableArray alloc] init];
+    self.ViewLoading.hidden = false;
+    [self.LoadingActivityIndictor startAnimating];
     
     NSString *PreferredLanguage;
     if (self.SegmentWikiLanguageOption.selectedSegmentIndex == 0) {
@@ -122,35 +134,169 @@
     
     NSString *url = [NSString stringWithFormat:@"https://%@.wikipedia.org/w/api.php?action=query&list=geosearch&gsprop=type|name|dim|country|region|globe&gsradius=10000&gscoord=%@|%@&format=json&redirects&gslimit=120",PreferredLanguage ,self.PointOfInterest.lat, self.PointOfInterest.lon];
     
+    bool GetImages = false;
+    
+    if ([self.SegmentImageEnabler selectedSegmentIndex] == 1) {
+        GetImages = true;
+    }
+    
+    bool FilterItems = false;
+    
+    if ([self.SegmentFilterType selectedSegmentIndex] == 0) {
+        FilterItems = true;
+    }
+    
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     [self fetchFromWikiApi:url withDictionary:^(NSDictionary *data) {
         
         NSDictionary *query = [data objectForKey:@"query"];
         NSDictionary *geosearch =  [query objectForKey:@"geosearch"];
         
-        NSLog(@"%@",geosearch);
-        
+        NSArray *AllowedTypes = [[NSArray alloc] initWithObjects:@"landmark",@"building",@"isle",@"city",@"railwaystation",@"edu",@"river",@"airport",@"mountain",@"forest"@"waterbody",@"glacier",@"pass",nil];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF IN %@ AND SELF != nil", AllowedTypes];
+          
+          
         /* we can process all later, but am only interested in the closest wiki entry */
         for (NSDictionary *item in geosearch) {
-            NearbyPoiNSO *poi = [[NearbyPoiNSO alloc] init];
+            /*
+             let us try and get the images if the switch user has set allows us!
+             */
+            bool typefound = true;
             
-            poi.wikititle = [NSString stringWithFormat:@"%@~%@",PreferredLanguage,[[item valueForKey:@"title"] stringByReplacingOccurrencesOfString:@" " withString:@"_"]];
-            poi.title = [item valueForKey:@"title"];
-            poi.dist = [item valueForKey:@"dist"];
-            poi.Coordinates = CLLocationCoordinate2DMake([[item valueForKey:@"lat"] doubleValue], [[item valueForKey:@"lon"] doubleValue]);
+            if (FilterItems) {
+                typefound = [predicate evaluateWithObject:[item valueForKey:@"type"]];
+            }
             
-            [self.nearbyitems addObject:poi];
-            
+            if (typefound) {
+                NearbyPoiNSO *poi = [[NearbyPoiNSO alloc] init];
+                
+                poi.wikititle = [NSString stringWithFormat:@"%@~%@",PreferredLanguage,[[item valueForKey:@"title"] stringByReplacingOccurrencesOfString:@" " withString:@"_"]];
+                poi.title = [item valueForKey:@"title"];
+                poi.dist = [item valueForKey:@"dist"];
+                
+                if ([item objectForKey:@"type"] != [NSNull null]) {
+                    poi.type = [item valueForKey:@"type"];
+                }
+                poi.Coordinates = CLLocationCoordinate2DMake([[item valueForKey:@"lat"] doubleValue], [[item valueForKey:@"lon"] doubleValue]);
+                poi.PageId = [item valueForKey:@"pageid"];
+                
+                [self.nearbyitems addObject:poi];
+            }
         }
-        dispatch_async(dispatch_get_main_queue(), ^(){
-            [self.TableViewNearbyPoi reloadData];
-        });
         
-        
+        if (GetImages && self.nearbyitems.count > 0) {
+            [self uploadWikiThumbImage :PreferredLanguage];
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^(){
+                self.LabelTotalItems.text = [NSString stringWithFormat:@"%lu items", (unsigned long)self.nearbyitems.count];
+                [self.TableViewNearbyPoi reloadData];
+                [self.TableViewNearbyPoi setNeedsDisplay];
+                //[self.TableViewNearbyPoi setNeedsLayout];
+                self.ViewLoading.hidden = true;
+                [self.LoadingActivityIndictor stopAnimating];
+            });
+        }
     }];
-    
+}
+
+
+
+/*
+ created date:      01/02/2019
+ last modified:     01/02/2019
+ remarks:
+ */
+- (void)uploadWikiThumbImage :(NSString*) PreferredLanguage {
+    NSLog(@"switch is enabled!");
+
+    __block int AssetCounter = 0;
    
-    
+    for (NearbyPoiNSO *item in self.nearbyitems) {
+        
+        NSString *urlString = [NSString stringWithFormat:@"https://%@.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=pageimages|pageterms&piprop=thumbnail&pithumbsize=600&pageids=%@",PreferredLanguage ,item.PageId];
+        
+        urlString = [urlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+        
+        [self fetchFromWikiApi:urlString withDictionary:^(NSDictionary *data) {
+            
+            NSDictionary *query = [data objectForKey:@"query"];
+            NSArray *pages = [query objectForKey:@"pages"];
+            NSDictionary *dataset = [pages lastObject];
+            
+            if ([dataset objectForKey:@"thumbnail"]) {
+                NSDictionary *thumbnail = [dataset objectForKey:@"thumbnail"];
+                NSString *source = [thumbnail objectForKey:@"source"];
+                NSURL *url = [NSURL URLWithString: source];
+                
+                [self downloadImageFrom:url completion:^(UIImage *image) {
+                    AssetCounter ++;
+                    if (image != nil) {
+                        
+                        if (image.size.height > image.size.width) {
+                            CGRect aRect = CGRectMake(0,(image.size.height / 2) - (image.size.width / 2), image.size.width, image.size.width);
+                            CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], aRect);
+                            image = [UIImage imageWithCGImage:imageRef];
+                            CGImageRelease(imageRef);
+                        } else if (image.size.height < image.size.width) {
+                            CGRect aRect = CGRectMake((image.size.width / 2) - (image.size.height / 2), 0, image.size.height, image.size.height);
+                            CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], aRect);
+                            image = [UIImage imageWithCGImage:imageRef];
+                            CGImageRelease(imageRef);
+                        }
+                        
+                        item.Image = image;
+                    }
+                    if (item == [self.nearbyitems lastObject]) {
+                        dispatch_async(dispatch_get_main_queue(), ^(){
+                            
+                                self.LabelTotalItems.text = [NSString stringWithFormat:@"%lu items", (unsigned long)self.nearbyitems.count];
+                                [self.TableViewNearbyPoi reloadData];
+                                [self.TableViewNearbyPoi setNeedsDisplay];
+                                //[self.TableViewNearbyPoi setNeedsLayout];
+                                self.ViewLoading.hidden = true;
+                                [self.LoadingActivityIndictor stopAnimating];
+                            
+                        });
+                    }
+                }];
+            } else {
+                if (item == [self.nearbyitems lastObject]) {
+                    dispatch_async(dispatch_get_main_queue(), ^(){
+                        
+                        self.LabelTotalItems.text = [NSString stringWithFormat:@"%lu items", (unsigned long)self.nearbyitems.count];
+                        [self.TableViewNearbyPoi reloadData];
+                        [self.TableViewNearbyPoi setNeedsDisplay];
+                        //[self.TableViewNearbyPoi setNeedsLayout];
+                        self.ViewLoading.hidden = true;
+                        [self.LoadingActivityIndictor stopAnimating];
+                        
+                    });
+                }
+            }
+        }];
+    }
+}
+
+
+
+
+/*
+ created date:      31/01/2019
+ last modified:     31/01/2019
+ remarks:
+ */
+- (void)downloadImageFrom:(NSURL *)path completion:(void (^)(UIImage *image))completionBlock {
+    dispatch_queue_t queue = dispatch_queue_create("Image Download", 0);
+    dispatch_async(queue, ^{
+        NSData *data = [[NSData alloc] initWithContentsOfURL:path];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if(data) {
+                completionBlock([[UIImage alloc] initWithData:data]);
+            } else {
+                completionBlock(nil);
+            }
+        });
+    });
 }
 
 /*
@@ -179,6 +325,8 @@
 
 
 
+
+
 /*
  created date:      16/07/2018
  last modified:     16/07/2018
@@ -202,39 +350,45 @@
 
 /*
  created date:      16/07/2018
- last modified:     16/09/2018
- remarks:           table view with sections.
+ last modified:     02/02/2019
+ remarks:           table view with sections.  TODO - REFRESH OF IMAGES STILL NOT IDEAL.
  */
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NearbyPoiCell *cell = [tableView dequeueReusableCellWithIdentifier:@"NearbyCellId"];
-    
     NearbyPoiNSO *item = [self.nearbyitems objectAtIndex:indexPath.row];
-    
     NSNumberFormatter *fmt = [[NSNumberFormatter alloc] init];
     [fmt setPositiveFormat:@"0.##"];
     cell.LabelDist.text = [NSString stringWithFormat:@"%@ metres",[fmt stringFromNumber:item.dist]];
+    cell.LabelTitle.text = item.title;
+    cell.LabelType.text = item.type;
     
-    cell.LabelTitle.attributedText=[[NSAttributedString alloc]
-                                    initWithString:item.title
-                                    attributes:@{
-                                                 NSStrokeWidthAttributeName: @-2.0,
-                                                 NSStrokeColorAttributeName:[UIColor blackColor],
-                                                 NSForegroundColorAttributeName:[UIColor whiteColor]
-                                                 }
-                                    ];
-
+    if (item.Image == nil) {
+        [cell.ImageViewThumbPhoto setImage:[UIImage imageNamed:@"Poi"]];
+    } else {
+        
+        
+        //imageitem.Image = [ToolBoxNSO imageWithImage:image scaledToSize:self.ImageSize];
+        
+        
+        [cell.ImageViewThumbPhoto setImage:[ToolBoxNSO imageWithImage:item.Image scaledToSize:cell.ImageViewThumbPhoto.frame.size]];
+    }
     return cell;
 }
 
+
+
 /*
  created date:      16/07/2018
- last modified:     19/07/2018
+ last modified:     02/02/2019
  remarks:
  */
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
     
     if ([self checkInternet]) {
+        
+        tableView.allowsSelection = NO;
+        
         static NSString *IDENTIFIER = @"NearbyCellId";
         
         NearbyPoiCell *cell = [tableView dequeueReusableCellWithIdentifier:IDENTIFIER];
@@ -251,6 +405,9 @@
         self.PointOfInterest.wikititle = Nearby.wikititle;
         
         CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
+        
+        self.ViewLoading.hidden = false;
+        [self.LoadingActivityIndictor startAnimating];
         
         [geoCoder reverseGeocodeLocation: [[CLLocation alloc] initWithLatitude:Nearby.Coordinates.latitude longitude:Nearby.Coordinates.longitude] completionHandler:^(NSArray *placemarks, NSError *error) {
             if (error) {
@@ -281,7 +438,7 @@
                 
                 NSArray *parms = [self.PointOfInterest.wikititle componentsSeparatedByString:@"~"];
 
-                NSString *url = [NSString stringWithFormat:@"https://%@.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=%@",[parms objectAtIndex:0],[parms objectAtIndex:1]];
+                NSString *url = [NSString stringWithFormat:@"https://%@.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=description|extracts|pageimages|pageterms&exintro=&explaintext=&piprop=original|thumbnail&titles=%@",[parms objectAtIndex:0],[parms objectAtIndex:1]];
                 
                 url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
@@ -289,28 +446,98 @@
                 [self fetchFromWikiApi:url withDictionary:^(NSDictionary *data) {
                     
                     NSDictionary *query = [data objectForKey:@"query"];
-                    NSDictionary *pages =  [query objectForKey:@"pages"];
-                    NSArray *keys = [pages allKeys];
-                    NSDictionary *item =  [pages objectForKey:[keys firstObject]];
+                    NSArray *pages =  [query objectForKey:@"pages"];
+                    NSDictionary *item =  [pages firstObject];
                     self.PointOfInterest.privatenotes = [item objectForKey:@"extract"];
-                    
                     
                     dispatch_async(dispatch_get_main_queue(), ^(){
                         
-                        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-                        
-                        PoiDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"PoiDataEntryId"];
-                        
-                        controller.delegate = self;
-                        controller.PointOfInterest = self.PointOfInterest;
-                        controller.realm = self.realm;
-                        controller.newitem = true;
-                        controller.readonlyitem = false;
-                        controller.fromproject = false;
-                        controller.fromnearby = true;
-                        
-                        [controller setModalPresentationStyle:UIModalPresentationFullScreen];
-                        [self presentViewController:controller animated:YES completion:nil];
+                        if ([self.SegmentImageEnabler selectedSegmentIndex] == 1) {
+                            
+                            NSArray *AllowedTypes = [[NSArray alloc] initWithObjects:@"png",@"gif",@"jpg",@"jpeg",@"bmp",nil];
+                            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF IN %@ AND SELF != nil", AllowedTypes];
+                            
+                            
+                            NSDictionary *original = [item objectForKey:@"original"];
+                            NSString *source = [original objectForKey:@"source"];
+                            
+                            bool typefound = [predicate evaluateWithObject:[[source pathExtension] lowercaseString]];
+                            
+                            if (!typefound) {
+                                NSLog(@"extension type=%@",[[source pathExtension] lowercaseString]);
+                                NSDictionary *thumbnail = [item objectForKey:@"thumbnail"];
+                                source = [thumbnail objectForKey:@"source"];
+                            }
+                            
+                            NSURL *url = [NSURL URLWithString: source];
+                            
+                            [self downloadImageFrom:url completion:^(UIImage *image) {
+                                
+                                dispatch_async(dispatch_get_main_queue(), ^(){
+                                    self.ViewLoading.hidden = true;
+                                    [self.LoadingActivityIndictor stopAnimating];
+                                    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+                                    PoiDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"PoiDataEntryId"];
+                                    
+                                    controller.delegate = self;
+                                    controller.PointOfInterest = self.PointOfInterest;
+                                    controller.realm = self.realm;
+                                    controller.newitem = true;
+                                    controller.readonlyitem = false;
+                                    controller.fromproject = false;
+                                    controller.fromnearby = true;
+                                    if (image!=nil) {
+                                        UIImage *squareimage = image;
+                                        if (image.size.height > image.size.width) {
+                                            CGRect aRect = CGRectMake(0,(image.size.height / 2) - (image.size.width / 2), image.size.width, image.size.width);
+                                            CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], aRect);
+                                            squareimage = [UIImage imageWithCGImage:imageRef];
+                                            CGImageRelease(imageRef);
+                                        } else if (image.size.height < image.size.width) {
+                                            CGRect aRect = CGRectMake((image.size.width / 2) - (image.size.height / 2), 0, image.size.height, image.size.height);
+                                            CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], aRect);
+                                            squareimage = [UIImage imageWithCGImage:imageRef];
+                                            CGImageRelease(imageRef);
+                                        }
+                                        
+                                        
+                                        controller.WikiMainImage = squareimage;
+                                        controller.WikiMainImageDescription = [item objectForKey:@"description"];
+                                        controller.haswikimainimage = true;
+                                    } else {
+                                        controller.haswikimainimage = false;
+                                    }
+                                    
+                                    [controller setModalPresentationStyle:UIModalPresentationFullScreen];
+                                    [self presentViewController:controller animated:YES completion:nil];
+                                });
+                                
+
+                            
+                                
+                            }];
+                            // 47019046
+                            
+                        } else {
+                            self.ViewLoading.hidden = true;
+                            [self.LoadingActivityIndictor stopAnimating];
+                            
+                            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+                            
+                            PoiDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"PoiDataEntryId"];
+                            
+                            controller.delegate = self;
+                            controller.PointOfInterest = self.PointOfInterest;
+                            controller.realm = self.realm;
+                            controller.newitem = true;
+                            controller.readonlyitem = false;
+                            controller.fromproject = false;
+                            controller.fromnearby = true;
+                            controller.haswikimainimage = false;
+                            
+                            [controller setModalPresentationStyle:UIModalPresentationFullScreen];
+                            [self presentViewController:controller animated:YES completion:nil];
+                        }
                     });
                     
                 }];
@@ -319,6 +546,7 @@
         }];
     }
 }
+
 
 - (UIView*)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
     UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.TableViewNearbyPoi.frame.size.width, 70)];
@@ -330,6 +558,43 @@
     return headerView;
 }
 
+/*
+ created date:      05/02/2019
+ last modified:     05/02/2019
+ remarks:
+ */
+-(void)scrollViewWillEndDragging:(UIScrollView *)scrollView
+                    withVelocity:(CGPoint)velocity
+             targetContentOffset:(inout CGPoint *)targetContentOffset{
+    
+    if (velocity.y > 0 && self.FooterWithSegmentConstraint.constant == NearbyListingFooterFilterHeightConstant){
+        NSLog(@"scrolling down");
+        
+        [UIView animateWithDuration:0.4f
+                              delay:0.0f
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+            self.FooterWithSegmentConstraint.constant = 0.0f;
+            [self.view layoutIfNeeded];
+        } completion:^(BOOL finished) {
+
+        }];
+    }
+    if (velocity.y < 0  && self.FooterWithSegmentConstraint.constant == 0.0f){
+        NSLog(@"scrolling up");
+        [UIView animateWithDuration:0.4f
+                              delay:0.0f
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+            
+            self.FooterWithSegmentConstraint.constant = NearbyListingFooterFilterHeightConstant;
+            [self.view layoutIfNeeded];
+            
+        } completion:^(BOOL finished) {
+
+        }];
+    }
+}
 
 
 - (void)didReceiveMemoryWarning {
@@ -395,6 +660,44 @@
     }
     [self dismissViewControllerAnimated:YES completion:Nil];
 }
+
+/*
+ created date:      05/02/2019
+ last modified:     05/02/2019
+ remarks:
+ */
+- (IBAction)SegmentImageEnablerChanged:(id)sender {
+    
+    if ([self.SegmentImageEnabler selectedSegmentIndex] == 1) {
+        
+        NSString *PreferredLanguage;
+        if (self.SegmentWikiLanguageOption.selectedSegmentIndex == 0) {
+            PreferredLanguage = [AppDelegateDef.CountryDictionary objectForKey:AppDelegateDef.HomeCountryCode];
+        } else if (self.SegmentWikiLanguageOption.selectedSegmentIndex == 1) {
+            PreferredLanguage = [AppDelegateDef.CountryDictionary objectForKey:self.PointOfInterest.countrycode];
+        } else {
+            PreferredLanguage = @"en";
+        }
+
+        self.ViewLoading.hidden = false;
+        [self.LoadingActivityIndictor startAnimating];
+        [self uploadWikiThumbImage :PreferredLanguage];
+        
+    }
+}
+
+
+/*
+ created date:      05/02/2019
+ last modified:     05/02/2019
+ remarks:
+ */
+- (IBAction)SegmentFilterTypeChanged:(id)sender {
+    [self LoadNearbyPoiItemsData];
+}
+
+
+
 
 
 

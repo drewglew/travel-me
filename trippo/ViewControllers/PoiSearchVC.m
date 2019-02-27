@@ -13,16 +13,16 @@
 @end
 
 @implementation PoiSearchVC
+CGFloat lastPoiSearchFooterFilterHeightConstant;
 
 - (NSURL *)applicationDocumentsDirectory
 {
-    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory
-                                                   inDomains:NSUserDomainMask] lastObject];
+    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
 
 /*
  created date:      30/04/2018
- last modified:     16/09/2018
+ last modified:     23/11/2018
  remarks:
  */
 - (void)viewDidLoad {
@@ -30,6 +30,12 @@
     self.SearchBarPoi.delegate = self;
     self.TableViewSearchPoiItems.delegate = self;
     self.TableViewSearchPoiItems.rowHeight = 100;
+    
+    lastPoiSearchFooterFilterHeightConstant = self.FilterOptionHeightConstraint.constant;
+    
+    
+    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, self.FilterOptionHeightConstraint.constant)];
+    self.TableViewSearchPoiItems.tableFooterView = footerView;
     
     self.SegmentCountries.selectedSegmentIndex=1;
     if (self.TripItem == nil) {
@@ -122,13 +128,12 @@
     lpgr.delegate = self;
     lpgr.delaysTouchesBegan = YES;
     [self.CollectionViewTypes addGestureRecognizer:lpgr];
-    
 }
 
--(UIStatusBarStyle)preferredStatusBarStyle
+/*-(UIStatusBarStyle)preferredStatusBarStyle
 {
     return UIStatusBarStyleLightContent;
-}
+}*/
 
 /*
  created date:      11/08/2018
@@ -173,9 +178,6 @@
  */
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-
-    [UISearchBar appearance].tintColor = [UIColor colorWithRed:130.0f/255.0f green:190.0f/255.0f blue:234.0f/255.0f alpha:1.0]; [[UITextField appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setDefaultTextAttributes:@{NSForegroundColorAttributeName: [UIColor colorWithRed:130.0f/255.0f green:190.0f/255.0f blue:234.0f/255.0f alpha:1.0]}];
-    
 }
 
 
@@ -299,7 +301,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     18/08/2018
+ last modified:     18/11/2018
  remarks:
  */
 -(void) LoadPoiBackgroundImageData {
@@ -330,21 +332,24 @@
                 } else {
                     image =[UIImage imageWithData:pngData];
                 }
-                
-                CGSize tablecellsize = CGSizeMake(self.TableViewSearchPoiItems.frame.size.width , self.TableViewSearchPoiItems.rowHeight); // set the width and height
-                CGSize imagesize = CGSizeMake(image.size.width , image.size.height); // set the width and height
-                
-               
-                CGRect CropRect = CGRectMake((imagesize.width/2) - (tablecellsize.width/2), (imagesize.height/2) - (tablecellsize.height/2), tablecellsize.width, tablecellsize.height);
 
+                CGSize imagesize = CGSizeMake(100 , 100); // set the width and height
+
+
+                [AppDelegateDef.PoiBackgroundImageDictionary setObject:[self imageWithImage:image convertToSize:imagesize] forKey:poi.key];
                 
-                [AppDelegateDef.PoiBackgroundImageDictionary setObject:[self croppIngimageByImageName:image toRect:CropRect] forKey:poi.key];
             }
         }
     }
 }
 
-
+- (UIImage *)imageWithImage:(UIImage *)image convertToSize:(CGSize)size {
+    UIGraphicsBeginImageContext(size);
+    [image drawInRect:CGRectMake(0, 0, size.width, size.height)];
+    UIImage *destImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return destImage;
+}
 
 
 /*
@@ -418,7 +423,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     20/10/2018
+ last modified:     18/11/2018
  remarks:
  */
 - (PoiListCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -437,18 +442,7 @@
     PoiRLM *poi = [self.poifilteredcollection objectAtIndex:indexPath.row];
     
     cell.poi = poi;    
-    cell.Name.attributedText=[[NSAttributedString alloc]
-                                          initWithString:poi.name
-                                          attributes:@{
-                                                       NSStrokeWidthAttributeName: @-1.0,
-                                                       NSStrokeColorAttributeName:[UIColor blackColor],
-                                                       NSForegroundColorAttributeName:[UIColor whiteColor]
-                                                       }
-                                          ];
-    
-    
-   // cell.AdministrativeArea.text = poi.administrativearea;
-    
+    cell.Name.text = poi.name;
     
     cell.AdministrativeArea.text = poi.administrativearea;
     if (poi.countrycode != nil && ![poi.countrycode isEqualToString:@""]) {
@@ -456,15 +450,11 @@
     }
     
     cell.ImageCategory.image = [UIImage imageNamed:[self.TypeItems objectAtIndex:[cell.poi.categoryid integerValue]]];
-    
-    
+
     if (poi.images.count==0) {
         [cell.PoiKeyImage setImage:[UIImage imageNamed:@"Poi"]];
     } else {
-        /* locate key image */
-        //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"KeyImage == %@", [NSNumber numberWithInt:1]];
-        //RLMResults<ImageCollectionRLM*> *filteredArray = [poi.images objectsWithPredicate :predicate];
-        //ImageCollectionRLM *imgobject = [filteredArray firstObject];
+        
         [cell.PoiKeyImage setImage:[AppDelegateDef.PoiBackgroundImageDictionary objectForKey:poi.key]];
     }
     return cell;
@@ -506,6 +496,7 @@
         controller.Activity = self.Activity;
         controller.realm = self.realm;
         controller.Poi = Poi;
+        NSLog(@"startdt = %@",self.TripItem.startdt);
         controller.Trip = self.TripItem;
         //controller.Activity.poi = Poi;
         controller.deleteitem = false;
@@ -567,14 +558,45 @@
 }
 
 /*
- created date:      30/04/2018
- last modified:     11/08/2018
- remarks:
+ created date:      05/02/2019
+ last modified:     05/02/2019
+ remarks:           Provide a bit of space if needed.
  */
-- (UIView*)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.TableViewSearchPoiItems.frame.size.width, self.FilterOptionHeightConstraint.constant)];
-    return footerView;
+-(void)scrollViewWillEndDragging:(UIScrollView *)scrollView
+                    withVelocity:(CGPoint)velocity
+             targetContentOffset:(inout CGPoint *)targetContentOffset{
+    
+    if (velocity.y > 0 && self.FilterOptionHeightConstraint.constant == lastPoiSearchFooterFilterHeightConstant){
+        NSLog(@"scrolling down");
+        
+        [UIView animateWithDuration:0.4f
+                              delay:0.0f
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             self.FilterOptionHeightConstraint.constant = 0.0f;
+                             [self.view layoutIfNeeded];
+                         } completion:^(BOOL finished) {
+                             
+                         }];
+    }
+    if (velocity.y < 0  && self.FilterOptionHeightConstraint.constant == 0.0f){
+        NSLog(@"scrolling up");
+        [UIView animateWithDuration:0.4f
+                              delay:0.0f
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             
+                             self.FilterOptionHeightConstraint.constant = lastPoiSearchFooterFilterHeightConstant;
+                             [self.view layoutIfNeeded];
+                             
+                         } completion:^(BOOL finished) {
+                             
+                         }];
+    }
 }
+
+
+
 
 -(void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
     [self.SearchBarPoi resignFirstResponder];
@@ -764,42 +786,45 @@
 
 /*
  created date:      11/08/2018
- last modified:     11/08/2018
+ last modified:     31/01/2019
  remarks:
  */
 - (IBAction)FilterPressed:(id)sender {
     
     [self.view layoutIfNeeded];
-    if (self.FilterOptionHeightConstraint.constant==70) {
-        [UIView animateWithDuration:0.75 animations:^{
-            self.FilterOptionHeightConstraint.constant=300;
+    if (self.FilterOptionHeightConstraint.constant==98) {
+        [UIView animateWithDuration:0.25f animations:^{
+            self.FilterOptionHeightConstraint.constant=350;
             self.ButtonResetFilter.hidden = false;
             [self.ButtonFilter setImage:[UIImage imageNamed:@"Close-Pane"] forState:UIControlStateNormal];
-            //self.ButtonMore.transform = CGAffineTransformMakeRotation(M_PI);
             [self.view layoutIfNeeded];
         } completion:^(BOOL finished) {
-            
-            
+            UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, self.FilterOptionHeightConstraint.constant)];
+            self.TableViewSearchPoiItems.tableFooterView = footerView;
+            [self.TableViewSearchPoiItems reloadData];
         }];
         
     } else {
-        [UIView animateWithDuration:0.75 animations:^{
-            self.FilterOptionHeightConstraint.constant=70;
+        [UIView animateWithDuration:0.25f animations:^{
+            self.FilterOptionHeightConstraint.constant=98;
             self.ButtonResetFilter.hidden = true;
             [self.ButtonFilter setImage:[UIImage imageNamed:@"Filter"] forState:UIControlStateNormal];
-            //self.ButtonMore.transform = CGAffineTransformMakeRotation(-2*M_PI);
             [self.view layoutIfNeeded];
         } completion:^(BOOL finished) {
-            
+            UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, self.FilterOptionHeightConstraint.constant)];
+            self.TableViewSearchPoiItems.tableFooterView = footerView;
+            [self.TableViewSearchPoiItems reloadData];
         }];
         
     }
+    lastPoiSearchFooterFilterHeightConstant = self.FilterOptionHeightConstraint.constant;
+
     
 }
 
 /*
  created date:      12/08/2018
- last modified:     13/09/2018
+ last modified:     18/11/2018
  remarks:
  */
 - (void)didUpdatePoi :(NSString*)Method :(PoiRLM*)Object {
@@ -827,12 +852,11 @@
         else {
             image =[UIImage imageNamed:@"Poi"];
         }
-        CGSize tablecellsize = CGSizeMake(self.TableViewSearchPoiItems.frame.size.width , self.TableViewSearchPoiItems.rowHeight); // set the width and height
-        CGSize imagesize = CGSizeMake(image.size.width , image.size.height); // set the width and height
+       
+        CGSize imagesize = CGSizeMake(100 , 100); // set the width and height
+    
+        [AppDelegateDef.PoiBackgroundImageDictionary setObject:[self imageWithImage:image convertToSize:imagesize] forKey:Object.key];
         
-        CGRect CropRect = CGRectMake((imagesize.width/2) - (tablecellsize.width/2), (imagesize.height/2) - (tablecellsize.height/2), tablecellsize.width, tablecellsize.height);
-
-        [AppDelegateDef.PoiBackgroundImageDictionary setObject:[self croppIngimageByImageName:image toRect:CropRect] forKey:Object.key];
     }
 }
 

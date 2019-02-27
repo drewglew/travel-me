@@ -14,16 +14,19 @@
 @end
 
 @implementation ActivityListVC
+CGFloat ActivityListFooterFilterHeightConstant;
 @synthesize delegate;
+
 /*
  created date:      30/04/2018
- last modified:     27/09/2018
+ last modified:     22/02/2019
  remarks:
  */
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.ActivityImageDictionary = [[NSMutableDictionary alloc] init];
     self.CollectionViewActivities.delegate = self;
+    self.TableViewDiary.delegate = self;
     
     self.editmode = true;
     // Do any additional setup after loading the view.
@@ -45,21 +48,54 @@
     
     __weak typeof(self) weakSelf = self;
     self.notification = [self.realm addNotificationBlock:^(NSString *note, RLMRealm *realm) {
-        if (weakSelf.ImagesNeedUpdating) {
-            [weakSelf LoadActivityImageData];
-        }
         [weakSelf LoadActivityData :[NSNumber numberWithInteger:weakSelf.SegmentState.selectedSegmentIndex]];
-        [weakSelf.CollectionViewActivities reloadData];
+        if (weakSelf.CollectionViewActivities.hidden) {
+            [weakSelf.TableViewDiary reloadData];
+        } else {
+            [weakSelf.CollectionViewActivities reloadData];
+        }
     }];
+
+    ActivityListFooterFilterHeightConstant = self.FooterWithSegmentConstraint.constant;
+
+    self.TableViewDiary.rowHeight = 125;
     
     UILongPressGestureRecognizer* longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPress:)];
     [self.CollectionViewActivities addGestureRecognizer:longPressRecognizer];
+    
+    //self.keyboardIsShowing = NO;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:)
+                                                 name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHidden:)
+                                                 name:UIKeyboardWillHideNotification object:nil];
+
+    self.TableViewDiary.sectionFooterHeight = 50;
+    
+    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 60)];
+    self.TableViewDiary.tableHeaderView = headerView;
 }
 
--(UIStatusBarStyle)preferredStatusBarStyle
+- (void)keyboardWillShow:(NSNotification*)aNotification
 {
-    return UIStatusBarStyleLightContent;
+    self.TableViewDiary.allowsSelection = NO;
 }
+- (void)keyboardWillBeHidden:(NSNotification*)aNotification
+{
+    self.TableViewDiary.allowsSelection = YES;
+}
+
+
+
+
+-(NSDate *)dateWithOutTime:(NSDate *)datDate
+{
+    if( datDate == nil ) {
+        datDate = [NSDate date];
+    }
+    NSDateComponents* comps = [[NSCalendar currentCalendar] components:NSCalendarUnitDay|NSCalendarUnitMonth|NSCalendarUnitYear  fromDate:datDate];
+    return [[NSCalendar currentCalendar] dateFromComponents:comps];
+}
+
 
 
 /*
@@ -102,25 +138,46 @@
 
 /*
  created date:      30/04/2018
- last modified:     01/09/2018
- remarks:
+ last modified:     24/02/2019
+ remarks:           TODO - Seem to miss the last item... in Diary
  */
 -(void) LoadActivityData:(NSNumber*) State {
+    
+    NSDateFormatter *DateIdentityFormatter = [[NSDateFormatter alloc] init];
+    [DateIdentityFormatter setDateFormat:@"YYYY-MM-dd"];
     
     NSMutableDictionary *dataset = [[NSMutableDictionary alloc] init];
     /* obtain the planned activities, both planned and actual activities are interested in this */
 
+    NSString *IdentityStartDate = [[NSString alloc] init];
+    NSString *IdentityEndDate = [[NSString alloc] init];
+    //NSDate *IdentityStartDt = [[NSDate alloc] init];
+    //NSDate *IdentityEndDt = [[NSDate alloc] init];
+    
+    
     self.AllActivitiesInTrip = [ActivityRLM objectsWhere:@"tripkey = %@", self.Trip.key];
     
     RLMResults<ActivityRLM*> *plannedactivities = [self.AllActivitiesInTrip objectsWhere:@"state==0"];
     for (ActivityRLM* planned in plannedactivities) {
         [dataset setObject:planned forKey:planned.key];
     }
+    
+    
+    self.IdentityStartDt  = [plannedactivities minOfProperty:@"startdt"];
+    self.IdentityEndDt = [plannedactivities minOfProperty:@"enddt"];
+    
     /* next only for actual activities we search for those too and replace using dictionary any of them */
     if (State==[NSNumber numberWithLong:1]) {
         RLMResults<ActivityRLM*> *actualactivities = [self.AllActivitiesInTrip objectsWhere:@"state==1"];
+        bool found=false;
         for (ActivityRLM* actual in actualactivities) {
             [dataset setObject:actual forKey:actual.key];
+            found = true;
+        }
+        if (found) {
+            self.IdentityStartDt  = [actualactivities minOfProperty:@"startdt"];
+            self.IdentityEndDt = [actualactivities minOfProperty:@"enddt"];
+            
         }
     }
     
@@ -133,11 +190,71 @@
     temp2 = [temp2 sortedArrayUsingDescriptors:@[sortDescriptorState,sortDescriptorStartDt]];
     self.activitycollection = [NSMutableArray arrayWithArray:temp2];
 
+    if (self.IdentityStartDt == nil ||  [self.IdentityStartDt compare:self.Trip.startdt] == NSOrderedDescending) {
+        self.IdentityStartDt = self.Trip.startdt;
+    }
+
+    if (self.IdentityEndDt == nil ||  [self.IdentityEndDt compare:self.Trip.enddt] == NSOrderedAscending) {
+        self.IdentityEndDt = self.Trip.enddt;
+    }
+
+    IdentityStartDate = [DateIdentityFormatter stringFromDate:self.IdentityStartDt];
+    IdentityEndDate = [DateIdentityFormatter stringFromDate:self.IdentityEndDt];
+        
+    NSMutableArray *diaryactivties = [[NSMutableArray alloc] init];
+    
+    for (ActivityRLM *activity in self.activitycollection) {
+        ActivityRLM *a = activity;
+        a.identitystartdate = [DateIdentityFormatter stringFromDate:activity.startdt];
+        a.identityenddate = [DateIdentityFormatter stringFromDate:activity.enddt];
+        [diaryactivties addObject:a];
+    }
+
+    self.sectionheaderdaystitle = [[NSMutableArray alloc] init];
+    self.diarycollection = [[NSMutableArray alloc] init];
+    
+    NSCalendar *currentCalendar = [NSCalendar currentCalendar];
+    
+    NSDateComponents *oneDay = [NSDateComponents new];
+    oneDay.day = 1;
+
+    NSDateFormatter *FullDateFormatter = [[NSDateFormatter alloc] init];
+    [FullDateFormatter setDateFormat:@"EEEE, dd MMMM, YYYY"];
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"YYYY-MM-dd"];
+    NSDate *StartDt = [dateFormatter dateFromString:IdentityStartDate];
+    NSDate *EndDt = [dateFormatter dateFromString:IdentityEndDate];
+
+    int DayIndex = 0;
+    while ([StartDt compare:EndDt] == NSOrderedAscending || [StartDt compare:EndDt] == NSOrderedSame) {
+        
+        IdentityStartDate = [DateIdentityFormatter stringFromDate:StartDt];
+        IdentityEndDate = [DateIdentityFormatter stringFromDate:EndDt];
+        
+        DayIndex ++;
+        DiaryDatesNSO *dd = [[DiaryDatesNSO alloc] init];
+
+        dd.daytitle = [NSString stringWithFormat:@"Day %d - %@", DayIndex, [FullDateFormatter stringFromDate:StartDt]];
+        dd.startdt = StartDt;
+        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identitystartdate = %@", IdentityStartDate];
+        NSArray *itemsinday = [diaryactivties filteredArrayUsingPredicate:predicate];
+        
+        itemsinday = [itemsinday sortedArrayUsingDescriptors:@[sortDescriptorStartDt]];
+        
+        [self.diarycollection addObject:itemsinday];
+        
+        StartDt = [currentCalendar dateByAddingComponents:oneDay toDate:StartDt options:0];
+        dd.enddt = StartDt;
+        [self.sectionheaderdaystitle addObject:dd];
+    }
+    NSLog(@"completed");
 }
 
 /*
  created date:      01/09/2018
- last modified:     01/09/2018
+ last modified:     16/02/2019
  remarks:  Load all Activity images for Trip
  */
 -(void)LoadActivityImageData {
@@ -150,10 +267,6 @@
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"KeyImage == %@", [NSNumber numberWithInt:1]];
     ImageCollectionRLM *imgobject;
     RLMResults *filteredResults;
-
-    for (ActivityRLM *activityobj in activities) {
-        NSLog(@"Name=%@",activityobj.name);
-    }
     
     for (ActivityRLM *activityobj in activities) {
         
@@ -174,15 +287,20 @@
         NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",imgobject.ImageFileReference]];
         NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
         if (pngData==nil) {
-            [self.ActivityImageDictionary setObject:[UIImage imageNamed:@"Activity"] forKey:activityobj.compondkey];
+            if (activityobj.state == [NSNumber numberWithInteger:0]) {
+                [self.ActivityImageDictionary setObject:[UIImage imageNamed:@"Planning"] forKey:activityobj.compondkey];
+                
+            } else {
+                [self.ActivityImageDictionary setObject:[UIImage imageNamed:@"Activity"] forKey:activityobj.compondkey];
+            }
         } else {
         
             [self.ActivityImageDictionary setObject:[UIImage imageWithData:pngData] forKey:activityobj.compondkey];
         }
     }
-    self.ImagesNeedUpdating=false;
-    
 }
+
+
 
 
 
@@ -197,15 +315,12 @@
 
 /*
  created date:      30/04/2018
- last modified:     29/09/2018
+ last modified:     30/01/2019
  remarks:
  */
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     
-    ActivityListCell *cell=[collectionView dequeueReusableCellWithReuseIdentifier:@"ActivityCellId" forIndexPath:indexPath];
-    
-
-    
+    ActivityListCell *cell= [collectionView dequeueReusableCellWithReuseIdentifier:@"ActivityCellId" forIndexPath:indexPath];
     
     NSDateFormatter *TimePlusDayOfWeekFormatter = [[NSDateFormatter alloc] init];
     [TimePlusDayOfWeekFormatter setDateFormat:@"HH:mm, EEEE"];
@@ -214,7 +329,7 @@
     
     NSInteger NumberOfItems = self.activitycollection.count + 1;
     if (indexPath.row == NumberOfItems -1) {
-        cell.ImageViewActivity.image = [UIImage imageNamed:@"Add-orange"];
+        cell.ImageViewActivity.image = [UIImage imageNamed:@"AddItem"];
         cell.VisualViewBlur.hidden = true;
         cell.VisualViewBlurBehindImage.hidden = true;
         cell.ImageBlurBackground.hidden = true;
@@ -350,26 +465,321 @@
         
         cell.ImageViewTypeOfPoi.image = [UIImage imageNamed:[TypeItems objectAtIndex:[poiobject.categoryid integerValue]]];
 
-        //cell.LabelName.text = cell.activity.name;
-        //[cell.LabelName sizeToFit];
+        
        
         cell.VisualViewBlurBehindImage.hidden = false;
         cell.ImageBlurBackground.hidden = false;
 
         cell.ImageViewActivity.image = [self.ActivityImageDictionary objectForKey:cell.activity.compondkey];
         cell.ImageBlurBackground.image = [self.ActivityImageDictionary objectForKey:cell.activity.compondkey];;
+
+        cell.LabelName.text = cell.activity.name;
+        //[cell.LabelName sizeToFit];
         
-        cell.LabelName.attributedText=[[NSAttributedString alloc]
-                                       initWithString:cell.activity.name
-                                       attributes:@{
-                                                    NSStrokeWidthAttributeName: @-1.0,
-                                                    NSStrokeColorAttributeName:[UIColor blackColor],
-                                                    NSForegroundColorAttributeName:[UIColor whiteColor]
-                                                    }
-                                       ];
     }
     return cell;
 }
+
+/*
+ created date:      30/04/2018
+ last modified:     30/04/2018
+ remarks: manages the dynamic width of the cells.
+ */
+-(CGSize)collectionView:(UICollectionView *) collectionView layout:(UICollectionViewLayout* )collectionViewLayout sizeForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
+    
+    CGFloat collectionWidth = self.CollectionViewActivities.frame.size.width;
+    float cellWidth = collectionWidth/3.0f;
+    CGSize size = CGSizeMake(cellWidth, cellWidth);
+    if (self.editmode) {
+        size = CGSizeMake(cellWidth,cellWidth*2);
+        
+    }
+    return size;
+}
+
+/*
+ created date:      30/04/2018
+ last modified:     21/02/2019
+ remarks:  ImG todo
+ */
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    NSInteger NumberOfItems = self.activitycollection.count + 1;
+    
+    if (indexPath.row == NumberOfItems -1) {
+        [self performSegueWithIdentifier:@"ShowNewActivity" sender:nil];
+    } else {
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        ActivityDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ActivityDataEntryViewController"];
+        controller.delegate = self;
+        controller.realm = self.realm;
+        
+        ActivityRLM *activity = [self.activitycollection objectAtIndex:indexPath.row];
+        
+        controller.Poi = [PoiRLM objectForPrimaryKey:activity.poikey];
+        controller.PoiImage = [self RetrievePoiImageItem :controller.Poi];
+        
+        controller.Trip = self.Trip;
+        long selectedSegmentState = self.SegmentState.selectedSegmentIndex;
+        controller.newitem = false;
+        if (selectedSegmentState == 1 && activity.state == [NSNumber numberWithInteger:0]) {
+            // this is an activity item selected from the actual selection that is in fact an idea item.
+            ActivityRLM *new = [[ActivityRLM alloc] init];
+            new.key = activity.key;
+            new.state = [NSNumber numberWithInt:1];
+            new.compondkey = [NSString stringWithFormat:@"%@~1",activity.key];
+            new.name = activity.name;
+            new.tripkey = activity.tripkey;
+            new.poikey = activity.poikey;
+            new.createddt = [NSDate date];
+            new.modifieddt = [NSDate date];
+            controller.Activity = new;
+            controller.transformed = true;
+            // how can we determine on destination controller what is a brand new item and a transformed item?  Do we need to?
+        } else {
+            controller.Activity = [self.activitycollection objectAtIndex:indexPath.row];
+            controller.transformed = false;
+        }
+        controller.deleteitem = false;
+        [controller setModalPresentationStyle:UIModalPresentationFullScreen];
+        [self presentViewController:controller animated:YES completion:nil];
+    }
+    
+}
+
+/*
+ created date:      20/02/2019
+ last modified:     23/02/2019
+ remarks:
+ */
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return self.sectionheaderdaystitle.count;
+}
+
+/*
+ created date:      20/02/2019
+ last modified:     23/02/2019
+ remarks:
+ */
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    NSArray *temp = self.diarycollection[section];
+    return temp.count;
+}
+
+/*
+ created date:      23/02/2019
+ last modified:     23/02/2019
+ remarks:
+ */
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    DiaryDatesNSO *dd = self.sectionheaderdaystitle[section];
+    return dd.daytitle;
+}
+
+
+/*
+ created date:      23/02/2019
+ last modified:     23/02/2019
+ remarks:
+ */
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
+
+    if ([view.subviews.lastObject isKindOfClass:[UIButton class]]) {
+        return;
+    }
+    
+    
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
+    button.frame = CGRectMake(view.frame.size.width - 40.0, 10, 20.0, 20.0); // x,y,width,height
+    button.tag = section;
+    [button setImage:[UIImage imageNamed:@"AddItem"] forState:UIControlStateNormal];
+    [button setTintColor: [UIColor colorWithRed:255.0f/255.0f green:91.0f/255.0f blue:73.0f/255.0f alpha:1.0]];
+    [button addTarget:self action:@selector(sectionHeaderButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [view addSubview:button];
+
+}
+
+/*
+ created date:      23/02/2019
+ last modified:     23/02/2019
+ remarks:
+ */
+-(void)sectionHeaderButtonPressed :(id)sender {
+    
+    [self performSegueWithIdentifier:@"ShowNewActivityFromDiary" sender:sender];
+
+    NSLog(@"pressed");
+}
+
+
+
+/*
+ created date:      20/02/2019
+ last modified:     24/02/2019
+ remarks:           table view with sections.
+ */
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    ActivityDiaryCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ActivityDiaryCellId"];
+    
+    cell.activity = [[self.diarycollection objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+    
+    if (self.SegmentState.selectedSegmentIndex==1 && cell.activity.state==[NSNumber numberWithInteger:0]) {
+        cell.TextFieldStartDt.enabled = false;
+        cell.TextFieldEndDt.enabled = false;
+        [cell.LabelName setTextColor:[UIColor lightGrayColor]];
+        cell.DurationBar.backgroundColor = [UIColor lightGrayColor];
+        [cell.LabelDuration setTextColor:[UIColor lightGrayColor]];
+        cell.ButtonDelete.hidden = true;
+    } else if (self.SegmentState.selectedSegmentIndex==1)  {
+        if ( [cell.activity.startdt compare:cell.activity.enddt] == NSOrderedSame) {
+            // This is ongoing...
+            cell.LabelDuration.text = @"active!";
+            cell.DurationBar.backgroundColor = [UIColor lightGrayColor];
+        } else {
+            cell.DurationBar.backgroundColor = [UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0];
+            cell.LabelDuration.text = [ToolBoxNSO PrettyDateDifference: cell.activity.startdt :cell.activity.enddt :@""];
+            [cell.LabelDuration setTextColor:[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]];
+        }
+    } else {
+        cell.TextFieldStartDt.enabled = true;
+        cell.TextFieldEndDt.enabled = true;
+        [cell.LabelName setTextColor:[UIColor blackColor]];
+        cell.ButtonDelete.hidden = false;
+        cell.DurationBar.backgroundColor = [UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0];
+        cell.LabelDuration.text = [ToolBoxNSO PrettyDateDifference: cell.activity.startdt :cell.activity.enddt :@""];
+        [cell.LabelDuration setTextColor:[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]];
+    }
+
+    cell.LabelName.text = cell.activity.name;
+    cell.TextFieldStartDt.text = [self FormatPrettyTime :cell.activity.startdt];
+    cell.TextFieldStartDt.delegate = self;
+    cell.TextFieldEndDt.text = [self FormatPrettyTime :cell.activity.enddt];
+    cell.TextFieldEndDt.delegate = self;
+    
+    cell.datePickerStart.date = cell.activity.startdt;
+    //minimum date..
+    cell.datePickerStart.minimumDate = self.IdentityStartDt;
+    cell.datePickerStart.maximumDate  = cell.datePickerEnd.date;
+    
+    cell.datePickerEnd.date = cell.activity.enddt;
+    cell.datePickerEnd.minimumDate = cell.datePickerStart.date;
+    //maximum date..
+    cell.datePickerEnd.maximumDate  = self.IdentityEndDt;
+    
+    cell.indexPathForCell = indexPath;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    return cell;
+}
+
+/*
+ created date:      25/02/2019
+ last modified:     25/02/2019
+ remarks:
+ */
+-(bool) textFieldShouldBeginEditing:(UITextField *)textField {
+    
+    if (self.TableViewDiary.allowsSelection) {
+        return true;
+    } else {
+        CGPoint buttonPosition = [textField convertPoint:CGPointZero toView:self.TableViewDiary];
+        NSIndexPath *indexPath = [self.TableViewDiary indexPathForRowAtPoint:buttonPosition];
+        ActivityDiaryCell *cell = [self.TableViewDiary cellForRowAtIndexPath:indexPath];
+        if ([cell.TextFieldStartDt isFirstResponder] || [cell.TextFieldEndDt isFirstResponder]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/*
+ created date:      25/02/2019
+ last modified:     25/02/2019
+ remarks:
+ */
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    CGPoint buttonPosition = [textField convertPoint:CGPointZero toView:self.TableViewDiary];
+    NSIndexPath *indexPath = [self.TableViewDiary indexPathForRowAtPoint:buttonPosition];
+    ActivityDiaryCell *cell = [self.TableViewDiary cellForRowAtIndexPath:indexPath];
+    [cell setSelected:YES animated:NO];
+}
+
+/*
+ created date:      25/02/2019
+ last modified:     25/02/2019
+ remarks:
+ */
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    CGPoint buttonPosition = [textField convertPoint:CGPointZero toView:self.TableViewDiary];
+    NSIndexPath *indexPath = [self.TableViewDiary indexPathForRowAtPoint:buttonPosition];
+    ActivityDiaryCell *cell = [self.TableViewDiary cellForRowAtIndexPath:indexPath];
+    [cell setSelected:NO animated:YES];
+}
+
+
+
+/*
+created date:      22/02/2019
+last modified:     24/02/2019
+remarks:           table view with sections.
+*/
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+
+
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    ActivityDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ActivityDataEntryViewController"];
+    controller.delegate = self;
+    controller.realm = self.realm;
+
+    ActivityRLM *activity = [[self.diarycollection objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+    
+    controller.Poi = [PoiRLM objectForPrimaryKey:activity.poikey];
+    controller.PoiImage = [self RetrievePoiImageItem :controller.Poi];
+    
+    controller.Trip = self.Trip;
+    long selectedSegmentState = self.SegmentState.selectedSegmentIndex;
+    controller.newitem = false;
+    if (selectedSegmentState == 1 && activity.state == [NSNumber numberWithInteger:0]) {
+        // this is an activity item selected from the actual selection that is in fact an idea item.
+        ActivityRLM *new = [[ActivityRLM alloc] init];
+        new.key = activity.key;
+        new.state = [NSNumber numberWithInt:1];
+        new.compondkey = [NSString stringWithFormat:@"%@~1",activity.key];
+        new.name = activity.name;
+        new.tripkey = activity.tripkey;
+        new.poikey = activity.poikey;
+        new.createddt = [NSDate date];
+        new.modifieddt = [NSDate date];
+        new.startdt = activity.startdt;
+        new.enddt = activity.enddt;
+        controller.Activity = new;
+        controller.transformed = true;
+        // how can we determine on destination controller what is a brand new item and a transformed item?  Do we need to?
+    } else {
+        controller.Activity =  activity;
+        controller.transformed = false;
+    }
+    controller.deleteitem = false;
+    [controller setModalPresentationStyle:UIModalPresentationFullScreen];
+    [self presentViewController:controller animated:YES completion:nil];
+    //}
+}
+
+
+/*
+created date:      22/10/2018
+last modified:     22/10/2018
+remarks:           Time formatter
+*/
+-(NSString*)FormatPrettyTime :(NSDate*)Dt {
+  
+  NSDateFormatter *timeformatter = [[NSDateFormatter alloc] init];
+  [timeformatter setDateFormat:@"HH:mm"];
+  return [NSString stringWithFormat:@"%@", [timeformatter stringFromDate:Dt]];
+}
+
 
 /*
  created date:      05/09/2018
@@ -398,82 +808,53 @@
 }
 
 
-/*
- created date:      30/04/2018
- last modified:     05/09/2018
- remarks:  ImG todo
- */
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    NSInteger NumberOfItems = self.activitycollection.count + 1;
-    
-    if (indexPath.row == NumberOfItems -1) {
-        [self performSegueWithIdentifier:@"ShowNewActivity" sender:nil];
-    } else {
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-        ActivityDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ActivityDataEntryViewController"];
-        controller.delegate = self;
-        controller.realm = self.realm;
-        
-        ActivityRLM *activity = [self.activitycollection objectAtIndex:indexPath.row];
-        
-        controller.Poi = [PoiRLM objectForPrimaryKey:activity.poikey];
-        controller.PoiImage = [self RetrievePoiImageItem :controller.Poi];
-       
-        controller.Trip = self.Trip;
-        long selectedSegmentState = self.SegmentState.selectedSegmentIndex;
-        controller.newitem = false;
-        if (selectedSegmentState == 1 && activity.state == [NSNumber numberWithInteger:0]) {
-            // this is an activity item selected from the actual selection that is in fact an idea item.
-            ActivityRLM *new = [[ActivityRLM alloc] init];
-            new.key = activity.key;
-            new.state = [NSNumber numberWithInt:1];
-            new.compondkey = [NSString stringWithFormat:@"%@~1",activity.key];
-            new.name = activity.name;
-            new.tripkey = activity.tripkey;
-            new.poikey = activity.poikey;
-            new.createddt = [NSDate date];
-            new.modifieddt = [NSDate date];
-            controller.Activity = new;
-            controller.transformed = true;
-            // how can we determine on destination controller what is a brand new item and a transformed item?  Do we need to?
-        } else {
-            controller.Activity = [self.activitycollection objectAtIndex:indexPath.row];
-            controller.transformed = false;
-        }
-        controller.deleteitem = false;
-        [controller setModalPresentationStyle:UIModalPresentationFullScreen];
-        [self presentViewController:controller animated:YES completion:nil];
-    }
 
+/*
+ created date:      05/02/2019
+ last modified:     05/02/2019
+ remarks:
+ */
+-(void)scrollViewWillEndDragging:(UIScrollView *)scrollView
+                    withVelocity:(CGPoint)velocity
+             targetContentOffset:(inout CGPoint *)targetContentOffset{
+    
+    if (velocity.y > 0 && self.FooterWithSegmentConstraint.constant == ActivityListFooterFilterHeightConstant){
+        NSLog(@"scrolling down");
+        
+        [UIView animateWithDuration:0.4f
+                              delay:0.0f
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             self.FooterWithSegmentConstraint.constant = 0.0f;
+                             [self.view layoutIfNeeded];
+                         } completion:^(BOOL finished) {
+                             
+                         }];
+    }
+    if (velocity.y < 0  && self.FooterWithSegmentConstraint.constant == 0.0f){
+        NSLog(@"scrolling up");
+        [UIView animateWithDuration:0.4f
+                              delay:0.0f
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             
+                             self.FooterWithSegmentConstraint.constant = ActivityListFooterFilterHeightConstant;
+                             [self.view layoutIfNeeded];
+                             
+                         } completion:^(BOOL finished) {
+                             
+                         }];
+    }
 }
 
-
 /*
  created date:      30/04/2018
- last modified:     30/04/2018
- remarks: manages the dynamic width of the cells.
- */
--(CGSize)collectionView:(UICollectionView *) collectionView layout:(UICollectionViewLayout* )collectionViewLayout sizeForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
-    
-    CGFloat collectionWidth = self.CollectionViewActivities.frame.size.width;
-    float cellWidth = collectionWidth/3.0f;
-    CGSize size = CGSizeMake(cellWidth, cellWidth);
-    if (self.editmode) {
-        size = CGSizeMake(cellWidth,cellWidth*2);
-        
-    }
-    return size;
-}
-
-
-
-/*
- created date:      30/04/2018
- last modified:     16/09/2018
+ last modified:     22/02/2019
  remarks:           segue controls .
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
    
+    
     if([segue.identifier isEqualToString:@"ShowNewActivity"]){
         PoiSearchVC *controller = (PoiSearchVC *)segue.destinationViewController;
         controller.delegate = self;
@@ -481,9 +862,27 @@
         controller.newitem = true;
         controller.transformed = false;
         controller.Activity.state = [NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex];
+        NSLog(@"startdt = %@",self.Trip.startdt);
         controller.TripItem = self.Trip;
         controller.realm = self.realm;
+     
         
+    } else if([segue.identifier isEqualToString:@"ShowNewActivityFromDiary"]){
+         
+        UIButton * button=(UIButton*)sender;
+        DiaryDatesNSO *dd = self.sectionheaderdaystitle[button.tag];
+        PoiSearchVC *controller = (PoiSearchVC *)segue.destinationViewController;
+        controller.delegate = self;
+        controller.Activity = [[ActivityRLM alloc] init];
+        controller.newitem = true;
+        controller.transformed = false;
+        controller.Activity.state = [NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex];
+        controller.Activity.startdt = dd.startdt;
+        controller.Activity.enddt = dd.enddt;
+        NSLog(@"startdt = %@",self.Trip.startdt);
+        controller.TripItem = self.Trip;
+        controller.realm = self.realm;
+    
     } else if([segue.identifier isEqualToString:@"ShowSchedule"]) {
         ScheduleVC *controller = (ScheduleVC *)segue.destinationViewController;
         controller.delegate = self;
@@ -500,7 +899,26 @@
             while ((cellView= [cellView superview])) {
                 if([cellView isKindOfClass:[ActivityListCell class]]) {
                     ActivityListCell *cell = (ActivityListCell*)cellView;
-                    //NSIndexPath *indexPath = [self.CollectionViewActivities indexPathForCell:cell];
+                    controller.Activity = cell.activity;
+                    controller.Poi = [PoiRLM objectForPrimaryKey:cell.activity.poikey];
+                    controller.PoiImage = [self.ActivityImageDictionary objectForKey:cell.activity.key];
+                    controller.Trip = self.Trip;
+                    controller.realm = self.realm;
+                }
+            }
+            
+        }
+        controller.deleteitem = true;
+        controller.newitem = false;
+        controller.transformed = false;
+    } else if ([segue.identifier isEqualToString:@"ShowDeleteActivityFromDiaryView"]) {
+        ActivityDataEntryVC *controller = (ActivityDataEntryVC *)segue.destinationViewController;
+        controller.delegate = self;
+        if ([sender isKindOfClass: [UIButton class]]) {
+            UIView * cellView=(UIView*)sender;
+            while ((cellView= [cellView superview])) {
+                if([cellView isKindOfClass:[ActivityDiaryCell class]]) {
+                    ActivityDiaryCell *cell = (ActivityDiaryCell*)cellView;
                     controller.Activity = cell.activity;
                     controller.Poi = [PoiRLM objectForPrimaryKey:cell.activity.poikey];
                     controller.PoiImage = [self.ActivityImageDictionary objectForKey:cell.activity.key];
@@ -538,16 +956,19 @@
 
 - (IBAction)ActivityStateChanged:(id)sender {
     [self LoadActivityData :[NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex]];
-    [self.CollectionViewActivities reloadData];
+   
+    if (self.TableViewDiary.hidden == true) {
+        [self.CollectionViewActivities reloadData];
+    } else {
+        [self.TableViewDiary reloadData];
+    }
 }
 
 
 
 - (IBAction)SwitchEditModeChanged:(id)sender {
     self.editmode = !self.editmode;
-
     [self.CollectionViewActivities performBatchUpdates:^{ } completion:^(BOOL finished) { }];
-    
     [self.CollectionViewActivities reloadData];
 }
 
@@ -564,11 +985,12 @@
 
 /*
  created date:      08/09/2018
- last modified:     08/09/2018
+ last modified:     16/02/2019
  remarks:
  */
 - (void)didUpdateActivityImages :(bool)ForceUpdate {
-    self.ImagesNeedUpdating = true;
+    [self LoadActivityImageData];
+    
 }
 
 - (IBAction)ShowDatePressed:(id)sender {
@@ -578,5 +1000,29 @@
 - (IBAction)RemoveDatePressedUp:(id)sender {
     NSLog(@"UNTOUCHED");
 }
+
+/*
+ created date:      20/02/2019
+ last modified:     24/02/2019
+ remarks:
+ */
+- (IBAction)SwapMainViewPressed:(id)sender {
+    
+    if (self.TableViewDiary.hidden == true) {
+        self.TableViewDiary.hidden = false;
+        [self.TableViewDiary reloadData];
+        self.CollectionViewActivities.hidden = true;
+        [self.ButtonSwapMainView setImage:[UIImage imageNamed:@"ActivityPhotoView"] forState:UIControlStateNormal];
+    } else {
+        self.TableViewDiary.hidden = true;
+        [self.CollectionViewActivities reloadData];
+        self.CollectionViewActivities.hidden = false;
+        [self.ButtonSwapMainView setImage:[UIImage imageNamed:@"ActivityDiaryView"] forState:UIControlStateNormal];
+    }
+}
+
+
+
+
 
 @end

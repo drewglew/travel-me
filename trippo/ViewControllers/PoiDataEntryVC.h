@@ -14,6 +14,7 @@
 #import "PoiImageCell.h"
 #import "PoiImageNSO.h"
 #import "PoiNSO.h"
+#import "ActivityRLM.h"
 #import "ImagePickerVC.h"
 #import "ImageNSO.h"
 #import "WikiVC.h"
@@ -22,8 +23,10 @@
 #import "TypeCell.h"
 #import "HCSStarRatingView.h"
 #import "PoiRLM.h"
+#import "SettingsRLM.h"
 #import <TesseractOCR/TesseractOCR.h>
 #import "TOCropViewController.h"
+
 
 @protocol PoiDataEntryDelegate <NSObject>
 - (void)didCreatePoiFromProject :(PoiRLM*)Object;
@@ -34,6 +37,7 @@
 
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;
 @property (nonatomic) NSString *Title;
+@property (nonatomic) NSString *WikiMainImageDescription;
 @property (nonatomic) NSNumber *SelectedImageIndex;
 @property (nonatomic) NSString *SelectedImageKey;
 @property (assign) bool newitem;
@@ -41,6 +45,7 @@
 @property (assign) bool readonlyitem;
 @property (assign) bool fromproject;
 @property (assign) bool fromnearby;
+@property (assign) bool haswikimainimage;
 @property (assign) int imagestate;
 @property (weak, nonatomic) IBOutlet UITextField *TextFieldTitle;
 @property (weak, nonatomic) IBOutlet UICollectionView *CollectionViewPoiImages;
@@ -67,6 +72,8 @@
 @property (weak, nonatomic) IBOutlet UIView *ViewNotes;
 @property (weak, nonatomic) IBOutlet UIView *ViewMap;
 @property (weak, nonatomic) IBOutlet UIView *ViewPhotos;
+@property (weak, nonatomic) IBOutlet UIView *ViewInfo;
+
 @property (weak, nonatomic) IBOutlet UIView *ViewTrash;
 
 @property (weak, nonatomic) IBOutlet UIVisualEffectView *ViewBlurImageOptionPanel;
@@ -84,8 +91,17 @@
 @property (weak, nonatomic) IBOutlet HCSStarRatingView *ViewStarRatings;
 @property (weak, nonatomic) IBOutlet UILabel *LabelOccurances;
 @property (weak, nonatomic) IBOutlet UILabel *LabelPhotoInfo;
-@property (weak, nonatomic) IBOutlet UIButton *ButtonUploadImages;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonSharePoi;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonScan;
-
+@property (strong, nonatomic) IBOutlet UIImage *WikiMainImage;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *ContraintBottomNotes;
+@property (weak, nonatomic) IBOutlet UILabel *LabelInfoName;
+@property (weak, nonatomic) IBOutlet UILabel *LabelInfoCreatedDt;
+@property (weak, nonatomic) IBOutlet UILabel *LabelInfoLastModified;
+@property (weak, nonatomic) IBOutlet UILabel *labelInfoAuthorName;
+@property (weak, nonatomic) IBOutlet UILabel *LabelInfoSharedBy;
+@property (weak, nonatomic) IBOutlet UILabel *LabelInfoSharedDt;
+@property (weak, nonatomic) IBOutlet UILabel *LabelInfoSharedDevice;
+@property (strong, nonatomic) SettingsRLM *Settings;
 
 @end

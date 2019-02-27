@@ -19,7 +19,7 @@
 - (void)updatePoiFromWikiActvity :(PoiRLM*)PointOfInterest;
 @end
 
-@interface WikiVC : UIViewController
+@interface WikiVC : UIViewController <UIScrollViewDelegate>
 @property (weak, nonatomic) IBOutlet WKWebView *webView;
 @property PoiRLM *PointOfInterest;
 @property (nonatomic, weak) id <WikiGeneratorDelegate> delegate;
@@ -28,7 +28,10 @@
 @property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonSearchByLocation;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonSearchByName;
-
-
+@property (weak, nonatomic) IBOutlet UILabel *LabelInfo;
+@property (weak, nonatomic) IBOutlet UILabel *LabelWaitingStatus;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *ActivityIndicator;
+@property (weak, nonatomic) IBOutlet UIView *ViewLoading;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *FooterWithSegmentConstraint;
 
 @end

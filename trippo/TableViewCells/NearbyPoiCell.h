@@ -12,5 +12,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelTitle;
 @property (weak, nonatomic) IBOutlet UILabel *LabelDist;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewThumbPhoto;
+@property (weak, nonatomic) IBOutlet UILabel *LabelType;
 
 @end

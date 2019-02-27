@@ -12,4 +12,8 @@
 @property (nonatomic) NSString *title;
 @property (nonatomic) NSNumber *dist;
 @property (nonatomic) UIImage *Image;
+@property (nonatomic) NSString *PageId;
+@property (nonatomic) NSString *type;
+
+
 @end

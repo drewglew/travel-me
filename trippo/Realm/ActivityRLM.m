@@ -12,4 +12,7 @@
 + (NSString *)primaryKey {
     return @"compondkey";
 }
++ (NSArray *)ignoredProperties {
+    return @[@"identitystartdate",@"identityenddate"];
+}
 @end

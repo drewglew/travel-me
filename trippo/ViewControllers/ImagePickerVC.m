@@ -19,6 +19,7 @@
 @end
 
 @implementation ImagePickerVC
+CGFloat ImagePickerFooterFilterHeightConstant;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -29,6 +30,14 @@
     } else {
         self.LabelPoiName.text = [NSString stringWithFormat:@"Web Photos of %@",self.PointOfInterest.name];
     }
+  
+    ImagePickerFooterFilterHeightConstant = self.FooterWithTextConstraint.constant;
+    
+    self.ViewLoading.layer.cornerRadius=8.0f;
+    self.ViewLoading.layer.masksToBounds=YES;
+    self.ViewLoading.layer.borderWidth = 1.0f;
+    self.ViewLoading.layer.borderColor=[[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]CGColor];
+    
     // Do any additional setup after loading the view.
 }
 
@@ -39,11 +48,6 @@
                                                      object:nil ];
     
     [queueThread start ];
-}
-
--(UIStatusBarStyle)preferredStatusBarStyle
-{
-    return UIStatusBarStyleLightContent;
 }
 
 /*
@@ -120,7 +124,7 @@
         dispatch_async(dispatch_get_main_queue(), ^(){
             self.ButtonStopSearching.hidden = true;
             
-            self.ActivityLoading.hidden = true;
+            [self.ActivityLoading stopAnimating];
             [self.ImageCollectionView reloadData];
         });
     } else {
@@ -140,6 +144,9 @@
                 });
                 __block int AssetCounter = 0;
                 
+                
+                // only load thumbnails here!!
+                
                 /* we can process all later, but am only interested in the closest wiki entry */
                 for (NSDictionary *item in items) {
                     int MaxNumberOfPhotos = 200;
@@ -150,102 +157,48 @@
                     if (self.imageitems.count < MaxNumberOfPhotos) {
                     
                         NSDictionary *OriginalItem = [item objectForKey:@"original"];
-                       
-
-                        /* check type & size of original photo asset if it is larger than 3000x3000 or it is of svg type we use the thumbnail image instead */
-                        if ([[OriginalItem valueForKey:@"mime"] isEqualToString:@"image/svg+xml"] || ([[OriginalItem valueForKey:@"width"] longValue] > 3000 || [[OriginalItem valueForKey:@"height"] longValue] > 3000) ) {
-                            
-                            NSDictionary *ThumbnailItem = [item objectForKey:@"thumbnail"];
-                            
-                            [self downloadImageFrom:[NSURL URLWithString:[ThumbnailItem valueForKey:@"source"]] completion:^(UIImage *image) {
-
-                                AssetCounter ++;
-                                
-                                
-                                if (image!=nil) {
-                                    ImageNSO *imageitem = [[ImageNSO alloc] init];
-                                    if (image.size.height > image.size.width) {
-                                        CGRect aRect = CGRectMake(0,(image.size.height / 2) - (image.size.width / 2), image.size.width, image.size.width);
-                                        CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], aRect);
-                                        image = [UIImage imageWithCGImage:imageRef];
-                                        CGImageRelease(imageRef);
-                                    } else if (image.size.height < image.size.width) {
-                                        CGRect aRect = CGRectMake((image.size.width / 2) - (image.size.height / 2), 0, image.size.height, image.size.height);
-                                        CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], aRect);
-                                        image = [UIImage imageWithCGImage:imageRef];
-                                        CGImageRelease(imageRef);
-                                    }
-                                    imageitem.Image = [ToolBoxNSO imageWithImage:image scaledToSize:self.ImageSize];
-                                    if (DescriptionItem.count>0) {
-                                        imageitem.Description = [DescriptionItem objectForKey:@"text"];
-                                    }
-                                    imageitem.selected = false;
-                                    [self.imageitems addObject:imageitem];
-                                    // keep the collection view updated with the new image
-                                    [self.ImageCollectionView reloadData];
-                                    
-                                }
-                                
-                                dispatch_async(dispatch_get_main_queue(), ^(){
-                                    [self.LabelPhotoCounter setText:[NSString stringWithFormat:@"%lu photos found inside %lu Web Assets", (unsigned long)self.imageitems.count,(unsigned long)items.count]];
-                                     if (AssetCounter==items.count) {
-                                         self.ButtonStopSearching.hidden = true;
-                                         
-                                         self.ActivityLoading.hidden = true;
-                                     }
-                                 });
-
-                            }];
+                        NSDictionary *ThumbnailItem = [item objectForKey:@"thumbnail"];
                         
-                        /* ok if mine type is an image we can handle load it in */
-                        } else if ([[OriginalItem valueForKey:@"mime"] isEqualToString:@"image/jpeg"] || [[OriginalItem valueForKey:@"mime"] isEqualToString:@"image/png"]) {
+                        [self downloadImageFrom:[NSURL URLWithString:[ThumbnailItem valueForKey:@"source"]] completion:^(UIImage *image) {
 
-                            [self downloadImageFrom:[NSURL URLWithString:[OriginalItem valueForKey:@"source"]] completion:^(UIImage *image) {
-                                AssetCounter ++;
-                                if (image!=nil) {
-                                    ImageNSO *imageitem = [[ImageNSO alloc] init];
-                                    
-                                    if (image.size.height > image.size.width) {
-                                        CGRect aRect = CGRectMake(0,(image.size.height / 2) - (image.size.width / 2), image.size.width, image.size.width);
-                                        CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], aRect);
-                                        image = [UIImage imageWithCGImage:imageRef];
-                                        CGImageRelease(imageRef);
-                                    } else if (image.size.height < image.size.width) {
-                                        CGRect aRect = CGRectMake((image.size.width / 2) - (image.size.height / 2), 0, image.size.height, image.size.height);
-                                        CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], aRect);
-                                        image = [UIImage imageWithCGImage:imageRef];
-                                        CGImageRelease(imageRef);
-                                    }
-                                    
-                                    imageitem.Image = [ToolBoxNSO imageWithImage:image scaledToSize:self.ImageSize];
-                                    if (DescriptionItem.count>0) {
-                                        imageitem.Description = [DescriptionItem objectForKey:@"text"];
-                                    } else {
-                                        imageitem.Description = @"No description available";
-                                    }
-                                    imageitem.selected = false;
-                                    [self.imageitems addObject:imageitem];
-                                     // keep the collection view updated with the new image
-                                    [self.ImageCollectionView reloadData];
-                                }
-                                
-                                dispatch_async(dispatch_get_main_queue(), ^(){
-                                    [self.LabelPhotoCounter setText:[NSString stringWithFormat:@"%lu photos found inside %lu Web Assets", (unsigned long)self.imageitems.count,(unsigned long)items.count]];
-                                    
-                                    if (AssetCounter==items.count) {
-                                        self.ButtonStopSearching.hidden = true;
-                                        self.ActivityLoading.hidden = true;
-                                    }
-                                });
-
-                            }];
-                        } else {
                             AssetCounter ++;
-                            if (AssetCounter==items.count) {
-                                self.ButtonStopSearching.hidden = true;
-                                self.ActivityLoading.hidden = true;
+
+                            if (image!=nil) {
+                                ImageNSO *imageitem = [[ImageNSO alloc] init];
+                                imageitem.originalsource = [OriginalItem valueForKey:@"source"];
+                                imageitem.thumbnailsource = [ThumbnailItem valueForKey:@"source"];
+                                                                    if (image.size.height > image.size.width) {
+                                    CGRect aRect = CGRectMake(0,(image.size.height / 2) - (image.size.width / 2), image.size.width, image.size.width);
+                                    CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], aRect);
+                                    image = [UIImage imageWithCGImage:imageRef];
+                                    CGImageRelease(imageRef);
+                                } else if (image.size.height < image.size.width) {
+                                    CGRect aRect = CGRectMake((image.size.width / 2) - (image.size.height / 2), 0, image.size.height, image.size.height);
+                                    CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], aRect);
+                                    image = [UIImage imageWithCGImage:imageRef];
+                                    CGImageRelease(imageRef);
+                                }
+                                imageitem.Image = [ToolBoxNSO imageWithImage:image scaledToSize:self.ImageSize];
+                                if (DescriptionItem.count>0) {
+                                    imageitem.Description = [DescriptionItem objectForKey:@"text"];
+                                }
+                                imageitem.selected = false;
+                                [self.imageitems addObject:imageitem];
+                                // keep the collection view updated with the new image
+                                [self.ImageCollectionView reloadData];
+                                
                             }
-                        }
+                            
+                            dispatch_async(dispatch_get_main_queue(), ^(){
+                                [self.LabelPhotoCounter setText:[NSString stringWithFormat:@"%lu photos found inside %lu Web Assets", (unsigned long)self.imageitems.count,(unsigned long)items.count]];
+                                 if (AssetCounter==items.count) {
+                                     self.ButtonStopSearching.hidden = true;
+                                     
+                                     [self.ActivityLoading stopAnimating];
+                                 }
+                             });
+
+                        }];
                     }
                     
                     if([[NSThread currentThread] isCancelled])
@@ -359,14 +312,55 @@
     return size;
 }
 
+
+/*
+ created date:      05/02/2019
+ last modified:     05/02/2019
+ remarks:
+ */
+-(void)scrollViewWillEndDragging:(UIScrollView *)scrollView
+                    withVelocity:(CGPoint)velocity
+             targetContentOffset:(inout CGPoint *)targetContentOffset{
+    
+    if (velocity.y > 0 && self.FooterWithTextConstraint.constant == ImagePickerFooterFilterHeightConstant){
+        NSLog(@"scrolling down");
+        
+        [UIView animateWithDuration:0.4f
+                              delay:0.0f
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             self.FooterWithTextConstraint.constant = 0.0f;
+                             [self.view layoutIfNeeded];
+                         } completion:^(BOOL finished) {
+                             
+                         }];
+    }
+    if (velocity.y < 0  && self.FooterWithTextConstraint.constant == 0.0f){
+        NSLog(@"scrolling up");
+        [UIView animateWithDuration:0.4f
+                              delay:0.0f
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             
+                             self.FooterWithTextConstraint.constant = ImagePickerFooterFilterHeightConstant;
+                             [self.view layoutIfNeeded];
+                             
+                         } completion:^(BOOL finished) {
+                             
+                         }];
+    }
+}
+
+
 - (void)didAddImages :(NSMutableArray*)ImageCollection {
     
 }
 
 /*
  created date:      11/06/2018
- last modified:     14/07/2018
- remarks:
+ last modified:     02/02/2019
+ remarks:           it gets the original image, but doesn't dismiss the view instantly.
+                    BUG FOR EACH ADDITIONAL PHOTO ADDED DUPLICATES * AMT
  */
 - (IBAction)AddSelectionPressed:(id)sender {
 
@@ -375,9 +369,67 @@
     
     NSPredicate *pred = [NSPredicate predicateWithFormat:@"selected = %@", @YES];
     NSMutableArray *imageCollection = [NSMutableArray arrayWithArray:[self.imageitems filteredArrayUsingPredicate:pred]];
+
     
-    [self.delegate didAddImages :imageCollection];
-    [self dismissViewControllerAnimated:YES completion:Nil];
+    if (self.wikiimages && [self.SwitchHighQuality isOn]) {
+        
+        // This will be a view suspending all user activity until task is completed.
+        
+        [self.ActivityLoading startAnimating];
+        self.VisualEffectViewWaiting.hidden = false;
+        
+        NSArray *AllowedTypes = [[NSArray alloc] initWithObjects:@"png",@"gif",@"jpg",@"jpeg",@"bmp",nil];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF IN %@ AND SELF != nil", AllowedTypes];
+
+        for (ImageNSO *item in imageCollection) {
+        
+            bool typefound = [predicate evaluateWithObject:[[item.originalsource pathExtension] lowercaseString]];
+            if (!typefound) {
+                if (item == [self.imageitems lastObject]) {
+                    self.VisualEffectViewWaiting.hidden = true;
+                    [self.ActivityLoading stopAnimating];
+                }
+                continue;
+            }
+            NSURL *url = [NSURL URLWithString: item.originalsource];
+            [self downloadImageFrom:url completion:^(UIImage *image) {
+                //dispatch_async(dispatch_get_main_queue(), ^(){
+                   
+                if (image!=nil) {
+                    UIImage *squareimage = image;
+                    if (image.size.height > image.size.width) {
+                        CGRect aRect = CGRectMake(0,(image.size.height / 2) - (image.size.width / 2), image.size.width, image.size.width);
+                        CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], aRect);
+                        squareimage = [UIImage imageWithCGImage:imageRef];
+                        CGImageRelease(imageRef);
+                    } else if (image.size.height < image.size.width) {
+                        CGRect aRect = CGRectMake((image.size.width / 2) - (image.size.height / 2), 0, image.size.height, image.size.height);
+                        CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], aRect);
+                        squareimage = [UIImage imageWithCGImage:imageRef];
+                        CGImageRelease(imageRef);
+                    }
+
+                    item.Image = squareimage;
+                    if (item == [imageCollection lastObject]) {
+                        dispatch_async(dispatch_get_main_queue(), ^(){
+                            self.VisualEffectViewWaiting.hidden = true;
+                            [self.ActivityLoading stopAnimating];
+                            [self.delegate didAddImages :imageCollection];
+                            [self dismissViewControllerAnimated:YES completion:Nil];
+                        });
+
+                    }
+                    
+                }
+
+            }];
+            
+        }
+    } else {
+        [self.delegate didAddImages :imageCollection];
+        [self dismissViewControllerAnimated:YES completion:Nil];
+    }
+    
 }
 
 - (IBAction)StopSearchingPressed:(id)sender {
@@ -386,12 +438,9 @@
     
     NSPredicate *pred = [NSPredicate predicateWithFormat:@"Image!=NULL"];
     self.imageitems = [NSMutableArray arrayWithArray:[self.imageitems filteredArrayUsingPredicate:pred]];
-    
-    
-    
     self.ButtonStopSearching.hidden = true;
 
-    self.ActivityLoading.hidden = true;
+    [self.ActivityLoading startAnimating];
     [self.ImageCollectionView reloadData];
     
 }
@@ -408,5 +457,14 @@
     [self dismissViewControllerAnimated:YES completion:Nil];
     
 }
-
+/*
+ created date:      02/02/2019
+ last modified:     02/02/2019
+ remarks:
+ */
+- (IBAction)SwitchQualityChanged:(id)sender {
+    
+    
+    
+}
 @end

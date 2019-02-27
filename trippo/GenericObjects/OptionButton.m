@@ -10,23 +10,75 @@
 
 @implementation OptionButton
 
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
-}
-*/
+@synthesize buttonColor;
 
-- (id)initWithCoder:(NSCoder*)coder {
-    self = [super initWithCoder:coder];
+
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
     if (self) {
-        self.layer.cornerRadius = self.bounds.size.width/2;
-        self.clipsToBounds = YES;
-        self.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-        
+        [self adjustButtonColor];
     }
+    
     return self;
 }
+
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        [self adjustButtonColor];
+    }
+    
+    return self;
+}
+
+- (void)setSelected:(BOOL)selected
+{
+    [super setSelected:selected];
+    
+    [self adjustButtonColor];
+}
+
+- (void)setHighlighted:(BOOL)highlighted
+{
+    [super setHighlighted:highlighted];
+    
+    [self adjustButtonColor];
+}
+
+
+
+- (void)adjustButtonColor
+{
+    if (!self.selected && !self.highlighted) {
+        UIImage *image = self.imageView.image;
+        
+        self.imageView.image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        [self.imageView setTintColor:[self buttonColor]];
+    }
+}
+
+#pragma mark - Default colors
+
+- (UIColor *)buttonColor
+{
+    if (!buttonColor) {
+        // GREEN >
+        buttonColor = [UIColor colorWithRed:44.0f/255.0f green:127.0f/255.0f blue:89.0f/255.0f alpha:1.0];
+        // ORANGE >
+        // buttonColor = [UIColor colorWithRed:255.0f/255.0f green:91.0f/255.0f blue:73.0f/255.0f alpha:1.0];
+    }
+    return buttonColor;
+}
+
+- (void)setButtonColor:(UIColor *)newButtonColor
+{
+    buttonColor = newButtonColor;
+    [self adjustButtonColor];
+}
+
+
 
 @end

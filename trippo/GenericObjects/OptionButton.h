@@ -12,6 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OptionButton : UIButton
 
+@property (nonatomic, strong) IBInspectable UIColor *buttonColor;
+- (void)adjustButtonColor;
+
 @end
 
 NS_ASSUME_NONNULL_END

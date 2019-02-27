@@ -13,6 +13,12 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     // Initialization code
+    /*
+    UIImage *image = self.ImageViewThumbPhoto.image;
+    
+    self.ImageViewThumbPhoto.image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [self.ImageViewThumbPhoto setTintColor:[UIColor colorWithRed:44.0f/255.0f green:127.0f/255.0f blue:89.0f/255.0f alpha:1.0]];
+    */
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

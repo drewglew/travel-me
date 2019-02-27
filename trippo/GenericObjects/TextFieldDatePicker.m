@@ -23,11 +23,22 @@
     return CGRectZero;
 }
 
+- (void)setEnabled:(BOOL)enabled
+{
+    [super setEnabled:enabled];
+    // Do your customization here, eg:
+    if (enabled) {
+        self.backgroundColor = [UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0];
+    } else {
+        self.backgroundColor = [UIColor lightGrayColor];
+    }
+}
+
 - (BOOL)becomeFirstResponder {
     BOOL outcome = [super becomeFirstResponder];
     if (outcome) {
-        self.backgroundColor = [UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0];
-        self.textColor = [UIColor blackColor];
+        self.backgroundColor = [UIColor colorWithRed:255.0f/255.0f green:91.0f/255.0f blue:73.0f/255.0f alpha:1.0];
+        
     }
     return outcome;
 }
@@ -35,11 +46,13 @@
 - (BOOL)resignFirstResponder {
     BOOL outcome = [super resignFirstResponder];
     if (outcome) {
-        self.backgroundColor = [UIColor clearColor];
-        self.textColor = [UIColor whiteColor];
+        self.backgroundColor = [UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0];
     }
     return outcome;
 }
+
+
+
 
 
 @end

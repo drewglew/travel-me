@@ -21,10 +21,6 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
-    NSURL *url = launchOptions[UIApplicationLaunchOptionsURLKey];
-    
-    //self.databasename = @"travelme_003.db";
-    //self.Db = [[Dal alloc] init];
     NSLocale *theLocale = [NSLocale currentLocale];
     self.HomeCurrencyCode = [theLocale objectForKey:NSLocaleCurrencyCode];
     self.HomeCountryCode = [theLocale objectForKey:NSLocaleCountryCode];
@@ -54,11 +50,26 @@
         }
     }
 
-    if (url){
-        [self InitRealm :url];
-    } else {
-        [self InitRealm :nil];
+    // determine if iPhone has a top notch (iPhoneX etc) or not.
+    self.HasTopNotch = NO;
+    if (@available(iOS 11.0, *)) {
+        UIWindow *mainWindow = [[[UIApplication sharedApplication] delegate] window];
+        if (mainWindow.safeAreaInsets.top > 24.0) {
+            self.HasTopNotch = YES;
+        }
     }
+
+    RLMRealm *realm = [RLMRealm defaultRealm];
+    self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    MenuVC *menu = [storyboard instantiateViewControllerWithIdentifier:@"MenuViewController"];
+    
+    self.PoiBackgroundImageDictionary = [[NSMutableDictionary alloc] init];
+    
+    menu.realm = realm;
+    self.window.rootViewController = menu;
+    [self.window makeKeyAndVisible];
+    
     return YES;
 }
 
@@ -116,12 +127,6 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-    /* open db */
-   self.databasename = @"travelme_01.db";
-    /* open db */
- //   self.Db = [[Dal alloc] init];
-//    [self.Db InitDb:self.databasename];
-
 }
 
 - (BOOL)application:(UIApplication *)app
@@ -134,10 +139,19 @@
                 completionHandler:^(NSData *data,
                                     NSURLResponse *response,
                                     NSError *error) {
+                    
                     NSURL *documentsURL = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
-                    documentsURL = [documentsURL URLByAppendingPathComponent:@"ImportedImage.trippo"];
-                    [data writeToURL:documentsURL atomically:YES];
-                    [self ProcessImportFile];
+                    
+                    NSString *ext = [[url lastPathComponent] pathExtension];
+                    if ([[ext uppercaseString] isEqualToString:@"PDF"]) {
+                        
+                        [self ProcessPdfFile :data :url];
+                        
+                    } else {
+                        documentsURL = [documentsURL URLByAppendingPathComponent:@"ImportedPoi.trippo"];
+                        [data writeToURL:documentsURL atomically:YES];
+                        [self ProcessImportFile];
+                    }
                     
                 }] resume];
     }
@@ -152,60 +166,261 @@
 
 
 /*
+ created date:      24/02/2019
+ last modified:     25/02/2019
+ remarks:           A means of importing PDF's into the App.  Feature will be made available within the App to preview and manage these.
+ */
+-(bool) ProcessPdfFile:(NSData*) PdfData :(NSURL*) url{
+    
+
+
+    NSString *PdfOriginalFileName = [url.absoluteString lastPathComponent];
+
+
+
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Importing PDF Document"
+                                                                   message:@"Please amend the file name, so you can identify it when attaching to a Point of Interest or an Activity."
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        // optionally configure the text field
+        textField.text = PdfOriginalFileName;
+        textField.keyboardType = UIKeyboardTypeAlphabet;
+    }];
+
+    UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK"
+                                                       style:UIAlertActionStyleDefault
+                                                     handler:^(UIAlertAction *action) {
+                                                         UITextField *textField = [alertController.textFields firstObject];
+
+                                                        NSURL *pdfDocumentsURL = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+
+
+                                                        pdfDocumentsURL = [pdfDocumentsURL URLByAppendingPathComponent:@"/PdfImportedDocs/"];
+
+                                                         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+                                                         NSString *pdfDirectory = [paths objectAtIndex:0];
+                                                         NSString *dataPath = [pdfDirectory stringByAppendingPathComponent:@"/PdfImportedDocs"];
+                                                         [[NSFileManager defaultManager] createDirectoryAtPath:dataPath withIntermediateDirectories:YES attributes:nil error:nil];
+                                                         
+                                                        
+
+                                                        RLMRealm *realm = [RLMRealm defaultRealm];
+
+                                                        AttachmentRLM *a = [[AttachmentRLM alloc] init];
+                                                        a.key = [[NSUUID UUID] UUIDString];
+                                                        a.importeddate = [NSDate date];
+
+                                                        a.filename = [NSString stringWithFormat:@"/PdfImportedDocs/%@.pdf",a.key];
+
+                                                        a.notes = textField.text;
+
+                                                        [realm beginWriteTransaction];
+                                                        [realm addObject:a];
+                                                        [realm commitWriteTransaction];
+
+                                                        pdfDocumentsURL = [pdfDocumentsURL URLByAppendingPathComponent:[NSString stringWithFormat:@"/%@.pdf",a.key]];
+
+                                                        [PdfData writeToURL:pdfDocumentsURL atomically:YES];
+                                                         
+                                                     }];
+    [alertController addAction:ok];
+
+    UIViewController *viewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+    if ( viewController.presentedViewController && !viewController.presentedViewController.isBeingDismissed ) {
+        viewController = viewController.presentedViewController;
+    }
+
+    NSLayoutConstraint *constraint = [NSLayoutConstraint
+                                      constraintWithItem:alertController.view
+                                      attribute:NSLayoutAttributeHeight
+                                      relatedBy:NSLayoutRelationLessThanOrEqual
+                                      toItem:nil
+                                      attribute:NSLayoutAttributeNotAnAttribute
+                                      multiplier:1
+                                      constant:viewController.view.frame.size.height*2.0f];
+
+    [alertController.view addConstraint:constraint];
+    [viewController presentViewController:alertController animated:YES completion:^{}];
+    return true;
+
+}
+
+
+/*
  created date:      08/09/2018
- last modified:     09/09/2018
- remarks:           Have plugged in Poi and Activity (tested Poi, not Activity).  Need to add Project too.
+ last modified:     19/02/2019
+ remarks:           Have plugged in Poi.
  */
 -(bool) ProcessImportFile {
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *filePath =  [documentsDirectory stringByAppendingPathComponent:@"ImportedImage.trippo"];
+    NSString *filePath =  [documentsDirectory stringByAppendingPathComponent:@"ImportedPoi.trippo"];
     bool ImportedFile = false;
+    
+    RLMRealm *realm = [RLMRealm defaultRealm];
     
     if([[NSFileManager defaultManager] fileExistsAtPath:filePath]){
     
         NSData *dataJSON = [NSData dataWithContentsOfFile:filePath];
-        NSDictionary *imagedata = [NSJSONSerialization JSONObjectWithData:dataJSON options:kNilOptions error:nil];
-        NSString *typeofimage = [imagedata objectForKey:@"type"];
-        NSString *imagestring = [imagedata objectForKey:@"image"];
-        NSData *nsdataFromBase64String  = [[NSData alloc] initWithBase64EncodedString:imagestring options:0];
-    
-        NSString *imagefilereference = [imagedata objectForKey:@"filereference"];
-        NSString *imagefiledirectory = [imagedata objectForKey:@"directory"];
+        NSDictionary *PoiData = [NSJSONSerialization JSONObjectWithData:dataJSON options:kNilOptions error:nil];
         
-        NSString *NewPath = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",imagefiledirectory]];
+        NSDictionary *ImageData = [PoiData objectForKey:@"ImageObject"];
         
-        [[NSFileManager defaultManager] createDirectoryAtPath:NewPath withIntermediateDirectories:YES attributes:nil error:nil];
+        PoiRLM *poi = [[PoiRLM alloc] init];
+        poi.key = [PoiData objectForKey:@"key"];
         
-        NSString *dataFilePath = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",imagefilereference]];
+        NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init]; [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+        poi.modifieddt = [dateFormat dateFromString:[PoiData objectForKey:@"modifieddt"]];
+        
+        RLMResults <PoiRLM*> *found = [PoiRLM objectsWhere:@"key=%@",poi.key];
+        
+        bool modifyflag = false;
+        bool insertflag = false;
+        bool imagefound = false;
+        
+        
+        if (found.count>0) {
+           if([found[0].modifieddt compare: poi.modifieddt] == NSOrderedAscending ) {
+               /* import is newer than item already in data - we must update existing */
+               modifyflag = true;
+               [realm beginWriteTransaction];
+               found[0].name = [PoiData objectForKey:@"name"];
+               found[0].categoryid = [PoiData objectForKey:@"categoryid"];
+               found[0].countrykey = [PoiData objectForKey:@"countrykey"];
+               found[0].country = [PoiData objectForKey:@"country"];
+               found[0].administrativearea = [PoiData objectForKey:@"administrativearea"];
+               found[0].subadministrativearea = [PoiData objectForKey:@"subadministrativearea"];
+               found[0].fullthoroughfare = [PoiData objectForKey:@"fullthoroughfare"];
+               found[0].privatenotes = [PoiData objectForKey:@"privatenotes"];
+               found[0].locality = [PoiData objectForKey:@"locality"];
+               found[0].sublocality = [PoiData objectForKey:@"sublocality"];
+               found[0].postcode = [PoiData objectForKey:@"postcode"];
+               found[0].wikititle = [PoiData objectForKey:@"wikititle"];
+               found[0].searchstring = [PoiData objectForKey:@"searchstring"];
+               found[0].lat = [PoiData objectForKey:@"lat"];
+               found[0].lon = [PoiData objectForKey:@"lon"];
+               found[0].createddt = [dateFormat dateFromString:[PoiData objectForKey:@"createddt"]];
+               found[0].modifieddt = [dateFormat dateFromString:[PoiData objectForKey:@"modifieddt"]];
+               found[0].authorname = [PoiData objectForKey:@"authorname"];
+               found[0].authorkey = [PoiData objectForKey:@"authorkey"];
+               found[0].sharedby = [PoiData objectForKey:@"sharedby"];
+               found[0].devicesharedby = [PoiData objectForKey:@"devicesharedby"];
+               found[0].importeddt = [dateFormat dateFromString:[PoiData objectForKey:@"shareddt"]];
+               
+               for (ImageCollectionRLM *image in found[0].images) {
+                   if (image.KeyImage && ![image.ImageFileReference isEqualToString:[ImageData objectForKey:@"FileReference"]]) {
+                       image.KeyImage = 0;
+                   }
+               }
+               bool ImageFound = false;
+               for (ImageCollectionRLM *image in found[0].images) {
+                   if ([image.ImageFileReference isEqualToString:[ImageData objectForKey:@"FileReference"]]) {
+                       image.KeyImage = 1;
+                       ImageFound = true;
+                   }
+               }
+               [realm commitWriteTransaction];
+           }
+        } else {
+            insertflag = true;
 
-        [nsdataFromBase64String writeToFile:dataFilePath atomically:YES];
-
-        NSError *error;
-        if (![nsdataFromBase64String writeToFile:dataFilePath options:NSDataWritingFileProtectionNone error:&error]) {
-            // Error occurred. Details are in the error object.
-            NSLog(@"%@",error);
+            [realm beginWriteTransaction];
+            poi.name = [PoiData objectForKey:@"name"];
+            poi.categoryid = [PoiData objectForKey:@"categoryid"];
+            poi.countrykey = [PoiData objectForKey:@"countrykey"];
+            poi.country = [PoiData objectForKey:@"country"];
+            poi.countrycode = [PoiData objectForKey:@"countrycode"];
+            poi.administrativearea = [PoiData objectForKey:@"administrativearea"];
+            poi.subadministrativearea = [PoiData objectForKey:@"subadministrativearea"];
+            poi.fullthoroughfare = [PoiData objectForKey:@"fullthoroughfare"];
+            poi.privatenotes = [PoiData objectForKey:@"privatenotes"];
+            poi.locality = [PoiData objectForKey:@"locality"];
+            poi.sublocality = [PoiData objectForKey:@"sublocality"];
+            poi.postcode = [PoiData objectForKey:@"postcode"];
+            poi.wikititle = [PoiData objectForKey:@"wikititle"];
+            poi.searchstring = [PoiData objectForKey:@"searchstring"];
+            poi.lat = [PoiData objectForKey:@"lat"];
+            poi.lon = [PoiData objectForKey:@"lon"];
+            poi.createddt = [dateFormat dateFromString:[PoiData objectForKey:@"createddt"]];
+            poi.authorname = [PoiData objectForKey:@"authorname"];
+            poi.authorkey = [PoiData objectForKey:@"authorkey"];
+            poi.sharedby = [PoiData objectForKey:@"sharedby"];
+            poi.importeddt = [dateFormat dateFromString:[PoiData objectForKey:@"shareddt"]];
+            poi.devicesharedby = [PoiData objectForKey:@"devicesharedby"];
+            [realm addObject:poi];
+            
+            [realm commitWriteTransaction];
+            
+            
         }
         
+        NSData *nsdataFromBase64String  = [[NSData alloc] initWithBase64EncodedString:[ImageData objectForKey:@"Image"] options:0];
+        
+        ImageCollectionRLM *img = [[ImageCollectionRLM alloc] init];
+        
+        if (insertflag || modifyflag) {
 
-        [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
+            NSString *imagefiledirectory = [ImageData objectForKey:@"Directory"];
+            img.ImageFileReference = [ImageData objectForKey:@"ImageFileReference"];
+            img.key = [ImageData objectForKey:@"Key"];
+            img.KeyImage = true;
+            
+            if (!imagefound && ![img.key isEqualToString:@"N/A"]) {
+                
+                NSString *NewPath = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",imagefiledirectory]];
+                
+                [[NSFileManager defaultManager] createDirectoryAtPath:NewPath withIntermediateDirectories:YES attributes:nil error:nil];
+                
+                NSString *dataFilePath = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",img.ImageFileReference]];
+                
+                [nsdataFromBase64String writeToFile:dataFilePath atomically:YES];
+                
+                NSError *error;
+                if (![nsdataFromBase64String writeToFile:dataFilePath options:NSDataWritingFileProtectionNone error:&error]) {
+                    // Error occurred. Details are in the error object.
+                    NSLog(@"%@",error);
+                }
+                [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
+                
+                [realm beginWriteTransaction];
+                if (insertflag) {
+                    [poi.images addObject:img];
+                } else if (modifyflag) {
+                    [found[0].images addObject:img];
+                }
+                [realm commitWriteTransaction];
+                
+                CGSize imagesize = CGSizeMake(100 , 100);
+                
+                if (insertflag) {
+                    [self.PoiBackgroundImageDictionary setObject:[ToolBoxNSO imageWithImage:[UIImage imageWithData:nsdataFromBase64String] convertToSize:imagesize] forKey:poi.key];
+                } else if (modifyflag) {
+                    [self.PoiBackgroundImageDictionary setObject:[ToolBoxNSO imageWithImage:[UIImage imageWithData:nsdataFromBase64String] convertToSize:imagesize] forKey:found[0].key];
+                }
+                
+            }
+
+        }
 
         // now show the alert
         UIAlertController *alertController;
-        if (error==nil && nsdataFromBase64String!=nil) {
-            alertController = [UIAlertController alertControllerWithTitle:@"Imported!" message:[NSString stringWithFormat:@"\n\n%@ image has been added to your device!",typeofimage] preferredStyle:UIAlertControllerStyleAlert];
-            
+        if (insertflag) {
+            alertController = [UIAlertController alertControllerWithTitle:@"Imported!" message:[NSString stringWithFormat:@"\n\nThe Point of Interest '%@' has been added to your device!",poi.name] preferredStyle:UIAlertControllerStyleAlert];
+        } else if (modifyflag) {
+            alertController = [UIAlertController alertControllerWithTitle:@"Imported!" message:[NSString stringWithFormat:@"\n\nThe Point of Interest '%@' has been updated!",found[0].name] preferredStyle:UIAlertControllerStyleAlert];
+        } else {
+             alertController = [UIAlertController alertControllerWithTitle:@"Warning!" message:[NSString stringWithFormat:@"\n\nThe Point of Interest '%@' has not been modified!",found[0].name] preferredStyle:UIAlertControllerStyleAlert];
+        }
+        if (![img.key isEqualToString:@"N/A"]) {
             /* try and add image into view. */
             UIImageView *img = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 40, 40)];
             img.image = [UIImage imageWithData:nsdataFromBase64String];
             [alertController.view addSubview:img];
             ImportedFile = true;
-            
-            
-        } else {
-            alertController = [UIAlertController alertControllerWithTitle:@"Failed!" message:@"Unable to import image.  Maybe it has already been added or it is in an unexpected format." preferredStyle:UIAlertControllerStyleAlert];
         }
+        
         UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
         [alertController addAction:ok];
         
@@ -229,5 +444,7 @@
     }
     return ImportedFile;
 }
+
+
 
 @end

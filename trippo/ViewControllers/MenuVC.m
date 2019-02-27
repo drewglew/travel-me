@@ -14,6 +14,7 @@
 
 @implementation MenuVC
 int Adjustment;
+bool FirstLoad;
 
 - (NSURL *)applicationDocumentsDirectory
 {
@@ -23,67 +24,24 @@ int Adjustment;
 
 /*
  created date:      27/04/2018
- last modified:     21/10/2018
+ last modified:     19/02/2019
  remarks:           Simple delete action that initially can be triggered by user on a button.
  */
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.FeaturedPoiMap.delegate = self;
+    self.ImageViewFeaturedPoi.layer.borderWidth = 2;
+    self.ImageViewFeaturedPoi.layer.borderColor = [UIColor whiteColor].CGColor;
+    
+    FirstLoad = true;
     self.TripImageDictionary = [[NSMutableDictionary alloc] init];
-
     self.selectedtripitems = [[NSMutableArray alloc] init];
-    
-    Adjustment = self.ViewFeature.frame.size.width + 10;
-    self.FeaturedViewTrailingConstraint.constant = self.FeaturedViewTrailingConstraint.constant - Adjustment;
-
-    self.ViewFeature.hidden = true;
-    // New item
-    
     [self LocateTripContent];
-    
-
     
     [self.CollectionViewPreviewPanel reloadData];
     
-    
-    
-    self.LabelAbout.attributedText=[[NSAttributedString alloc]
-                                        initWithString:@"About"
-                                        attributes:@{
-                                                     NSStrokeWidthAttributeName: @-1.0,
-                                                     NSStrokeColorAttributeName:[UIColor blackColor],
-                                                     NSForegroundColorAttributeName:[UIColor whiteColor]
-                                                     }
-                                        ];
-    
-    self.LabelAllTrips.attributedText=[[NSAttributedString alloc]
-                                    initWithString:@"Trips"
-                                    attributes:@{
-                                                 NSStrokeWidthAttributeName: @-1.0,
-                                                 NSStrokeColorAttributeName:[UIColor blackColor],
-                                                 NSForegroundColorAttributeName:[UIColor whiteColor]
-                                                 }
-                                    ];
-    self.LabelSettings.attributedText=[[NSAttributedString alloc]
-                                       initWithString:@"Settings"
-                                       attributes:@{
-                                                    NSStrokeWidthAttributeName: @-1.0,
-                                                    NSStrokeColorAttributeName:[UIColor blackColor],
-                                                    NSForegroundColorAttributeName:[UIColor whiteColor]
-                                                    }
-                                       ];
-    
-    self.LabelPoiSearch.attributedText=[[NSAttributedString alloc]
-                                       initWithString:@"Points of Interest"
-                                       attributes:@{
-                                                    NSStrokeWidthAttributeName: @-1.0,
-                                                    NSStrokeColorAttributeName:[UIColor blackColor],
-                                                    NSForegroundColorAttributeName:[UIColor whiteColor]
-                                                    }
-                                       ];
-    
-    
     self.LabelFeaturedPoi.attributedText=[[NSAttributedString alloc]
-                                          initWithString:@"Featured..."
+                                          initWithString:@"In focus..."
                                           attributes:@{
                                                        NSStrokeWidthAttributeName: @-1.0,
                                                        NSStrokeColorAttributeName:[UIColor blackColor],
@@ -91,9 +49,9 @@ int Adjustment;
                                                        }
                                           ];
     
-    
+
     __weak typeof(self) weakSelf = self;
-    
+
     self.notification = [self.realm addNotificationBlock:^(NSString *note, RLMRealm *realm) {
         [weakSelf LocateTripContent];
         [weakSelf.CollectionViewPreviewPanel reloadData];
@@ -102,28 +60,56 @@ int Adjustment;
 
 /*
  created date:      18/08/2018
- last modified:     21/10/2018
+ last modified:     19/02/2019
  remarks:
  */
 -(void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+
     [self.ActivityView stopAnimating];
     [self LoadFeaturedPoi];
     
     self.alltripitems = [TripRLM allObjects];
-    
+    /*
     for (TripRLM *item in self.alltripitems) {
-        RLMResults <ActivityRLM*> *activities = [ActivityRLM objectsWhere:@"tripkey = %@", item.key];
-        
-        NSDate *startdt = [activities minOfProperty:@"startdt"];
-        NSDate *enddt = [activities maxOfProperty:@"enddt"];
-        
-        [self.realm transactionWithBlock:^{
-            item.startdt = startdt;
-            item.enddt = enddt;
-        }];
+        RLMResults <ActivityRLM*> *activities = [ActivityRLM objectsWhere:@"tripkey = %@ and state==1", item.key];
+        if (activities.count>0) {
+            NSDate *startdt = [activities minOfProperty:@"startdt"];
+            NSDate *enddt = [activities maxOfProperty:@"enddt"];
+            
+            [self.realm transactionWithBlock:^{
+                item.startdt = startdt;
+                item.enddt = enddt;
+            }];
+        }
     }
+     */
+    FirstLoad = false;
+    
+    RLMResults <SettingsRLM*> *settings = [SettingsRLM allObjects];
+    if (settings.count==0) {
+        self.ViewRegisterWarning.hidden = false;
+        CABasicAnimation *animation =
+        [CABasicAnimation animationWithKeyPath:@"position"];
+        [animation setDuration:0.05];
+        [animation setRepeatCount:5];
+        [animation setAutoreverses:YES];
+        [animation setFromValue:[NSValue valueWithCGPoint:
+                                 CGPointMake([self.ViewRegisterWarning center].x - 20.0f, [self.ViewRegisterWarning center].y)]];
+        [animation setToValue:[NSValue valueWithCGPoint:
+                               CGPointMake([self.ViewRegisterWarning center].x + 20.0f, [self.ViewRegisterWarning center].y)]];
+        [[self.ViewRegisterWarning layer] addAnimation:animation forKey:@"position"];
+        self.Settings = nil;
+    } else {
+        self.Settings = settings[0];
+        self.ViewRegisterWarning.hidden = true;
+    }
+    
 }
+
+
+
+
 
 
 
@@ -276,10 +262,6 @@ int Adjustment;
 }
 
 
--(UIStatusBarStyle)preferredStatusBarStyle
-{
-    return UIStatusBarStyleDefault;
-}
 
 /*
  created date:      18/08/2018
@@ -301,6 +283,16 @@ int Adjustment;
     self.FeaturedPoi = [poicollection objectAtIndex:featuredIndex];
     
     NSLog(@"Name=%@",self.FeaturedPoi.name);
+    
+    self.LabelFeaturedPoi.attributedText=[[NSAttributedString alloc]
+                                          initWithString:[NSString stringWithFormat:@"In focus... %@", self.FeaturedPoi.name]
+                                          attributes:@{
+                                                       NSStrokeWidthAttributeName: @-1.0,
+                                                       NSStrokeColorAttributeName:[UIColor blackColor],
+                                                       NSForegroundColorAttributeName:[UIColor whiteColor]
+                                                       }
+                                          ];
+    
     
     NSURL *url = [self applicationDocumentsDirectory];
     
@@ -330,14 +322,29 @@ int Adjustment;
     } else {
         self.ImageViewFeaturedPoi.image = [UIImage imageNamed:@"Poi"];
     }
-    self.ViewFeature.hidden = false;
-    [UIView animateWithDuration:0.75f animations:^{
-        self.FeaturedViewTrailingConstraint.constant = self.FeaturedViewTrailingConstraint.constant + Adjustment;
-        [self.view layoutIfNeeded];
-    } completion:^(BOOL finished) {
-        NSLog(@"LoadFeaturedPoi %f",  self.FeaturedViewTrailingConstraint.constant);
-        NSLog(@"LoadFeaturedPoi %f", self.ViewFeature.frame.size.width);
-    }];
+    
+    [self.FeaturedPoiMap removeAnnotations:self.FeaturedPoiMap.annotations];
+    
+    MKPointAnnotation *anno = [[MKPointAnnotation alloc] init];
+    anno.title = self.FeaturedPoi.name;
+    anno.subtitle = [NSString stringWithFormat:@"%@", self.FeaturedPoi.administrativearea];
+    
+    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake([self.FeaturedPoi.lat doubleValue], [self.FeaturedPoi.lon doubleValue]);
+    
+    anno.coordinate = coord;
+    
+    //NSNumber *radius = [self.TypeDistanceItems objectAtIndex:[self.Poi.categoryid unsignedLongValue]];
+    
+    [self.FeaturedPoiMap setCenterCoordinate:coord animated:YES];
+    
+    //MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(coord, [radius doubleValue] * 2.2, [radius doubleValue] * 2.2);
+    
+    //MKCoordinateRegion adjustedRegion = [self.PoiMapView regionThatFits:viewRegion];
+    //[self.PoiMapView setRegion:adjustedRegion animated:YES];
+    [self.FeaturedPoiMap addAnnotation:anno];
+    [self.FeaturedPoiMap selectAnnotation:anno animated:YES];
+    
+    
 }
 
 
@@ -351,8 +358,6 @@ int Adjustment;
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
 
-    self.FeaturedViewTrailingConstraint.constant = self.FeaturedViewTrailingConstraint.constant - Adjustment;
-    
     if([segue.identifier isEqualToString:@"ShowPoiList"]){
         PoiSearchVC *controller = (PoiSearchVC *)segue.destinationViewController;
         controller.delegate = self;
@@ -368,6 +373,11 @@ int Adjustment;
         controller.delegate = self;
         controller.PointOfInterest = self.FeaturedPoi;
         controller.readonlyitem = true;
+        controller.realm = self.realm;
+    } else if ([segue.identifier isEqualToString:@"ShowSettings"]){
+        SettingsVC *controller= (SettingsVC *)segue.destinationViewController;
+        controller.delegate = self;
+        controller.Settings = self.Settings;
         controller.realm = self.realm;
     }
 }
@@ -428,6 +438,8 @@ int Adjustment;
                                                        }
                                           ];
     
+    cell.ImageViewProject.layer.cornerRadius = cell.ImageViewProject.bounds.size.width / 2;
+    cell.ImageViewProject.layer.masksToBounds = true;
     
     return cell;
 }
@@ -443,7 +455,7 @@ int Adjustment;
     TripRLM *trip = [self.selectedtripitems objectAtIndex:indexPath.row];
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
 
-    self.FeaturedViewTrailingConstraint.constant = self.FeaturedViewTrailingConstraint.constant - Adjustment;
+    //self.FeaturedViewTrailingConstraint.constant = self.FeaturedViewTrailingConstraint.constant - Adjustment;
 
     if (trip.itemgrouping==[NSNumber numberWithInt:3] || trip.itemgrouping==[NSNumber numberWithInt:5]) {
         ProjectDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ProjectDataEntryViewController"];
@@ -503,7 +515,7 @@ int Adjustment;
 - (IBAction)ButtonShowPoiListPressed:(id)sender {
 
     
-    self.FeaturedViewTrailingConstraint.constant = self.FeaturedViewTrailingConstraint.constant - Adjustment;
+    //self.FeaturedViewTrailingConstraint.constant = self.FeaturedViewTrailingConstraint.constant - Adjustment;
     
     [self.ActivityView startAnimating];
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate date]];
@@ -548,4 +560,6 @@ int Adjustment;
 
 /* optimize - if returning from projects/trips we need to update, not after every update */
 
+- (IBAction)SwitchImageEnabler:(id)sender {
+}
 @end

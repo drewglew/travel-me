@@ -44,5 +44,7 @@
 
 @property (weak, nonatomic) IBOutlet UILabel *LabelWarningNoInet;
 
+@property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentMapType;
+
 
 @end

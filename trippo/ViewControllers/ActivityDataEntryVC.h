@@ -14,7 +14,6 @@
 #import "PoiListCell.h"
 #import "PoiImageNSO.h"
 #import "PoiDataEntryVC.h"
-#import "DatePickerRangeVC.h"
 #import "DirectionsVC.h"
 #import "PaymentListingVC.h"
 #import "HCSStarRatingView.h"
@@ -23,12 +22,15 @@
 #import <TesseractOCR/TesseractOCR.h>
 #import "TOCropViewController.h"
 #import "TextFieldDatePicker.h"
+#import "OptionButton.h"
+#import "AttachmentCell.h"
+#import "DocumentsVC.h"
 
 @protocol ActivityDataEntryDelegate <NSObject>
 - (void)didUpdateActivityImages :(bool) ForceUpdate;
 @end
 
-@interface ActivityDataEntryVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, MKMapViewDelegate, PoiDataEntryDelegate, SelectDateRangeDelegate, DirectionsDelegate, PaymentListingDelegate, UITextViewDelegate,UITextFieldDelegate, UICollectionViewDelegate, UICollectionViewDataSource,UIImagePickerControllerDelegate, UINavigationControllerDelegate, ImagePickerDelegate, UIScrollViewDelegate,G8TesseractDelegate, TOCropViewControllerDelegate>
+@interface ActivityDataEntryVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, MKMapViewDelegate, PoiDataEntryDelegate, DirectionsDelegate, PaymentListingDelegate, DocumentsDelegate, UITextViewDelegate,UITextFieldDelegate, UICollectionViewDelegate, UICollectionViewDataSource,UIImagePickerControllerDelegate, UINavigationControllerDelegate, ImagePickerDelegate, UIScrollViewDelegate,G8TesseractDelegate, TOCropViewControllerDelegate>
 @property (nonatomic) UIImage *PoiImage;
 @property (assign) bool newitem;
 @property (assign) bool transformed;
@@ -43,6 +45,7 @@
 @property TripRLM *Trip;
 @property RLMRealm *realm;
 @property (strong, nonatomic) NSMutableDictionary *ActivityImageDictionary;
+@property (strong, nonatomic) NSMutableDictionary *DocumentDictionary;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewPoi;
 @property (weak, nonatomic) IBOutlet MKMapView *PoiMapView;
 @property (weak, nonatomic) IBOutlet UITextField *TextFieldName;
@@ -54,7 +57,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelCheckInOut;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonDirections;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonPayment;
-@property (weak, nonatomic) IBOutlet UIButton *ButtonDateRange;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonCancel;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonScan;
 
@@ -63,6 +65,9 @@
 @property (weak, nonatomic) IBOutlet UIView *ViewMain;
 @property (weak, nonatomic) IBOutlet UIView *ViewNotes;
 @property (weak, nonatomic) IBOutlet UIView *ViewPhotos;
+@property (weak, nonatomic) IBOutlet UIView *ViewDocuments;
+@property (weak, nonatomic) IBOutlet UITableView *TableViewAttachments;
+@property (weak, nonatomic) IBOutlet WKWebView *WebViewPreview;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *ImageViewIdeaWidthConstraint;
 @property (weak, nonatomic) IBOutlet HCSStarRatingView *ViewStarRating;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *ViewEffectBlurDetailHeightConstraint;
@@ -84,5 +89,11 @@
 @property (nonatomic, strong)IBOutlet TextFieldDatePicker  *TextFieldStartDt;
 @property (nonatomic, strong)IBOutlet TextFieldDatePicker  *TextFieldEndDt;
 @property (nonatomic, strong)IBOutlet UILabel  *LabelDuration;
+@property (weak, nonatomic) IBOutlet UIVisualEffectView *ViewBackground;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *ConstraintBottomNotes;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonExpandCollapseList;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *ViewDocumentListHeightConstraint;
+
+
 @end
 

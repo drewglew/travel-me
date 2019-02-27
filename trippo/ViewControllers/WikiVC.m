@@ -13,27 +13,26 @@
 @end
 
 @implementation WikiVC
-
+CGFloat WikiFooterFilterHeightConstant;
 /*
  created date:      13/06/2018
- last modified:     19/07/2018
- remarks:
+ last modified:     04/02/2019
+ remarks:           Need to make sure we create folder
  */
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.webView.scrollView.delegate = self;
+
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentDirectory = [paths objectAtIndex:0];
     
-    /*
-     NSArray *parms = [self.PointOfInterest.wikititle componentsSeparatedByString:@"~"];
-     NSString *url = [NSString stringWithFormat:@"https://%@.wikipedia.org/api/rest_v1/page/media/%@",[parms objectAtIndex:0] , [parms objectAtIndex:1]];
-     
-     (self.PointOfInterest.wikititle)
-     */
+    NSString *dataPath = [documentDirectory stringByAppendingPathComponent:@"/WikiDocs/"];
     
+    [[NSFileManager defaultManager] createDirectoryAtPath:dataPath withIntermediateDirectories:YES attributes:nil error:nil];
+
     NSString *wikiDataFilePath = [documentDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/WikiDocs/%@.pdf",self.PointOfInterest.key]];
     
     if (![fileManager fileExistsAtPath:wikiDataFilePath]){
@@ -46,18 +45,32 @@
         }
     } else {
         /* present the WikiPage that is saved already */
+        NSString *HomeLanguage = [[AppDelegateDef.CountryDictionary objectForKey:AppDelegateDef.HomeCountryCode] lowercaseString];
+        NSString *LocalLanguage = [[AppDelegateDef.CountryDictionary objectForKey:self.PointOfInterest.countrycode] lowercaseString];
+        NSString *PageLanguage =  [self.PointOfInterest.wikititle substringWithRange:NSMakeRange(0, 2)];
+        
+        if ([PageLanguage isEqualToString:HomeLanguage]) {
+            [self.SegmentLanguageOption setSelectedSegmentIndex:0];
+        } else if ([PageLanguage isEqualToString:LocalLanguage]) {
+            // segment index = 1
+            [self.SegmentLanguageOption setSelectedSegmentIndex:1];
+        } else {
+            [self.SegmentLanguageOption setSelectedSegmentIndex:2];
+            // segment index = 2
+        }
+
         NSURL *targetURL = [NSURL fileURLWithPath:wikiDataFilePath];
         NSData *data = [NSData dataWithContentsOfURL:targetURL];
         [self.webView loadData:data MIMEType:@"application/pdf" characterEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@""]];
     }
-    
+    WikiFooterFilterHeightConstant = self.FooterWithSegmentConstraint.constant;
     self.webView.hidden=false;
     // Do any additional setup after loading the view.
-}
-
--(UIStatusBarStyle)preferredStatusBarStyle
-{
-    return UIStatusBarStyleLightContent;
+    self.ViewLoading.layer.cornerRadius=8.0f;
+    self.ViewLoading.layer.masksToBounds=YES;
+    self.ViewLoading.layer.borderWidth = 1.0f;
+    self.ViewLoading.layer.borderColor=[[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]CGColor];
+    
 }
 
 /*
@@ -97,7 +110,7 @@
                     self.PointOfInterest.wikititle =  [NSString stringWithFormat:@"%@~%@",language,titleText];
                     
                     [self.delegate updatePoiFromWikiActvity :self.PointOfInterest];
-                    [self MakeWikiFile:titleText :wikiPathName :language];
+                    [self MakeWikiFile :titleText :wikiPathName :language];
                 });
                     
                 /*
@@ -120,18 +133,27 @@
 NSString *urlstring = [NSString stringWithFormat:@"https://%@.wikipedia.org/api/rest_v1/page/pdf/%@",language,Title];
 NSURL *url = [NSURL URLWithString:[urlstring stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
     
+[self.ActivityIndicator startAnimating];
+[self.ViewLoading setHidden:FALSE];
+    
 NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
                                       dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
                                           
                                           if ([[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]) {
                                               NSLog(@"error");
                                               self.PointOfInterest.wikititle=@"";
+                                              
                                               dispatch_async(dispatch_get_main_queue(), ^(void){
+                                                  self.LabelInfo.text = @"An error occurred in download PDF Wiki service";
+                                                  [self.ActivityIndicator stopAnimating];
+                                                  [self.ViewLoading setHidden:TRUE];
                                                    self.webView.hidden = true;
                                               });
                                           } else {
-                                            
+
                                               [data writeToFile:wikiPathName options:NSDataWritingAtomic error:&error];
+                                              
+                                              NSLog(@"TEST");
                                               
                                               dispatch_async(dispatch_get_main_queue(), ^(void){
                                                   
@@ -141,14 +163,75 @@ NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
                                                   
                                                   [self.webView loadData:data MIMEType:@"application/pdf" characterEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@""]];
                                                   
+                                                  self.LabelInfo.text = @"Download completed.";
+                                                  [self.ActivityIndicator stopAnimating];
+                                                  [self.ViewLoading setHidden:TRUE];
+                                                  
                                                   self.webView.hidden=false;
                                                   
                                               });
+                                             
                                           }
                                       }];
 
         [downloadTask resume];
 }
+
+
+/*
+ created date:      04/02/2019
+ last modified:     04/02/2019
+ remarks:  Wiki PDF generator not working..
+ */
+-(void) MakeWikiFileV2 :(NSString*)Title :(NSString *)wikiPathName :(NSString *)language {
+    NSString *urlstring = [NSString stringWithFormat:@"https://%@.wikipedia.org/api/rest_v1/page/html/%@",language,Title];
+    NSURL *url = [NSURL URLWithString:[urlstring stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+    
+    NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
+                                          dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                                              
+                                              if ([[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]) {
+                                                  NSLog(@"error");
+                                                  self.PointOfInterest.wikititle=@"";
+                                                  dispatch_async(dispatch_get_main_queue(), ^(void){
+                                                      
+                                                      self.PointOfInterest.wikititle =  [NSString stringWithFormat:@"%@~%@",language,Title];
+                                                      
+                                                      //[self.delegate updatePoiFromWikiActvity :self.PointOfInterest];
+                                                      
+                                                      [self.webView loadData:data MIMEType:@"application/html" characterEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@""]];
+                                                      
+                                                      self.webView.hidden=false;
+                                                      
+                                                  });
+                                                      
+                                                      
+                                                      
+                                                      
+                                                  
+                                              } else {
+ 
+                                                  /*
+                                                  [data writeToFile:wikiPathName options:NSDataWritingAtomic error:&error];
+                                                  */
+                                                  dispatch_async(dispatch_get_main_queue(), ^(void){
+                                                      
+                                                      self.PointOfInterest.wikititle =  [NSString stringWithFormat:@"%@~%@",language,Title];
+                                                      
+                                                      [self.delegate updatePoiFromWikiActvity :self.PointOfInterest];
+                                                      
+                                                      [self.webView loadData:data MIMEType:@"application/html" characterEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@""]];
+                                                      
+                                                      self.webView.hidden=false;
+                                                      
+                                                  });
+                                                  
+                                              }
+                                          }];
+    
+    [downloadTask resume];
+}
+
 
 
 
@@ -253,6 +336,44 @@ NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
         NSLog(@"Device is not connected to the Internet");
     }
     
+}
+
+/*
+ created date:      06/02/2019
+ last modified:     06/02/2019
+ remarks:
+ */
+-(void)scrollViewWillEndDragging:(UIScrollView *)scrollView
+                    withVelocity:(CGPoint)velocity
+             targetContentOffset:(inout CGPoint *)targetContentOffset{
+    
+    if (velocity.y > 0 && self.FooterWithSegmentConstraint.constant == WikiFooterFilterHeightConstant){
+        NSLog(@"scrolling down");
+        
+        [UIView animateWithDuration:0.4f
+                              delay:0.0f
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             self.FooterWithSegmentConstraint.constant = 0.0f;
+                             [self.view layoutIfNeeded];
+                         } completion:^(BOOL finished) {
+                             
+                         }];
+    }
+    if (velocity.y < 0  && self.FooterWithSegmentConstraint.constant == 0.0f){
+        NSLog(@"scrolling up");
+        [UIView animateWithDuration:0.4f
+                              delay:0.0f
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             
+                             self.FooterWithSegmentConstraint.constant = WikiFooterFilterHeightConstant;
+                             [self.view layoutIfNeeded];
+                             
+                         } completion:^(BOOL finished) {
+                             
+                         }];
+    }
 }
 
 

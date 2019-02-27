@@ -34,14 +34,16 @@
 */
 - (void)layoutSubviews {
     [super layoutSubviews];
-    self.ButtonDelete.layer.cornerRadius = 17.5;
-    self.ButtonDelete.clipsToBounds = YES;
-    self.ButtonDelete.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
+    //self.ButtonDelete.layer.cornerRadius = 17.5;
+    //self.ButtonDelete.clipsToBounds = YES;
+    //self.ButtonDelete.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
     self.ViewPoiType.layer.cornerRadius = 17.5;
     self.ViewPoiType.clipsToBounds = YES;
     //self.ViewPoiType.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
     self.layer.cornerRadius = 8;
     self.clipsToBounds = YES;
+    //self.layer.borderWidth = 1.0;
+    //self.layer.borderColor = [UIColor whiteColor].CGColor;
 }
 
 

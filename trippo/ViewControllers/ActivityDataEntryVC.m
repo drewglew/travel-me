@@ -9,33 +9,51 @@
 #import "ActivityDataEntryVC.h"
 
 @interface ActivityDataEntryVC ()
+@property RLMNotificationToken *notification;
 @end
 
 int BlurredMainViewPresentedHeight;
 int BlurredImageViewPresentedHeight=60;
+int DocumentListingViewPresentedHeight = 250;
 @implementation ActivityDataEntryVC
 @synthesize ImageViewPoi;
 @synthesize delegate;
 
 /*
  created date:      01/05/2018
- last modified:     16/09/2018
+ last modified:     21/02/2019
  remarks:
  */
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    if (self.Activity.state == [NSNumber  numberWithInteger:0]) {
+        self.ImagePicture.image = [UIImage imageNamed:@"Planning"];
+        self.ImageViewKeyActivity.image = [UIImage imageNamed:@"Planning"];
+        
+    } else {
+        self.ImagePicture.image = [UIImage imageNamed:@"Activity"];
+        self.ImageViewKeyActivity.image = [UIImage imageNamed:@"Activity"];
+        self.ViewBackground.backgroundColor = [UIColor colorWithRed:22.0f/255.0f green:118.0f/255.0f blue:255.0f/255.0f alpha:1.0];
+    }
+    
     self.ActivityImageDictionary = [[NSMutableDictionary alloc] init];
+    
+    self.TableViewAttachments.delegate = self;
     
     self.TextFieldName.layer.cornerRadius=8.0f;
     self.TextFieldName.layer.masksToBounds=YES;
     self.TextFieldName.layer.borderColor=[[UIColor clearColor] CGColor];
     self.TextFieldName.layer.borderWidth= 1.0f;
     
+    self.TextFieldReference.layer.cornerRadius=8.0f;
+    self.TextFieldReference.layer.borderColor=[[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]CGColor];
+    self.TextFieldReference.layer.borderWidth = 2.0f;
+
     self.TextViewNotes.layer.cornerRadius=8.0f;
     self.TextViewNotes.layer.masksToBounds=YES;
-    self.TextViewNotes.layer.borderColor=[[UIColor colorWithRed:175.0f/255.0f green:46.0f/255.0f blue:17.0f/255.0f alpha:1.0]CGColor];
-    self.TextViewNotes.layer.borderWidth= 1.0f;
+    self.TextViewNotes.layer.borderColor=[[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]CGColor];
+    self.TextViewNotes.layer.borderWidth= 2.0f;
     
     self.ViewSelectedKey.layer.cornerRadius=28;
     self.ViewSelectedKey.layer.masksToBounds=YES;
@@ -85,79 +103,82 @@ int BlurredImageViewPresentedHeight=60;
                                 @100 // fuel pump, 38
                                 ];
     
+    NSDate *defaultStartDt = [NSDate date];
+    NSDate *defaultEndDt = [NSDate date];
+    
     NSDate *today = [NSDate date];
     if (self.deleteitem) {
-        UIImage *btnImage = [UIImage imageNamed:@"Delete"];
+        UIImage *btnImage = [UIImage imageNamed:@"TrashCan"];
+        
+        
+    
         [self.ButtonAction setImage:btnImage forState:UIControlStateNormal];
-        [self.ButtonAction setBackgroundColor:[UIColor colorWithRed:251.0f/255.0f green:13.0f/255.0f blue:68.0f/255.0f alpha:1.0]];
+        //[self.ButtonAction setBackgroundColor:[UIColor colorWithRed:251.0f/255.0f green:13.0f/255.0f blue:68.0f/255.0f alpha:1.0]];
         [self.ButtonAction setTitle:@"" forState:UIControlStateNormal];
         
         [self LoadActivityData];
+        [self LoadDocuments];
         
         self.CollectionViewActivityImages.scrollEnabled = true;
     } else if (!self.newitem && !self.transformed) {
-        [self.ButtonAction setTitle:@"Update" forState:UIControlStateNormal];
+        
         [self LoadActivityData];
         self.CollectionViewActivityImages.scrollEnabled = true;
-
         NSComparisonResult result = [self.Activity.startdt compare:today];
         NSComparisonResult resultStartEnd = [self.Activity.startdt compare:self.Activity.enddt];
 
         if (resultStartEnd == NSOrderedSame && result==NSOrderedAscending && self.Activity.state==[NSNumber numberWithInteger:1]) {
             self.ViewCheckInOut.layer.cornerRadius = 100;
             self.ViewCheckInOut.clipsToBounds = YES;
+            self.ViewCheckInOut.transform = CGAffineTransformMakeRotation(-.34906585);
             self.ViewCheckInOut.hidden = false;
             // systemPink colour
-            self.ViewCheckInOut.backgroundColor = [UIColor colorWithRed:251.0f/255.0f green:13.0f/255.0f blue:68.0f/255.0f alpha:1.0];
-            self.LabelCheckInOut.attributedText=[[NSAttributedString alloc]
-                                           initWithString:@"Check\nOut"
-                                           attributes:@{
-                                                        NSStrokeWidthAttributeName: @-4.0,
-                                                        NSStrokeColorAttributeName:[UIColor whiteColor],
-                                                        NSForegroundColorAttributeName:[UIColor colorWithRed:251.0f/255.0f green:13.0f/255.0f blue:68.0f/255.0f alpha:1.0]
-                                                        }
-                                           ];
+            self.ViewCheckInOut.backgroundColor = [UIColor colorWithRed:255.0f/255.0f green:91.0f/255.0f blue:73.0f/255.0f alpha:1.0];
+            self.LabelCheckInOut.text = @"Check\nOut";
+            [self.LabelCheckInOut setTextColor:[UIColor whiteColor]];
+            
         }
 
     } else if (self.transformed) {
         self.ViewCheckInOut.layer.cornerRadius = 100;
         self.ViewCheckInOut.clipsToBounds = YES;
+        self.ViewCheckInOut.transform = CGAffineTransformMakeRotation(-.34906585);
         self.ViewCheckInOut.hidden = false;
-        // systemYellow colour
-        self.ViewCheckInOut.backgroundColor = [UIColor colorWithRed:254.0f/255.0f green:195.0f/255.0f blue:9.0f/255.0f alpha:1.0];
-        self.LabelCheckInOut.attributedText=[[NSAttributedString alloc]
-                                             initWithString:@"Check\nIn"
-                                             attributes:@{
-                                                          NSStrokeWidthAttributeName: @-4.0,
-                                                          NSStrokeColorAttributeName:[UIColor whiteColor],
-                                                          NSForegroundColorAttributeName:[UIColor colorWithRed:254.0f/255.0f green:195.0f/255.0f blue:9.0f/255.0f alpha:1.0]
-                                                          }
-                                             ];
+        self.LabelCheckInOut.text = @"Check\nIn";
         [self.ButtonAction setTitle:@"Update" forState:UIControlStateNormal];
         [self LoadActivityData];
         self.CollectionViewActivityImages.scrollEnabled = true;
+        
+        // HERE
+        defaultStartDt = self.Activity.startdt;
+        defaultEndDt = self.Activity.enddt;
+        
         self.Activity.startdt = [NSDate date];
         self.Activity.enddt = [NSDate date];
-        [self FormatPrettyDates:self.Activity.startdt :self.Activity.enddt];
+
         
     } else if (self.newitem) {
-        self.TextFieldName.text = self.Poi.name;
-        NSCalendar *cal = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-        [cal setTimeZone:[NSTimeZone systemTimeZone]];
         
-        NSDateComponents * comp = [cal components:( NSCalendarUnitYear| NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute) fromDate:[NSDate date]];
-        [comp setMinute:0];
-        [comp setHour:0];
-        [comp setSecond:0];
-        NSDate *startOfToday = [cal dateFromComponents:comp];
-        //self.Activity.Images = [[NSMutableArray alloc] init];
-        self.Activity.startdt = startOfToday;
-        self.Activity.enddt = startOfToday;
+        NSLog(@"StartDt = %@ and EndDt = %@", self.Trip.startdt, self.Trip.enddt);
+        
+        self.TextFieldName.text = self.Poi.name;
+        
+        if (self.Activity.startdt==nil) {
+            if (self.Activity.state==[NSNumber numberWithInteger:0]) {
+                self.Activity.startdt = self.Trip.startdt;
+                self.Activity.enddt = self.Trip.enddt;
+            } else {
+                self.Activity.startdt = [NSDate date];
+                self.Activity.enddt = [NSDate date];
+            }
+        }
+        
         [self LoadPoiData];
     }
     [self addDoneToolBarToKeyboard:self.TextViewNotes];
     self.TextFieldName.delegate = self;
     self.TextViewNotes.delegate = self;
+    self.TableViewAttachments.delegate = self;
  
     if (self.Activity.state==[NSNumber numberWithInteger:1]) {
         self.ImageViewIdeaWidthConstraint.constant = 0;
@@ -181,16 +202,110 @@ int BlurredImageViewPresentedHeight=60;
     self.ImagePicture.frame = CGRectMake(0, 0, self.ScrollViewImage.frame.size.width, self.ScrollViewImage.frame.size.height);
     self.ScrollViewImage.delegate = self;
 
+    /* initialize the datePicker for start dt */
+    self.datePickerStart = [[UIDatePicker alloc] initWithFrame:CGRectZero];
+    [self.datePickerStart setDatePickerMode:UIDatePickerModeDateAndTime];
+    
+    if (self.transformed  && defaultStartDt!=nil) {
+        [self.datePickerStart setDate:defaultStartDt];
+    } else {
+        [self.datePickerStart setDate:self.Activity.startdt];
+    }
+
+    [self.datePickerStart addTarget:self action:@selector(onDatePickerStartValueChanged:) forControlEvents:UIControlEventValueChanged];
+    
+    /* initialize the datePicker for end dt */
+    self.datePickerEnd = [[UIDatePicker alloc] initWithFrame:CGRectZero];
+    [self.datePickerEnd setDatePickerMode:UIDatePickerModeDateAndTime];
+    
+    if (self.transformed && defaultEndDt!=nil) {
+        [self.datePickerEnd setDate:defaultEndDt];
+    } else {
+         [self.datePickerEnd setDate:self.Activity.enddt];
+    }
+    
+   
+    
+    [self.datePickerEnd addTarget:self action:@selector(onDatePickerEndValueChanged:) forControlEvents:UIControlEventValueChanged];
+    
+    
+    /* add toolbar control for 'Done' option */
+    UIToolbar *toolBar=[[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
+    [toolBar setTintColor:[UIColor colorWithRed:255.0f/255.0f green:91.0f/255.0f blue:73.0f/255.0f alpha:1.0]];
+    UIBarButtonItem *doneBtn=[[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(HideDatePicker)];
+    UIBarButtonItem *space=[[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    [toolBar setItems:[NSArray arrayWithObjects:space,doneBtn, nil]];
+    
+    /* extend features on the input view of the text field for start dt */
+    self.TextFieldStartDt.inputView = self.datePickerStart;
+    self.TextFieldStartDt.text = [NSString stringWithFormat:@"%@", [self FormatPrettyDate :self.datePickerStart.date]];
+    [self.TextFieldStartDt setInputAccessoryView:toolBar];
+    
+    /* extend features on the input view of the text field for end dt */
+    self.TextFieldEndDt.inputView = self.datePickerEnd;
+    
+    
+    NSDateFormatter *dateformatter = [[NSDateFormatter alloc] init];
+    [dateformatter setDateFormat:@"EEE, dd MMM yyyy"];
+    NSDateFormatter *timeformatter = [[NSDateFormatter alloc] init];
+    [timeformatter setDateFormat:@"HH:mm"];
+    
+    // firstly test the start and end dates.  Remember the start and end are the same if activity is checked in.
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute fromDate:self.datePickerStart.date toDate:self.datePickerEnd.date options:0];
+    
+    if ((components.day!=0 || components.hour!=0 || components.minute!=0) || self.Activity.state==[NSNumber numberWithInteger:0]) {
+        self.TextFieldEndDt.text = [NSString stringWithFormat:@"%@", [self FormatPrettyDate :self.datePickerEnd.date]];
+    } else {
+        // now using same exponent, we can write out the time that has passed since user checked into activity.
+        NSString *PrettyDateDifference = [ToolBoxNSO PrettyDateDifference :self.datePickerStart.date :[NSDate date] :@" ago"];
+        if (![PrettyDateDifference isEqualToString:@""]) {
+            self.TextFieldEndDt.text = PrettyDateDifference;
+        }
+    }
+    
+    [self.TextFieldEndDt setInputAccessoryView:toolBar];
+    self.TableViewAttachments.rowHeight = 60.0f;
+    //self.WebViewPreview.scrollView.delegate = self;
+    __weak typeof(self) weakSelf = self;
+    self.notification = [self.realm addNotificationBlock:^(NSString *note, RLMRealm *realm) {
+        [weakSelf LoadDocuments];
+        [weakSelf.TableViewAttachments reloadData];
+    }];
+    
 }
 
--(UIStatusBarStyle)preferredStatusBarStyle
+-(void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+
+    [[NSNotificationCenter defaultCenter]
+     addObserver:self
+     selector:@selector(handleKeyboardWillShow:)
+     name:UIKeyboardWillShowNotification object:nil];
+
+}
+
+-(void)LoadDocuments {
+    self.DocumentDictionary = [[NSMutableDictionary alloc] init];
+    for (AttachmentRLM *attachmentobject in self.Activity.attachments) {
+        //NSString *dataFilePath = [fileDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/PdfImportedDocs/%@",attachmentobject.filename]];
+        [self.DocumentDictionary setObject:attachmentobject forKey:attachmentobject.key];
+    }
+}
+
+/*
+ created date:      16/02/2019
+ last modified:     17/02/2019
+ remarks:
+ */
+- (void)HideDatePicker
 {
-    return UIStatusBarStyleLightContent;
+    [self.TextFieldStartDt resignFirstResponder];
+    [self.TextFieldEndDt resignFirstResponder];
 }
 
 /*
  created date:      01/05/2018
- last modified:     01/09/2018
+ last modified:     04/12/2018
  remarks: Load the activity data received from the views 
  */
 -(void) LoadActivityData {
@@ -198,19 +313,22 @@ int BlurredImageViewPresentedHeight=60;
     self.TextFieldName.text = self.Activity.name;
     self.TextViewNotes.text = self.Activity.privatenotes;
     self.TextFieldReference.text = self.Activity.reference;
-    //self.LabelStartDT.text = self.Activity.startdt;
-    //self.Activity.enddt = self.Activity.enddt;
-    [self FormatPrettyDates:self.Activity.startdt :self.Activity.enddt];
-    //self.Activity.costamt = [NSNumber numberWithInteger:200];
+
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *imagesDirectory = [paths objectAtIndex:0];
+    NSString *fileDirectory = [paths objectAtIndex:0];
     long ImageIndex = 0;
     for (ImageCollectionRLM *imgobject in self.Activity.images) {
         UIImage *image = [[UIImage alloc] init];
-        NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",imgobject.ImageFileReference]];
+        NSString *dataFilePath = [fileDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",imgobject.ImageFileReference]];
         NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
         if (pngData==nil) {
-            image = [UIImage imageNamed:@"Activity"];
+            
+            if (self.Activity.state == [NSNumber numberWithInteger:0]) {
+                image = [UIImage imageNamed:@"Planning"];
+            } else {
+                image = [UIImage imageNamed:@"Activity"];
+            }
+        
         } else {
             image = [UIImage imageWithData:pngData];
         }
@@ -313,36 +431,178 @@ int BlurredImageViewPresentedHeight=60;
 
 /*
  created date:      01/05/2018
- last modified:     01/05/2018
+ last modified:     17/02/2019
  remarks:
  */
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     [self.TextFieldName endEditing:YES];
     [self.TextViewNotes endEditing:YES];
+    [self.TextFieldEndDt endEditing:YES];
+    [self.TextFieldStartDt endEditing:YES];
 }
 
 /*
  created date:      01/05/2018
- last modified:     29/09/2018
+ last modified:     22/02/2019
  remarks:  TODO [self.delegate didUpdateActivityImage]; add to update
  */
 - (IBAction)ActionButtonPressed:(id)sender {
-    /* validations perhaps? */
     
     if (self.TextFieldName.text == nil) {
         return;
     }
-
+    
+    /* delete and finish oof */
     if (self.deleteitem) {
-        
         [self.realm transactionWithBlock:^{
             [self.realm deleteObject:[ActivityRLM objectForPrimaryKey:self.Activity.compondkey]];
         }];
-        
-        //[AppDelegateDef.Db DeleteActivity:self.Activity :nil];
         [self dismissViewControllerAnimated:YES completion:Nil];
+        return;
+    }
+    
+    /*
+    if user does not enter any dates, the dates stored match the project dates entered.
+    If user modifies the dates and start date is earlier than project start date or end date is later than end date -
+    modify the project date & any other PLANNED dates that were equal to it previously.
+    
+    Additionally validate all planned dates in following way when they are manually modified.
+    Take example 1.
+     Planned activity A: start 10/1/19 10:00 end 15/1/19 10:30
+     *Planned activity B: start 14/1/19 16:00 end 16/1/19 21:00
+    
+    The start date of activity B cannot be after activity A starts and end date cannot be after 15/1/19 10:30 when activity A ends.
+    Either activity B end date must be equal/less than end date of activity A
+     Planned activity A: start 10/1/19 10:00 end 15/1/19 10:30
+     *Planned activity B: start 14/1/19 16:00 end 15/1/19 10:30
+    or activity B must start before or after activity A begins.
+     Planned activity A: start 10/1/19 10:00 end 15/1/19 10:30
+     *Planned activity B: start 10/1/19 09:00 end 16/1/19 10:30
+    
+    
+    Now example 2:
+    
+    Extend example 1 with adding activity C.
+     Planned activity A: start 10/1/19 10:00 end 15/1/19 10:30
+     Planned activity B: start 14/1/19 16:00 end 15/1/19 09:30
+     *Planned activity C: start 5/1/19 09:00 end 14/1/19 08:00
+    
+    Either activity C start date must be after both activity A + B’s start date
+     Planned activity A: start 10/1/19 10:00 end 15/1/19 10:30
+     Planned activity B: start 14/1/19 16:00 end 15/1/19 09:30
+     *Planned activity C: start 14/1/19 17:00 end 14/1/19 08:00
+    
+    Or activity C end date must be after activity A+B’s end date
+     Planned activity A: start 10/1/19 10:00 end 15/1/19 10:30
+     Planned activity B: start 14/1/19 16:00 end 15/1/19 09:30
+     *Planned activity C: start 5/1/19 09:00 end 16/1/19 08:00
+    */
+    
+    
+    NSDate *startdt = self.datePickerStart.date;
+    NSDate *enddt = self.datePickerEnd.date;
+
+    /* validate against the Trip */
+    bool AdjustTripStartDt = false;
+    bool AdjustTripEndDt = false;
+
+    if (self.Activity.state == 0) {
+        NSComparisonResult resulttripstartdt = [startdt compare:self.Trip.startdt];
+        NSComparisonResult resulttripenddt = [enddt compare:self.Trip.enddt];
+
+        if (resulttripstartdt == NSOrderedDescending) {
+            AdjustTripStartDt = true;
+        }
+        if (resulttripenddt == NSOrderedAscending) {
+            AdjustTripEndDt = true;
+        }
+    }
+
+    RLMResults <ActivityRLM*> *activities = [ActivityRLM objectsWhere:@"tripkey=%@ and state=%@",self.Trip.key, self.Activity.state];
+
+    if (activities.count==0) {
+        [self UpdateActivityRealmData];
+    } else {
         
-    } else if (self.newitem || self.transformed) {
+        NSString *AlertMessage = [[NSString alloc] init];
+
+        bool ErrorInCurrentItem = false;
+        for (ActivityRLM* activity in activities) {
+            
+            /* we do not want to waste comparing activity against itself */
+            if (![self.Activity.key isEqualToString:activity.key]) {
+                NSDate *activitystartdt = activity.startdt;
+                NSDate *activityenddt = activity.enddt;
+                
+                NSComparisonResult resultactivitystartdtstartdt = [activitystartdt compare:startdt];
+                NSComparisonResult resultactivitystartdtenddt = [activitystartdt compare:enddt];
+                NSComparisonResult resultactivityenddtstartdt = [activityenddt compare:startdt];
+                NSComparisonResult resultactivityenddtenddt = [activityenddt compare:enddt];
+                
+                //whats bad??
+                if ((resultactivitystartdtstartdt == NSOrderedAscending && resultactivitystartdtenddt == NSOrderedDescending && resultactivityenddtenddt == NSOrderedDescending) ||
+                    (resultactivityenddtstartdt == NSOrderedDescending && resultactivityenddtenddt == NSOrderedAscending && resultactivitystartdtstartdt ==  NSOrderedAscending)) {
+                    ErrorInCurrentItem = true;
+                    NSString *prettystartdt = [ToolBoxNSO FormatPrettyDate :activity.startdt];
+                    NSString *prettyenddt = [ToolBoxNSO FormatPrettyDate :activity.enddt];
+                    AlertMessage = [NSString stringWithFormat:@"This activity must be contained within the date range %@ and %@ found in activity %@ or outside these bounds.  Please modify and correct before updating.", prettystartdt, prettyenddt, activity.name];
+                    break;
+                }
+            }
+        }
+        if (ErrorInCurrentItem) {
+            
+            UIAlertController * alert = [UIAlertController
+                                         alertControllerWithTitle:@"Error in date range"
+                                         message:AlertMessage
+                                         preferredStyle:UIAlertControllerStyleAlert];
+            
+            UIAlertAction* okButton = [UIAlertAction
+                                       actionWithTitle:@"Ok"
+                                       style:UIAlertActionStyleDefault
+                                       handler:^(UIAlertAction * action) {
+                                           
+                                       }];
+            
+            [alert addAction:okButton];
+            [self presentViewController:alert animated:YES completion:nil];
+            
+        } else  {
+            /* only perform this batch update if no errors have occurred beforehand & we are working on planned activities */
+            if (self.Activity.state==0) {
+                for (ActivityRLM* activity in activities) {
+                    /* we do not want to waste comparing activity against itself */
+                    if (![self.Activity.key isEqualToString:activity.key]) {
+                        NSDate *activitystartdt = activity.startdt;
+                        NSDate *activityenddt = activity.enddt;
+                        /* organize planned draft items to match expected modification to Trip  */
+                        if (AdjustTripStartDt || AdjustTripEndDt) {
+                            NSComparisonResult resultoriginalstartdt = [self.Trip.startdt compare:activitystartdt];
+                            NSComparisonResult resultoriginalenddt = [self.Trip.enddt compare:activityenddt];
+                            if (resultoriginalstartdt == NSOrderedSame && resultoriginalenddt == NSOrderedSame) {
+                                [activity.realm beginWriteTransaction];
+                                activity.startdt = startdt;
+                                activity.enddt = enddt;
+                                [activity.realm commitWriteTransaction];
+                            }
+                        }
+                    }
+                }
+            }
+            [self UpdateActivityRealmData];
+        }
+    }
+}
+
+
+/*
+ created date:      21/02/2019
+ last modified:     21/02/2019
+ remarks:
+ */
+- (void)UpdateActivityRealmData
+{
+    if (self.newitem || self.transformed) {
         /* working */
         self.Activity.name = self.TextFieldName.text;
         self.Activity.privatenotes = self.TextViewNotes.text;
@@ -353,11 +613,14 @@ int BlurredImageViewPresentedHeight=60;
         self.Activity.poi = self.Poi;
         self.Activity.poikey = self.Poi.key;
         self.Activity.tripkey = self.Trip.key;
+        self.Activity.startdt = self.datePickerStart.date;
+        self.Activity.enddt = self.datePickerEnd.date;
         
         if (self.newitem) self.Activity.key = [[NSUUID UUID] UUIDString];
         self.Activity.compondkey = [NSString stringWithFormat:@"%@~%@",self.Activity.key,self.Activity.state];
         
-        if (self.Activity.images.count>0) {
+        if (self.Activity.images.count > 0) {
+
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
             NSString *imagesDirectory = [paths objectAtIndex:0];
             
@@ -377,23 +640,29 @@ int BlurredImageViewPresentedHeight=60;
                 counter++;
             }
         }
-      
+        
         [self.realm beginWriteTransaction];
         [self.realm addObject:self.Activity];
         [self.realm commitWriteTransaction];
+        
         [delegate didUpdateActivityImages:true];
+        
         if (self.newitem) {
+            
             [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
         } else {
-           [self dismissViewControllerAnimated:YES completion:Nil];
+            [self dismissViewControllerAnimated:YES completion:Nil];
         }
     } else {
-        [self.realm beginWriteTransaction];
+        [self.Activity.realm beginWriteTransaction];
         self.Activity.name = self.TextFieldName.text;
         self.Activity.privatenotes = self.TextViewNotes.text;
         self.Activity.reference = self.TextFieldReference.text;
         self.Activity.rating = [NSNumber numberWithFloat: self.ViewStarRating.value];
         self.Activity.modifieddt = [NSDate date];
+        self.Activity.startdt = self.datePickerStart.date;
+        self.Activity.enddt = self.datePickerEnd.date;
+        
         
         if (self.Activity.images.count>0) {
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -404,7 +673,7 @@ int BlurredImageViewPresentedHeight=60;
             
             NSFileManager *fm = [NSFileManager defaultManager];
             [fm createDirectoryAtPath:dataPath withIntermediateDirectories:YES attributes:nil error:nil];
-
+            
             NSInteger count = [self.Activity.images count];
             
             for (NSInteger index = (count - 1); index >= 0; index--) {
@@ -443,11 +712,98 @@ int BlurredImageViewPresentedHeight=60;
                 }
             }
         }
-        [self.realm commitWriteTransaction];
+        [self.Activity.realm commitWriteTransaction];
         [self dismissViewControllerAnimated:YES completion:Nil];
+    }
+
+}
+
+
+/*
+ created date:      24/02/2019
+ last modified:     24/02/2019
+ remarks:
+ */
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return 1;
+}
+
+/*
+ created date:      24/02/2019
+ last modified:     24/02/2019
+ remarks:
+ */
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return self.Activity.attachments.count + 1;
+}
+
+
+/*
+ created date:      25/02/2019
+ last modified:     25/02/2019
+ remarks:           table view with sections.
+ */
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    AttachmentCell *cell = [tableView dequeueReusableCellWithIdentifier:@"AttachmentCellId"];
+    NSInteger NumberOfItems = self.Activity.attachments.count + 1;
+    if (indexPath.row == NumberOfItems -1) {
+        cell.LabelInfo.hidden = false;
+        cell.LabelNotes.text = @"";
+        //[cell.LabelNotes setTextColor:[UIColor colorWithRed:255.0f/255.0f green:91.0f/255.0f blue:73.0f/255.0f alpha:1.0]];
+        cell.LabelUploadedDt.text = @"";
+        cell.ButtonAddNew.hidden = false;
+        cell.ImageViewChecked.hidden = true;
+    } else {
+        AttachmentRLM *attachmentobject = [self.Activity.attachments objectAtIndex:indexPath.row];
+        cell.LabelInfo.hidden = true;
+        cell.LabelNotes.text = attachmentobject.notes;
+        //[cell.LabelNotes setTextColor:[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]];
+        cell.LabelUploadedDt.text = [NSString stringWithFormat:@"%@", [ToolBoxNSO FormatPrettyDate:attachmentobject.importeddate]];
+        cell.ButtonAddNew.hidden = true;
+        cell.ImageViewChecked.hidden = false;
+    }
+    return cell;
+}
+
+/*
+ created date:      25/02/2019
+ last modified:     25/02/2019
+ remarks:           table view with sections.
+ */
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    NSInteger NumberOfItems = self.Activity.attachments.count + 1;
+    if (indexPath.row == NumberOfItems -1 ) {
+        
+    } else {
+        AttachmentRLM *attachmentobject = [self.Activity.attachments objectAtIndex:indexPath.row];
+
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentDirectory = [paths objectAtIndex:0];
+        
+        NSString *PdfDataFilePath = [documentDirectory stringByAppendingPathComponent:attachmentobject.filename];
+
+        NSURL *targetURL = [NSURL fileURLWithPath:PdfDataFilePath];
+        NSData *data = [NSData dataWithContentsOfURL:targetURL];
+        
+        
+        [self.WebViewPreview loadData:data MIMEType:@"application/pdf" characterEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@""]];
+        
     }
 }
 
+/*
+ created date:      25/02/2019
+ last modified:     25/02/2019
+ remarks:           table view with sections.
+ */
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    // rows in section 0 should not be selectable
+    if ( indexPath.row ==  self.Activity.attachments.count) return nil;
+    
+    return indexPath;
+}
 
 /*
  created date:      03/05/2018
@@ -466,12 +822,13 @@ int BlurredImageViewPresentedHeight=60;
         controller.fromproject = false;
     }
     
-    /*else if ([segue.identifier isEqualToString:@"ShowDateRangePicker"]){
-        DatePickerRangeVC *controller = (DatePickerRangeVC *)segue.destinationViewController;
+    else if ([segue.identifier isEqualToString:@"ShowDocuments"]){
+        DocumentsVC *controller = (DocumentsVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.Activity = self.Activity;
+        controller.realm = self.realm;
         
-    }*/ else if ([segue.identifier isEqualToString:@"ShowPayments"]){
+    } else if ([segue.identifier isEqualToString:@"ShowPayments"]){
         PaymentListingVC *controller = (PaymentListingVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.ActivityItem = self.Activity;
@@ -482,7 +839,13 @@ int BlurredImageViewPresentedHeight=60;
             if (self.Poi.images.count > 0) {
                  controller.headerImage = self.PoiImage;
             } else {
-                controller.headerImage = [UIImage imageNamed:@"Activity"];
+                if (self.Activity.state == [NSNumber numberWithInteger:0]) {
+                    controller.headerImage = [UIImage imageNamed:@"Planning"];
+                } else {
+                    controller.headerImage = [UIImage imageNamed:@"Activity"];
+                }
+                
+                
             }
         }
         /* here we add something new */
@@ -541,7 +904,6 @@ int BlurredImageViewPresentedHeight=60;
     self.Activity.startdt = Start;
     self.Activity.enddt = End;
     [self.realm commitWriteTransaction];
-    [self FormatPrettyDates:Start :End];
 }
 
 /*
@@ -558,32 +920,6 @@ int BlurredImageViewPresentedHeight=60;
 }
 
 
-/*
- created date:      04/05/2018
- last modified:     22/10/2018
- remarks:           Present the pretty date formats of start and end.  If activity is checked out give the user detail of how long instead of duplicated date.
- */
--(void)FormatPrettyDates :(NSDate*)Start :(NSDate*)End {
-    NSDateFormatter *dateformatter = [[NSDateFormatter alloc] init];
-    [dateformatter setDateFormat:@"EEE, dd MMM yyyy"];
-    NSDateFormatter *timeformatter = [[NSDateFormatter alloc] init];
-    [timeformatter setDateFormat:@"HH:mm"];
-    
-    self.LabelStartDT.text = [NSString stringWithFormat:@"%@ %@",[dateformatter stringFromDate:Start], [timeformatter stringFromDate:Start]];
-
-    // firstly test the start and end dates.  Remember the start and end are the same if activity is checked in.
-    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute fromDate:Start toDate:End options:0];
-    
-    if ((components.day!=0 || components.hour!=0 || components.minute!=0) || self.Activity.state==[NSNumber numberWithInteger:0]) {
-        self.LabelEndDT.text = [NSString stringWithFormat:@"%@ %@",[dateformatter stringFromDate:End], [timeformatter stringFromDate :End]];
-    } else {
-        // now using same exponent, we can write out the time that has passed since user checked into activity.
-        NSString *PrettyDateDifference = [ToolBoxNSO PrettyDateDifference :Start :[NSDate date] :@" ago"];
-        if (![PrettyDateDifference isEqualToString:@""]) {
-            self.LabelEndDT.text = PrettyDateDifference;
-        }
-    }
-}
 
 /*
  created date:      13/05/2018
@@ -623,12 +959,12 @@ int BlurredImageViewPresentedHeight=60;
     }
 }
 
-
-
 -(void)addDoneToolBarToKeyboard:(UITextView *)textView
 {
     UIToolbar* doneToolbar = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, 320, 50)];
     doneToolbar.barStyle = UIBarStyleDefault;
+    //doneToolbar.backgroundColor = [UIColor colorWithRed:255.0f/255.0f green:91.0f/255.0f blue:73.0f/255.0f alpha:1.0];
+    [doneToolbar setTintColor:[UIColor colorWithRed:255.0f/255.0f green:91.0f/255.0f blue:73.0f/255.0f alpha:1.0]];
     doneToolbar.items = [NSArray arrayWithObjects:
                          [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
                          [[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(doneButtonClickedDismissKeyboard)],
@@ -661,28 +997,58 @@ int BlurredImageViewPresentedHeight=60;
 -(void)doneButtonClickedDismissKeyboard
 {
     [self.TextViewNotes resignFirstResponder];
+    self.ConstraintBottomNotes.constant = 10;
 }
 
+/*
+ created date:      13/05/2018
+ last modified:     24/02/2019
+ remarks:
+ */
 - (IBAction)SegmentPresenterChanged:(id)sender {
     
     if ([self.SegmentPresenter selectedSegmentIndex] == 0) {
         self.ViewMain.hidden = false;
         self.ViewNotes.hidden = true;
         self.ViewPhotos.hidden = true;
+        self.ViewDocuments.hidden = true;
         self.ButtonScan.hidden = true;
         self.ButtonUploadImage.hidden = true;
+        self.ButtonPayment.hidden = false;
+        self.ButtonDirections.hidden = false;
+        
+        self.SwitchViewPhotoOptions.hidden = true;
     } else if ([self.SegmentPresenter selectedSegmentIndex] == 1) {
         self.ViewMain.hidden = true;
         self.ViewNotes.hidden = false;
         self.ViewPhotos.hidden = true;
+        self.ViewDocuments.hidden = true;
         self.ButtonScan.hidden = false;
         self.ButtonUploadImage.hidden = true;
+        self.ButtonPayment.hidden = true;
+        self.ButtonDirections.hidden = true;
+        
+        self.SwitchViewPhotoOptions.hidden = true;
     } else if ([self.SegmentPresenter selectedSegmentIndex] == 2) {
         self.ViewMain.hidden = true;
         self.ViewNotes.hidden = true;
         self.ViewPhotos.hidden = false;
+        self.ViewDocuments.hidden = true;
         self.ButtonScan.hidden = true;
         self.ButtonUploadImage.hidden = false;
+        self.ButtonPayment.hidden = true;
+        self.ButtonDirections.hidden = true;
+        self.SwitchViewPhotoOptions.hidden = false;
+        
+    } else if ([self.SegmentPresenter selectedSegmentIndex] == 3) {
+        self.ViewMain.hidden = true;
+        self.ViewNotes.hidden = true;
+        self.ViewDocuments.hidden = false;
+        self.ViewPhotos.hidden = true;
+        self.ButtonScan.hidden = false;
+        self.ButtonUploadImage.hidden = true;
+        self.ButtonPayment.hidden = true;
+        self.ButtonDirections.hidden = true;
     }
 }
 
@@ -1054,7 +1420,7 @@ int BlurredImageViewPresentedHeight=60;
     ActivityImageCell *cell=[collectionView dequeueReusableCellWithReuseIdentifier:@"ActivityImageId" forIndexPath:indexPath];
     NSInteger NumberOfItems = self.Activity.images.count + 1;
     if (indexPath.row == NumberOfItems -1) {
-        cell.ImageActivity.image = [UIImage imageNamed:@"Add-orange"];
+        cell.ImageActivity.image = [UIImage imageNamed:@"AddItem"];
     } else {
         ImageCollectionRLM *imgobject = [self.Activity.images objectAtIndex:indexPath.row];
         cell.ImageActivity.image = [self.ActivityImageDictionary objectForKey: imgobject.key];
@@ -1352,7 +1718,7 @@ int BlurredImageViewPresentedHeight=60;
 
 /*
  created date:      09/10/2018
- last modified:     09/10/2018
+ last modified:     23/10/2018
  remarks:           Give user option of origins..
  */
 - (IBAction)ShowDirectionsPressed:(id)sender {
@@ -1363,9 +1729,14 @@ int BlurredImageViewPresentedHeight=60;
     
     RLMResults *filteredActivities = [ActivitiesInTrip objectsWithPredicate:predicate];
     
-    RLMSortDescriptor *sort = [RLMSortDescriptor sortDescriptorWithKeyPath:@"startdt" ascending:NO];
+    //RLMSortDescriptor *sort = [RLMSortDescriptor sortDescriptorWithKeyPath:@"startdt" ascending:YES];
     
-    [filteredActivities sortedResultsUsingDescriptors:[NSArray arrayWithObject:sort]];
+    
+    
+    filteredActivities = [filteredActivities sortedResultsUsingDescriptors:@[
+                                                                             [RLMSortDescriptor sortDescriptorWithKeyPath:@"startdt" ascending:NO]]];
+                          
+    //[filteredActivities sortedResultsUsingDescriptors:[NSArray arrayWithObject:sort]];
     
     int MaxList = 8;
     if (filteredActivities.count < MaxList) {
@@ -1397,15 +1768,16 @@ int BlurredImageViewPresentedHeight=60;
     [alertPickOrigin addAction:action];
     
     for (NSInteger index = 0; index < MaxList; index++) {
+
         ActivityRLM *item = [filteredActivities objectAtIndex:index];
         PoiRLM *poiitem = item.poi;
-        
+
         if (poiitem == nil) {
             poiitem = [PoiRLM objectForPrimaryKey:item.poikey];
         }
         
         UIAlertAction* action = [UIAlertAction
-                                 actionWithTitle:poiitem.name
+                                 actionWithTitle:item.name
                                  style:UIAlertActionStyleDefault
                                  handler:^(UIAlertAction * action) {
                                      
@@ -1435,135 +1807,58 @@ int BlurredImageViewPresentedHeight=60;
 
 /*
  created date:      22/10/2018
- last modified:     22/10/2018
+ last modified:     03/03/2019
  remarks:
  */
-- (IBAction)DateSelectionPressed:(id)sender {
-    
-    self.datePickerStart = [[UIDatePicker alloc] initWithFrame:CGRectZero];
-    [self.datePickerStart setDatePickerMode:UIDatePickerModeDateAndTime];
-    [self.datePickerStart addTarget:self action:@selector(onDatePickerStartValueChanged:) forControlEvents:UIControlEventValueChanged];
-    [self.datePickerStart setDate:self.Activity.startdt];
-    [self.datePickerStart setMaximumDate:self.datePickerEnd.date];
-    
-    self.datePickerEnd = [[UIDatePicker alloc] initWithFrame:CGRectZero];
-    [self.datePickerEnd setDatePickerMode:UIDatePickerModeDateAndTime];
-    [self.datePickerEnd addTarget:self action:@selector(onDatePickerEndValueChanged:) forControlEvents:UIControlEventValueChanged];
-    [self.datePickerEnd setDate:self.Activity.enddt];
-    [self.datePickerEnd setMinimumDate:self.datePickerStart.date];
-    
-    /* set rectangles which control the position in new temporary view */
-    CGRect ViewRect = CGRectMake(0.0, 0.0, self.view.bounds.size.width, self.view.bounds.size.height);
-    CGRect CancelButtonRect = CGRectMake(10.0, 50.0, 50.0, 50.0);
-    CGRect NameLabelRect = CGRectMake(70.0, 50.0, self.view.bounds.size.width - 140, 30.0);
-    CGRect DurationLabelRect = CGRectMake(70.0, 90.0, self.view.bounds.size.width - 140, 10.0);
-    CGRect AcceptButtonRect = CGRectMake(self.view.bounds.size.width - 60.0, 50.0, 50.0, 50.0);
-    CGRect StartDtTextFieldRect = CGRectMake(10.0, 135.0, self.view.bounds.size.width - 20, 40.0);
-    CGRect BadgeImageViewRect = CGRectMake((self.view.bounds.size.width / 2) - 50, 200.0, 100, 100);
-    CGRect EndDtTextFieldRect = CGRectMake(10.0, 325.0, self.view.bounds.size.width - 20, 40.0);
-    
-    /* Temporary Image Badge setup - uses same image as the main image for activity */
-    UIImageView *BadgeImageView = [[UIImageView alloc] initWithFrame:BadgeImageViewRect];
-    [BadgeImageView setImage:self.ImagePicture.image];
-    [BadgeImageView setBackgroundColor:[UIColor yellowColor]];
-    BadgeImageView.layer.cornerRadius = 50;
-    BadgeImageView.clipsToBounds = YES;
-    
-    /* Temporary Cancel button setup - positioned top left of view */
-    UIButton *CancelButton = [[UIButton alloc] initWithFrame:CancelButtonRect];
-    CancelButton.backgroundColor = [UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0];
-    [CancelButton addTarget:self action:@selector(cancelButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [CancelButton setImage:[UIImage imageNamed:@"Cancel"] forState:UIControlStateNormal];
-    CancelButton.layer.cornerRadius = 25;
-    CancelButton.clipsToBounds = YES;
-    CancelButton.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    
-    /* Temporary Ok button */
-    UIButton *AcceptButton = [[UIButton alloc] initWithFrame:AcceptButtonRect];
-    AcceptButton.backgroundColor = [UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0];
-    [AcceptButton setTitle:@"OK" forState:UIControlStateNormal];
-    [AcceptButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [AcceptButton addTarget:self action:@selector(acceptButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    AcceptButton.layer.cornerRadius = 25;
-    AcceptButton.clipsToBounds = YES;
-    
-    /* TextField Start Date Time - used as an accessor for the datepicker input view */
-    self.TextFieldStartDt = [[TextFieldDatePicker alloc] initWithFrame:StartDtTextFieldRect];
-    self.TextFieldStartDt.text = [NSString stringWithFormat:@"%@", [self FormatPrettyDate :self.Activity.startdt]];
-    
-    [[self.TextFieldStartDt layer] setBorderColor:[[UIColor whiteColor] CGColor]];
-    [[self.TextFieldStartDt layer] setBorderWidth:2.3];
-    [[self.TextFieldStartDt layer] setCornerRadius:15];
-    [self.TextFieldStartDt setClipsToBounds: YES];
-    self.TextFieldStartDt.inputView = self.datePickerStart;
-    [self.TextFieldStartDt setTextAlignment:NSTextAlignmentCenter];
-    [self.TextFieldStartDt setTextColor:[UIColor whiteColor]];
-    
-    /* TextField End Date Time - used as an accessor for the datepicker input view */
-    self.TextFieldEndDt = [[TextFieldDatePicker alloc] initWithFrame:EndDtTextFieldRect];
-    self.TextFieldEndDt.text = [NSString stringWithFormat:@"%@", [self FormatPrettyDate :self.Activity.enddt]];
-    [[self.TextFieldEndDt layer] setBorderColor:[[UIColor whiteColor] CGColor]];
-    [[self.TextFieldEndDt layer] setBorderWidth:2.3];
-    [[self.TextFieldEndDt layer] setCornerRadius:15];
-    [self.TextFieldEndDt setClipsToBounds: YES];
-    self.TextFieldEndDt.inputView = self.datePickerEnd;
-    [self.TextFieldEndDt setTextAlignment:NSTextAlignmentCenter];
-    [self.TextFieldEndDt setTextColor:[UIColor whiteColor]];
-    
-    /* Label Duration - used to present the duration between the 2 dates */
-    self.LabelDuration = [[UILabel alloc] initWithFrame:DurationLabelRect];
-    self.LabelDuration.text = [ToolBoxNSO PrettyDateDifference:self.datePickerStart.date :self.datePickerEnd.date :@""];
-    [self.LabelDuration setFont:[UIFont systemFontOfSize:12.0]];
-    [self.LabelDuration setTextColor:[UIColor whiteColor]];
-    [self.LabelDuration setTextAlignment:NSTextAlignmentCenter];
-    
-    /* Label Name - temporarily used to present the name  */
-    UILabel *LabelName = [[UILabel alloc] initWithFrame:NameLabelRect];
-    LabelName.text = self.TextFieldName.text;
-    [LabelName setFont:[UIFont systemFontOfSize:16.0]];
-    [LabelName setTextColor:[UIColor whiteColor]];
-    [LabelName setTextAlignment:NSTextAlignmentCenter];
-   
-    /* Lastly the temporary view itself */
-    UIView* view = [[UIView alloc] initWithFrame:ViewRect];
-    view.backgroundColor = [UIColor colorWithRed:11.0f/255.0f green:110.0f/255.0f blue:79.0f/255.0f alpha:1.0];
-    [view addSubview:self.TextFieldStartDt];
-    [view addSubview:self.TextFieldEndDt];
-    [view addSubview:LabelName];
-    [view addSubview:BadgeImageView];
-    [view addSubview:CancelButton];
-    [view addSubview:AcceptButton];
-    [view addSubview:self.LabelDuration];
-    
-    [self addDoneToolBarToDatePicker:self.TextFieldStartDt];
-    [self addDoneToolBarToDatePicker:self.TextFieldEndDt];
-    
-    [self.view addSubview:view];
 
-}
 
-/*
- created date:      22/10/2018
- last modified:     22/10/2018
- remarks:
- */
+
+
 - (void)onDatePickerStartValueChanged:(UIDatePicker *)datePicker
 {
     self.TextFieldStartDt.text = [self FormatPrettyDate:datePicker.date];
-    self.LabelDuration.text = [ToolBoxNSO PrettyDateDifference:datePicker.date :self.Activity.enddt :@""];
-    [self.datePickerEnd setMinimumDate:self.datePickerStart.date];
+    NSComparisonResult result = [self.datePickerEnd.date compare:datePicker.date];
+    
+    switch (result)
+    {
+    case NSOrderedAscending:
+            NSLog(@"%@ is in future from %@", datePicker.date, self.datePickerEnd.date);
+            self.datePickerEnd.date = datePicker.date;
+            self.TextFieldEndDt.text = [self FormatPrettyDate:datePicker.date];
+            break;
+    case NSOrderedDescending: NSLog(@"%@ is in past from %@", datePicker.date, self.datePickerEnd.date); break;
+    case NSOrderedSame: NSLog(@"%@ is the same as %@", datePicker.date, self.datePickerEnd.date); break;
+    default: NSLog(@"erorr dates %@, %@", datePicker.date, self.datePickerEnd.date); break;
+    }
+    //self.LabelDuration.text = [ToolBoxNSO PrettyDateDifference:datePicker.date :self.datePickerEnd.date :@""];
+    
 }
 
 /*
  created date:      22/10/2018
- last modified:     22/10/2018
+ last modified:     03/02/2019
  remarks:
  */
 - (void)onDatePickerEndValueChanged:(UIDatePicker *)datePicker
 {
     self.TextFieldEndDt.text = [self FormatPrettyDate:datePicker.date];
-    self.LabelDuration.text = [ToolBoxNSO PrettyDateDifference:self.Activity.startdt :datePicker.date :@""];
-    [self.datePickerStart setMaximumDate:self.datePickerEnd.date];
+    NSComparisonResult result = [datePicker.date compare: self.datePickerStart.date];
+    
+    switch (result)
+    {
+        case NSOrderedAscending:
+            NSLog(@"%@ is in future from %@", self.datePickerStart.date, datePicker.date);
+            self.datePickerStart.date = datePicker.date;
+            self.TextFieldStartDt.text = [self FormatPrettyDate:datePicker.date];
+            break;
+        case NSOrderedDescending:
+            NSLog(@"%@ is in past from %@", self.datePickerStart.date, datePicker.date);
+            
+            break;
+        case NSOrderedSame: NSLog(@"%@ is the same as %@", self.datePickerStart.date, datePicker.date); break;
+        default: NSLog(@"erorr dates %@, %@", self.datePickerStart.date, datePicker.date); break;
+    }
+    //self.LabelDuration.text = [ToolBoxNSO PrettyDateDifference:self.datePickerStart.date :datePicker.date :@""];
 }
 
 
@@ -1577,32 +1872,9 @@ int BlurredImageViewPresentedHeight=60;
     [[self.view.subviews objectAtIndex:(self.view.subviews.count - 1)]removeFromSuperview];
 }
 
-/*
- created date:      22/10/2018
- last modified:     22/10/2018
- remarks:
- */
-- (void)acceptButtonPressed:(UIButton *)sender {
-    [self.realm beginWriteTransaction];
-    self.Activity.startdt = self.datePickerStart.date;
-    self.Activity.enddt = self.datePickerEnd.date;
-    [self.realm commitWriteTransaction];
-    
-    [self FormatPrettyDates:self.datePickerStart.date :self.datePickerEnd.date];
-    [[self.view.subviews objectAtIndex:(self.view.subviews.count - 1)]removeFromSuperview];
-}
 
--(void)addDoneToolBarToDatePicker:(UITextField *)textField
-{
-    UIToolbar* doneToolbar = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, 320, 50)];
-    doneToolbar.barStyle = UIBarStyleDefault;
-    doneToolbar.items = [NSArray arrayWithObjects:
-                         [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
-                         [[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(doneButtonClickedDismissDatePicker)],
-                         nil];
-    [doneToolbar sizeToFit];
-    textField.inputAccessoryView = doneToolbar;
-}
+
+
 
 -(void)doneButtonClickedDismissDatePicker
 {
@@ -1610,7 +1882,72 @@ int BlurredImageViewPresentedHeight=60;
     [self.TextFieldEndDt resignFirstResponder];
 }
 
+/*
+ created date:      17/02/2019
+ last modified:     17/02/2019
+ remarks:           resizes the textview control to allow for keyboard view.
+ */
+- (void) handleKeyboardDidShow:(NSNotification *)paramNotification{
+    
+    
+    NSValue *keyboardRectAsObject =
+    [[paramNotification userInfo]
+     objectForKey:UIKeyboardFrameEndUserInfoKey];
+    
+    CGRect keyboardRect = CGRectZero;
+    [keyboardRectAsObject getValue:&keyboardRect];
+    
+    self.ConstraintBottomNotes.constant = keyboardRect.size.height - 132;
+    
+    [self.TextViewNotes scrollRangeToVisible:self.TextViewNotes.selectedRange];
+   // [self.TextViewNotes setNeedsDisplay];
+}
 
+/*
+ created date:      17/02/2019
+ last modified:     17/02/2019
+ remarks:           resizes the textview control to allow for keyboard view.
+ */
+- (void) handleKeyboardWillShow:(NSNotification *)paramNotification{
+    
+    
+    NSValue *keyboardRectAsObject =
+    [[paramNotification userInfo]
+     objectForKey:UIKeyboardFrameEndUserInfoKey];
+    
+    CGRect keyboardRect = CGRectZero;
+    [keyboardRectAsObject getValue:&keyboardRect];
+    
+    self.ConstraintBottomNotes.constant = keyboardRect.size.height - 132;
+    
+    [self.TextViewNotes scrollRangeToVisible:self.TextViewNotes.selectedRange];
+    // [self.TextViewNotes setNeedsDisplay];
+}
+
+/*
+ created date:      26/02/2019
+ last modified:     26/02/2019
+ remarks:           resizes the listing of documents
+ */
+- (IBAction)ButtonExpandDocumentList:(id)sender {
+    
+    if (self.ViewDocumentListHeightConstraint.constant==DocumentListingViewPresentedHeight) {
+        
+        [UIView animateWithDuration:0.5 animations:^{
+            self.ViewDocumentListHeightConstraint.constant=0;
+            [self.view layoutIfNeeded];
+        } completion:^(BOOL finished) {
+            [self.ButtonExpandCollapseList setImage:[UIImage imageNamed:@"Present-List"] forState:UIControlStateNormal];
+        }];
+    } else {
+        [UIView animateWithDuration:0.5 animations:^{
+            self.ViewDocumentListHeightConstraint.constant=DocumentListingViewPresentedHeight;
+            [self.view layoutIfNeeded];
+        } completion:^(BOOL finished) {
+            [self.ButtonExpandCollapseList setImage:[UIImage imageNamed:@"Close-View"] forState:UIControlStateNormal];
+        }];
+    }
+}
 
 
 @end

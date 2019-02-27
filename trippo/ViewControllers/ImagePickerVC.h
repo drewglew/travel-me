@@ -14,6 +14,7 @@
 #import "ImageNSO.h"
 #import "ToolBoxNSO.h"
 #import "PoiRLM.h"
+#import "OptionButton.h"
 
 @protocol ImagePickerDelegate <NSObject>
 - (void)didAddImages :(NSMutableArray*)ImageCollection;
@@ -38,6 +39,15 @@
 @property (nonatomic, weak) id <ImagePickerDelegate> delegate;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonCancel;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonSelect;
-@property (weak, nonatomic) IBOutlet UIButton *ButtonStopSearching;
+@property (weak, nonatomic) IBOutlet OptionButton *ButtonStopSearching;
+@property (weak, nonatomic) IBOutlet UISwitch *SwitchHighQuality;
+@property (weak, nonatomic) IBOutlet UIVisualEffectView *VisualEffectViewWaiting;
+@property (weak, nonatomic) IBOutlet UILabel *LabelWaitingMessage;
+@property (weak, nonatomic) IBOutlet UIView *ViewLoading;
+
+
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *FooterWithTextConstraint;
+
 
 @end

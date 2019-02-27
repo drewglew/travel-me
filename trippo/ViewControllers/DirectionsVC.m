@@ -44,9 +44,6 @@
         self.ButtonOpenMap.hidden = true;
         self.ButtonOpenGMap.hidden = true;
         self.ButtonUpdateCalc.hidden = false;
-        self.ButtonUpdateCalc.layer.cornerRadius = 25;
-        self.ButtonUpdateCalc.clipsToBounds = YES;
-        self.ButtonUpdateCalc.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
     }
     
     if (self.Route.count ==1) {
@@ -57,14 +54,9 @@
     
 }
 
--(UIStatusBarStyle)preferredStatusBarStyle
-{
-    return UIStatusBarStyleLightContent;
-}
-
 /*
  created date:      08/05/2018
- last modified:     09/10/2018
+ last modified:     04/02/2019
  remarks:
  */
 -(void)processMultiRouting {
@@ -73,6 +65,9 @@
     
     MKMapItem *mapItemPrevious;
     MKDirectionsRequest *request = [[MKDirectionsRequest alloc] init];
+    
+    self.Distance = 0;
+    self.TravelTime = 0;
     
     for (PoiRLM *route in self.Route) {
 
@@ -158,11 +153,13 @@
 }
 /*
  created date:      06/05/2018
- last modified:     09/10/2018
+ last modified:     04/02/2019
  remarks:
  */
 -(void)showRoute:(MKDirectionsResponse *)response
 {
+
+    
     for (MKRoute *route in response.routes)
     {
         route.polyline.subtitle = [NSString stringWithFormat:@"%lu",(unsigned long)route.transportType];
@@ -177,12 +174,12 @@
         
         self.Distance += route.distance;
         self.TravelTime += (route.expectedTravelTime);
-
-        self.LabelJourneyDetail.text = [NSString stringWithFormat:@"Journey = %@ hrs",[self stringFromTimeInterval:[NSNumber numberWithLong:self.TravelTime]]];
-
-        self.LabelDistance.text = [NSString stringWithFormat:@"Distance = %@", [self formattedDistanceForMeters :self.Distance]];
- 
     }
+    
+    self.LabelJourneyDetail.text = [NSString stringWithFormat:@"Journey = %@ hrs",[self stringFromTimeInterval:[NSNumber numberWithLong:self.TravelTime]]];
+    
+    self.LabelDistance.text = [NSString stringWithFormat:@"Distance = %@", [self formattedDistanceForMeters :self.Distance]];
+    
 }
 
 
@@ -275,7 +272,7 @@
 
 /*
  created date:      06/05/2018
- last modified:     06/05/2018
+ last modified:     23/10/2018
  remarks:
  */
 - (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
@@ -284,13 +281,15 @@
     if ([overlay isKindOfClass:[MKPolyline class]]) {
         MKPolylineRenderer *renderer = [[MKPolylineRenderer alloc] initWithOverlay:overlay];
         if ([overlay.subtitle isEqualToString:@"1"]) {
-            [renderer setStrokeColor:[UIColor blueColor]];
+            
+            [renderer setStrokeColor:[UIColor colorWithRed:23.0f/255.0f green:130.0f/255.0f blue:196.0f/255.0f alpha:1.0]];
         } else if ([overlay.subtitle isEqualToString:@"2"]) {
-            [renderer setStrokeColor:[UIColor blackColor]];
+            
+            [renderer setStrokeColor:[UIColor colorWithRed:106.0f/255.0f green:76.0f/255.0f blue:147.0f/255.0f alpha:1.0]];
         } else {
-            [renderer setStrokeColor:[UIColor blackColor]];
+            [renderer setStrokeColor:[UIColor colorWithRed:106.0f/255.0f green:76.0f/255.0f blue:147.0f/255.0f alpha:1.0]];
         }
-        [renderer setLineWidth:3.0];
+        [renderer setLineWidth:5.0];
         return renderer;
     }
     return nil;

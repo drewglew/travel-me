@@ -14,13 +14,15 @@
 #import "ActivityListVC.h"
 #import "PoiNSO.h"
 #import "PoiDataEntryVC.h"
+#import "SettingsRLM.h"
+#import "SettingsVC.h"
 
 #include <stdlib.h>
 
 @protocol MenuDelegate <NSObject>
 @end
 
-@interface MenuVC : UIViewController <UICollectionViewDelegate, UICollectionViewDataSource, ProjectDataEntryDelegate, ActivityListDelegate, PoiDataEntryDelegate>
+@interface MenuVC : UIViewController <UICollectionViewDelegate, UICollectionViewDataSource, ProjectDataEntryDelegate, ActivityListDelegate, PoiDataEntryDelegate, SettingsDelegate, MKMapViewDelegate>
 @property (weak, nonatomic) IBOutlet UIButton *ButtonProject;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonPoi;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonInfo;
@@ -29,19 +31,21 @@
 @property (strong, nonatomic) NSMutableArray *selectedtripitems;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonSettings;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewFeaturedPoi;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *FeaturedViewTrailingConstraint;
 @property (nonatomic, weak) id <MenuDelegate> delegate;
-@property (weak, nonatomic) IBOutlet UIView *ViewFeature;
 @property (strong, nonatomic) RLMRealm *realm;
 @property (assign) bool SetReload;
 @property (strong, nonatomic) PoiRLM *FeaturedPoi;
+@property (strong, nonatomic) SettingsRLM *Settings;
 @property (strong, nonatomic) NSMutableDictionary *TripImageDictionary;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *ActivityView;
-@property (weak, nonatomic) IBOutlet UIButton *ButtonShowPoiListing;
 @property (weak, nonatomic) IBOutlet UILabel *LabelFeaturedPoi;
-@property (weak, nonatomic) IBOutlet UILabel *LabelAbout;
-@property (weak, nonatomic) IBOutlet UILabel *LabelSettings;
-@property (weak, nonatomic) IBOutlet UILabel *LabelPoiSearch;
-@property (weak, nonatomic) IBOutlet UILabel *LabelAllTrips;
+@property (weak, nonatomic) IBOutlet UIImageView *ImageViewPoi;
+@property (weak, nonatomic) IBOutlet UIImageView *ImageViewTrip;
+@property (weak, nonatomic) IBOutlet MKMapView *FeaturedPoiMap;
+@property (weak, nonatomic) IBOutlet UIView *ViewRegisterWarning;
+
+
+
+
 
 @end

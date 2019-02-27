@@ -19,9 +19,9 @@
     //self.editButton.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
     
     
-    self.deleteButton.layer.cornerRadius = 15;
-    self.deleteButton.clipsToBounds = YES;
-    self.deleteButton.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
+   // self.deleteButton.layer.cornerRadius = 15;
+   // self.deleteButton.clipsToBounds = YES;
+   // self.deleteButton.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
     
 }
 

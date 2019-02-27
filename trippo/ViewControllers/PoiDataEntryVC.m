@@ -19,11 +19,23 @@
 
 /*
  created date:      28/04/2018
- last modified:     08/09/2018
- remarks: TODO - split load existing data into 2 - map data and images.
+ last modified:     19/02/2019
+ remarks: Need to optimize the call to settings so it ends up as part of the appdelegate or something
  */
 - (void)viewDidLoad {
+
     [super viewDidLoad];
+    
+    RLMResults <SettingsRLM*> *settings = [SettingsRLM allObjects];
+    if (settings.count==0) {
+        self.Settings = [[SettingsRLM alloc] init];
+        self.Settings.userkey = @"UNKNOWN-KEY";
+        self.Settings.username = @"Jane Doe";
+        self.Settings.useremail = @"jane,doe@unknown.com";
+    } else {
+        self.Settings = settings[0];
+    }
+
     self.PoiImageDictionary = [[NSMutableDictionary alloc] init];
     if (self.newitem && !self.fromnearby) {
         if (![self.PointOfInterest.name isEqualToString:@""]) {
@@ -35,6 +47,25 @@
     } else if (self.fromnearby) {
         self.TextFieldTitle.text = self.PointOfInterest.name;
         self.TextViewNotes.text = self.PointOfInterest.privatenotes;
+        
+        if (self.haswikimainimage) {
+            
+            ImageCollectionRLM *imgobject = [[ImageCollectionRLM alloc] init];
+            imgobject.key = [[NSUUID UUID] UUIDString];
+            imgobject.KeyImage = 1;
+            imgobject.info = self.WikiMainImageDescription;
+            
+            [self.realm beginWriteTransaction];
+            [self.PointOfInterest.images addObject:imgobject];
+            [self.realm commitWriteTransaction];
+            
+            CGSize size = CGSizeMake(self.TextViewNotes.frame.size.width * 2, self.TextViewNotes.frame.size.width * 2);
+        
+            [self.PoiImageDictionary setObject:[ToolBoxNSO imageWithImage:self.WikiMainImage scaledToSize:size] forKey:imgobject.key];
+            [self.ImagePicture setImage:[self.PoiImageDictionary objectForKey:imgobject.key]];
+            [self.ImageViewKey setImage:[self.PoiImageDictionary objectForKey:imgobject.key]];
+            self.LabelPhotoInfo.text = imgobject.info;
+        }
         
     } else {
         if (self.readonlyitem) {
@@ -51,7 +82,9 @@
     }
     
     self.ImagePicture.frame = CGRectMake(0, 0, self.ScrollViewImage.frame.size.width, self.ScrollViewImage.frame.size.height);
+    
     self.ScrollViewImage.delegate = self;
+    
     
     [self LoadCategoryData];
 
@@ -72,8 +105,9 @@
     
     self.TextViewNotes.layer.cornerRadius=8.0f;
     self.TextViewNotes.layer.masksToBounds=YES;
-    self.TextViewNotes.layer.borderColor=[[UIColor colorWithRed:246.0f/255.0f green:247.0f/255.0f blue:235.0f/255.0f alpha:1.0]CGColor];
-    self.TextViewNotes.layer.borderWidth= 1.0f;
+    self.TextViewNotes.layer.borderColor=[[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]CGColor];
+    self.TextViewNotes.layer.borderWidth= 2.0f;
+
     // heigtht of option blurred view is 60; view is 4 less; to make a circle we need half the remainder.
     self.ViewSelectedKey.layer.cornerRadius=28;
     self.ViewSelectedKey.layer.masksToBounds=YES;
@@ -87,38 +121,103 @@
     
     
     if (self.checkInternet) {
-        if ([self.PointOfInterest.countrycode isEqualToString:@""]) {
+        if ([self.PointOfInterest.countrycode isEqualToString:@""] || self.PointOfInterest.countrycode==nil) {
             self.ButtonGeo.hidden = false;
         }
         // TODO we need to check if Poi has missing data and that the internet is available...
         
     }
-    
-    self.ButtonUploadImages.hidden = true;
-    
     NSIndexPath *indexPath = [NSIndexPath indexPathForItem:[self.PointOfInterest.categoryid unsignedLongValue] inSection:0];
     [self.CollectionViewTypes scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
     
+    
+    
+    /* load the average count of ratings given to this point of interest inside actual activities */
+    RLMResults<ActivityRLM*> *activities = [ActivityRLM objectsWhere:@"poikey==%@ and state==1",self.PointOfInterest.key];
+    
+    int totalelements = 0;
+    float total = 0.0f;
+    float average = 0.0f;
+   
+    
+    NSCalendar *cal = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    [cal setTimeZone:[NSTimeZone systemTimeZone]];
+    NSDateComponents * comp = [cal components:( NSCalendarUnitYear| NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute) fromDate:[NSDate date]];
+    [comp setYear:1900];
+    [comp setMonth:1];
+    [comp setDay:1];
+    [comp setMinute:0];
+    [comp setHour:0];
+    [comp setSecond:0];
+    NSDate *LastVisitiedDt = [cal dateFromComponents:comp];
+    
+    for (ActivityRLM *activity in activities) {
+        if (activity.rating != [NSNumber numberWithFloat:0]) {
+            totalelements ++;
+            total += [activity.rating floatValue];
+        }
+        if([activity.startdt compare: LastVisitiedDt] == NSOrderedDescending ) {
+            LastVisitiedDt = activity.startdt;
+        }
+    }
+    
+    if (total>0.0f) {
+        average = total / totalelements;
+        self.LabelOccurances.text = [NSString stringWithFormat:@"Located in %d activities\nLast visited %@",totalelements, [self FormatPrettyDate:LastVisitiedDt]];
+    } else {
+        average = 0.0f;
+        self.LabelOccurances.text = @"Not found in any activities";
+    }
+    
+    self.ViewStarRatings.maximumValue = 5;
+    self.ViewStarRatings.minimumValue = 0;
+    self.ViewStarRatings.value = average;
+    self.ViewStarRatings.allowsHalfStars = YES;
+    
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+
+    [dateFormatter setDateFormat:@"dd MMM, YYYY HH:mm"];
+    
+    self.LabelInfoName.text = self.PointOfInterest.name;
+    self.LabelInfoSharedBy.text = self.PointOfInterest.sharedby;
+    NSLog(@"device shared by:%@",self.PointOfInterest.devicesharedby);
+    self.LabelInfoSharedDevice.text = self.PointOfInterest.devicesharedby;
+    self.labelInfoAuthorName.text = self.PointOfInterest.authorname;
+    self.LabelInfoSharedDt.text = [dateFormatter  stringFromDate:self.PointOfInterest.importeddt];
+    self.LabelInfoCreatedDt.text = [dateFormatter  stringFromDate:self.PointOfInterest.createddt];
+    self.LabelInfoLastModified.text = [dateFormatter  stringFromDate:self.PointOfInterest.modifieddt];
+    
+   
 }
+
+-(void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    [[NSNotificationCenter defaultCenter]
+     addObserver:self
+     selector:@selector(handleKeyboardWillShow:)
+     name:UIKeyboardWillShowNotification object:nil];
+
+}
+
 
 /*
  created date:      28/04/2018
- last modified:     19/07/2018
+ last modified:     30/01/2019
  remarks: TODO - split load existing data into 2 - map data and images.
  */
 -(void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
+    UIImage *ImageWiki;
     if (![self.PointOfInterest.wikititle isEqualToString:@""]) {
-        [self.ButtonWiki setImage:[UIImage imageNamed:@"WikiFilled"] forState:UIControlStateNormal];
+        ImageWiki = [UIImage imageNamed:@"WikiFilled"];
     } else {
-       [self.ButtonWiki setImage:[UIImage imageNamed:@"Wiki"] forState:UIControlStateNormal];
+        ImageWiki = [UIImage imageNamed:@"Wiki"];
     }
-}
-
--(UIStatusBarStyle)preferredStatusBarStyle
-{
-    return UIStatusBarStyleLightContent;
+    self.ButtonWiki.imageView.image = [ImageWiki imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    //[self.ButtonWiki.imageView setTintColor:[UIColor colorWithRed:44.0f/255.0f green:127.0f/255.0f blue:89.0f/255.0f alpha:1.0]];
 }
 
 /*
@@ -373,7 +472,7 @@
         PoiImageCell *cell=[collectionView dequeueReusableCellWithReuseIdentifier:@"PoiImageId" forIndexPath:indexPath];
         NSInteger NumberOfItems = self.PointOfInterest.images.count + 1;
         if (indexPath.row == NumberOfItems -1) {
-            cell.ImagePoi.image = [UIImage imageNamed:@"Add-blue"];
+            cell.ImagePoi.image = [UIImage imageNamed:@"AddItem"];
         } else {
             ImageCollectionRLM *imgreference = [self.PointOfInterest.images objectAtIndex:indexPath.row];
             cell.ImagePoi.image = [self.PoiImageDictionary objectForKey:imgreference.key];
@@ -450,15 +549,14 @@
 
 /*
  created date:      13/08/2018
- last modified:     13/08/2018
+ last modified:     16/02/2019
  remarks:           Scrolls to selected catagory item.
  */
 -(void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
-    /*
-    NSIndexPath *indexPath = [NSIndexPath indexPathForItem:[self.PointOfInterest.categoryid unsignedLongValue] inSection:0];
-    [self.CollectionViewTypes scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
-    */
+    
+    NSIndexPath *indexPath = [NSIndexPath indexPathForItem:[self.PointOfInterest.categoryid longValue] inSection:0];
+     [self.CollectionViewTypes scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically | UICollectionViewScrollPositionCenteredHorizontally animated:NO];
 }
 
 
@@ -802,6 +900,9 @@
     return size;
 }
 
+
+
+
 /*
  created date:      28/04/2018
  last modified:     28/04/2018
@@ -817,7 +918,7 @@
  remarks:
  */
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    [self.TextViewNotes endEditing:YES];
+    //[self.TextViewNotes endEditing:YES];
     [self.TextFieldTitle endEditing:YES];
 }
 
@@ -851,6 +952,8 @@
                 
             }
         }
+        self.PointOfInterest.authorname = self.Settings.username;
+        self.PointOfInterest.authorkey = self.Settings.userkey;
         self.PointOfInterest.name = self.TextFieldTitle.text;
         self.PointOfInterest.privatenotes = self.TextViewNotes.text;
         self.PointOfInterest.modifieddt = [NSDate date];
@@ -945,7 +1048,7 @@
 
 /*
  created date:      28/04/2018
- last modified:     26/09/2018
+ last modified:     19/02/2019
  remarks:
  */
 -(IBAction)SegmentOptionChanged:(id)sender {
@@ -956,10 +1059,12 @@
         self.ViewNotes.hidden = true;
         self.ViewMap.hidden = true;
         self.ViewPhotos.hidden =true;
+        self.ViewInfo.hidden = true;
         self.SwitchViewPhotoOptions.hidden=true;
-        self.ButtonUploadImages.hidden=true;
-        if (self.ButtonGeo.layer.cornerRadius==25) {
-            self.ButtonGeo.hidden = false;
+        if (self.checkInternet) {
+            if ([self.PointOfInterest.countrycode isEqualToString:@""] || self.PointOfInterest.countrycode==nil) {
+                self.ButtonGeo.hidden = false;
+            }
         }
         self.ButtonScan.hidden = true;
 
@@ -969,8 +1074,8 @@
         self.ButtonScan.hidden = false;
         self.ViewMap.hidden = true;
         self.ViewPhotos.hidden =true;
+        self.ViewInfo.hidden = true;
         self.SwitchViewPhotoOptions.hidden=true;
-        self.ButtonUploadImages.hidden = true;
         self.ButtonGeo.hidden = true;
         
      } else if (segment.selectedSegmentIndex==2) {
@@ -978,6 +1083,7 @@
          self.ViewNotes.hidden = true;
          self.ViewMap.hidden = false;
          self.ViewPhotos.hidden =true;
+         self.ViewInfo.hidden = true;
          self.SwitchViewPhotoOptions.hidden=true;
          self.ButtonGeo.hidden = true;
          self.ButtonScan.hidden = true;
@@ -1001,15 +1107,15 @@
         self.CircleRange = [MKCircle circleWithCenterCoordinate:coord radius:RadiusAmt];
         
         [self.MapView addOverlay:self.CircleRange];
-        self.ButtonUploadImages.hidden = true;
         
-    } else {
+        
+    } else if (segment.selectedSegmentIndex==3) {
         self.ViewMain.hidden = true;
         self.ViewNotes.hidden = true;
         self.ViewMap.hidden = true;
         self.ViewPhotos.hidden =false;
+        self.ViewInfo.hidden = true;
         self.ButtonGeo.hidden = true;
-        self.ButtonUploadImages.hidden = false;
         self.ButtonScan.hidden = true;
 
         if (self.PointOfInterest.images.count > 0 && !self.readonlyitem) {
@@ -1017,6 +1123,17 @@
             self.ViewBlurImageOptionPanel.hidden=false;
             self.SwitchViewPhotoOptions.hidden=false;
         }
+    } else {
+        /* view info */
+        
+        self.ViewMain.hidden = true;
+        self.ViewNotes.hidden = true;
+        self.ViewInfo.hidden = false;
+        self.ButtonScan.hidden = true;
+        self.ViewMap.hidden = true;
+        self.ViewPhotos.hidden =true;
+        self.SwitchViewPhotoOptions.hidden=true;
+        self.ButtonGeo.hidden = true;
     }
 }
 
@@ -1169,7 +1286,6 @@
  remarks:
  */
 - (IBAction)ButtonWikiPressed:(id)sender {
-
 
     if (self.SegmentDetailOption.selectedSegmentIndex!=1) {
        
@@ -1334,6 +1450,8 @@
 {
     UIToolbar* doneToolbar = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, 320, 50)];
     doneToolbar.barStyle = UIBarStyleDefault;
+    [doneToolbar setTintColor:[UIColor colorWithRed:255.0f/255.0f green:91.0f/255.0f blue:73.0f/255.0f alpha:1.0]];
+    
     doneToolbar.items = [NSArray arrayWithObjects:
                          [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
                          [[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(doneButtonClickedDismissKeyboard)],
@@ -1354,6 +1472,7 @@
 -(void)doneButtonClickedDismissKeyboard
 {
     [self.TextViewNotes resignFirstResponder];
+    self.ContraintBottomNotes.constant = 10;
 }
 
 - (IBAction)TitleEditingDidEnd:(id)sender {
@@ -1389,13 +1508,13 @@
 
 /*
  created date:      28/04/2018
- last modified:     21/10/2018
- remarks:
+ last modified:     06/02/2019
+ remarks:           BUG WHEN USER CANCELS AFTER ADDING IMAGE IN NEARBY
  */
 - (IBAction)BackPressed:(id)sender {
 
     if (self.newitem) {
-        /* wiki reference */
+        /* remove any wiki document that might be orphaned afterwards */
         NSFileManager *fileManager = [NSFileManager defaultManager];
         
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -1407,12 +1526,13 @@
         [fileManager removeItemAtPath:wikiDataFilePath error:&error];
         
         /* manage the images if any exist */
-        if (self.PointOfInterest.images.count>0) {
-            /* delete all */
+        /*if (self.PointOfInterest.images.count>0) {
+         
             [self.realm transactionWithBlock:^{
                [self.realm deleteObjects:self.PointOfInterest.images];
             }];
-        }
+        }*/
+    
     } else {
         
         if (self.PointOfInterest.images.count > 0) {
@@ -1438,7 +1558,6 @@
             [self.realm commitWriteTransaction];
         }
 
-        //[self dismissViewControllerAnimated:YES completion:Nil];
     }
    
     [self dismissViewControllerAnimated:YES completion:Nil];
@@ -1516,36 +1635,135 @@
 }
 /*
  created date:      08/09/2018
- last modified:     08/09/2018
- remarks:
+ last modified:     19/02/2019
+ remarks:           Turn this into more like structure used in RLM objects.
  */
-- (IBAction)UploadImagesPressed:(id)sender {
-    
-    
-    NSData *dataImage = UIImagePNGRepresentation(self.ImagePicture.image);
-    NSString *stringImage = [dataImage base64EncodedStringWithOptions:0];
-
-    NSString *ImageFileReference = [NSString stringWithFormat:@"Images/%@/%@.png",self.PointOfInterest.key, self.SelectedImageKey];
-    
-    NSString *ImageFileDirectory = [NSString stringWithFormat:@"Images/%@",self.PointOfInterest.key];
-
-    NSDictionary* dataJSON = [NSDictionary dictionaryWithObjectsAndKeys:
-                              @"Point of Interest",
-                              @"type",
-                              ImageFileReference,
-                              @"filereference",
-                              ImageFileDirectory,
-                              @"directory",
-                              stringImage,
-                              @"image",
-                              nil];
-    
-    
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dataJSON
-                                                       options:NSJSONWritingPrettyPrinted error:nil];
+- (IBAction)SharePressed:(id)sender {
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *imagesDirectory = [paths objectAtIndex:0];
+    
+    NSData *ImageData = [[NSData alloc] init];
+    NSString *ImageString = [[NSString alloc] init];
+    
+    ImageCollectionRLM *ImageObject = [[ImageCollectionRLM alloc] init];
+    
+    if (self.PointOfInterest.images.count==0) {
+        ImageObject.key = @"N/A";
+    } else {
+        for (ImageCollectionRLM *imageitem in self.PointOfInterest.images) {
+             if (imageitem.KeyImage) {
+                 ImageData = UIImagePNGRepresentation([self.PoiImageDictionary objectForKey:imageitem.key]);
+                 ImageString = [ImageData base64EncodedStringWithOptions:0];
+                 ImageObject.key = imageitem.key;
+                 ImageObject.ImageFileReference = imageitem.ImageFileReference;
+                 if (imageitem.info.length>0) ImageObject.info=imageitem.info;
+                 break;
+            }
+        }
+    }
+    
+    NSString *ImageFileDirectory = [NSString stringWithFormat:@"Images/%@",self.PointOfInterest.key];
+
+    PoiRLM *poi = [[PoiRLM alloc] initWithValue:self.PointOfInterest];
+    if (poi.name.length==0) poi.name=@"";
+    if (poi.countrykey.length==0) poi.countrykey=@"";
+    if (poi.country.length==0) poi.country=@"";
+    if (poi.countrycode.length==0) poi.countrycode=@"";
+    if (poi.administrativearea.length==0) poi.administrativearea=@"";
+    if (poi.subadministrativearea.length==0) poi.subadministrativearea=@"";
+    if (poi.fullthoroughfare.length==0) poi.fullthoroughfare=@"";
+    if (poi.privatenotes.length==0) poi.privatenotes=@"";
+    if (poi.locality.length==0) poi.locality=@"";
+    if (poi.sublocality.length==0) poi.sublocality=@"";
+    if (poi.postcode.length==0) poi.postcode=@"";
+    if (poi.wikititle.length==0) poi.wikititle=@"";
+    if (poi.searchstring.length==0) poi.searchstring=@"";
+    poi.devicesharedby = [[UIDevice currentDevice] name];
+    poi.sharedby = self.Settings.username;
+    if (poi.authorname.length==0) poi.authorname=@"";
+    if (poi.authorkey.length==0) poi.authorkey=@"";
+    
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    //NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+    //[dateFormatter setTimeZone:timeZone];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+   
+    NSString *ModifiedDt = [dateFormatter  stringFromDate:poi.modifieddt];
+    NSString *CreatedDt = [dateFormatter  stringFromDate:poi.createddt];
+    NSString *SharedDt = [dateFormatter  stringFromDate:[NSDate date]];
+    
+    NSDictionary* ImageDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                              ImageObject.key,
+                              @"Key",
+                              ImageObject.ImageFileReference,
+                              @"ImageFileReference",
+                              ImageFileDirectory,
+                              @"Directory",
+                              ImageObject.info,
+                              @"info",
+                              ImageString,
+                              @"Image",
+                              nil];
+    
+    
+    NSDictionary* PoiDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                poi.key,
+                                @"key",
+                                poi.name,
+                                @"name",
+                                poi.categoryid,
+                                @"categoryid",
+                                poi.countrykey,
+                                @"countrykey",
+                                poi.country,
+                                @"country",
+                                poi.countrycode,
+                                @"countrycode",
+                                poi.administrativearea,
+                                @"administrativearea",
+                                poi.subadministrativearea,
+                                @"subadministrativearea",
+                                poi.fullthoroughfare,
+                                @"fullthoroughfare",
+                                poi.privatenotes,
+                                @"privatenotes",
+                                poi.locality,
+                                @"locality",
+                                poi.sublocality,
+                                @"sublocality",
+                                poi.postcode,
+                                @"postcode",
+                                poi.wikititle,
+                                @"wikititle",
+                                poi.searchstring,
+                                @"searchstring",
+                                poi.lat,
+                                @"lat",
+                                poi.lon,
+                                @"lon",
+                                CreatedDt,
+                                @"createddt",
+                                ModifiedDt,
+                                @"modifieddt",
+                                SharedDt,
+                                @"shareddt",
+                                poi.sharedby,
+                                @"sharedby",
+                                poi.devicesharedby,
+                                @"devicesharedby",
+                                poi.authorkey,
+                                @"authorkey",
+                                poi.authorname,
+                                @"authorname",
+                                ImageDictionary,
+                                @"ImageObject",
+                                nil];
+    
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:PoiDictionary
+                                                       options:NSJSONWritingPrettyPrinted error:nil];
+   
     NSURL *url = [NSURL fileURLWithPath:imagesDirectory];
     url = [url URLByAppendingPathComponent:@"Poi.trippo"];
     
@@ -1557,15 +1775,26 @@
         //Delete file
         NSError *errorBlock;
         if([[NSFileManager defaultManager] removeItemAtURL:url error:&errorBlock] == NO) {
-            //NSLog(@"error deleting file %@",error);
             return;
         }
     }];
-    
-    
+
     activityViewController.popoverPresentationController.sourceView = self.view;
     [self presentViewController:activityViewController animated:YES completion:nil];
     
+}
+
+/*
+ created date:      16/02/2019
+ last modified:     16/02/2019
+ remarks:
+ */
+-(NSString*)FormatPrettyDate :(NSDate*)Dt {
+    NSDateFormatter *dateformatter = [[NSDateFormatter alloc] init];
+    [dateformatter setDateFormat:@"EEE, dd MMM yyyy"];
+    NSDateFormatter *timeformatter = [[NSDateFormatter alloc] init];
+    [timeformatter setDateFormat:@"HH:mm"];
+    return [NSString stringWithFormat:@"%@ %@",[dateformatter stringFromDate:Dt], [timeformatter stringFromDate:Dt]];
 }
 
 /*
@@ -1588,23 +1817,32 @@
 
     }else
     {
-       
-        
         UIImagePickerController *picker = [[UIImagePickerController alloc] init];
         picker.delegate = self;
-        //picker.allowsEditing = YES;
 
-        //picker.
         picker.sourceType = UIImagePickerControllerSourceTypeCamera;
         picker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
         [self presentViewController:picker animated:YES completion:NULL];
-        
     }
-    
-    
-    
 }
 
+/*
+ created date:      17/02/2019
+ last modified:     17/02/2019
+ remarks:           resizes the textview control to allow for keyboard view.
+ */
+- (void) handleKeyboardWillShow:(NSNotification *)paramNotification{
+    
+    NSValue *keyboardRectAsObject =
+    [[paramNotification userInfo]
+     objectForKey:UIKeyboardFrameEndUserInfoKey];
 
+    CGRect keyboardRect = CGRectZero;
+    [keyboardRectAsObject getValue:&keyboardRect];
+    self.ContraintBottomNotes.constant = keyboardRect.size.height - 132;
+    
+    [self.TextViewNotes scrollRangeToVisible:self.TextViewNotes.selectedRange];
+    [self.TextViewNotes setNeedsDisplay];
+}
 
 @end

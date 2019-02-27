@@ -20,4 +20,6 @@
 @property (assign) bool UpdateImage;
 @property (assign) int ImageFlaggedDeleted;
 @property (assign) NSNumber *State;
+@property (nonatomic) NSString *originalsource;
+@property (nonatomic) NSString *thumbnailsource;
 @end

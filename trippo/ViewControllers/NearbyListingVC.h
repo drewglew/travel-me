@@ -15,6 +15,7 @@
 #import "Reachability.h"
 #import "PoiRLM.h"
 
+
 @protocol NearbyListingDelegate <NSObject>
 - (void)didUpdatePoi :(NSString*)Method :(PoiRLM*)Object;
 @end
@@ -30,5 +31,14 @@
 @property (strong, nonatomic)  CLLocationManager *locationManager;
 @property RLMRealm *realm;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentFilterType;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentImageEnabler;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *LoadingActivityIndictor;
+
+@property (strong, nonatomic) IBOutlet UIImage *WikiMainImage;
+@property (weak, nonatomic) IBOutlet UILabel *LabelTotalItems;
+@property (weak, nonatomic) IBOutlet UIView *ViewLoading;
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *FooterWithSegmentConstraint;
 
 @end

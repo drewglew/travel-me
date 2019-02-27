@@ -7,6 +7,7 @@
 //
 
 #import "ImageCollectionRLM.h"
+#import "AttachmentRLM.h"
 #import <Realm/Realm.h>
 
 @interface PoiRLM : RLMObject
@@ -30,5 +31,11 @@
 @property (strong, nonatomic) NSNumber<RLMDouble> *lon;
 @property (strong, nonatomic) NSDate *createddt;
 @property (strong, nonatomic) NSDate *modifieddt;
+@property (strong, nonatomic) NSString *authorname;
+@property (strong, nonatomic) NSString *authorkey;
+@property (strong, nonatomic) NSString *sharedby;
+@property (strong, nonatomic) NSString *devicesharedby;
+@property (strong, nonatomic) NSDate *importeddt;
 @property RLMArray<ImageCollectionRLM *><ImageCollectionRLM> *images;
+@property RLMArray<AttachmentRLM *><AttachmentRLM> *attachments;
 @end

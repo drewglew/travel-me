@@ -10,12 +10,22 @@
 	<array>
 		<dict>
 			<key>CFBundleTypeName</key>
-			<string>Trippo Image Data</string>
+			<string>Trippo Point Of Interest</string>
 			<key>LSHandlerRank</key>
 			<string>Owner</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>com.drewbysoft.poiimage.trippo</string>
+				<string>com.drewbysoft.poi.trippo</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>PDF</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.adobe.pdf</string>
 			</array>
 		</dict>
 	</array>
@@ -30,7 +40,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.5.10</string>
+	<string>1.6.1</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSApplicationCategoryType</key>
@@ -49,13 +59,13 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Travel-Me would like to access your camera so it can store photos against your Point Of Interests and Projects</string>
+	<string>Trippo would like to access your camera so it can store photos against your Point Of Interests and Trips</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Travel-Me would like to access your current location so it can provide helpful directions.</string>
+	<string>Trippo would like to access your current location so it can provide helpful directions.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>To obtain distance from current location to Point Of Interest Travel-Me requires access to your current location</string>
+	<string>To obtain distance from current location to Point Of Interest Trippo requires access to your current location</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Travel-Me would like to access your photo collectilon so it can present your Point Of Interests and Projects with your own photos.</string>
+	<string>Trippo would like to access your photo collectilon so it can present your Point Of Interests and Trips with your own photos.</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -67,7 +77,7 @@
 		<string>armv7</string>
 	</array>
 	<key>UIStatusBarStyle</key>
-	<string>UIStatusBarStyleBlackOpaque</string>
+	<string>UIStatusBarStyleDefault</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -91,7 +101,7 @@
 				<string></string>
 			</array>
 			<key>UTTypeIdentifier</key>
-			<string>com.drewbysoft.poiimage.trippo</string>
+			<string>com.drewbysoft.poi.trippo</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>

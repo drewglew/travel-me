@@ -9,6 +9,7 @@
 #import "RLMObject.h"
 #import <Realm/Realm.h>
 #import "ExchangeRateRLM.h"
+#import "ImageCollectionRLM.h"
 
 @interface PaymentRLM : RLMObject
 @property NSString *key;
@@ -27,7 +28,7 @@
 @property ExchangeRateRLM *rate_est;
 @property ExchangeRateRLM *rate_act;
 @property NSNumber<RLMInt> *status;
-
+@property RLMArray<ImageCollectionRLM *><ImageCollectionRLM> *images;
 @end
 
 RLM_ARRAY_TYPE(PaymentRLM)

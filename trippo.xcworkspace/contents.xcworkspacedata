@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:trippo.xcodeproj">
+      location = "group:/Users/drew/Development/iOS/Trippo-Lite/trippo/trippo-app.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">

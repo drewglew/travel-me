@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "plus-96x96.png",
+      "filename" : "add-poi-100x100.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "plus-96x96-1.png",
+      "filename" : "add-poi-200x200.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "plus-96x96-2.png",
+      "filename" : "add-poi-300x300.png",
       "scale" : "3x"
     }
   ],

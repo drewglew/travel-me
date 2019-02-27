@@ -21,6 +21,7 @@
 #import "PoiRLM.h"
 #import "ActivityRLM.h"
 
+
 @protocol PoiSearchDelegate <NSObject>
 - (void)didUpdateActivityImages :(bool) ForceUpdate;
 @end

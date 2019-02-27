@@ -66,11 +66,6 @@ MKLocalSearchResponse *results;
 
 }
 
--(UIStatusBarStyle)preferredStatusBarStyle
-{
-    return UIStatusBarStyleLightContent;
-}
-
 
 /*
  created date:      11/05/2018
@@ -528,6 +523,34 @@ MKLocalSearchResponse *results;
  */
 - (void)didUpdatePoi :(NSString*)Method :(PoiRLM*)Object {
     [self.delegate didUpdatePoi:Method :Object];
+}
+
+/*
+ created date:      03/02/2019
+ last modified:     03/02/2019
+ remarks:
+ */
+- (IBAction)SegmentMapTypeChanged:(id)sender {
+    
+    switch ([self.SegmentMapType selectedSegmentIndex])
+    {
+        case 0:
+            self.MapView.mapType = MKMapTypeStandard;
+            break;
+        case 1:
+            self.MapView.mapType = MKMapTypeSatellite ;
+            break;
+        case 2:
+            self.MapView.mapType = MKMapTypeHybrid;
+            
+            break;
+        case 3:
+            self.MapView.mapType = MKMapTypeMutedStandard;
+            break;
+        default:
+            break;
+            
+    }
 }
 
 

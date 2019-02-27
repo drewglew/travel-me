@@ -14,9 +14,38 @@
 
 @implementation SettingsVC
 
+/*
+ created date:      23/08/2018
+ last modified:     19/02/2019
+ remarks:
+ */
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    
+    self.TextFieldNickName.delegate = self;
+    self.TextFieldEmail.delegate = self;
+    
+    if (self.Settings!=nil) {
+        self.TextFieldNickName.text = self.Settings.username;
+        self.TextFieldEmail.text = self.Settings.useremail;
+    }
+    
+    self.ViewUserName.layer.cornerRadius = 5;
+    self.ViewUserName.layer.masksToBounds = true;
+    self.ViewEmailInfo.layer.cornerRadius = 5;
+    self.ViewEmailInfo.layer.masksToBounds = true;
+    
+    self.TextFieldNickName.layer.borderWidth = 1.0f;
+    self.TextFieldNickName.layer.borderColor = [UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0].CGColor;
+    
+    self.TextFieldEmail.layer.borderWidth = 1.0f;
+    self.TextFieldEmail.layer.borderColor = [UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0].CGColor;
+    
+    
+    
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -115,5 +144,44 @@
     
     
 }
+
+-(BOOL) textFieldShouldReturn: (UITextField *) textField {
+    [textField resignFirstResponder];
+    return YES;
+}
+
+
+/*
+ created date:      19/02/2019
+ last modified:     19/02/2019
+ remarks:
+ */
+- (IBAction)ActionButtonPressed:(id)sender {
+    
+    if ([self.TextFieldEmail.text isEqualToString:@""] && [self.TextFieldNickName.text isEqualToString:@""]) {
+    
+    } else {
+        if (self.Settings == nil) {
+            self.Settings = [[SettingsRLM alloc] init];
+            self.Settings.userkey = [[NSUUID UUID] UUIDString];
+            self.Settings.username = self.TextFieldNickName.text;
+            self.Settings.useremail = self.TextFieldEmail.text;
+            
+            [self.realm beginWriteTransaction];
+            [self.realm addObject:self.Settings];
+            [self.realm commitWriteTransaction];
+            
+        } else {
+            [self.Settings.realm beginWriteTransaction];
+            self.Settings.username = self.TextFieldNickName.text;
+            self.Settings.useremail = self.TextFieldEmail.text;
+            [self.Settings.realm commitWriteTransaction];
+        }
+        [self dismissViewControllerAnimated:YES completion:Nil];
+    }
+    
+}
+
+
 
 @end

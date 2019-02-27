@@ -17,7 +17,7 @@
 
 /*
  created date:      29/04/2018
- last modified:     09/09/2018
+ last modified:     16/02/2019
  remarks:
  */
 - (void)viewDidLoad {
@@ -26,8 +26,9 @@
     // Do any additional setup after loading the view.
     if (!self.newitem) {
         if (self.deleteitem) {
-            self.ButtonAction.backgroundColor = [UIColor redColor];
-            UIImage *btnImage = [UIImage imageNamed:@"Delete"];
+            
+            UIImage *btnImage = [UIImage imageNamed:@"TrashCan"];
+            
             [self.ButtonAction setImage:btnImage forState:UIControlStateNormal];
             [self.ButtonAction setTitle:@"" forState:UIControlStateNormal];
             
@@ -41,16 +42,155 @@
         self.updatedimage = false;
     }
 
-     
     [self addDoneToolBarToKeyboard:self.TextViewNotes];
     self.TextViewNotes.delegate = self;
     self.TextFieldName.delegate = self;
+    
+    self.TextViewNotes.layer.cornerRadius=8.0f;
+    self.TextViewNotes.layer.masksToBounds=YES;
+    self.TextViewNotes.layer.borderColor=[[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]CGColor];
+    self.TextViewNotes.layer.borderWidth= 2.0f;
+    
+    NSDate *startOfToday = [[NSDate alloc] init];
+    
+    /* if a new trip, set both start & end dates to today at 00:00  */
+    if (self.newitem) {
+        NSCalendar *cal = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        [cal setTimeZone:[NSTimeZone systemTimeZone]];
+        
+        NSDateComponents * comp = [cal components:( NSCalendarUnitYear| NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute) fromDate:[NSDate date]];
+        [comp setMinute:0];
+        [comp setHour:0];
+        [comp setSecond:0];
+        startOfToday = [cal dateFromComponents:comp];
+     }
+    
+    /* initialize the datePicker for start dt */
+    self.datePickerStart = [[UIDatePicker alloc] initWithFrame:CGRectZero];
+    [self.datePickerStart setDatePickerMode:UIDatePickerModeDateAndTime];
+    
+    if (self.newitem) {
+        [self.datePickerStart setDate:startOfToday];
+        self.Trip.startdt = startOfToday;
+    } else {
+        [self.datePickerStart setDate:self.Trip.startdt];
+    }
+    [self.datePickerStart addTarget:self action:@selector(onDatePickerStartValueChanged:) forControlEvents:UIControlEventValueChanged];
+
+    /* initialize the datePicker for end dt */
+    self.datePickerEnd = [[UIDatePicker alloc] initWithFrame:CGRectZero];
+    [self.datePickerEnd setDatePickerMode:UIDatePickerModeDateAndTime];
+    if (self.newitem) {
+        [self.datePickerEnd setDate:startOfToday];
+        self.Trip.enddt = startOfToday;
+    } else {
+        [self.datePickerEnd setDate:self.Trip.enddt];
+    }
+    [self.datePickerEnd addTarget:self action:@selector(onDatePickerEndValueChanged:) forControlEvents:UIControlEventValueChanged];
+
+    /* add toolbar control for 'Done' option */
+    UIToolbar *toolBar=[[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
+    [toolBar setTintColor:[UIColor grayColor]];
+    UIBarButtonItem *doneBtn=[[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(HideDatePicker)];
+    UIBarButtonItem *space=[[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    [toolBar setItems:[NSArray arrayWithObjects:space,doneBtn, nil]];
+
+    /* extend features on the input view of the text field for start dt */
+    self.TextFieldStartDt.inputView = self.datePickerStart;
+    self.TextFieldStartDt.text = [NSString stringWithFormat:@"%@", [self FormatPrettyDate :self.datePickerStart.date]];
+    [self.TextFieldStartDt setInputAccessoryView:toolBar];
+    
+    /* extend features on the input view of the text field for end dt */
+    self.TextFieldEndDt.inputView = self.datePickerEnd;
+    self.TextFieldEndDt.text = [NSString stringWithFormat:@"%@", [self FormatPrettyDate :self.datePickerEnd.date]];
+    [self.TextFieldEndDt setInputAccessoryView:toolBar];
+    
 }
 
--(UIStatusBarStyle)preferredStatusBarStyle
-{
-    return UIStatusBarStyleLightContent;
+/*
+ created date:      16/02/2019
+ last modified:     16/02/2019
+ remarks:
+ */
+-(NSString*)FormatPrettyDate :(NSDate*)Dt {
+    NSDateFormatter *dateformatter = [[NSDateFormatter alloc] init];
+    [dateformatter setDateFormat:@"EEE, dd MMM yyyy"];
+    NSDateFormatter *timeformatter = [[NSDateFormatter alloc] init];
+    [timeformatter setDateFormat:@"HH:mm"];
+    return [NSString stringWithFormat:@"%@ %@",[dateformatter stringFromDate:Dt], [timeformatter stringFromDate:Dt]];
 }
+
+
+/*
+ created date:      16/02/2019
+ last modified:     17/02/2019
+ remarks:
+ */
+- (void)HideDatePicker
+{
+    [self.TextFieldStartDt resignFirstResponder];
+    [self.TextFieldEndDt resignFirstResponder];
+}
+
+
+/*
+ created date:      16/02/2019
+ last modified:     16/02/2019
+ remarks:
+ */
+- (void)onDatePickerStartValueChanged:(UIDatePicker *)datePicker
+{
+    self.TextFieldStartDt.text = [self FormatPrettyDate:datePicker.date];
+    NSComparisonResult result = [self.datePickerEnd.date compare:datePicker.date];
+    
+    switch (result)
+    {
+        case NSOrderedAscending:
+            NSLog(@"%@ is in future from %@", datePicker.date, self.datePickerEnd.date);
+            self.datePickerEnd.date = datePicker.date;
+            self.TextFieldEndDt.text = [self FormatPrettyDate:datePicker.date];
+            break;
+        case NSOrderedDescending: NSLog(@"%@ is in past from %@", datePicker.date, self.datePickerEnd.date); break;
+        case NSOrderedSame: NSLog(@"%@ is the same as %@", datePicker.date, self.datePickerEnd.date); break;
+        default: NSLog(@"erorr dates %@, %@", datePicker.date, self.datePickerEnd.date); break;
+    }
+    //self.LabelDuration.text = [ToolBoxNSO PrettyDateDifference:datePicker.date :self.datePickerEnd.date :@""];
+    
+}
+
+/*
+ created date:      16/02/2019
+ last modified:     16/02/2019
+ remarks:
+ */
+- (void)onDatePickerEndValueChanged:(UIDatePicker *)datePicker
+{
+    self.TextFieldEndDt.text = [self FormatPrettyDate:datePicker.date];
+    NSComparisonResult result = [datePicker.date compare: self.datePickerStart.date];
+    
+    switch (result)
+    {
+        case NSOrderedAscending:
+            NSLog(@"%@ is in future from %@", self.datePickerStart.date, datePicker.date);
+            self.datePickerStart.date = datePicker.date;
+            self.TextFieldStartDt.text = [self FormatPrettyDate:datePicker.date];
+            break;
+        case NSOrderedDescending:
+            NSLog(@"%@ is in past from %@", self.datePickerStart.date, datePicker.date);
+            
+            break;
+        case NSOrderedSame: NSLog(@"%@ is the same as %@", self.datePickerStart.date, datePicker.date); break;
+        default: NSLog(@"erorr dates %@, %@", self.datePickerStart.date, datePicker.date); break;
+    }
+    //self.LabelDuration.text = [ToolBoxNSO PrettyDateDifference:self.datePickerStart.date :datePicker.date :@""];
+}
+
+
+
+
+
+
+
 
 /*
  created date:      29/04/2018
@@ -140,24 +280,174 @@
 
 /*
  created date:      29/04/2018
- last modified:     13/05/2018
+ last modified:     21/02/2019
  remarks:
  */
 - (IBAction)ProjectActionPressed:(id)sender {
     
+    NSDate *startdt = self.datePickerStart.date;
+    NSDate *enddt = self.datePickerEnd.date;
+    
+    NSString *prettystartdt = [ToolBoxNSO FormatPrettyDate :startdt];
+    NSString *prettyenddt = [ToolBoxNSO FormatPrettyDate :enddt];
+
+    // first validation round is between the 2 dates on this page.
+    NSComparisonResult result = [startdt compare:enddt];
+    
+    NSString *AlertMessage = [[NSString alloc] init];
+    
+    switch (result)
+    {
+        case NSOrderedDescending:
+            AlertMessage = [NSString stringWithFormat:@"The start date %@ cannot be after the end date %@. \nPlease correct.", prettystartdt, prettyenddt];
+            break;
+        case NSOrderedAscending:
+            // all good!!
+            break;
+        case NSOrderedSame:
+            AlertMessage = [NSString stringWithFormat:@"The start date %@ cannot be the same as the end date.\nPlease correct", prettystartdt];
+            break;
+        default:
+            NSLog(@"error dates %@, %@", startdt, enddt);
+            break;
+    }
+    
+    if (![AlertMessage isEqualToString:@""])  {
+        UIAlertController * alert = [UIAlertController
+                                     alertControllerWithTitle:@"Error in dates chosen"
+                                     message:AlertMessage
+                                     preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction* okButton = [UIAlertAction
+                                    actionWithTitle:@"Ok"
+                                    style:UIAlertActionStyleDefault
+                                    handler:^(UIAlertAction * action) {
+
+                                    }];
+        
+        [alert addAction:okButton];
+        [self presentViewController:alert animated:YES completion:nil];
+        
+    } else {
+        
+        int StartDtsAmendedCount = 0;
+        int EndDtsAmendedCount = 0;
+        int DraftAmendedCount = 0;
+        
+        /* ERROR */
+
+        RLMResults <ActivityRLM*> *plannedactivities = [ActivityRLM objectsWhere:@"tripkey=%@ and state=0",self.Trip.key];
+       
+        if (plannedactivities.count==0) {
+            [self UpdateTripRealmData];
+        } else {
+            
+            for (ActivityRLM* activity in plannedactivities) {
+               
+                NSDate *activitystartdt = activity.startdt;
+                NSDate *activityenddt = activity.enddt;
+                
+                NSComparisonResult resultstartdt = [self.Trip.startdt compare:activitystartdt];
+                NSComparisonResult resultenddt = [self.Trip.enddt compare:activityenddt];
+                
+                if (resultstartdt == NSOrderedSame && resultenddt == NSOrderedSame) {
+                    DraftAmendedCount ++;
+                } else if (resultstartdt == NSOrderedDescending) {
+                    StartDtsAmendedCount ++;
+                } else if (resultenddt == NSOrderedAscending) {
+                    EndDtsAmendedCount ++;
+                }
+            }
+            
+            if (DraftAmendedCount + StartDtsAmendedCount + EndDtsAmendedCount > 0)  {
+
+                UIAlertController * alertInfo = [UIAlertController
+                                             alertControllerWithTitle:@"Information"
+                                             message:[NSString stringWithFormat:@"This update will adjust %d draft items, %d start dates and %d end dates inside activities. Are you sure you want to make this change?", DraftAmendedCount, StartDtsAmendedCount, EndDtsAmendedCount]
+                                             preferredStyle:UIAlertControllerStyleAlert];
+                
+                UIAlertAction* yesButton = [UIAlertAction
+                                           actionWithTitle:@"Yes"
+                                           style:UIAlertActionStyleDefault
+                                           handler:^(UIAlertAction * action) {
+                                               
+                                               for (ActivityRLM* activity in plannedactivities) {
+                                                   
+                                                   NSDate *activitystartdt = activity.startdt;
+                                                   NSDate *activityenddt = activity.enddt;
+                                                   
+                                                   NSComparisonResult resultstartdt = [self.Trip.startdt compare:activitystartdt];
+                                                   NSComparisonResult resultenddt = [self.Trip.enddt compare:activityenddt];
+                                                   
+                                                   if (resultstartdt == NSOrderedSame && resultenddt == NSOrderedSame) {
+                                                       [activity.realm beginWriteTransaction];
+                                                       activity.startdt = startdt;
+                                                       activity.enddt = enddt;
+                                                       [activity.realm commitWriteTransaction];
+                                                      
+                                                   } else if (resultstartdt == NSOrderedDescending) {
+                                                       [activity.realm beginWriteTransaction];
+                                                       activity.startdt = startdt;
+                                                       if ([startdt compare:activityenddt] == NSOrderedAscending)
+                                                       {
+                                                            activity.enddt = startdt;
+                                                       }
+                                                       [activity.realm commitWriteTransaction];
+                                                   } else if (resultenddt == NSOrderedAscending) {
+                                                       [activity.realm beginWriteTransaction];
+                                                       activity.enddt = enddt;
+                                                       if ([enddt compare:activitystartdt] == NSOrderedDescending)
+                                                       {
+                                                           activity.startdt = enddt;
+                                                       }
+                                                       [activity.realm commitWriteTransaction];
+                                                   }
+                                               }
+                                               
+                                               [self UpdateTripRealmData];
+                                           }];
+                
+                UIAlertAction* noButton = [UIAlertAction
+                                           actionWithTitle:@"No"
+                                           style:UIAlertActionStyleDefault
+                                           handler:^(UIAlertAction * action) {
+                                               
+                                           }];
+                
+                
+                [alertInfo addAction:yesButton];
+                [alertInfo addAction:noButton];
+                
+                [self presentViewController:alertInfo animated:YES completion:nil];
+            } else {
+                
+                [self UpdateTripRealmData];
+            }
+        }
+    }
+}
+
+
+/*
+ created date:      21/02/2019
+ last modified:     21/02/2019
+ remarks:
+ */
+- (void)UpdateTripRealmData
+{
+
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *imagesDirectory = [paths objectAtIndex:0];
-
+    
     if (self.newitem) {
-
+        
+        // new item
+        
         self.Trip.key = [[NSUUID UUID] UUIDString];
         if (self.updatedimage) {
-  
+            
             NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/Images/Trips/%@",self.Trip.key]];
             [[NSFileManager defaultManager] createDirectoryAtPath:dataPath withIntermediateDirectories:YES attributes:nil error:nil];
-        
-            //ImageCollectionRLM *image = [self.Trip.images firstObject];
-            
             NSData *imageData =  UIImagePNGRepresentation(self.ImageViewProject.image);
             
             NSString *filepathname = [dataPath stringByAppendingPathComponent:@"image.png"];
@@ -168,18 +458,21 @@
             [self.Trip.images addObject:image];
             
         } else {
+            // just set the single placeholder for the trip
             ImageCollectionRLM *image = [[ImageCollectionRLM alloc] init];
             image.ImageFileReference = @"";
             [self.Trip.images addObject:image];
         }
         
-        
         self.Trip.name = self.TextFieldName.text;
         self.Trip.privatenotes = self.TextViewNotes.text;
         self.Trip.modifieddt = [NSDate date];
         self.Trip.createddt = [NSDate date];
+        self.Trip.startdt = [self.datePickerStart date];
+        self.Trip.enddt = [self.datePickerEnd date];
         
         [self.realm beginWriteTransaction];
+        NSLog(@"addObject startdate=%@",self.Trip.startdt);
         [self.realm addObject:self.Trip];
         [self.realm commitWriteTransaction];
         
@@ -202,7 +495,10 @@
     }
     else
     {
-        if ([self.Trip.privatenotes isEqualToString:self.TextViewNotes.text] && [self.Trip.name isEqualToString:self.TextFieldName.text] && !self.updatedimage) {
+        // potential update
+        
+        
+        if ([self.Trip.privatenotes isEqualToString:self.TextViewNotes.text] && [self.Trip.name isEqualToString:self.TextFieldName.text] && !self.updatedimage && self.Trip.startdt == self.datePickerStart.date && self.Trip.enddt == self.datePickerEnd.date ) {
             // nothing to do
         } else {
             [self.Trip.realm beginWriteTransaction];
@@ -220,12 +516,28 @@
             self.Trip.privatenotes = self.TextViewNotes.text;
             self.Trip.name = self.TextFieldName.text;
             self.Trip.modifieddt = [NSDate date];
+            self.Trip.startdt = [self.datePickerStart date];
+            self.Trip.enddt = [self.datePickerEnd date];
             [self.Trip.realm commitWriteTransaction];
-
+            
         }
     }
     [self dismissViewControllerAnimated:YES completion:Nil];
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
  created date:      29/04/2018
@@ -375,18 +687,21 @@
 
 /*
  created date:      28/04/2018
- last modified:     29/04/2018
+ last modified:     17/02/2019
  remarks:
  */
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     [self.TextViewNotes endEditing:YES];
     [self.TextFieldName endEditing:YES];
+    [self.TextFieldEndDt endEditing:YES];
+    [self.TextFieldStartDt endEditing:YES];
 }
 
 -(void)addDoneToolBarToKeyboard:(UITextView *)textView
 {
     UIToolbar* doneToolbar = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, 320, 50)];
     doneToolbar.barStyle = UIBarStyleDefault;
+    [doneToolbar setTintColor:[UIColor colorWithRed:255.0f/255.0f green:91.0f/255.0f blue:73.0f/255.0f alpha:1.0]];
     doneToolbar.items = [NSArray arrayWithObjects:
                          [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
                          [[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(doneButtonClickedDismissKeyboard)],
@@ -527,5 +842,7 @@
         return [lengthFormatter stringFromValue:distance / 1000 unit:NSLengthFormatterUnitKilometer];
     }
 }
+
+
 
 @end

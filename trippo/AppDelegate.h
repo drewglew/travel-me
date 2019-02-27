@@ -7,6 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ImageCollectionRLM.h"
+#import "ToolBoxNSO.h"
+#import "AttachmentRLM.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 #define AppDelegateDef ((AppDelegate *)[[UIApplication sharedApplication] delegate])
@@ -16,6 +19,7 @@
 @property (nonatomic) NSString *HomeCountryCode;
 @property (nonatomic) NSString *MeasurementSystem;
 @property (assign) bool MetricSystem;
+@property (assign) bool HasTopNotch;
 @property (strong, nonatomic) NSMutableArray *poiitems;
 @property (strong, nonatomic) NSMutableDictionary *PoiBackgroundImageDictionary;
 @property (strong, nonatomic) NSMutableDictionary *CountryDictionary;

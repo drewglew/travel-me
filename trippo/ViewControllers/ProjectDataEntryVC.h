@@ -13,7 +13,9 @@
 #import "ToolBoxNSO.h"
 #import <Realm/Realm.h>
 #import "TripRLM.h"
+#import "ActivityRLM.h"
 #import "ImageCollectionRLM.h"
+#import "TextFieldDatePicker.h"
 
 @protocol ProjectDataEntryDelegate <NSObject>
 @end
@@ -45,6 +47,11 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelActCalcDist;
 @property (weak, nonatomic) IBOutlet UILabel *LabelEstCalcTravelTime;
 @property (weak, nonatomic) IBOutlet UILabel *LabelActCalcTravelTime;
+@property (nonatomic, strong)IBOutlet UIDatePicker *datePickerStart;
+@property (nonatomic, strong)IBOutlet UIDatePicker *datePickerEnd;
+@property (weak, nonatomic) IBOutlet TextFieldDatePicker *TextFieldStartDt;
+@property (weak, nonatomic) IBOutlet TextFieldDatePicker *TextFieldEndDt;
+
 
 @property (nonatomic, weak) id <ProjectDataEntryDelegate> delegate;
 @end

@@ -28,17 +28,12 @@ NSIndexPath *activeCellIndexPath;
     self.level = 0;
     
     if (self.ActivityState == [NSNumber numberWithLong:0]) {
-        self.labelHeader.text = [NSString stringWithFormat:@"%@ - Planned Schedule", self.Trip.name];
+        self.labelHeader.text = [NSString stringWithFormat:@"%@ - Itinerary", self.Trip.name];
     } else {
-        self.labelHeader.text = [NSString stringWithFormat:@"%@ - Actual Schedule", self.Trip.name];;
+        self.labelHeader.text = [NSString stringWithFormat:@"%@ - Journey", self.Trip.name];;
     }
     [self LoadScheduleData];
     // Do any additional setup after loading the view.
-}
-
--(UIStatusBarStyle)preferredStatusBarStyle
-{
-    return UIStatusBarStyleLightContent;
 }
 
 /*
@@ -296,7 +291,7 @@ NSIndexPath *activeCellIndexPath;
              [cell.TransportButton setImage:[UIImage imageNamed:@"transport-car"] forState:UIControlStateNormal];
         }
         cell.TransportButton.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
-        [cell.TransportButton setBackgroundColor:[UIColor whiteColor]];
+        [cell.TransportButton setBackgroundColor:[UIColor colorWithRed:218.0f/255.0f green:212.0f/255.0f blue:239.0f/255.0f alpha:1.0]];
         [cell.TransportButton addTarget:self
                           action:@selector(TransportButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
         cell.TransportButton.layer.cornerRadius = (TransportButtonWH / 2);
@@ -333,7 +328,7 @@ NSIndexPath *activeCellIndexPath;
     UIView *view=[[UIView alloc]initWithFrame:CGRectMake(LeftMargin + (Spacer * (cell.schedule.hierarcyindex - 1)), PositionLabelViewY, LabelViewWidth, LabelViewHeight)];
 
     CGFloat LabelNameWidth = 100;
-    CGFloat LabelNameHeight = 35;
+    CGFloat LabelNameHeight = 40;
     CGFloat LabelNameLeftMargin = 0;
     CGFloat LabelNameTopMargin = 5;
     
@@ -344,6 +339,13 @@ NSIndexPath *activeCellIndexPath;
     [labelName setFont:[UIFont fontWithName:@"Helvetica" size:12]];
     [labelName setTextAlignment:NSTextAlignmentCenter];
     [labelName setTextColor:[UIColor whiteColor]];
+    [labelName setBackgroundColor:[UIColor colorWithRed:173.0f/255.0f green:52.0f/255.0f blue:62.0f/255.0f alpha:1.0]];
+    labelName.layer.borderWidth = 1.0f;
+    labelName.layer.borderColor = [UIColor colorWithRed:173.0f/255.0f green:52.0f/255.0f blue:62.0f/255.0f alpha:1.0].CGColor;
+    
+    labelName.layer.cornerRadius = 5;
+    labelName.layer.masksToBounds = true;
+    
     [view addSubview:labelName];
     
     [cell.ViewHierarcyDetail addSubview:view];
@@ -641,7 +643,7 @@ NSIndexPath *activeCellIndexPath;
                                                            
                                                            CGRect ViewRect = CGRectMake(0.0, 0.0, self.view.bounds.size.width, self.view.bounds.size.height);
                                                            CGRect CancelButtonRect = CGRectMake(10.0, 50.0, 50.0, 50.0);
-                                                           CGRect DurationLabelRect = CGRectMake(70.0, 50.0, self.view.bounds.size.width - 140, 10.0);
+                                                           CGRect DurationLabelRect = CGRectMake(70.0, 50.0, self.view.bounds.size.width - 140, 13.0);
                                                            CGRect NameLabelRect = CGRectMake(70.0, 50.0, self.view.bounds.size.width - 140, 30.0);
                                                            CGRect AcceptButtonRect = CGRectMake(self.view.bounds.size.width - 60.0, 50.0, 50.0, 50.0);
                                                            CGRect StartDtLabelRect = CGRectMake(10.0, 135.0, self.view.bounds.size.width - 20, 40.0);
@@ -682,31 +684,31 @@ NSIndexPath *activeCellIndexPath;
                                                           
                                                            self.TextFieldDt.text = [NSString stringWithFormat:@"%@", [self FormatPrettyDates :cell.schedule.dt]];
                                                            
-                                                           [[self.TextFieldDt layer] setBorderColor:[[UIColor whiteColor] CGColor]];
+                                                           [[self.TextFieldDt layer] setBorderColor:[[UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0] CGColor]];
                                                            [[self.TextFieldDt layer] setBorderWidth:2.3];
                                                            [[self.TextFieldDt layer] setCornerRadius:15];
                                                            [self.TextFieldDt setClipsToBounds: YES];
                                                            
                                                            self.TextFieldDt.inputView = self.datePicker;
                                                            [self.TextFieldDt setTextAlignment:NSTextAlignmentCenter];
-                                                           [self.TextFieldDt setTextColor:[UIColor whiteColor]];
+                                                           [self.TextFieldDt setTextColor:[UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0]];
                                                         
                                                            self.LabelDuration = [[UILabel alloc] initWithFrame:DurationLabelRect];
                                                            self.LabelDuration.text = @"No Duration";
                                                            [self.LabelDuration setFont:[UIFont systemFontOfSize:12.0]];
-                                                           [self.LabelDuration setTextColor:[UIColor whiteColor]];
+                                                           [self.LabelDuration setTextColor:[UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0]];
                                                            [self.LabelDuration setTextAlignment:NSTextAlignmentCenter];
                                                            
                                                            /* Label Name - temporarily used to present the name  */
                                                            UILabel *LabelName = [[UILabel alloc] initWithFrame:NameLabelRect];
                                                            LabelName.text = cell.schedule.activityitem.name;
                                                            [LabelName setFont:[UIFont systemFontOfSize:16.0]];
-                                                           [LabelName setTextColor:[UIColor whiteColor]];
+                                                           [LabelName setTextColor:[UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0]];
                                                            [LabelName setTextAlignment:NSTextAlignmentCenter];
                                                            
                                                            UILabel *StartDtLabel = [[UILabel alloc] initWithFrame:StartDtLabelRect];
                                                            
-                                                           [StartDtLabel setTextColor:[UIColor whiteColor]];
+                                                           [StartDtLabel setTextColor:[UIColor colorWithRed:100.0f/255.0f green:245.0f/255.0f blue:1.0f/255.0f alpha:1.0]];
                                                            StartDtLabel.text = [NSString stringWithFormat:@"%@", [self FormatPrettyDates :cell.schedule.activityitem.startdt]];
                                                            [StartDtLabel setTextAlignment:NSTextAlignmentCenter];
                                                            
