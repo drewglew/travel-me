@@ -138,7 +138,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "trippo/ViewControllers/ActivityDataEntryVC.m"
-            timestampString = "573000393.68338"
+            timestampString = "573071042.196867"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1337"
@@ -250,12 +250,12 @@
                   moduleName = "trippo-app"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/drew/Development/iOS/Trippo-Lite/trippo/trippo/ViewControllers/WikiVC.m"
-                  timestampString = "573000394.041198"
+                  timestampString = "573071042.603946"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "217"
                   endingLineNumber = "217"
-                  offsetFromSymbolStart = "576">
+                  offsetFromSymbolStart = "677">
                </Location>
                <Location
                   shouldBeEnabled = "Yes"
@@ -265,12 +265,12 @@
                   moduleName = "trippo-app"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/drew/Development/iOS/Trippo-Lite/trippo/trippo/ViewControllers/WikiVC.m"
-                  timestampString = "573000394.043723"
+                  timestampString = "573071042.61151"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "217"
                   endingLineNumber = "217"
-                  offsetFromSymbolStart = "32">
+                  offsetFromSymbolStart = "22">
                </Location>
                <Location
                   shouldBeEnabled = "Yes"
@@ -280,12 +280,12 @@
                   moduleName = "trippo-app"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/drew/Development/iOS/Trippo-Lite/trippo/trippo/ViewControllers/WikiVC.m"
-                  timestampString = "573000394.046104"
+                  timestampString = "573071042.623776"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "217"
                   endingLineNumber = "217"
-                  offsetFromSymbolStart = "20">
+                  offsetFromSymbolStart = "16">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -297,7 +297,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "trippo/ViewControllers/ActivityDataEntryVC.m"
-            timestampString = "573000393.683599"
+            timestampString = "573071042.197315"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "904"
@@ -313,7 +313,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "trippo/ViewControllers/ActivityListVC.m"
-            timestampString = "573000393.683702"
+            timestampString = "573071042.197673"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "921"

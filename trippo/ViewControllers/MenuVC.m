@@ -40,7 +40,7 @@ bool FirstLoad;
     
     [self.CollectionViewPreviewPanel reloadData];
     
-    self.LabelFeaturedPoi.attributedText=[[NSAttributedString alloc]
+    /*self.LabelFeaturedPoi.attributedText=[[NSAttributedString alloc]
                                           initWithString:@"In focus..."
                                           attributes:@{
                                                        NSStrokeWidthAttributeName: @-1.0,
@@ -48,7 +48,8 @@ bool FirstLoad;
                                                        NSForegroundColorAttributeName:[UIColor whiteColor]
                                                        }
                                           ];
-    
+    */
+    self.LabelFeaturedPoi.text = @"In focus...";
 
     __weak typeof(self) weakSelf = self;
 
@@ -265,7 +266,7 @@ bool FirstLoad;
 
 /*
  created date:      18/08/2018
- last modified:     11/10/2018
+ last modified:     28/02/2019
  remarks:
  */
 -(void) LoadFeaturedPoi {
@@ -276,23 +277,11 @@ bool FirstLoad;
     
     RLMResults *poicollection = [[PoiRLM allObjects] objectsWithPredicate:[NSPredicate predicateWithFormat:@"categoryid IN %@",typeset]];
     
-    //RLMResults *poicollection = [PoiRLM allObjects];
- 
     if (poicollection.count==0) { return; }
     int featuredIndex = arc4random_uniform((int)poicollection.count);
     self.FeaturedPoi = [poicollection objectAtIndex:featuredIndex];
     
-    NSLog(@"Name=%@",self.FeaturedPoi.name);
-    
-    self.LabelFeaturedPoi.attributedText=[[NSAttributedString alloc]
-                                          initWithString:[NSString stringWithFormat:@"In focus... %@", self.FeaturedPoi.name]
-                                          attributes:@{
-                                                       NSStrokeWidthAttributeName: @-1.0,
-                                                       NSStrokeColorAttributeName:[UIColor blackColor],
-                                                       NSForegroundColorAttributeName:[UIColor whiteColor]
-                                                       }
-                                          ];
-    
+    self.LabelFeaturedPoi.text = [NSString stringWithFormat:@"In focus... %@", self.FeaturedPoi.name];
     
     NSURL *url = [self applicationDocumentsDirectory];
     

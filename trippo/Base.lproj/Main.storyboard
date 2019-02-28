@@ -429,7 +429,7 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Rpy-Br-qtF" userLabel="ViewFEATUREDPOI">
                                         <rect key="frame" x="5" y="0.0" width="365" height="183.5"/>
                                         <subviews>
-                                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="hybridFlyover" zoomEnabled="NO" scrollEnabled="NO" rotateEnabled="NO" pitchEnabled="NO" showsBuildings="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mm3-Mg-tpc">
+                                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" zoomEnabled="NO" scrollEnabled="NO" rotateEnabled="NO" pitchEnabled="NO" showsBuildings="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mm3-Mg-tpc">
                                                 <rect key="frame" x="1" y="1" width="363" height="181.5"/>
                                             </mapView>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Poi" translatesAutoresizingMaskIntoConstraints="NO" id="vGM-FE-6it">
@@ -6322,7 +6322,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
         <image name="Money-Add" width="96" height="96"/>
         <image name="OCR" width="72" height="72"/>
         <image name="Planning" width="1000" height="1000"/>
-        <image name="Poi" width="16" height="16"/>
+        <image name="Poi" width="600" height="600"/>
         <image name="PoiMenu" width="750" height="750"/>
         <image name="Present-List" width="100" height="100"/>
         <image name="Project" width="644" height="644"/>
@@ -6346,7 +6346,7 @@ Wikipedia - superb API providing access to data that matters.    Thanks to:�
         <segue reference="5z7-qs-WAd"/>
         <segue reference="3DY-I8-tb9"/>
         <segue reference="ZIc-mm-OQy"/>
-        <segue reference="3os-SD-Z4P"/>
+        <segue reference="C4j-D2-C1t"/>
         <segue reference="XaH-Wj-sbi"/>
         <segue reference="twy-MJ-tG7"/>
     </inferredMetricsTieBreakers>
