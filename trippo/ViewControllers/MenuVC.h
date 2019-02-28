@@ -43,6 +43,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewTrip;
 @property (weak, nonatomic) IBOutlet MKMapView *FeaturedPoiMap;
 @property (weak, nonatomic) IBOutlet UIView *ViewRegisterWarning;
+@property (weak, nonatomic) IBOutlet UIView *MainSurface;
 
 
 

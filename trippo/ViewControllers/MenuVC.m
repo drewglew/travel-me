@@ -382,6 +382,17 @@ bool FirstLoad;
     return self.selectedtripitems.count;
 }
 
+
+/*
+ created date:      28/02/2019
+ last modified:     28/02/2019
+ remarks:
+ */
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    return CGSizeMake(CGRectGetHeight(collectionView.frame) - 20, (CGRectGetHeight(collectionView.frame) - 20));
+}
+
 /*
  created date:      14/08/2018
  last modified:     03/09/2018
@@ -392,7 +403,7 @@ bool FirstLoad;
     ProjectListCell *cell=[collectionView dequeueReusableCellWithReuseIdentifier:@"projectCellId" forIndexPath:indexPath];
     TripRLM *trip = [self.selectedtripitems objectAtIndex:indexPath.row];
     cell.ImageViewProject.image = [self.TripImageDictionary objectForKey:trip.key];
-    
+    /*
     cell.LabelProjectName.attributedText=[[NSAttributedString alloc]
                                initWithString:trip.name
                                attributes:@{
@@ -401,6 +412,8 @@ bool FirstLoad;
                                             NSForegroundColorAttributeName:[UIColor whiteColor]
                                             }
                                ];
+    */
+    cell.LabelProjectName.text = trip.name;
     
     //cell.LabelProjectName.text = trip.name;
     
@@ -417,7 +430,7 @@ bool FirstLoad;
     } else {
         reference = @"New";
     }
-    
+    /*
     cell.LabelDateRange.attributedText=[[NSAttributedString alloc]
                                           initWithString:reference
                                           attributes:@{
@@ -426,8 +439,13 @@ bool FirstLoad;
                                                        NSForegroundColorAttributeName:[UIColor whiteColor]
                                                        }
                                           ];
+    */
+    cell.LabelDateRange.text = reference;
     
-    cell.ImageViewProject.layer.cornerRadius = cell.ImageViewProject.bounds.size.width / 2;
+    //TODO
+    cell.ImageViewProject.layer.cornerRadius = ((self.MainSurface.bounds.size.height / 2) - 100) / 2;
+    
+    //cell.ImageViewProject.layer.cornerRadius = cell.ImageViewProject.bounds.size.height / 2;
     cell.ImageViewProject.layer.masksToBounds = true;
     
     return cell;
