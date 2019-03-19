@@ -93,6 +93,7 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *ConstraintBottomNotes;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonExpandCollapseList;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *ViewDocumentListHeightConstraint;
+@property (weak, nonatomic) IBOutlet UISwitch *SwitchTweet;
 
 
 @end

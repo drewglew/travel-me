@@ -16,6 +16,8 @@
 
 @implementation PoiDataEntryVC
 @synthesize delegate;
+CLLocationCoordinate2D ModifiedCoordinate;
+bool CenterSelectedType;
 
 /*
  created date:      28/04/2018
@@ -23,7 +25,7 @@
  remarks: Need to optimize the call to settings so it ends up as part of the appdelegate or something
  */
 - (void)viewDidLoad {
-
+    CenterSelectedType = true;
     [super viewDidLoad];
     
     RLMResults <SettingsRLM*> *settings = [SettingsRLM allObjects];
@@ -90,6 +92,11 @@
 
     [self LoadMapData];
 
+    UILongPressGestureRecognizer* mapLongPressAddAnnotation = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(AddAnnotationToMap:)];
+    
+    [mapLongPressAddAnnotation setMinimumPressDuration:0.5];
+    [self.MapView addGestureRecognizer:mapLongPressAddAnnotation];
+    
     self.CollectionViewPoiImages.dataSource = self;
     self.CollectionViewPoiImages.delegate = self;
     
@@ -265,7 +272,8 @@
                        @"Cat-Village",
                        @"Cat-Zoo",
                        @"Cat-CarPark",
-                       @"Cat-PetrolStation"
+                       @"Cat-PetrolStation",
+                       @"Cat-School"
                        ];
     
     self.TypeLabelItems  = @[
@@ -307,7 +315,8 @@
                              @"Village",
                              @"Zoo",
                              @"Car Park",
-                             @"Fuel Station"
+                             @"Fuel Station",
+                             @"Education"
                              ];
     
     self.TypeDistanceItems  = @[
@@ -349,7 +358,8 @@
                              @1000, // village 35
                              @1000, // zoo, 36
                              @250, // car park, 37
-                             @100 // fuel pump, 38
+                             @100, // fuel pump, 38
+                             @150 // school, 39
                              ];
 
     self.LabelPoi.text = [self GetPoiLabelWithType:self.PointOfInterest.categoryid];
@@ -374,20 +384,143 @@
     anno.title = self.PointOfInterest.name;
     anno.subtitle = [NSString stringWithFormat:@"%@", self.PointOfInterest.administrativearea];
 
-    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake([self.PointOfInterest.lat doubleValue], [self.PointOfInterest.lon doubleValue]);
+    ModifiedCoordinate = CLLocationCoordinate2DMake([self.PointOfInterest.lat doubleValue], [self.PointOfInterest.lon doubleValue]);
     
-    anno.coordinate = coord;
+    anno.coordinate = ModifiedCoordinate;
     
     NSNumber *radius = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
     
-    [self.MapView setCenterCoordinate:coord animated:YES];
-    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(coord, [radius doubleValue] * 2.1, [radius doubleValue] * 2.1);
+    [self.MapView setCenterCoordinate:ModifiedCoordinate animated:YES];
+    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(ModifiedCoordinate, [radius doubleValue] * 2.1, [radius doubleValue] * 2.1);
     MKCoordinateRegion adjustedRegion = [self.MapView regionThatFits:viewRegion];
     [self.MapView setRegion:adjustedRegion animated:YES];
     [self.MapView addAnnotation:anno];
     [self.MapView selectAnnotation:anno animated:YES];
 
 }
+
+
+/*
+ created date:      16/03/2019
+ last modified:     16/03/2019
+ remarks: User gestures a long tap, the annotation is placed where the figure is.
+ */
+-(void)AddAnnotationToMap:(UILongPressGestureRecognizer *)gesture
+{
+
+    UIGestureRecognizer *recognizer = (UIGestureRecognizer*) gesture;
+    if(UIGestureRecognizerStateBegan == gesture.state)
+    {
+        CGPoint tapPoint = [recognizer locationInView:self.MapView];
+        CLLocationCoordinate2D location = [self.MapView convertPoint:tapPoint toCoordinateFromView:self.MapView];
+        
+        CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
+        
+        [geoCoder reverseGeocodeLocation: [[CLLocation alloc] initWithLatitude:location.latitude longitude:location.longitude] completionHandler:^(NSArray *placemarks, NSError *error) {
+            if (error) {
+                NSLog(@"%@", [NSString stringWithFormat:@"%@", error.localizedDescription]);
+            } else {
+
+                AnnotationMK *anno = [[AnnotationMK alloc] init];
+                
+                if ([placemarks count]>0) {
+                    CLPlacemark *placemark = [placemarks firstObject];
+                    anno.coordinate = placemark.location.coordinate;
+                    anno.title = placemark.name;
+                    
+                    NSString *AdminArea = placemark.subAdministrativeArea;
+                    if ([AdminArea isEqualToString:@""] || AdminArea == NULL) {
+                        AdminArea = placemark.administrativeArea;
+                    }
+                    
+                    anno.subtitle = [NSString stringWithFormat:@"%@, %@", AdminArea, placemark.ISOcountryCode ];
+                    
+                    anno.Country = placemark.country;
+                    anno.SubLocality = placemark.subLocality;
+                    anno.Locality = placemark.locality;
+                    anno.PostCode = placemark.postalCode;
+                    anno.CountryCode = placemark.ISOcountryCode;
+                    anno.FullThoroughFare = [NSString stringWithFormat:@"%@, %@", placemark.thoroughfare, placemark.subThoroughfare];
+                    
+                    [self.MapView addAnnotation:anno];
+                    [self.MapView selectAnnotation:anno animated:true];
+                } else {
+                    anno.title = @"Unknown Place";
+                }
+                [self.MapView removeAnnotations:self.MapView.annotations];
+                self.ButtonMapUpdate.hidden = false;
+                self.ButtonMapRevert.hidden = false;
+                
+                NSNumber *radius = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
+                
+                [self.MapView setCenterCoordinate:anno.coordinate animated:YES];
+                MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(anno.coordinate, [radius doubleValue] * 2.1, [radius doubleValue] * 2.1);
+                MKCoordinateRegion adjustedRegion = [self.MapView regionThatFits:viewRegion];
+                [self.MapView setRegion:adjustedRegion animated:YES];
+
+                for (id<MKOverlay> overlay in self.MapView.overlays)
+                {
+                    [self.MapView removeOverlay:overlay];
+                }
+                
+                CLLocationDistance RadiusAmt = [radius doubleValue];
+                self.CircleRange = [MKCircle circleWithCenterCoordinate:anno.coordinate radius:RadiusAmt];
+                
+                ModifiedCoordinate = anno.coordinate;
+                
+                [self.MapView addOverlay:self.CircleRange];
+                
+                [self.MapView addAnnotation:anno];
+                [self.MapView selectAnnotation:anno animated:true];
+            }
+        }];
+    }
+}
+
+/*
+ created date:      16/03/2019
+ last modified:     16/03/2019
+ remarks:
+ */
+- (IBAction)RevertMapButtonPressed:(id)sender {
+    
+    [self.MapView removeAnnotations:self.MapView.annotations];
+    for (id<MKOverlay> overlay in self.MapView.overlays)
+    {
+        [self.MapView removeOverlay:overlay];
+    }
+    [self LoadMapData];
+    
+    NSNumber *radius = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
+    CLLocationDistance RadiusAmt = [radius doubleValue];
+    ModifiedCoordinate = CLLocationCoordinate2DMake([self.PointOfInterest.lat doubleValue], [self.PointOfInterest.lon doubleValue]);
+    
+    self.CircleRange = [MKCircle circleWithCenterCoordinate:ModifiedCoordinate radius:RadiusAmt];
+    [self.MapView addOverlay:self.CircleRange];
+    
+    self.ButtonMapRevert.hidden = true;
+    self.ButtonMapUpdate.hidden = true;
+}
+
+
+
+/*
+ created date:      16/03/2019
+ last modified:     16/03/2019
+ remarks:           Need to save the location modification. Do we need to update the main array?
+ */
+- (IBAction)UpdateMapButtonPressed:(id)sender {
+    
+    [self.PointOfInterest.realm beginWriteTransaction];
+    
+    self.PointOfInterest.lon = [NSNumber numberWithDouble:ModifiedCoordinate.longitude];
+    self.PointOfInterest.lat = [NSNumber numberWithDouble:ModifiedCoordinate.latitude ];
+    
+    [self.PointOfInterest.realm commitWriteTransaction];
+    self.ButtonMapRevert.hidden = true;
+    self.ButtonMapUpdate.hidden = true;
+}
+
 
 /*
  created date:      14/07/2018
@@ -459,9 +592,11 @@
     }
 }
 
+
+
 /*
  created date:      28/04/2018
- last modified:     12/08/2018
+ last modified:     03/03/2019
  remarks:
  */
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -473,6 +608,7 @@
         NSInteger NumberOfItems = self.PointOfInterest.images.count + 1;
         if (indexPath.row == NumberOfItems -1) {
             cell.ImagePoi.image = [UIImage imageNamed:@"AddItem"];
+            [cell.ImagePoi setTintColor: [UIColor colorWithRed:255.0f/255.0f green:91.0f/255.0f blue:73.0f/255.0f alpha:1.0]];
         } else {
             ImageCollectionRLM *imgreference = [self.PointOfInterest.images objectAtIndex:indexPath.row];
             cell.ImagePoi.image = [self.PoiImageDictionary objectForKey:imgreference.key];
@@ -548,17 +684,19 @@
 }
 
 /*
- created date:      13/08/2018
- last modified:     16/02/2019
- remarks:           Scrolls to selected catagory item.
+ created date:      16/03/2019
+ last modified:     16/03/2019
+ remarks:           Scrolls to selected catagory item - only once.
  */
--(void)viewDidLayoutSubviews {
-    [super viewDidLayoutSubviews];
-    
-    NSIndexPath *indexPath = [NSIndexPath indexPathForItem:[self.PointOfInterest.categoryid longValue] inSection:0];
-     [self.CollectionViewTypes scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically | UICollectionViewScrollPositionCenteredHorizontally animated:NO];
-}
 
+-(void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath{
+    
+    if (CenterSelectedType) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForItem:[self.PointOfInterest.categoryid longValue] inSection:0];
+        [self.CollectionViewTypes scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically | UICollectionViewScrollPositionCenteredHorizontally animated:NO];
+        CenterSelectedType = false;
+    }
+}
 
 /*
  created date:      10/06/2018
@@ -864,7 +1002,9 @@
     G8Tesseract *tesseract = [[G8Tesseract alloc] initWithLanguage:@"eng"];
     tesseract.delegate = self;
     //tesseract.charWhitelist = @"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'-?@$%&().,:;";
-    tesseract.image = [image g8_blackAndWhite];
+    
+    
+    tesseract.image = [ToolBoxNSO convertImageToGrayScale :image];
     tesseract.maximumRecognitionTime = 20.0;
     [tesseract recognize];
 
@@ -882,9 +1022,11 @@
 
 
 
+
+
 /*
  created date:      21/05/2018
- last modified:     21/05/2018
+ last modified:     15/03/2019
  remarks: manages the dynamic width of the cells.
  */
 -(CGSize)collectionView:(UICollectionView *) collectionView layout:(UICollectionViewLayout* )collectionViewLayout sizeForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
@@ -895,7 +1037,7 @@
         size = CGSizeMake(cellWidth,cellWidth);*/
         size = CGSizeMake(100,100);
     } else {
-        size = CGSizeMake(50,50);
+        return CGSizeMake(self.view.frame.size.height/8,self.view.frame.size.height/8 );
     }
     return size;
 }
@@ -1093,18 +1235,18 @@
             [self.MapView removeOverlay:overlay];
         }
         
-        CLLocationCoordinate2D coord = CLLocationCoordinate2DMake([self.PointOfInterest.lat doubleValue], [self.PointOfInterest.lon doubleValue]);
+        //CLLocationCoordinate2D coord = CLLocationCoordinate2DMake([self.PointOfInterest.lat doubleValue], [self.PointOfInterest.lon doubleValue]);
         
         NSNumber *radius = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
         
-        [self.MapView setCenterCoordinate:coord animated:YES];
-        MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(coord, [radius doubleValue] * 2.1, [radius doubleValue] * 2.1);
+        [self.MapView setCenterCoordinate:ModifiedCoordinate animated:YES];
+        MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(ModifiedCoordinate, [radius doubleValue] * 2.1, [radius doubleValue] * 2.1);
         MKCoordinateRegion adjustedRegion = [self.MapView regionThatFits:viewRegion];
         [self.MapView setRegion:adjustedRegion animated:YES];
 
         CLLocationDistance RadiusAmt = [radius doubleValue];
         
-        self.CircleRange = [MKCircle circleWithCenterCoordinate:coord radius:RadiusAmt];
+        self.CircleRange = [MKCircle circleWithCenterCoordinate:ModifiedCoordinate radius:RadiusAmt];
         
         [self.MapView addOverlay:self.CircleRange];
         

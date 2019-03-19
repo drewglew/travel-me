@@ -7,7 +7,7 @@
 //
 
 #import "SettingsVC.h"
-
+#import <TwitterKit/TWTRLogInButton.h>
 @interface SettingsVC ()
 
 @end
@@ -16,7 +16,7 @@
 
 /*
  created date:      23/08/2018
- last modified:     19/02/2019
+ last modified:     16/03/2019
  remarks:
  */
 - (void)viewDidLoad {
@@ -43,8 +43,21 @@
     self.TextFieldEmail.layer.borderWidth = 1.0f;
     self.TextFieldEmail.layer.borderColor = [UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0].CGColor;
     
+    TWTRLogInButton *logInButton = [TWTRLogInButton buttonWithLogInCompletion:^(TWTRSession *session, NSError *error) {
+        if (session) {
+            
+            
+            NSLog(@"Logged in as %@",[session userName]);
+        } else {
+            NSLog(@"error: %@", [error localizedDescription]);
+        }
+    }];
     
+    //CGPointMake(CGRectGetWidth(self.view.bounds)/2, CGRectGetHeight(self.view.bounds)/2);
     
+    logInButton.center = CGPointMake(CGRectGetWidth(self.view.bounds)/2 - 20, logInButton.bounds.size.height);
+
+    [self.ViewTwitterLogIn addSubview:logInButton];
     
 }
 

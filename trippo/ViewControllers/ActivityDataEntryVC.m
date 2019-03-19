@@ -100,7 +100,8 @@ int DocumentListingViewPresentedHeight = 250;
                                 @1000, // village 35
                                 @1000, // zoo, 36
                                 @250, // car park, 37
-                                @100 // fuel pump, 38
+                                @100, // fuel pump, 38
+                                @150 // school, 39
                                 ];
     
     NSDate *defaultStartDt = [NSDate date];
@@ -305,7 +306,7 @@ int DocumentListingViewPresentedHeight = 250;
 
 /*
  created date:      01/05/2018
- last modified:     04/12/2018
+ last modified:     17/03/2019
  remarks: Load the activity data received from the views 
  */
 -(void) LoadActivityData {
@@ -314,6 +315,12 @@ int DocumentListingViewPresentedHeight = 250;
     self.TextViewNotes.text = self.Activity.privatenotes;
     self.TextFieldReference.text = self.Activity.reference;
 
+    if ([self.Activity.IncludeInTweet intValue] == 0) {
+        [self.SwitchTweet setOn:false];
+    } else {
+        [self.SwitchTweet setOn:true];
+    }
+    
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *fileDirectory = [paths objectAtIndex:0];
     long ImageIndex = 0;
@@ -443,7 +450,7 @@ int DocumentListingViewPresentedHeight = 250;
 
 /*
  created date:      01/05/2018
- last modified:     22/02/2019
+ last modified:     17/03/2019
  remarks:  TODO [self.delegate didUpdateActivityImage]; add to update
  */
 - (IBAction)ActionButtonPressed:(id)sender {
@@ -597,8 +604,8 @@ int DocumentListingViewPresentedHeight = 250;
 
 /*
  created date:      21/02/2019
- last modified:     21/02/2019
- remarks:
+ last modified:     17/03/2019
+ remarks:           TODO - add switch control item for Tweet
  */
 - (void)UpdateActivityRealmData
 {
@@ -616,6 +623,12 @@ int DocumentListingViewPresentedHeight = 250;
         self.Activity.startdt = self.datePickerStart.date;
         self.Activity.enddt = self.datePickerEnd.date;
         
+        if ([self.SwitchTweet isSelected]) {
+            self.Activity.IncludeInTweet = [NSNumber numberWithInt:1];
+        } else {
+            self.Activity.IncludeInTweet = [NSNumber numberWithInt:0];
+        }
+
         if (self.newitem) self.Activity.key = [[NSUUID UUID] UUIDString];
         self.Activity.compondkey = [NSString stringWithFormat:@"%@~%@",self.Activity.key,self.Activity.state];
         
@@ -648,7 +661,6 @@ int DocumentListingViewPresentedHeight = 250;
         [delegate didUpdateActivityImages:true];
         
         if (self.newitem) {
-            
             [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
         } else {
             [self dismissViewControllerAnimated:YES completion:Nil];
@@ -662,6 +674,12 @@ int DocumentListingViewPresentedHeight = 250;
         self.Activity.modifieddt = [NSDate date];
         self.Activity.startdt = self.datePickerStart.date;
         self.Activity.enddt = self.datePickerEnd.date;
+        
+        if ([self.SwitchTweet isOn]) {
+            self.Activity.IncludeInTweet = [NSNumber numberWithInt:1];
+        } else {
+            self.Activity.IncludeInTweet = [NSNumber numberWithInt:0];
+        }
         
         
         if (self.Activity.images.count>0) {
@@ -997,7 +1015,7 @@ int DocumentListingViewPresentedHeight = 250;
 -(void)doneButtonClickedDismissKeyboard
 {
     [self.TextViewNotes resignFirstResponder];
-    self.ConstraintBottomNotes.constant = 10;
+    self.ConstraintBottomNotes.constant = 60;
 }
 
 /*
@@ -1348,7 +1366,9 @@ int DocumentListingViewPresentedHeight = 250;
 {
     G8Tesseract *tesseract = [[G8Tesseract alloc] initWithLanguage:@"eng"];
     tesseract.delegate = self;
-    tesseract.image = [image g8_blackAndWhite];
+    
+    tesseract.image = [ToolBoxNSO convertImageToGrayScale :image];
+    
     tesseract.maximumRecognitionTime = 20.0;
     [tesseract recognize];
     
@@ -1412,7 +1432,7 @@ int DocumentListingViewPresentedHeight = 250;
 
 /*
  created date:      19/04/2018
- last modified:     01/09/2018
+ last modified:     03/03/2019
  remarks:
  */
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -1421,12 +1441,12 @@ int DocumentListingViewPresentedHeight = 250;
     NSInteger NumberOfItems = self.Activity.images.count + 1;
     if (indexPath.row == NumberOfItems -1) {
         cell.ImageActivity.image = [UIImage imageNamed:@"AddItem"];
+        [cell.ImageActivity setTintColor: [UIColor colorWithRed:255.0f/255.0f green:91.0f/255.0f blue:73.0f/255.0f alpha:1.0]];
     } else {
         ImageCollectionRLM *imgobject = [self.Activity.images objectAtIndex:indexPath.row];
         cell.ImageActivity.image = [self.ActivityImageDictionary objectForKey: imgobject.key];
     }
     return cell;
-    
 }
 
 

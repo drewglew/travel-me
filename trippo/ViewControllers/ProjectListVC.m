@@ -55,10 +55,7 @@ CGFloat ProjectListFooterFilterHeightConstant;
 -(void) LoadSupportingData {
     /* 1. Get Images from file. */
     self.tripcollection = [TripRLM allObjects];
-    
-    
-    
-    
+
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *imagesDirectory = [paths objectAtIndex:0];
     for (TripRLM *trip in self.tripcollection) {
@@ -90,7 +87,7 @@ CGFloat ProjectListFooterFilterHeightConstant;
 
 /*
  created date:      29/04/2018
- last modified:     29/08/2018
+ last modified:     03/03/2019
  remarks:
  */
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -100,8 +97,11 @@ CGFloat ProjectListFooterFilterHeightConstant;
     NSInteger NumberOfItems = self.tripcollection.count + 1;
     if (indexPath.row == NumberOfItems -1) {
         cell.ImageViewProject.image = [UIImage imageNamed:@"AddItem"];
+        [cell.ImageViewProject setTintColor: [UIColor colorWithRed:255.0f/255.0f green:91.0f/255.0f blue:73.0f/255.0f alpha:1.0]];
         cell.isNewAccessor = true;
         cell.VisualEffectsViewBlur.hidden = true;
+        cell.ImageConstraint = [cell.ImageConstraint updateMultiplier:0.6];
+        // TODO ISSUES!!!
     } else {
         TripRLM *trip = [self.tripcollection objectAtIndex:indexPath.row];
         
@@ -112,16 +112,7 @@ CGFloat ProjectListFooterFilterHeightConstant;
         } else {
             cell.ImageViewProject.image = image;
         }
-/*
-        cell.LabelProjectName.attributedText=[[NSAttributedString alloc]
-                                       initWithString:trip.name
-                                       attributes:@{
-                                                    NSStrokeWidthAttributeName: @-1.0,
-                                                    NSStrokeColorAttributeName:[UIColor blackColor],
-                                                    NSForegroundColorAttributeName:[UIColor whiteColor]
-                                                    }
-                                       ];
-        */
+
         cell.LabelProjectName.text = trip.name;
         
         if (trip.startdt != nil) {
@@ -139,6 +130,8 @@ CGFloat ProjectListFooterFilterHeightConstant;
             cell.deleteButton.hidden=true;
             cell.VisualEffectsViewBlur.hidden = true;
         }
+        cell.ImageConstraint = [cell.ImageConstraint updateMultiplier:0.995];
+        
     }
     return cell;
 }

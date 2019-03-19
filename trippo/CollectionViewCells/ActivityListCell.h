@@ -31,5 +31,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelStartDate;
 @property (weak, nonatomic) IBOutlet UILabel *LabelEndDate;
 @property (weak, nonatomic) IBOutlet UILabel *LabelDuration;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *ImageConstraint;
 
 @end

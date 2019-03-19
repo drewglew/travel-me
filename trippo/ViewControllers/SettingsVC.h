@@ -24,5 +24,6 @@
 @property (strong, nonatomic) RLMRealm *realm;
 @property (weak, nonatomic) IBOutlet UIView *ViewUserName;
 @property (weak, nonatomic) IBOutlet UIView *ViewEmailInfo;
+@property (weak, nonatomic) IBOutlet UIView *ViewTwitterLogIn;
 
 @end

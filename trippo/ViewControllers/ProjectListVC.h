@@ -14,6 +14,7 @@
 #import "CirclePart.h"
 #import "GraphView.h"
 #import "TripRLM.h"
+#import "MultiplierConstraint.h"
 
 @protocol ProjectListDelegate <NSObject>
 @end

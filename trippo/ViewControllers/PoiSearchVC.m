@@ -113,7 +113,8 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
                        @"Cat-Village",
                        @"Cat-Zoo",
                        @"Cat-CarPark",
-                       @"Cat-PetrolStation"
+                       @"Cat-PetrolStation",
+                       @"Cat-School"
                        ];
     
     

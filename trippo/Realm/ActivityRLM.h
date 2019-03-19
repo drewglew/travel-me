@@ -26,6 +26,7 @@
 @property NSDate *modifieddt;
 @property NSNumber<RLMFloat> *rating;
 @property NSNumber<RLMInt> *legendref;
+@property NSNumber<RLMInt> *IncludeInTweet;
 @property NSDate *startdt;
 @property NSDate *enddt;
 @property NSString *identitystartdate;

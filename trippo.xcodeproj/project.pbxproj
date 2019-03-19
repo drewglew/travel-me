@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		038191F074ACF477D206CE17 /* libPods-trippo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBF13E1E7717E50216657244 /* libPods-trippo.a */; };
 		3A046D4B222303DA00EA26A9 /* AttachmentRLM.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A046D4A222303DA00EA26A9 /* AttachmentRLM.m */; };
 		3A046D4E2223461300EA26A9 /* AttachmentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A046D4D2223461300EA26A9 /* AttachmentCell.m */; };
 		3A046D512224621200EA26A9 /* DocumentsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A046D502224621200EA26A9 /* DocumentsVC.m */; };
@@ -17,6 +16,7 @@
 		3A12B8DA21010680006B621D /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A12B8D921010680006B621D /* SystemConfiguration.framework */; };
 		3A12B8DD21010BF4006B621D /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A12B8DC21010BF4006B621D /* Reachability.m */; };
 		3A1446E2217B9AD800A9C2C8 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A6295A92171CA76006B083C /* libc++.tbd */; };
+		3A20ABA3223D489000661666 /* Twitter.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3A20ABA2223D489000661666 /* Twitter.plist */; };
 		3A224CA62094338D00075457 /* PoiImageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CA52094338D00075457 /* PoiImageCell.m */; };
 		3A224CAC2094736200075457 /* SearchResultListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CAB2094736200075457 /* SearchResultListCell.m */; };
 		3A224CAF2094946800075457 /* PoiImageNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CAE2094946800075457 /* PoiImageNSO.m */; };
@@ -52,6 +52,7 @@
 		3A6349432129C61500BE53FC /* ActivityImageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A6349422129C61500BE53FC /* ActivityImageCell.m */; };
 		3A634970212F12AA00BE53FC /* SettingsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A63496F212F12AA00BE53FC /* SettingsVC.m */; };
 		3A72E1CF21B28EC2007C40FC /* PhotoswithGeoTagListingVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A72E1CE21B28EC2007C40FC /* PhotoswithGeoTagListingVC.m */; };
+		3A79F213222D912500C68D77 /* MultiplierConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A79F212222D912500C68D77 /* MultiplierConstraint.m */; };
 		3A81B509209D80B8005CABDA /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A81B508209D80B8005CABDA /* Photos.framework */; };
 		3A81B50C209D90CA005CABDA /* AlphaView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A81B50B209D90CA005CABDA /* AlphaView.m */; };
 		3A9CE745221C879700A4CB98 /* SettingsRLM.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9CE744221C879700A4CB98 /* SettingsRLM.m */; };
@@ -85,6 +86,7 @@
 		3AFE356D209E462500C46180 /* ScheduleVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AFE356C209E462500C46180 /* ScheduleVC.m */; };
 		3AFE3570209E4ADA00C46180 /* ScheduleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AFE356F209E4ADA00C46180 /* ScheduleCell.m */; };
 		3AFE3573209E504F00C46180 /* ScheduleNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AFE3572209E504F00C46180 /* ScheduleNSO.m */; };
+		D47E4EACCBB20FD32F6AC828 /* libPods-trippo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E856F7EF5DAFD9B99FE6779E /* libPods-trippo.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -98,19 +100,11 @@
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		3AF785D0213091AB00DD5A5B /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1BE415B63361D3B562EA1F2D /* Pods-trippo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-trippo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-trippo/Pods-trippo.debug.xcconfig"; sourceTree = "<group>"; };
+		22192EA5DBD3A559DF536FB4 /* Pods-trippo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-trippo.release.xcconfig"; path = "Pods/Target Support Files/Pods-trippo/Pods-trippo.release.xcconfig"; sourceTree = "<group>"; };
 		3A046D49222303DA00EA26A9 /* AttachmentRLM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AttachmentRLM.h; sourceTree = "<group>"; };
 		3A046D4A222303DA00EA26A9 /* AttachmentRLM.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AttachmentRLM.m; sourceTree = "<group>"; };
 		3A046D4C2223461300EA26A9 /* AttachmentCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AttachmentCell.h; sourceTree = "<group>"; };
@@ -126,6 +120,7 @@
 		3A12B8D921010680006B621D /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		3A12B8DB21010BF4006B621D /* Reachability.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		3A12B8DC21010BF4006B621D /* Reachability.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		3A20ABA2223D489000661666 /* Twitter.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Twitter.plist; sourceTree = "<group>"; };
 		3A224CA42094338D00075457 /* PoiImageCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PoiImageCell.h; sourceTree = "<group>"; };
 		3A224CA52094338D00075457 /* PoiImageCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PoiImageCell.m; sourceTree = "<group>"; };
 		3A224CAA2094736200075457 /* SearchResultListCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SearchResultListCell.h; sourceTree = "<group>"; };
@@ -163,7 +158,7 @@
 		3A2D8D7B215AA4DD009CDB32 /* tessdata */ = {isa = PBXFileReference; lastKnownFileType = folder; path = tessdata; sourceTree = SOURCE_ROOT; };
 		3A3075DC21220445007D53C9 /* HCSStarRatingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HCSStarRatingView.m; sourceTree = "<group>"; };
 		3A3075DD21220445007D53C9 /* HCSStarRatingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HCSStarRatingView.h; sourceTree = "<group>"; };
-		3A374EE120936A9300E5A652 /* trippo-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "trippo-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A374EE120936A9300E5A652 /* trippo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = trippo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A374EE420936A9300E5A652 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		3A374EE520936A9300E5A652 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		3A374EEB20936A9300E5A652 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -187,6 +182,7 @@
 		3A58B4BF211F534E00699008 /* TypeCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TypeCell.m; sourceTree = "<group>"; };
 		3A58B4C1211F547100699008 /* TypeNSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TypeNSO.h; sourceTree = "<group>"; };
 		3A58B4C2211F547100699008 /* TypeNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TypeNSO.m; sourceTree = "<group>"; };
+		3A619FB222415ED40053E8B6 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		3A6295A92171CA76006B083C /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		3A6349412129C61500BE53FC /* ActivityImageCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActivityImageCell.h; sourceTree = "<group>"; };
 		3A6349422129C61500BE53FC /* ActivityImageCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ActivityImageCell.m; sourceTree = "<group>"; };
@@ -194,9 +190,14 @@
 		3A63496F212F12AA00BE53FC /* SettingsVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingsVC.m; sourceTree = "<group>"; };
 		3A72E1CD21B28EC2007C40FC /* PhotoswithGeoTagListingVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PhotoswithGeoTagListingVC.h; sourceTree = "<group>"; };
 		3A72E1CE21B28EC2007C40FC /* PhotoswithGeoTagListingVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PhotoswithGeoTagListingVC.m; sourceTree = "<group>"; };
+		3A79F211222D912500C68D77 /* MultiplierConstraint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MultiplierConstraint.h; sourceTree = "<group>"; };
+		3A79F212222D912500C68D77 /* MultiplierConstraint.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MultiplierConstraint.m; sourceTree = "<group>"; };
 		3A81B508209D80B8005CABDA /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		3A81B50A209D90CA005CABDA /* AlphaView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AlphaView.h; sourceTree = "<group>"; };
 		3A81B50B209D90CA005CABDA /* AlphaView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AlphaView.m; sourceTree = "<group>"; };
+		3A98851A22403F3D00D19186 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		3A98851C22403F4D00D19186 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		3A98851E22403F5E00D19186 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		3A9CE743221C879700A4CB98 /* SettingsRLM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingsRLM.h; sourceTree = "<group>"; };
 		3A9CE744221C879700A4CB98 /* SettingsRLM.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingsRLM.m; sourceTree = "<group>"; };
 		3A9EA18420AE17DF0052CC4F /* ScheduleBackgroundView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScheduleBackgroundView.h; sourceTree = "<group>"; };
@@ -215,6 +216,7 @@
 		3AA4DA6721267FE900F7CAC9 /* CirclePart.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CirclePart.m; sourceTree = "<group>"; };
 		3AA4DA692126807300F7CAC9 /* GraphView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GraphView.h; sourceTree = "<group>"; };
 		3AA4DA6A2126807400F7CAC9 /* GraphView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GraphView.m; sourceTree = "<group>"; };
+		3AAB42EA223EF08A0018396C /* TwitterKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TwitterKit.framework; path = Pods/TwitterKit/iOS/TwitterKit.framework; sourceTree = "<group>"; };
 		3AAB60BD20FCF8C300A22047 /* NearbyListingVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NearbyListingVC.h; sourceTree = "<group>"; };
 		3AAB60BE20FCF8C300A22047 /* NearbyListingVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NearbyListingVC.m; sourceTree = "<group>"; };
 		3AAB60C020FCFCE800A22047 /* NearbyPoiCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NearbyPoiCell.h; sourceTree = "<group>"; };
@@ -257,9 +259,7 @@
 		3AFE356F209E4ADA00C46180 /* ScheduleCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScheduleCell.m; sourceTree = "<group>"; };
 		3AFE3571209E504F00C46180 /* ScheduleNSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScheduleNSO.h; sourceTree = "<group>"; };
 		3AFE3572209E504F00C46180 /* ScheduleNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScheduleNSO.m; sourceTree = "<group>"; };
-		610267118C76A96DC618F6D3 /* Pods-trippo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-trippo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-trippo/Pods-trippo.debug.xcconfig"; sourceTree = "<group>"; };
-		DB9BC9D6C304F161BD858309 /* Pods-trippo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-trippo.release.xcconfig"; path = "Pods/Target Support Files/Pods-trippo/Pods-trippo.release.xcconfig"; sourceTree = "<group>"; };
-		FBF13E1E7717E50216657244 /* libPods-trippo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-trippo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E856F7EF5DAFD9B99FE6779E /* libPods-trippo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-trippo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -270,7 +270,7 @@
 				3A12B8DA21010680006B621D /* SystemConfiguration.framework in Frameworks */,
 				3AB915F720D1979F001A08A9 /* WebKit.framework in Frameworks */,
 				3A81B509209D80B8005CABDA /* Photos.framework in Frameworks */,
-				038191F074ACF477D206CE17 /* libPods-trippo.a in Frameworks */,
+				D47E4EACCBB20FD32F6AC828 /* libPods-trippo.a in Frameworks */,
 				3A1446E2217B9AD800A9C2C8 /* libc++.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -325,14 +325,14 @@
 				3A374EE320936A9300E5A652 /* trippo */,
 				3A374EE220936A9300E5A652 /* Products */,
 				3A374F0B2093762E00E5A652 /* Frameworks */,
-				859AFDE3F4DECB8FA87A57B0 /* Pods */,
+				E4DF1B1794DAF62F99279D79 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
 		3A374EE220936A9300E5A652 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				3A374EE120936A9300E5A652 /* trippo-app.app */,
+				3A374EE120936A9300E5A652 /* trippo.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -355,6 +355,7 @@
 				3A374EEF20936A9600E5A652 /* LaunchScreen.storyboard */,
 				3A374EF220936A9600E5A652 /* Info.plist */,
 				3A374EF320936A9600E5A652 /* main.m */,
+				3A20ABA2223D489000661666 /* Twitter.plist */,
 			);
 			path = trippo;
 			sourceTree = "<group>";
@@ -453,6 +454,8 @@
 				3A0BDE36217E4EDD006A746E /* OptionButton.m */,
 				3A23AFFF2221FED2003ACF7B /* DiaryDatesNSO.h */,
 				3A23B0002221FED2003ACF7B /* DiaryDatesNSO.m */,
+				3A79F211222D912500C68D77 /* MultiplierConstraint.h */,
+				3A79F212222D912500C68D77 /* MultiplierConstraint.m */,
 			);
 			path = GenericObjects;
 			sourceTree = "<group>";
@@ -460,11 +463,16 @@
 		3A374F0B2093762E00E5A652 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3A619FB222415ED40053E8B6 /* libz.tbd */,
+				3A98851E22403F5E00D19186 /* Security.framework */,
+				3A98851C22403F4D00D19186 /* UIKit.framework */,
+				3A98851A22403F3D00D19186 /* Foundation.framework */,
+				3AAB42EA223EF08A0018396C /* TwitterKit.framework */,
 				3A6295A92171CA76006B083C /* libc++.tbd */,
 				3A12B8D921010680006B621D /* SystemConfiguration.framework */,
 				3AB915F620D1979F001A08A9 /* WebKit.framework */,
 				3A81B508209D80B8005CABDA /* Photos.framework */,
-				FBF13E1E7717E50216657244 /* libPods-trippo.a */,
+				E856F7EF5DAFD9B99FE6779E /* libPods-trippo.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -504,11 +512,11 @@
 			path = Realm;
 			sourceTree = "<group>";
 		};
-		859AFDE3F4DECB8FA87A57B0 /* Pods */ = {
+		E4DF1B1794DAF62F99279D79 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				610267118C76A96DC618F6D3 /* Pods-trippo.debug.xcconfig */,
-				DB9BC9D6C304F161BD858309 /* Pods-trippo.release.xcconfig */,
+				1BE415B63361D3B562EA1F2D /* Pods-trippo.debug.xcconfig */,
+				22192EA5DBD3A559DF536FB4 /* Pods-trippo.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -516,25 +524,25 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		3A374EE020936A9200E5A652 /* trippo-app */ = {
+		3A374EE020936A9200E5A652 /* trippo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 3A374EF720936A9600E5A652 /* Build configuration list for PBXNativeTarget "trippo-app" */;
+			buildConfigurationList = 3A374EF720936A9600E5A652 /* Build configuration list for PBXNativeTarget "trippo" */;
 			buildPhases = (
-				E28FF09E8ED325E5DEDE9B66 /* [CP] Check Pods Manifest.lock */,
+				66052E950285709C44460272 /* [CP] Check Pods Manifest.lock */,
 				3A374EDD20936A9200E5A652 /* Sources */,
 				3A374EDE20936A9200E5A652 /* Frameworks */,
 				3A374EDF20936A9200E5A652 /* Resources */,
-				3AF785D0213091AB00DD5A5B /* Embed Frameworks */,
-				7DB7FE557E8AA556D98651AF /* [CP] Copy Pods Resources */,
 				3AF240372180E237007B280F /* Embed App Extensions */,
+				371E07B03423567062B1850E /* [CP] Copy Pods Resources */,
+				AB12406B1EE6A86E9351863E /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = "trippo-app";
+			name = trippo;
 			productName = travelme;
-			productReference = 3A374EE120936A9300E5A652 /* trippo-app.app */;
+			productReference = 3A374EE120936A9300E5A652 /* trippo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -556,7 +564,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 3A374EDC20936A9200E5A652 /* Build configuration list for PBXProject "trippo-app" */;
+			buildConfigurationList = 3A374EDC20936A9200E5A652 /* Build configuration list for PBXProject "trippo" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -569,7 +577,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				3A374EE020936A9200E5A652 /* trippo-app */,
+				3A374EE020936A9200E5A652 /* trippo */,
 			);
 		};
 /* End PBXProject section */
@@ -580,6 +588,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3A9F73A320A0FB5A00D61666 /* Settings.bundle in Resources */,
+				3A20ABA3223D489000661666 /* Twitter.plist in Resources */,
 				3A374EF120936A9600E5A652 /* LaunchScreen.storyboard in Resources */,
 				3A9F73A620A1FFE400D61666 /* country.json in Resources */,
 				3A374EEE20936A9600E5A652 /* Assets.xcassets in Resources */,
@@ -591,7 +600,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		7DB7FE557E8AA556D98651AF /* [CP] Copy Pods Resources */ = {
+		371E07B03423567062B1850E /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -601,34 +610,66 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-trippo/Pods-trippo-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/TOCropViewController/TOCropViewControllerBundle.bundle",
+				"${PODS_ROOT}/TwitterKit/iOS/TwitterKit.framework/TwitterKitResources.bundle",
+				"${PODS_ROOT}/TwitterKit/iOS/TwitterKit.framework/TwitterShareExtensionUIResources.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TOCropViewControllerBundle.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TwitterKitResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TwitterShareExtensionUIResources.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-trippo/Pods-trippo-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E28FF09E8ED325E5DEDE9B66 /* [CP] Check Pods Manifest.lock */ = {
+		66052E950285709C44460272 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			inputFileListPaths = (
 			);
 			inputPaths = (
 				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
 				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-trippo-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		AB12406B1EE6A86E9351863E /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-trippo/Pods-trippo-frameworks.sh",
+				"${PODS_ROOT}/TwitterCore/iOS/TwitterCore.framework",
+				"${PODS_ROOT}/TwitterKit/iOS/TwitterKit.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TwitterCore.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TwitterKit.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-trippo/Pods-trippo-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -691,6 +732,7 @@
 				3A374F12209386F700E5A652 /* PoiListCell.m in Sources */,
 				3A291BD5213D917500FDFDFB /* ExchangeRateRLM.m in Sources */,
 				3A224CAF2094946800075457 /* PoiImageNSO.m in Sources */,
+				3A79F213222D912500C68D77 /* MultiplierConstraint.m in Sources */,
 				3A12B8DD21010BF4006B621D /* Reachability.m in Sources */,
 				3A9F73AF20A3747300D61666 /* PaymentNSO.m in Sources */,
 				3AFE3573209E504F00C46180 /* ScheduleNSO.m in Sources */,
@@ -782,7 +824,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -835,7 +877,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -844,13 +886,17 @@
 		};
 		3A374EF820936A9600E5A652 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 610267118C76A96DC618F6D3 /* Pods-trippo.debug.xcconfig */;
+			baseConfigurationReference = 1BE415B63361D3B562EA1F2D /* Pods-trippo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = trippo/trippo.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6QW2ZP6GTA;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Pods/TwitterKit/iOS",
+				);
 				INFOPLIST_FILE = trippo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -886,13 +932,17 @@
 		};
 		3A374EF920936A9600E5A652 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DB9BC9D6C304F161BD858309 /* Pods-trippo.release.xcconfig */;
+			baseConfigurationReference = 22192EA5DBD3A559DF536FB4 /* Pods-trippo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = trippo/trippo.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6QW2ZP6GTA;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Pods/TwitterKit/iOS",
+				);
 				INFOPLIST_FILE = trippo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -929,7 +979,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		3A374EDC20936A9200E5A652 /* Build configuration list for PBXProject "trippo-app" */ = {
+		3A374EDC20936A9200E5A652 /* Build configuration list for PBXProject "trippo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3A374EF520936A9600E5A652 /* Debug */,
@@ -938,7 +988,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		3A374EF720936A9600E5A652 /* Build configuration list for PBXNativeTarget "trippo-app" */ = {
+		3A374EF720936A9600E5A652 /* Build configuration list for PBXNativeTarget "trippo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3A374EF820936A9600E5A652 /* Debug */,

@@ -25,6 +25,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelNbrOfActivities2;
 @property (weak, nonatomic) IBOutlet UILabel *LabelNbrOfActivities3;
 @property (weak, nonatomic) IBOutlet UIView *RotatingView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *ImageConstraint;
 
 
 @end

@@ -11,6 +11,7 @@
 #import "ToolBoxNSO.h"
 #import "AttachmentRLM.h"
 
+
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 #define AppDelegateDef ((AppDelegate *)[[UIApplication sharedApplication] delegate])
 @property (strong, nonatomic) UIWindow *window;
@@ -23,5 +24,7 @@
 @property (strong, nonatomic) NSMutableArray *poiitems;
 @property (strong, nonatomic) NSMutableDictionary *PoiBackgroundImageDictionary;
 @property (strong, nonatomic) NSMutableDictionary *CountryDictionary;
+@property (strong, nonatomic) NSString *twitterConsumerKey;
+@property (strong, nonatomic) NSString *twitterSecretKey;
 @end
 

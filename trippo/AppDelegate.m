@@ -10,15 +10,23 @@
 #import <Realm/Realm.h>
 #import "MenuVC.h"
 #import "LoginVC.h"
+#import <TwitterKit/TWTRKit.h>
+
 
 @interface AppDelegate ()
 
 @end
 
-
 @implementation AppDelegate
 @synthesize databasename;
+@synthesize twitterSecretKey;
+@synthesize twitterConsumerKey;
 
+/*
+ created date:      27/04/2018
+ last modified:     16/03/2019
+ remarks:
+ */
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     NSLocale *theLocale = [NSLocale currentLocale];
@@ -59,6 +67,14 @@
         }
     }
 
+    /*
+     Migration block - to use if we change the model..
+    */
+    RLMRealmConfiguration *config = [RLMRealmConfiguration defaultConfiguration];
+    config.schemaVersion = 1;
+    config.migrationBlock = ^(RLMMigration *migration, uint64_t oldSchemaVersion) { };
+    [RLMRealmConfiguration setDefaultConfiguration:config];
+    
     RLMRealm *realm = [RLMRealm defaultRealm];
     self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
@@ -69,6 +85,15 @@
     menu.realm = realm;
     self.window.rootViewController = menu;
     [self.window makeKeyAndVisible];
+    
+    
+    NSString *pathForTwitterProperties = [[NSBundle mainBundle] pathForResource:@"Twitter" ofType:@"plist"];
+    NSDictionary *TwitterProperties = [[NSDictionary alloc] initWithContentsOfFile:pathForTwitterProperties];
+    twitterConsumerKey = [TwitterProperties valueForKey:@"TwitterConsumerKey"];
+    twitterSecretKey = [TwitterProperties valueForKey:@"TwitterSecretKey"];
+    
+    [[Twitter sharedInstance] startWithConsumerKey:twitterConsumerKey consumerSecret: twitterSecretKey];
+    
     
     return YES;
 }
@@ -129,11 +154,18 @@
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
 }
 
+/*
+ created date:      29/04/2018
+ last modified:     16/03/2019
+ remarks:
+ */
 - (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
     
-    if (url){
+    if ([url.absoluteString containsString:@"twitter"]){
+        return [[Twitter sharedInstance] application:app openURL:url options:options];
+    } else if (url) {
         NSURLSession *session = [NSURLSession sharedSession];
         [[session dataTaskWithURL:url
                 completionHandler:^(NSData *data,

@@ -21,6 +21,8 @@
 #import "ImageCollectionRLM.h"
 #import "ToolboxNSO.h"
 #import "DiaryDatesNSO.h"
+#import "MultiplierConstraint.h"
+
 
 @protocol ActivityListDelegate <NSObject>
 @end
@@ -52,5 +54,6 @@
 @property (weak, nonatomic) IBOutlet UITableView *TableViewDiary;
 @property (nonatomic) NSDate *IdentityStartDt;
 @property (nonatomic) NSDate *IdentityEndDt;
-
+@property (weak, nonatomic) IBOutlet UIButton *ButtonTweet;
+@property (assign) bool tweetview;
 @end

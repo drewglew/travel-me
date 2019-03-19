@@ -7,6 +7,8 @@
 //
 
 #import "ActivityListVC.h"
+#import <TwitterKit/TWTRComposer.h>
+#import <TwitterKit/TWTRTwitter.h>
 
 @interface ActivityListVC ()
 @property RLMNotificationToken *notification;
@@ -73,6 +75,7 @@ CGFloat ActivityListFooterFilterHeightConstant;
     
     UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 60)];
     self.TableViewDiary.tableHeaderView = headerView;
+    self.tweetview = false;
 }
 
 - (void)keyboardWillShow:(NSNotification*)aNotification
@@ -138,8 +141,8 @@ CGFloat ActivityListFooterFilterHeightConstant;
 
 /*
  created date:      30/04/2018
- last modified:     24/02/2019
- remarks:           TODO - Seem to miss the last item... in Diary
+ last modified:     17/03/2019
+ remarks:           Tweet option included in selection of cells.
  */
 -(void) LoadActivityData:(NSNumber*) State {
     
@@ -151,24 +154,36 @@ CGFloat ActivityListFooterFilterHeightConstant;
 
     NSString *IdentityStartDate = [[NSString alloc] init];
     NSString *IdentityEndDate = [[NSString alloc] init];
-    //NSDate *IdentityStartDt = [[NSDate alloc] init];
-    //NSDate *IdentityEndDt = [[NSDate alloc] init];
-    
-    
+
     self.AllActivitiesInTrip = [ActivityRLM objectsWhere:@"tripkey = %@", self.Trip.key];
     
-    RLMResults<ActivityRLM*> *plannedactivities = [self.AllActivitiesInTrip objectsWhere:@"state==0"];
-    for (ActivityRLM* planned in plannedactivities) {
-        [dataset setObject:planned forKey:planned.key];
+    NSString *whereClause = @"state==0";
+    
+    if (State==[NSNumber numberWithLong:0] || !self.tweetview) {
+        
+        if (self.tweetview) {
+            whereClause = [NSString stringWithFormat:@"%@ and IncludeInTweet==1", whereClause];
+        }
+        
+        RLMResults<ActivityRLM*> *plannedactivities = [self.AllActivitiesInTrip objectsWhere:whereClause];
+        
+        for (ActivityRLM* planned in plannedactivities) {
+            [dataset setObject:planned forKey:planned.key];
+        }
+        self.IdentityStartDt  = [plannedactivities minOfProperty:@"startdt"];
+        self.IdentityEndDt = [plannedactivities minOfProperty:@"enddt"];
     }
-    
-    
-    self.IdentityStartDt  = [plannedactivities minOfProperty:@"startdt"];
-    self.IdentityEndDt = [plannedactivities minOfProperty:@"enddt"];
     
     /* next only for actual activities we search for those too and replace using dictionary any of them */
     if (State==[NSNumber numberWithLong:1]) {
-        RLMResults<ActivityRLM*> *actualactivities = [self.AllActivitiesInTrip objectsWhere:@"state==1"];
+        
+        whereClause = @"state==1";
+        if (self.tweetview) {
+            whereClause = [NSString stringWithFormat:@"%@ and IncludeInTweet==1", whereClause];
+            [dataset removeAllObjects];
+        }
+
+        RLMResults<ActivityRLM*> *actualactivities = [self.AllActivitiesInTrip objectsWhere:whereClause];
         bool found=false;
         for (ActivityRLM* actual in actualactivities) {
             [dataset setObject:actual forKey:actual.key];
@@ -177,7 +192,6 @@ CGFloat ActivityListFooterFilterHeightConstant;
         if (found) {
             self.IdentityStartDt  = [actualactivities minOfProperty:@"startdt"];
             self.IdentityEndDt = [actualactivities minOfProperty:@"enddt"];
-            
         }
     }
     
@@ -198,6 +212,11 @@ CGFloat ActivityListFooterFilterHeightConstant;
         self.IdentityEndDt = self.Trip.enddt;
     }
 
+    if (self.tweetview) {
+        return;
+    }
+    /* diary collection - not including Tweet complexity */
+    
     IdentityStartDate = [DateIdentityFormatter stringFromDate:self.IdentityStartDt];
     IdentityEndDate = [DateIdentityFormatter stringFromDate:self.IdentityEndDt];
         
@@ -315,12 +334,14 @@ CGFloat ActivityListFooterFilterHeightConstant;
 
 /*
  created date:      30/04/2018
- last modified:     30/01/2019
+ last modified:     16/03/2019
  remarks:
  */
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     
     ActivityListCell *cell= [collectionView dequeueReusableCellWithReuseIdentifier:@"ActivityCellId" forIndexPath:indexPath];
+    
+    cell.contentView.hidden = false;
     
     NSDateFormatter *TimePlusDayOfWeekFormatter = [[NSDateFormatter alloc] init];
     [TimePlusDayOfWeekFormatter setDateFormat:@"HH:mm, EEEE"];
@@ -329,15 +350,21 @@ CGFloat ActivityListFooterFilterHeightConstant;
     
     NSInteger NumberOfItems = self.activitycollection.count + 1;
     if (indexPath.row == NumberOfItems -1) {
+        
+        if (self.tweetview) {
+            cell.contentView.hidden = true;
+        }
         cell.ImageViewActivity.image = [UIImage imageNamed:@"AddItem"];
+        [cell.ImageViewActivity setTintColor: [UIColor colorWithRed:255.0f/255.0f green:91.0f/255.0f blue:73.0f/255.0f alpha:1.0]];
+        cell.ImageConstraint = [cell.ImageConstraint updateMultiplier:0.6];
         cell.VisualViewBlur.hidden = true;
         cell.VisualViewBlurBehindImage.hidden = true;
         cell.ImageBlurBackground.hidden = true;
         cell.ViewActiveBadge.hidden = true;
         cell.ViewActiveItem.backgroundColor = [UIColor clearColor];
-        
     } else {
         cell.activity = [self.activitycollection objectAtIndex:indexPath.row];
+        cell.ImageConstraint = [cell.ImageConstraint updateMultiplier:0.992];
         
         /* setup startdt popup that shows on longpress */
         if (cell.activity.startdt!=nil) {
@@ -367,7 +394,7 @@ CGFloat ActivityListFooterFilterHeightConstant;
         
         if (self.SegmentState.selectedSegmentIndex == 1) {
             
-            if (CountOfActivitiesInSet == [NSNumber numberWithLong:2]) {
+            if (CountOfActivitiesInSet == [NSNumber numberWithLong:2] || self.tweetview) {
                 [cell.ImageViewBookmark setImage:[UIImage imageNamed:@""]];
             } else {
                 ActivityRLM *single = [activitySet firstObject];
@@ -380,11 +407,21 @@ CGFloat ActivityListFooterFilterHeightConstant;
             }
 
             if (cell.activity.state == [NSNumber numberWithInteger:0]) {
-                cell.ButtonDelete.hidden = true;
-                cell.VisualViewBlur.hidden = false;
+                if (self.tweetview) {
+                    cell.contentView.hidden = true;
+                } else {
+                    cell.ButtonDelete.hidden = true;
+                    cell.VisualViewBlur.hidden = false;
+                }
             } else {
-                cell.ButtonDelete.hidden = false;
-                cell.VisualViewBlur.hidden = true;
+                if (self.tweetview) {
+                    cell.ButtonDelete.hidden = true;
+                    cell.VisualViewBlur.hidden = false;
+                } else {
+                    cell.ButtonDelete.hidden = false;
+                    cell.VisualViewBlur.hidden = true;
+                }
+                
             }
            
             if ([cell.activity.startdt compare: cell.activity.enddt] == NSOrderedSame && cell.activity.startdt!=nil) {
@@ -413,7 +450,11 @@ CGFloat ActivityListFooterFilterHeightConstant;
             }
             
             cell.VisualViewBlur.hidden = true;
-            cell.ButtonDelete.hidden = false;
+            if (self.tweetview) {
+                cell.ButtonDelete.hidden = true;
+            } else {
+                cell.ButtonDelete.hidden = false;
+            }
             cell.ViewActiveItem.backgroundColor = [UIColor clearColor];
 
             cell.ViewActiveBadge.hidden = true;
@@ -458,7 +499,8 @@ CGFloat ActivityListFooterFilterHeightConstant;
                                @"Cat-Village",
                                @"Cat-Zoo",
                                @"Cat-CarPark",
-                               @"Cat-PetrolStation"
+                               @"Cat-PetrolStation",
+                               @"Cat-School"
                                ];
         
         PoiRLM *poiobject = [PoiRLM objectForPrimaryKey:cell.activity.poikey];
@@ -567,37 +609,39 @@ CGFloat ActivityListFooterFilterHeightConstant;
 }
 
 /*
- created date:      23/02/2019
- last modified:     23/02/2019
+ created date:      17/03/2019
+ last modified:     17/03/2019
  remarks:
  */
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    DiaryDatesNSO *dd = self.sectionheaderdaystitle[section];
-    return dd.daytitle;
-}
-
-
-/*
- created date:      23/02/2019
- last modified:     23/02/2019
- remarks:
- */
-- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
-
-    if ([view.subviews.lastObject isKindOfClass:[UIButton class]]) {
-        return;
-    }
+    UIView* headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 100)];
     
+    headerView.backgroundColor = [UIColor colorWithRed:230.0f/255.0f green:235.0f/255.0f blue:224.0f/255.0f alpha:1.0];
+    
+    UILabel* title = [[UILabel alloc] init];
+    title.frame = CGRectMake(10, 10, tableView.frame.size.width - 50, 20);
+    
+    DiaryDatesNSO *dd = self.sectionheaderdaystitle[section];
+
+    title.textColor = [UIColor colorWithRed:71.0f/255.0f green:71.0f/255.0f blue:71.0f/255.0f alpha:1.0];
+    title.font = [UIFont systemFontOfSize:17 weight:UIFontWeightRegular];
+    title.text = dd.daytitle;
+    title.textAlignment = NSTextAlignmentLeft;
+    
+    // 4. Add the label to the header view
+    [headerView addSubview:title];
     
     UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
-    button.frame = CGRectMake(view.frame.size.width - 40.0, 10, 20.0, 20.0); // x,y,width,height
+    button.frame = CGRectMake(tableView.frame.size.width - 40.0, 10, 20.0, 20.0); // x,y,width,height
     button.tag = section;
+    
     [button setImage:[UIImage imageNamed:@"AddItem"] forState:UIControlStateNormal];
     [button setTintColor: [UIColor colorWithRed:255.0f/255.0f green:91.0f/255.0f blue:73.0f/255.0f alpha:1.0]];
     [button addTarget:self action:@selector(sectionHeaderButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [view addSubview:button];
-
+    [headerView addSubview:button];
+    
+    return headerView;
 }
 
 /*
@@ -870,7 +914,13 @@ remarks:           Time formatter
     } else if([segue.identifier isEqualToString:@"ShowNewActivityFromDiary"]){
          
         UIButton * button=(UIButton*)sender;
+        
+        
+        
         DiaryDatesNSO *dd = self.sectionheaderdaystitle[button.tag];
+        
+        NSLog(@"button tag=%ld",(long)button.tag);
+        
         PoiSearchVC *controller = (PoiSearchVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.Activity = [[ActivityRLM alloc] init];
@@ -961,6 +1011,7 @@ remarks:           Time formatter
         [self.CollectionViewActivities reloadData];
     } else {
         [self.TableViewDiary reloadData];
+        //[self.TableViewDiary setNeedsLayout];
     }
 }
 
@@ -1003,17 +1054,19 @@ remarks:           Time formatter
 
 /*
  created date:      20/02/2019
- last modified:     24/02/2019
+ last modified:     17/03/2019
  remarks:
  */
 - (IBAction)SwapMainViewPressed:(id)sender {
     
     if (self.TableViewDiary.hidden == true) {
+        self.ButtonTweet.hidden = true;
         self.TableViewDiary.hidden = false;
         [self.TableViewDiary reloadData];
         self.CollectionViewActivities.hidden = true;
         [self.ButtonSwapMainView setImage:[UIImage imageNamed:@"ActivityPhotoView"] forState:UIControlStateNormal];
     } else {
+        self.ButtonTweet.hidden = false;
         self.TableViewDiary.hidden = true;
         [self.CollectionViewActivities reloadData];
         self.CollectionViewActivities.hidden = false;
@@ -1021,6 +1074,184 @@ remarks:           Time formatter
     }
 }
 
+/*
+ created date:      15/03/2019
+ last modified:     17/03/2019
+ remarks: amended to include whole collection view.
+ */
+- (UIImage *) imageWithCollectionView:(UICollectionView *)collectionBreakView
+{
+    
+    UIImage* image = nil;
+    UIGraphicsBeginImageContextWithOptions(collectionBreakView.contentSize, NO, 0.0);
+    {
+        CGPoint savedContentOffset = collectionBreakView.contentOffset;
+        CGRect savedFrame = collectionBreakView.frame;
+        
+        collectionBreakView.contentOffset = CGPointZero;
+        collectionBreakView.frame = CGRectMake(0, 0, collectionBreakView.contentSize.width, collectionBreakView.contentSize.height);
+        
+        [collectionBreakView.layer renderInContext: UIGraphicsGetCurrentContext()];
+        image = UIGraphicsGetImageFromCurrentImageContext();
+        
+        collectionBreakView.contentOffset = savedContentOffset;
+        collectionBreakView.frame = savedFrame;
+    }
+    UIGraphicsEndImageContext();
+
+    return image;
+}
+
+
+/*
+ created date:      17/03/2019
+ last modified:     17/03/2019
+ remarks:           stolen from stackoverflow
+ */
+- (CGRect)cropRectForImage:(UIImage *)image {
+    
+    CGImageRef cgImage = image.CGImage;
+    CGContextRef context = [self createARGBBitmapContextFromImage:cgImage];
+    if (context == NULL) return CGRectZero;
+    
+    size_t width = CGImageGetWidth(cgImage);
+    size_t height = CGImageGetHeight(cgImage);
+    CGRect rect = CGRectMake(0, 0, width, height);
+    
+    CGContextDrawImage(context, rect, cgImage);
+    
+    unsigned char *data = CGBitmapContextGetData(context);
+    CGContextRelease(context);
+    
+    //Filter through data and look for non-transparent pixels.
+    u_long lowX = width;
+    u_long lowY = height;
+    u_long highX = 0;
+    u_long highY = 0;
+    if (data != NULL) {
+        for (int y=0; y<height; y++) {
+            for (int x=0; x<width; x++) {
+                u_long pixelIndex = (width * y + x) * 4 /* 4 for A, R, G, B */;
+                if (data[pixelIndex] != 0) { //Alpha value is not zero; pixel is not transparent.
+                    if (x < lowX) lowX = x;
+                    if (x > highX) highX = x;
+                    if (y < lowY) lowY = y;
+                    if (y > highY) highY = y;
+                }
+            }
+        }
+        free(data);
+    } else {
+        return CGRectZero;
+    }
+    return CGRectMake(lowX, lowY, highX-lowX, highY-lowY);
+}
+
+/*
+ created date:      17/03/2019
+ last modified:     17/03/2019
+ remarks:           stolen from stackoverflow
+ */
+- (CGContextRef)createARGBBitmapContextFromImage:(CGImageRef)inImage {
+        
+        CGContextRef context = NULL;
+        CGColorSpaceRef colorSpace;
+        void *bitmapData;
+        u_long bitmapByteCount;
+        u_long bitmapBytesPerRow;
+        
+        // Get image width, height. We'll use the entire image.
+        size_t width = CGImageGetWidth(inImage);
+        size_t height = CGImageGetHeight(inImage);
+        
+        // Declare the number of bytes per row. Each pixel in the bitmap in this
+        // example is represented by 4 bytes; 8 bits each of red, green, blue, and
+        // alpha.
+        bitmapBytesPerRow = (width * 4);
+        bitmapByteCount = (bitmapBytesPerRow * height);
+        
+        // Use the generic RGB color space.
+        colorSpace = CGColorSpaceCreateDeviceRGB();
+        if (colorSpace == NULL) return NULL;
+        
+        // Allocate memory for image data. This is the destination in memory
+        // where any drawing to the bitmap context will be rendered.
+        bitmapData = malloc( bitmapByteCount );
+        if (bitmapData == NULL)
+        {
+            CGColorSpaceRelease(colorSpace);
+            return NULL;
+        }
+        
+        // Create the bitmap context. We want pre-multiplied ARGB, 8-bits
+        // per component. Regardless of what the source image format is
+        // (CMYK, Grayscale, and so on) it will be converted over to the format
+        // specified here by CGBitmapContextCreate.
+        context = CGBitmapContextCreate (bitmapData,
+                                         width,
+                                         height,
+                                         8,      // bits per component
+                                         bitmapBytesPerRow,
+                                         colorSpace,
+                                         kCGImageAlphaPremultipliedFirst);
+        if (context == NULL) free (bitmapData);
+        
+        // Make sure and release colorspace before returning
+        CGColorSpaceRelease(colorSpace);
+        
+        return context;
+    }
+    
+    
+    
+
+/*
+ created date:      15/03/2019
+ last modified:     17/03/2019
+ remarks:           need to hide new and the delete buttons..
+ */
+- (IBAction)tweetButtonPressed:(id)sender {
+    /* tweet break selected */
+    UIImage *image;
+    
+    //TWTRSession *session = [[[Twitter sharedInstance] sessionStore] session];
+    self.tweetview = true;
+
+    [self LoadActivityData :[NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex]];
+    [self.CollectionViewActivities reloadData];
+    
+    image = [self imageWithCollectionView :self.CollectionViewActivities];
+    /* this part strips the transparent space around the image */
+    CGRect newRect = [self cropRectForImage:image];
+    CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, newRect);
+    image = [UIImage imageWithCGImage:imageRef];
+    CGImageRelease(imageRef);
+    
+    TWTRComposer *composer = [[TWTRComposer alloc] init];
+    
+    NSString *TripType = @"highlights";
+    
+    if (self.SegmentState.selectedSegmentIndex == 0) {
+        TripType = @"itinerary";
+    }
+    [composer setText:[NSString stringWithFormat:@"%@ trip %@, generated in @TrippoApp ",self.Trip.name, TripType]];
+    [composer setImage:image];
+    [composer showFromViewController:self completion:^(TWTRComposerResult result) {
+        if (result == TWTRComposerResultCancelled) {
+            NSLog(@"Tweet composition cancelled");
+        } else {
+            NSLog(@"Sending Tweet");
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.tweetview = false;
+            [self LoadActivityData :[NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex]];
+            [self.CollectionViewActivities reloadData];
+        });
+        
+       
+    }];
+}
 
 
 

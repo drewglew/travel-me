@@ -26,6 +26,8 @@
 #import "SettingsRLM.h"
 #import <TesseractOCR/TesseractOCR.h>
 #import "TOCropViewController.h"
+#import "AnnotationMK.h"
+
 
 
 @protocol PoiDataEntryDelegate <NSObject>
@@ -103,5 +105,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelInfoSharedDt;
 @property (weak, nonatomic) IBOutlet UILabel *LabelInfoSharedDevice;
 @property (strong, nonatomic) SettingsRLM *Settings;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonMapUpdate;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonMapRevert;
 
 @end
