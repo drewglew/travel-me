@@ -9,6 +9,7 @@
 #import "ActivityListVC.h"
 #import <TwitterKit/TWTRComposer.h>
 #import <TwitterKit/TWTRTwitter.h>
+@import UserNotifications;
 
 @interface ActivityListVC ()
 @property RLMNotificationToken *notification;
@@ -17,6 +18,7 @@
 
 @implementation ActivityListVC
 CGFloat ActivityListFooterFilterHeightConstant;
+
 @synthesize delegate;
 
 /*
@@ -29,10 +31,15 @@ CGFloat ActivityListFooterFilterHeightConstant;
     self.ActivityImageDictionary = [[NSMutableDictionary alloc] init];
     self.CollectionViewActivities.delegate = self;
     self.TableViewDiary.delegate = self;
-    
     self.editmode = true;
-    // Do any additional setup after loading the view.
     
+    
+    if (![ToolBoxNSO HasTopNotch]) {
+        self.HeaderViewHeightConstraint.constant = 70.0f;
+    }
+    
+    
+    // Do any additional setup after loading the view.
     if (self.Trip.itemgrouping==[NSNumber numberWithInt:1]) {
         self.SegmentState.selectedSegmentIndex = 1;
         self.LabelProject.text =  [NSString stringWithFormat:@"%@ - Activities in Last Trip", self.Trip.name];
@@ -64,8 +71,7 @@ CGFloat ActivityListFooterFilterHeightConstant;
     
     UILongPressGestureRecognizer* longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPress:)];
     [self.CollectionViewActivities addGestureRecognizer:longPressRecognizer];
-    
-    //self.keyboardIsShowing = NO;
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHidden:)
@@ -73,7 +79,7 @@ CGFloat ActivityListFooterFilterHeightConstant;
 
     self.TableViewDiary.sectionFooterHeight = 50;
     
-    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 60)];
+    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 50)];
     self.TableViewDiary.tableHeaderView = headerView;
     self.tweetview = false;
 }
@@ -87,9 +93,6 @@ CGFloat ActivityListFooterFilterHeightConstant;
     self.TableViewDiary.allowsSelection = YES;
 }
 
-
-
-
 -(NSDate *)dateWithOutTime:(NSDate *)datDate
 {
     if( datDate == nil ) {
@@ -98,8 +101,6 @@ CGFloat ActivityListFooterFilterHeightConstant;
     NSDateComponents* comps = [[NSCalendar currentCalendar] components:NSCalendarUnitDay|NSCalendarUnitMonth|NSCalendarUnitYear  fromDate:datDate];
     return [[NSCalendar currentCalendar] dateFromComponents:comps];
 }
-
-
 
 /*
  created date:      27/09/2018
@@ -135,9 +136,7 @@ CGFloat ActivityListFooterFilterHeightConstant;
             
         }
     }
-    
 }
-
 
 /*
  created date:      30/04/2018
@@ -146,12 +145,14 @@ CGFloat ActivityListFooterFilterHeightConstant;
  */
 -(void) LoadActivityData:(NSNumber*) State {
     
+    NSLog(@"completed loadactivity code block");
+    
     NSDateFormatter *DateIdentityFormatter = [[NSDateFormatter alloc] init];
     [DateIdentityFormatter setDateFormat:@"YYYY-MM-dd"];
     
     NSMutableDictionary *dataset = [[NSMutableDictionary alloc] init];
+    
     /* obtain the planned activities, both planned and actual activities are interested in this */
-
     NSString *IdentityStartDate = [[NSString alloc] init];
     NSString *IdentityEndDate = [[NSString alloc] init];
 
@@ -216,7 +217,6 @@ CGFloat ActivityListFooterFilterHeightConstant;
         return;
     }
     /* diary collection - not including Tweet complexity */
-    
     IdentityStartDate = [DateIdentityFormatter stringFromDate:self.IdentityStartDt];
     IdentityEndDate = [DateIdentityFormatter stringFromDate:self.IdentityEndDt];
         
@@ -268,12 +268,12 @@ CGFloat ActivityListFooterFilterHeightConstant;
         dd.enddt = StartDt;
         [self.sectionheaderdaystitle addObject:dd];
     }
-    NSLog(@"completed");
+    NSLog(@"completed loadactivity code block");
 }
 
 /*
  created date:      01/09/2018
- last modified:     16/02/2019
+ last modified:     21/03/2019
  remarks:  Load all Activity images for Trip
  */
 -(void)LoadActivityImageData {
@@ -281,47 +281,64 @@ CGFloat ActivityListFooterFilterHeightConstant;
     /* load images from file - TODO make sure we locate them all */
     
     RLMResults<ActivityRLM*> *activities = [ActivityRLM objectsWhere:@"tripkey==%@",self.Trip.key];
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *imagesDirectory = [paths objectAtIndex:0];
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"KeyImage == %@", [NSNumber numberWithInt:1]];
-    ImageCollectionRLM *imgobject;
-    RLMResults *filteredResults;
-    
     for (ActivityRLM *activityobj in activities) {
-        
-        imgobject = [[ImageCollectionRLM alloc] init];
-        filteredResults = [activityobj.images objectsWithPredicate:predicate];
-        if (filteredResults.count>0) {
-            imgobject = [filteredResults firstObject];
-        } else {
-            PoiRLM *poiobject = [PoiRLM objectForPrimaryKey:activityobj.poikey];
-            filteredResults = [poiobject.images objectsWithPredicate:predicate];
-            if (filteredResults.count==0) {
-                imgobject = [poiobject.images firstObject];
-            } else {
-                imgobject = [filteredResults firstObject];
-            }
-        }
-        
-        NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",imgobject.ImageFileReference]];
-        NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
-        if (pngData==nil) {
-            if (activityobj.state == [NSNumber numberWithInteger:0]) {
-                [self.ActivityImageDictionary setObject:[UIImage imageNamed:@"Planning"] forKey:activityobj.compondkey];
-                
-            } else {
-                [self.ActivityImageDictionary setObject:[UIImage imageNamed:@"Activity"] forKey:activityobj.compondkey];
-            }
-        } else {
-        
-            [self.ActivityImageDictionary setObject:[UIImage imageWithData:pngData] forKey:activityobj.compondkey];
-        }
+        [self getActivityImage :activityobj];
     }
 }
 
+/*
+ created date:      21/03/2019
+ last modified:     30/03/2019
+ remarks:           Load single Activity image for Trip - TODO optimize this.
+                    use thumbnail image if it exists, else - create it (the activity data entry point will
+                    also need to do some management - when it deletes an activity or a key image delete its thumbnail
+ */
+-(void)getActivityImage :(ActivityRLM*) activity {
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *imagesDirectory = [paths objectAtIndex:0];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"KeyImage == %@", [NSNumber numberWithInt:1]];
+    RLMResults *filteredResults;
+    ImageCollectionRLM *imgobject = [[ImageCollectionRLM alloc] init];
+    
+    CGSize CellSize = CGSizeMake(self.CollectionViewActivities.collectionViewLayout.collectionViewContentSize.height, self.CollectionViewActivities.collectionViewLayout.collectionViewContentSize.height);
 
+    filteredResults = [activity.images objectsWithPredicate:predicate];
+    if (filteredResults.count>0) {
+        imgobject = [filteredResults firstObject];
+    } else {
+        PoiRLM *poiobject = [PoiRLM objectForPrimaryKey:activity.poikey];
+        filteredResults = [poiobject.images objectsWithPredicate:predicate];
+        if (filteredResults.count==0) {
+            imgobject = [poiobject.images firstObject];
+        } else {
+            imgobject = [filteredResults firstObject];
+        }
+    }
 
+    NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",imgobject.ImageFileReference]];
+    NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
+    if (pngData==nil) {
+        if (activity.state == [NSNumber numberWithInteger:0]) {
+            [self.ActivityImageDictionary setObject:[ToolBoxNSO imageWithImage:[UIImage imageNamed:@"Planning"] convertToSize:CellSize] forKey:activity.compondkey];
+            
+        } else {
+            [self.ActivityImageDictionary setObject:[ToolBoxNSO imageWithImage:[UIImage imageNamed:@"Activity"] convertToSize:CellSize]  forKey:activity.compondkey];
+        }
+    } else {
+        [self.ActivityImageDictionary setObject:[ToolBoxNSO imageWithImage:[UIImage imageWithData:pngData]  convertToSize:CellSize] forKey:activity.compondkey];
+    }
+}
 
+-(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
+{
+    if ([ToolBoxNSO HasTopNotch]) {
+        return CGSizeMake(0, 50);
+    }
+    else{
+        return CGSizeMake(0, 50);
+    }
+}
 
 /*
  created date:      30/04/2018
@@ -334,7 +351,7 @@ CGFloat ActivityListFooterFilterHeightConstant;
 
 /*
  created date:      30/04/2018
- last modified:     16/03/2019
+ last modified:     31/03/2019
  remarks:
  */
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -350,7 +367,6 @@ CGFloat ActivityListFooterFilterHeightConstant;
     
     NSInteger NumberOfItems = self.activitycollection.count + 1;
     if (indexPath.row == NumberOfItems -1) {
-        
         if (self.tweetview) {
             cell.contentView.hidden = true;
         }
@@ -360,6 +376,7 @@ CGFloat ActivityListFooterFilterHeightConstant;
         cell.VisualViewBlur.hidden = true;
         cell.VisualViewBlurBehindImage.hidden = true;
         cell.ImageBlurBackground.hidden = true;
+        cell.ImageBlurBackgroundBottomHalf.hidden = true;
         cell.ViewActiveBadge.hidden = true;
         cell.ViewActiveItem.backgroundColor = [UIColor clearColor];
     } else {
@@ -387,15 +404,14 @@ CGFloat ActivityListFooterFilterHeightConstant;
             cell.LabelEndDate.text = @"";
             cell.LabelDuration.text = @"";
         }
-       
-        
+
         RLMResults <ActivityRLM*> *activitySet = [self.AllActivitiesInTrip objectsWhere:[NSString stringWithFormat:@"key = '%@'",cell.activity.key]];
         NSNumber *CountOfActivitiesInSet = [NSNumber numberWithLong:activitySet.count];
         
         if (self.SegmentState.selectedSegmentIndex == 1) {
             
             if (CountOfActivitiesInSet == [NSNumber numberWithLong:2] || self.tweetview) {
-                [cell.ImageViewBookmark setImage:[UIImage imageNamed:@""]];
+                cell.ImageViewBookmark.image = nil;
             } else {
                 ActivityRLM *single = [activitySet firstObject];
                 if (single.state == [NSNumber numberWithInteger:1]) {
@@ -409,6 +425,7 @@ CGFloat ActivityListFooterFilterHeightConstant;
             if (cell.activity.state == [NSNumber numberWithInteger:0]) {
                 if (self.tweetview) {
                     cell.contentView.hidden = true;
+                    
                 } else {
                     cell.ButtonDelete.hidden = true;
                     cell.VisualViewBlur.hidden = false;
@@ -416,37 +433,36 @@ CGFloat ActivityListFooterFilterHeightConstant;
             } else {
                 if (self.tweetview) {
                     cell.ButtonDelete.hidden = true;
-                    cell.VisualViewBlur.hidden = false;
                 } else {
                     cell.ButtonDelete.hidden = false;
-                    cell.VisualViewBlur.hidden = true;
                 }
-                
+                cell.VisualViewBlur.hidden = true;
             }
            
             if ([cell.activity.startdt compare: cell.activity.enddt] == NSOrderedSame && cell.activity.startdt!=nil) {
                 // only show badge when activity is Actual.
-                //int state = [cell.activity.state intValue];
                 if (cell.activity.state == [NSNumber numberWithInteger:1]) {
                     cell.ViewActiveBadge.layer.cornerRadius = 35;
                     cell.ViewActiveBadge.layer.masksToBounds = YES;
                     cell.ViewActiveBadge.transform = CGAffineTransformMakeRotation(.34906585);
-                    //cell.ViewActiveItem.backgroundColor = [UIColor colorWithRed:252.0f/255.0f green:33.0f/255.0f blue:37.0f/255.0f alpha:1.0];
                     cell.ViewActiveBadge.hidden = false;
                 } else  {
                     cell.ViewActiveBadge.hidden = true;
                 }
             } else {
-                //cell.ViewActiveItem.backgroundColor = [UIColor clearColor];
                 cell.ViewActiveBadge.hidden = true;
             }
  
         } else {
 
             if (CountOfActivitiesInSet == [NSNumber numberWithLong:2]) {
-                [cell.ImageViewBookmark setImage:[UIImage imageNamed:@""]];
+                cell.ImageViewBookmark.image = nil;
             } else {
-                [cell.ImageViewBookmark setImage:[UIImage imageNamed:@"Bookmark-Blue"]];
+                if (self.tweetview) {
+                    cell.ImageViewBookmark.image = nil;
+                } else {
+                    [cell.ImageViewBookmark setImage:[UIImage imageNamed:@"Bookmark-Blue"]];
+                }
             }
             
             cell.VisualViewBlur.hidden = true;
@@ -456,71 +472,107 @@ CGFloat ActivityListFooterFilterHeightConstant;
                 cell.ButtonDelete.hidden = false;
             }
             cell.ViewActiveItem.backgroundColor = [UIColor clearColor];
-
             cell.ViewActiveBadge.hidden = true;
-            
         }
 
-        NSArray *TypeItems = @[@"Cat-Accomodation",
-                               @"Cat-Airport",
-                               @"Cat-Astronaut",
-                               @"Cat-Beer",
-                               @"Cat-Bike",
-                               @"Cat-Bridge",
-                               @"Cat-CarHire",
-                               @"Cat-Casino",
-                               @"Cat-Church",
-                               @"Cat-City",
-                               @"Cat-Club",
-                               @"Cat-Concert",
-                               @"Cat-FoodWine",
-                               @"Cat-Historic",
-                               @"Cat-House",
-                               @"Cat-Lake",
-                               @"Cat-Lighthouse",
-                               @"Cat-Metropolis",
-                               @"Cat-Misc",
-                               @"Cat-Monument",
-                               @"Cat-Museum",
-                               @"Cat-Nature",
-                               @"Cat-Office",
-                               @"Cat-Restaurant",
-                               @"Cat-Scenary",
-                               @"Cat-Sea",
-                               @"Cat-Ship",
-                               @"Cat-Shopping",
-                               @"Cat-Ski",
-                               @"Cat-Sports",
-                               @"Cat-Theatre",
-                               @"Cat-ThemePark",
-                               @"Cat-Train",
-                               @"Cat-Trek",
-                               @"Cat-Venue",
-                               @"Cat-Village",
-                               @"Cat-Zoo",
-                               @"Cat-CarPark",
-                               @"Cat-PetrolStation",
-                               @"Cat-School"
-                               ];
+        NSArray *TypeItems = @[
+                @"Cat-Accomodation",
+                @"Cat-Airport",
+                @"Cat-Astronaut",
+                @"Cat-Bakery",
+                @"Cat-Beer",
+                @"Cat-Bike",
+                @"Cat-Bridge",
+                @"Cat-CarHire",
+                @"Cat-CarPark",
+                @"Cat-Casino",
+                @"Cat-Cave",
+                @"Cat-Church",
+                @"Cat-Cinema",
+                @"Cat-City",
+                @"Cat-CityPark",
+                @"Cat-Climbing",
+                @"Cat-Club",
+                @"Cat-Sea",
+                @"Cat-Concert",
+                @"Cat-FoodWine",
+                @"Cat-Football",
+                @"Cat-Forest",
+                @"Cat-Golf",
+                @"Cat-Historic",
+                @"Cat-House",
+                @"Cat-Lake",
+                @"Cat-Lighthouse",
+                @"Cat-Metropolis",
+                @"Cat-Misc",
+                @"Cat-Monument",
+                @"Cat-Museum",
+                @"Cat-NationalPark",
+                @"Cat-Nature",
+                @"Cat-Office",
+                @"Cat-PetrolStation",
+                @"Cat-Photography",
+                @"Cat-Restaurant",
+                @"Cat-River",
+                @"Cat-Rugby",
+                @"Cat-Safari",
+                @"Cat-Scenary",
+                @"Cat-School",
+                @"Cat-Ship",
+                @"Cat-Shopping",
+                @"Cat-Ski",
+                @"Cat-Sports",
+                @"Cat-Swimming",
+                @"Cat-Tennis",
+                @"Cat-Theatre",
+                @"Cat-ThemePark",
+                @"Cat-Tower",
+                @"Cat-Train",
+                @"Cat-Trek",
+                @"Cat-Venue",
+                @"Cat-Village",
+                @"Cat-Windmill",
+                @"Cat-Zoo"
+        ];
+                               
         
         PoiRLM *poiobject = [PoiRLM objectForPrimaryKey:cell.activity.poikey];
         
         cell.ImageViewTypeOfPoi.image = [UIImage imageNamed:[TypeItems objectAtIndex:[poiobject.categoryid integerValue]]];
 
-        
-       
         cell.VisualViewBlurBehindImage.hidden = false;
         cell.ImageBlurBackground.hidden = false;
-
+        cell.ImageBlurBackgroundBottomHalf.hidden = false;
+        
+        if ([self.ActivityImageDictionary objectForKey:cell.activity.compondkey] == nil) {
+            [self getActivityImage :cell.activity];
+        }
+        
         cell.ImageViewActivity.image = [self.ActivityImageDictionary objectForKey:cell.activity.compondkey];
-        cell.ImageBlurBackground.image = [self.ActivityImageDictionary objectForKey:cell.activity.compondkey];;
-
-        cell.LabelName.text = cell.activity.name;
-        //[cell.LabelName sizeToFit];
+        
+        if (self.tweetview) {
+            [cell.VisualViewBlurBehindImage setBackgroundColor:[UIColor whiteColor]];
+            //cell.VisualViewBlurBehindImage.layer.borderWidth = 1.5;
+            cell.VisualViewBlurBehindImage.layer.backgroundColor = [UIColor colorWithRed:230.0f/255.0f green:230.0f/255.0f blue:230.0f/255.0f alpha:1.0].CGColor;
+            cell.ViewPoiType.backgroundColor = [UIColor colorWithRed:255.0f/255.0f green:91.0f/255.0f blue:73.0f/255.0f alpha:1.0];
+        } else {
+            [cell.VisualViewBlurBehindImage setBackgroundColor:[UIColor clearColor]];
+            cell.VisualViewBlurBehindImage.layer.backgroundColor = [UIColor clearColor].CGColor;
+            cell.ImageBlurBackground.image = [self.ActivityImageDictionary objectForKey:cell.activity.compondkey];
+            cell.ImageBlurBackgroundBottomHalf.image = [self.ActivityImageDictionary objectForKey:cell.activity.compondkey];
+            cell.ViewPoiType.backgroundColor = [UIColor lightGrayColor];
+        }
+        
+        //UIFont *font = [UIFont fontWithName:@"AmericanTypewriter" size:14.0];
+        UIFont *font = [UIFont systemFontOfSize:16.0];
+        NSDictionary *attributes = @{NSBackgroundColorAttributeName:[UIColor colorWithRed:35.0f/255.0f green:35.0f/255.0f blue:35.0f/255.0f alpha:1.0], NSForegroundColorAttributeName:[UIColor whiteColor], NSFontAttributeName:font};
+        NSAttributedString *string = [[NSAttributedString alloc] initWithString:cell.activity.name attributes:attributes];
+        cell.LabelName.attributedText = string;
         
     }
     return cell;
 }
+
 
 /*
  created date:      30/04/2018
@@ -574,6 +626,10 @@ CGFloat ActivityListFooterFilterHeightConstant;
             new.poikey = activity.poikey;
             new.createddt = [NSDate date];
             new.modifieddt = [NSDate date];
+            new.geonotification = activity.geonotification;
+            new.geonotifycheckout = activity.geonotifycheckout;
+            new.geonotifycheckindt = activity.geonotifycheckindt;
+            new.geonotifycheckoutdt = activity.geonotifycheckoutdt;
             controller.Activity = new;
             controller.transformed = true;
             // how can we determine on destination controller what is a brand new item and a transformed item?  Do we need to?
@@ -585,7 +641,6 @@ CGFloat ActivityListFooterFilterHeightConstant;
         [controller setModalPresentationStyle:UIModalPresentationFullScreen];
         [self presentViewController:controller animated:YES completion:nil];
     }
-    
 }
 
 /*
@@ -633,7 +688,7 @@ CGFloat ActivityListFooterFilterHeightConstant;
     [headerView addSubview:title];
     
     UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
-    button.frame = CGRectMake(tableView.frame.size.width - 40.0, 10, 20.0, 20.0); // x,y,width,height
+    button.frame = CGRectMake(tableView.frame.size.width - 40.0, 3.5, 35.0, 35.0); // x,y,width,height
     button.tag = section;
     
     [button setImage:[UIImage imageNamed:@"AddItem"] forState:UIControlStateNormal];
@@ -650,17 +705,14 @@ CGFloat ActivityListFooterFilterHeightConstant;
  remarks:
  */
 -(void)sectionHeaderButtonPressed :(id)sender {
-    
     [self performSegueWithIdentifier:@"ShowNewActivityFromDiary" sender:sender];
-
-    NSLog(@"pressed");
 }
 
 
 
 /*
  created date:      20/02/2019
- last modified:     24/02/2019
+ last modified:     24/03/2019
  remarks:           table view with sections.
  */
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -672,33 +724,35 @@ CGFloat ActivityListFooterFilterHeightConstant;
         cell.TextFieldStartDt.enabled = false;
         cell.TextFieldEndDt.enabled = false;
         [cell.LabelName setTextColor:[UIColor lightGrayColor]];
-        cell.DurationBar.backgroundColor = [UIColor lightGrayColor];
+        //cell.DurationBar.backgroundColor = [UIColor lightGrayColor];
         [cell.LabelDuration setTextColor:[UIColor lightGrayColor]];
         cell.ButtonDelete.hidden = true;
     } else if (self.SegmentState.selectedSegmentIndex==1)  {
+        cell.TextFieldStartDt.enabled = true;
+        cell.TextFieldEndDt.enabled = true;
+        [cell.LabelName setTextColor:[UIColor colorWithRed:71.0f/255.0f green:71.0f/255.0f blue:71.0f/255.0f alpha:1.0]];
         if ( [cell.activity.startdt compare:cell.activity.enddt] == NSOrderedSame) {
             // This is ongoing...
             cell.LabelDuration.text = @"active!";
-            cell.DurationBar.backgroundColor = [UIColor lightGrayColor];
         } else {
-            cell.DurationBar.backgroundColor = [UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0];
             cell.LabelDuration.text = [ToolBoxNSO PrettyDateDifference: cell.activity.startdt :cell.activity.enddt :@""];
             [cell.LabelDuration setTextColor:[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]];
         }
+        cell.ButtonDelete.hidden = false;
     } else {
         cell.TextFieldStartDt.enabled = true;
         cell.TextFieldEndDt.enabled = true;
-        [cell.LabelName setTextColor:[UIColor blackColor]];
+        [cell.LabelName setTextColor:[UIColor colorWithRed:71.0f/255.0f green:71.0f/255.0f blue:71.0f/255.0f alpha:1.0]];
         cell.ButtonDelete.hidden = false;
-        cell.DurationBar.backgroundColor = [UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0];
+        //cell.DurationBar.backgroundColor = [UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0];
         cell.LabelDuration.text = [ToolBoxNSO PrettyDateDifference: cell.activity.startdt :cell.activity.enddt :@""];
         [cell.LabelDuration setTextColor:[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]];
     }
 
     cell.LabelName.text = cell.activity.name;
-    cell.TextFieldStartDt.text = [self FormatPrettyTime :cell.activity.startdt];
+    cell.TextFieldStartDt.text = [ToolBoxNSO FormatPrettyTime :cell.activity.startdt];
     cell.TextFieldStartDt.delegate = self;
-    cell.TextFieldEndDt.text = [self FormatPrettyTime :cell.activity.enddt];
+    cell.TextFieldEndDt.text = [ToolBoxNSO FormatPrettyTime :cell.activity.enddt];
     cell.TextFieldEndDt.delegate = self;
     
     cell.datePickerStart.date = cell.activity.startdt;
@@ -762,15 +816,12 @@ CGFloat ActivityListFooterFilterHeightConstant;
     [cell setSelected:NO animated:YES];
 }
 
-
-
 /*
 created date:      22/02/2019
 last modified:     24/02/2019
 remarks:           table view with sections.
 */
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-
 
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     ActivityDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ActivityDataEntryViewController"];
@@ -798,9 +849,12 @@ remarks:           table view with sections.
         new.modifieddt = [NSDate date];
         new.startdt = activity.startdt;
         new.enddt = activity.enddt;
+        new.geonotification = activity.geonotification;
+        new.geonotifycheckout = activity.geonotifycheckout;
+        new.geonotifycheckindt = activity.geonotifycheckindt;
+        new.geonotifycheckoutdt = activity.geonotifycheckoutdt;
         controller.Activity = new;
         controller.transformed = true;
-        // how can we determine on destination controller what is a brand new item and a transformed item?  Do we need to?
     } else {
         controller.Activity =  activity;
         controller.transformed = false;
@@ -808,22 +862,7 @@ remarks:           table view with sections.
     controller.deleteitem = false;
     [controller setModalPresentationStyle:UIModalPresentationFullScreen];
     [self presentViewController:controller animated:YES completion:nil];
-    //}
 }
-
-
-/*
-created date:      22/10/2018
-last modified:     22/10/2018
-remarks:           Time formatter
-*/
--(NSString*)FormatPrettyTime :(NSDate*)Dt {
-  
-  NSDateFormatter *timeformatter = [[NSDateFormatter alloc] init];
-  [timeformatter setDateFormat:@"HH:mm"];
-  return [NSString stringWithFormat:@"%@", [timeformatter stringFromDate:Dt]];
-}
-
 
 /*
  created date:      05/09/2018
@@ -836,8 +875,6 @@ remarks:           Time formatter
     UIImage *image = [[UIImage alloc] init];
     if (poi.images.count>0) {
         ImageCollectionRLM *imgobject = [[poi.images objectsWhere:@"KeyImage==1"] firstObject];
-        
-        //ImageCollectionRLM *imgobject = [poi.images firstObject];
         NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",imgobject.ImageFileReference]];
         NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
         if (pngData==nil) {
@@ -893,12 +930,11 @@ remarks:           Time formatter
 
 /*
  created date:      30/04/2018
- last modified:     22/02/2019
+ last modified:     24/03/2019
  remarks:           segue controls .
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
    
-    
     if([segue.identifier isEqualToString:@"ShowNewActivity"]){
         PoiSearchVC *controller = (PoiSearchVC *)segue.destinationViewController;
         controller.delegate = self;
@@ -906,21 +942,12 @@ remarks:           Time formatter
         controller.newitem = true;
         controller.transformed = false;
         controller.Activity.state = [NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex];
-        NSLog(@"startdt = %@",self.Trip.startdt);
         controller.TripItem = self.Trip;
         controller.realm = self.realm;
      
-        
     } else if([segue.identifier isEqualToString:@"ShowNewActivityFromDiary"]){
-         
         UIButton * button=(UIButton*)sender;
-        
-        
-        
         DiaryDatesNSO *dd = self.sectionheaderdaystitle[button.tag];
-        
-        NSLog(@"button tag=%ld",(long)button.tag);
-        
         PoiSearchVC *controller = (PoiSearchVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.Activity = [[ActivityRLM alloc] init];
@@ -929,7 +956,6 @@ remarks:           Time formatter
         controller.Activity.state = [NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex];
         controller.Activity.startdt = dd.startdt;
         controller.Activity.enddt = dd.enddt;
-        NSLog(@"startdt = %@",self.Trip.startdt);
         controller.TripItem = self.Trip;
         controller.realm = self.realm;
     
@@ -940,47 +966,13 @@ remarks:           Time formatter
         controller.Trip = self.Trip;
         controller.realm = self.realm;
         controller.ActivityState = [NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex];
+    
     } else if([segue.identifier isEqualToString:@"ShowDeleteActivity"]) {
+        [self DeleteActivity :sender];
         
-        ActivityDataEntryVC *controller = (ActivityDataEntryVC *)segue.destinationViewController;
-        controller.delegate = self;
-        if ([sender isKindOfClass: [UIButton class]]) {
-            UIView * cellView=(UIView*)sender;
-            while ((cellView= [cellView superview])) {
-                if([cellView isKindOfClass:[ActivityListCell class]]) {
-                    ActivityListCell *cell = (ActivityListCell*)cellView;
-                    controller.Activity = cell.activity;
-                    controller.Poi = [PoiRLM objectForPrimaryKey:cell.activity.poikey];
-                    controller.PoiImage = [self.ActivityImageDictionary objectForKey:cell.activity.key];
-                    controller.Trip = self.Trip;
-                    controller.realm = self.realm;
-                }
-            }
-            
-        }
-        controller.deleteitem = true;
-        controller.newitem = false;
-        controller.transformed = false;
     } else if ([segue.identifier isEqualToString:@"ShowDeleteActivityFromDiaryView"]) {
-        ActivityDataEntryVC *controller = (ActivityDataEntryVC *)segue.destinationViewController;
-        controller.delegate = self;
-        if ([sender isKindOfClass: [UIButton class]]) {
-            UIView * cellView=(UIView*)sender;
-            while ((cellView= [cellView superview])) {
-                if([cellView isKindOfClass:[ActivityDiaryCell class]]) {
-                    ActivityDiaryCell *cell = (ActivityDiaryCell*)cellView;
-                    controller.Activity = cell.activity;
-                    controller.Poi = [PoiRLM objectForPrimaryKey:cell.activity.poikey];
-                    controller.PoiImage = [self.ActivityImageDictionary objectForKey:cell.activity.key];
-                    controller.Trip = self.Trip;
-                    controller.realm = self.realm;
-                }
-            }
-            
-        }
-        controller.deleteitem = true;
-        controller.newitem = false;
-        controller.transformed = false;
+        [self DeleteActivity :sender];
+    
     } else if([segue.identifier isEqualToString:@"ShowProjectPaymentList"]) {
         PaymentListingVC *controller = (PaymentListingVC *)segue.destinationViewController;
         controller.delegate = self;
@@ -994,7 +986,6 @@ remarks:           Time formatter
         NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",image.ImageFileReference]];
         NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
         if (pngData!=nil) {
-            //image.Image = [UIImage imageWithData:pngData];
             controller.headerImage = [UIImage imageWithData:pngData];
         } else {
             controller.headerImage = [UIImage imageNamed:@"Project"];
@@ -1004,6 +995,80 @@ remarks:           Time formatter
     }
 }
 
+
+/*
+ created date:      24/03/2019
+ last modified:     07/04/2019
+ remarks:           segue controls .
+ */
+-(void)DeleteActivity: (id)sender {
+    
+    ActivityRLM *ActivityToDelete = [[ActivityRLM alloc] init];
+    if ([sender isKindOfClass: [UIButton class]]) {
+        UIView * cellView=(UIView*)sender;
+        while ((cellView= [cellView superview])) {
+            if([cellView isKindOfClass:[ActivityListCell class]]  || [cellView isKindOfClass:[ActivityDiaryCell class]]) {
+                ActivityListCell *cell = (ActivityListCell*)cellView;
+                ActivityToDelete = cell.activity;
+            }
+        }
+    }
+    
+    if (ActivityToDelete!=nil) {
+        UIAlertController* alert = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"Delete Activity\n%@", ActivityToDelete.name] message:@"Are you sure you want to remove this actvity from current trip?"
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {
+                                                                  
+                                                                  dispatch_async(dispatch_get_main_queue(), ^{
+                                                                      
+                                                                      [self RemoveGeoNotification :true :ActivityToDelete];
+                                                                      [self RemoveGeoNotification :false :ActivityToDelete];
+                                                                      
+                                                                      
+                                                                      [self.realm beginWriteTransaction];
+                                                                      [self.realm deleteObject:ActivityToDelete];
+                                                                      [self.realm commitWriteTransaction];
+                                                                      
+                                                                      
+                                                                  });
+                                                              }];
+        
+        UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Canel" style:UIAlertActionStyleDefault
+                                                             handler:^(UIAlertAction * action) {
+                                                                 // do nothing..
+                                                                 
+                                                             }];
+        
+        [alert addAction:defaultAction];
+        [alert addAction:cancelAction];
+        [self presentViewController:alert animated:YES completion:nil];
+    }
+}
+
+/*
+ created date:      29/03/2019
+ last modified:     29/03/2019
+ remarks:
+ */
+-(void) RemoveGeoNotification :(bool) NotifyOnEntry :(ActivityRLM*) activity {
+    NSString *identifier;
+    
+    if (NotifyOnEntry) {
+        identifier = [NSString stringWithFormat:@"CHECKIN~%@", activity.compondkey];
+    } else {
+        identifier = [NSString stringWithFormat:@"CHECKOUT~%@", activity.compondkey];
+    }
+    
+    NSArray *pendingNotification = [NSArray arrayWithObjects:identifier, nil];
+    
+    
+    [AppDelegateDef.UserNotificationCenter removePendingNotificationRequestsWithIdentifiers:pendingNotification];
+}
+
+
+
 - (IBAction)ActivityStateChanged:(id)sender {
     [self LoadActivityData :[NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex]];
    
@@ -1011,11 +1076,8 @@ remarks:           Time formatter
         [self.CollectionViewActivities reloadData];
     } else {
         [self.TableViewDiary reloadData];
-        //[self.TableViewDiary setNeedsLayout];
     }
 }
-
-
 
 - (IBAction)SwitchEditModeChanged:(id)sender {
     self.editmode = !self.editmode;
@@ -1023,12 +1085,10 @@ remarks:           Time formatter
     [self.CollectionViewActivities reloadData];
 }
 
-
-
 /*
  created date:      30/04/2018
  last modified:     30/04/2018
- remarks:           segue controls .
+ remarks:
  */
 - (IBAction)BackPressed:(id)sender {
     [self dismissViewControllerAnimated:YES completion:Nil];
@@ -1041,7 +1101,6 @@ remarks:           Time formatter
  */
 - (void)didUpdateActivityImages :(bool)ForceUpdate {
     [self LoadActivityImageData];
-    
 }
 
 - (IBAction)ShowDatePressed:(id)sender {
@@ -1074,34 +1133,82 @@ remarks:           Time formatter
     }
 }
 
+
 /*
- created date:      15/03/2019
- last modified:     17/03/2019
- remarks: amended to include whole collection view.
+ created date:      30/03/2019
+ last modified:     31/03/2019
+ remarks:
  */
-- (UIImage *) imageWithCollectionView:(UICollectionView *)collectionBreakView
-{
-    
+- (UIImage *)imageWithCollectionView {
     UIImage* image = nil;
-    UIGraphicsBeginImageContextWithOptions(collectionBreakView.contentSize, NO, 0.0);
+    UIGraphicsBeginImageContextWithOptions(self.CollectionViewActivities.contentSize, NO, 0.0);
     {
-        CGPoint savedContentOffset = collectionBreakView.contentOffset;
-        CGRect savedFrame = collectionBreakView.frame;
+        CGPoint savedContentOffset = self.CollectionViewActivities.contentOffset;
+        CGRect savedFrame = self.CollectionViewActivities.frame;
         
-        collectionBreakView.contentOffset = CGPointZero;
-        collectionBreakView.frame = CGRectMake(0, 0, collectionBreakView.contentSize.width, collectionBreakView.contentSize.height);
+        self.CollectionViewActivities.contentOffset = CGPointZero;
+        self.CollectionViewActivities.frame = CGRectMake(0, 0, self.CollectionViewActivities.contentSize.width, self.CollectionViewActivities.contentSize.height);
         
-        [collectionBreakView.layer renderInContext: UIGraphicsGetCurrentContext()];
+        [self.CollectionViewActivities.layer renderInContext: UIGraphicsGetCurrentContext()];
         image = UIGraphicsGetImageFromCurrentImageContext();
         
-        collectionBreakView.contentOffset = savedContentOffset;
-        collectionBreakView.frame = savedFrame;
+        self.CollectionViewActivities.contentOffset = savedContentOffset;
+        self.CollectionViewActivities.frame = savedFrame;
     }
     UIGraphicsEndImageContext();
-
     return image;
 }
 
+
+/*
+ created date:      15/03/2019
+ last modified:     31/03/2019
+ remarks:           Added completion block as image rendered too soon after reload data.
+                    CustomCollectionView is custom subclass of UICollectionView.
+                    https://stackoverflow.com/questions/16071503/how-to-tell-when-uitableview-has-completed-reloaddata
+ */
+- (IBAction)tweetButtonPressed:(id)sender {
+    /* tweet break selected */
+    
+    self.tweetview = true;
+    [self LoadActivityData :[NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex]];
+    [self.CollectionViewActivities reloadDataWithCompletion:^{
+        
+        [self.CollectionViewActivities layoutIfNeeded];
+        
+        UIImage *image;
+        image = [self imageWithCollectionView];
+        
+        CGRect newRect = [self cropRectForImage:image];
+        
+        CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, newRect);
+        image = [UIImage imageWithCGImage:imageRef];
+        CGImageRelease(imageRef);
+        
+        TWTRComposer *composer = [[TWTRComposer alloc] init];
+        
+        NSString *TripType = @"highlights";
+        
+        if (self.SegmentState.selectedSegmentIndex == 0) {
+            TripType = @"itinerary";
+        }
+        [composer setText:[NSString stringWithFormat:@"%@ trip %@, generated in @TrippoApp ",self.Trip.name, TripType]];
+        [composer setImage:image];
+        [composer showFromViewController:self completion:^(TWTRComposerResult result) {
+            if (result == TWTRComposerResultCancelled) {
+                NSLog(@"Tweet composition cancelled");
+            } else {
+                NSLog(@"Sending Tweet");
+            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.tweetview = false;
+                [self LoadActivityData :[NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex]];
+                [self.CollectionViewActivities reloadData];
+            });
+        }];
+
+    }];
+}
 
 /*
  created date:      17/03/2019
@@ -1150,110 +1257,57 @@ remarks:           Time formatter
 /*
  created date:      17/03/2019
  last modified:     17/03/2019
- remarks:           stolen from stackoverflow
+ remarks:           stolen from stackoverflow - used internally
  */
 - (CGContextRef)createARGBBitmapContextFromImage:(CGImageRef)inImage {
-        
-        CGContextRef context = NULL;
-        CGColorSpaceRef colorSpace;
-        void *bitmapData;
-        u_long bitmapByteCount;
-        u_long bitmapBytesPerRow;
-        
-        // Get image width, height. We'll use the entire image.
-        size_t width = CGImageGetWidth(inImage);
-        size_t height = CGImageGetHeight(inImage);
-        
-        // Declare the number of bytes per row. Each pixel in the bitmap in this
-        // example is represented by 4 bytes; 8 bits each of red, green, blue, and
-        // alpha.
-        bitmapBytesPerRow = (width * 4);
-        bitmapByteCount = (bitmapBytesPerRow * height);
-        
-        // Use the generic RGB color space.
-        colorSpace = CGColorSpaceCreateDeviceRGB();
-        if (colorSpace == NULL) return NULL;
-        
-        // Allocate memory for image data. This is the destination in memory
-        // where any drawing to the bitmap context will be rendered.
-        bitmapData = malloc( bitmapByteCount );
-        if (bitmapData == NULL)
-        {
-            CGColorSpaceRelease(colorSpace);
-            return NULL;
-        }
-        
-        // Create the bitmap context. We want pre-multiplied ARGB, 8-bits
-        // per component. Regardless of what the source image format is
-        // (CMYK, Grayscale, and so on) it will be converted over to the format
-        // specified here by CGBitmapContextCreate.
-        context = CGBitmapContextCreate (bitmapData,
-                                         width,
-                                         height,
-                                         8,      // bits per component
-                                         bitmapBytesPerRow,
-                                         colorSpace,
-                                         kCGImageAlphaPremultipliedFirst);
-        if (context == NULL) free (bitmapData);
-        
-        // Make sure and release colorspace before returning
+    
+    CGContextRef context = NULL;
+    CGColorSpaceRef colorSpace;
+    void *bitmapData;
+    u_long bitmapByteCount;
+    u_long bitmapBytesPerRow;
+    
+    // Get image width, height. We'll use the entire image.
+    size_t width = CGImageGetWidth(inImage);
+    size_t height = CGImageGetHeight(inImage);
+    
+    // Declare the number of bytes per row. Each pixel in the bitmap in this
+    // example is represented by 4 bytes; 8 bits each of red, green, blue, and
+    // alpha.
+    bitmapBytesPerRow = (width * 4);
+    bitmapByteCount = (bitmapBytesPerRow * height);
+    
+    // Use the generic RGB color space.
+    colorSpace = CGColorSpaceCreateDeviceRGB();
+    if (colorSpace == NULL) return NULL;
+    
+    // Allocate memory for image data. This is the destination in memory
+    // where any drawing to the bitmap context will be rendered.
+    bitmapData = malloc( bitmapByteCount );
+    if (bitmapData == NULL)
+    {
         CGColorSpaceRelease(colorSpace);
-        
-        return context;
+        return NULL;
     }
     
+    // Create the bitmap context. We want pre-multiplied ARGB, 8-bits
+    // per component. Regardless of what the source image format is
+    // (CMYK, Grayscale, and so on) it will be converted over to the format
+    // specified here by CGBitmapContextCreate.
+    context = CGBitmapContextCreate (bitmapData,
+                                     width,
+                                     height,
+                                     8,      // bits per component
+                                     bitmapBytesPerRow,
+                                     colorSpace,
+                                     kCGImageAlphaPremultipliedFirst);
+    if (context == NULL) free (bitmapData);
     
+    // Make sure and release colorspace before returning
+    CGColorSpaceRelease(colorSpace);
     
-
-/*
- created date:      15/03/2019
- last modified:     17/03/2019
- remarks:           need to hide new and the delete buttons..
- */
-- (IBAction)tweetButtonPressed:(id)sender {
-    /* tweet break selected */
-    UIImage *image;
-    
-    //TWTRSession *session = [[[Twitter sharedInstance] sessionStore] session];
-    self.tweetview = true;
-
-    [self LoadActivityData :[NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex]];
-    [self.CollectionViewActivities reloadData];
-    
-    image = [self imageWithCollectionView :self.CollectionViewActivities];
-    /* this part strips the transparent space around the image */
-    CGRect newRect = [self cropRectForImage:image];
-    CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, newRect);
-    image = [UIImage imageWithCGImage:imageRef];
-    CGImageRelease(imageRef);
-    
-    TWTRComposer *composer = [[TWTRComposer alloc] init];
-    
-    NSString *TripType = @"highlights";
-    
-    if (self.SegmentState.selectedSegmentIndex == 0) {
-        TripType = @"itinerary";
-    }
-    [composer setText:[NSString stringWithFormat:@"%@ trip %@, generated in @TrippoApp ",self.Trip.name, TripType]];
-    [composer setImage:image];
-    [composer showFromViewController:self completion:^(TWTRComposerResult result) {
-        if (result == TWTRComposerResultCancelled) {
-            NSLog(@"Tweet composition cancelled");
-        } else {
-            NSLog(@"Sending Tweet");
-        }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.tweetview = false;
-            [self LoadActivityData :[NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex]];
-            [self.CollectionViewActivities reloadData];
-        });
-        
-       
-    }];
+    return context;
 }
-
-
 
 
 @end

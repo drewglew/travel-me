@@ -17,7 +17,7 @@
 
 /*
  created date:      29/04/2018
- last modified:     16/02/2019
+ last modified:     30/03/2019
  remarks:
  */
 - (void)viewDidLoad {
@@ -25,19 +25,7 @@
  
     // Do any additional setup after loading the view.
     if (!self.newitem) {
-        if (self.deleteitem) {
-            
-            UIImage *btnImage = [UIImage imageNamed:@"TrashCan"];
-            
-            [self.ButtonAction setImage:btnImage forState:UIControlStateNormal];
-            [self.ButtonAction setTitle:@"" forState:UIControlStateNormal];
-            
-            self.ButtonEditImage.hidden = true;
-            self.LabelInfo.hidden = false;
-            self.LabelInfo.text = @"Confirm Deletion of this trip and any activities attached.";
-        } else {
-            [self.ButtonAction setTitle:@"Update" forState:UIControlStateNormal];
-        }
+        [self.ButtonAction setTitle:@"Update" forState:UIControlStateNormal];
         [self LoadExistingData];
         self.updatedimage = false;
     }
@@ -280,7 +268,7 @@
 
 /*
  created date:      29/04/2018
- last modified:     21/02/2019
+ last modified:     29/03/2019
  remarks:
  */
 - (IBAction)ProjectActionPressed:(id)sender {
@@ -352,9 +340,9 @@
                 
                 if (resultstartdt == NSOrderedSame && resultenddt == NSOrderedSame) {
                     DraftAmendedCount ++;
-                } else if (resultstartdt == NSOrderedDescending) {
+                } else if (resultstartdt == NSOrderedDescending && resultenddt == NSOrderedSame) {
                     StartDtsAmendedCount ++;
-                } else if (resultenddt == NSOrderedAscending) {
+                } else if (resultstartdt == NSOrderedSame && resultenddt == NSOrderedAscending) {
                     EndDtsAmendedCount ++;
                 }
             }
@@ -385,7 +373,7 @@
                                                        activity.enddt = enddt;
                                                        [activity.realm commitWriteTransaction];
                                                       
-                                                   } else if (resultstartdt == NSOrderedDescending) {
+                                                   } else if (resultstartdt == NSOrderedDescending  && resultenddt == NSOrderedSame) {
                                                        [activity.realm beginWriteTransaction];
                                                        activity.startdt = startdt;
                                                        if ([startdt compare:activityenddt] == NSOrderedAscending)
@@ -393,7 +381,7 @@
                                                             activity.enddt = startdt;
                                                        }
                                                        [activity.realm commitWriteTransaction];
-                                                   } else if (resultenddt == NSOrderedAscending) {
+                                                   } else if (resultstartdt == NSOrderedSame && resultenddt == NSOrderedAscending) {
                                                        [activity.realm beginWriteTransaction];
                                                        activity.enddt = enddt;
                                                        if ([enddt compare:activitystartdt] == NSOrderedDescending)
@@ -475,29 +463,10 @@
         NSLog(@"addObject startdate=%@",self.Trip.startdt);
         [self.realm addObject:self.Trip];
         [self.realm commitWriteTransaction];
-        
-        //[AppDelegateDef.Db InsertProjectItem :self.Project];
-    }
-    else if (self.deleteitem) {
-        /* TODO - are you sure?? */
-        //[self.realm beginWriteTransaction];
-        RLMResults <ActivityRLM*> *activities = [ActivityRLM objectsWhere:@"tripkey=%@",self.Trip.key];
-        
-        [self.realm transactionWithBlock:^{
-            [self.realm deleteObjects:activities];
-        }];
-        
-        NSLog(@"Trip to delete= %@",self.Trip.key);
-        [self.realm transactionWithBlock:^{
-            [self.realm deleteObject:self.Trip];
-        }];
-        
     }
     else
     {
         // potential update
-        
-        
         if ([self.Trip.privatenotes isEqualToString:self.TextViewNotes.text] && [self.Trip.name isEqualToString:self.TextFieldName.text] && !self.updatedimage && self.Trip.startdt == self.datePickerStart.date && self.Trip.enddt == self.datePickerEnd.date ) {
             // nothing to do
         } else {
@@ -526,22 +495,9 @@
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*
  created date:      29/04/2018
- last modified:     05/04/2018
+ last modified:     30/03/2019
  remarks:
  */
 - (IBAction)EditImagePressed:(id)sender {
@@ -619,14 +575,9 @@
                                                                             resultHandler:^(UIImage *result, NSDictionary *info) {
                                                                                 
                                                                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                                                                    
                                                                                     self.Project.Image = result;
                                                                                     self.ImageViewProject.image = result;
-                                                                                    
-                                                                                    if (!self.newitem) {
-                                                                                        self.updatedimage = true;
-                                                                                    }
-                                                                                    
+                                                                                    self.updatedimage = true;
                                                                                 });
                                                                             }];                                    
                                     }
@@ -665,7 +616,7 @@
 
 /*
  created date:      29/04/2018
- last modified:     29/04/2018
+ last modified:     30/03/2019
  remarks:
  */
 
@@ -677,11 +628,7 @@
     chosenImage = [ToolBoxNSO imageWithImage:chosenImage scaledToSize:self.ImageViewProject.frame.size];
     self.Project.Image = chosenImage;
     self.ImageViewProject.image = chosenImage;
-    
-    if (!self.newitem) {
-        self.updatedimage = true;
-    }
-    
+    self.updatedimage = true;
     [picker dismissViewControllerAnimated:YES completion:NULL];
 }
 

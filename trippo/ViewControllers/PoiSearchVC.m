@@ -22,7 +22,7 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
 
 /*
  created date:      30/04/2018
- last modified:     23/11/2018
+ last modified:     05/04/2019
  remarks:
  */
 - (void)viewDidLoad {
@@ -50,20 +50,25 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
 
         NSArray *keypaths  = [[NSArray alloc] initWithObjects:@"poikey", nil];
         RLMResults <ActivityRLM*> *activities = [[ActivityRLM objectsWhere:@"tripkey = %@",self.TripItem.key] distinctResultsUsingKeyPaths:keypaths];
-        
-        self.countries = [[NSMutableArray alloc] init];
-        for (ActivityRLM *activityobj in activities) {
-            PoiRLM *poi = [PoiRLM objectForPrimaryKey:activityobj.poikey];
-            bool found=false;
-            for (NSString *country in self.countries) {
-                if ([country isEqualToString:poi.countrycode]) {
-                    found=true;
-                    break;
+
+        if (activities.count>0) {
+            self.countries = [[NSMutableArray alloc] init];
+            for (ActivityRLM *activityobj in activities) {
+                PoiRLM *poi = [PoiRLM objectForPrimaryKey:activityobj.poikey];
+                bool found=false;
+                for (NSString *country in self.countries) {
+                    if ([country isEqualToString:poi.countrycode]) {
+                        found=true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    [self.countries addObject:poi.countrycode];
                 }
             }
-            if (!found) {
-                [self.countries addObject:poi.countrycode];
-            }
+        } else {
+            self.SegmentCountries.selectedSegmentIndex=1;
+            self.SegmentPoiFilterList.selectedSegmentIndex=1;
         }
     }
     
@@ -78,16 +83,26 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
     self.TypeItems = @[@"Cat-Accomodation",
                        @"Cat-Airport",
                        @"Cat-Astronaut",
+                       @"Cat-Bakery",
                        @"Cat-Beer",
                        @"Cat-Bike",
                        @"Cat-Bridge",
                        @"Cat-CarHire",
+                       @"Cat-CarPark",
                        @"Cat-Casino",
+                       @"Cat-Cave",
                        @"Cat-Church",
+                       @"Cat-Cinema",
                        @"Cat-City",
+                       @"Cat-CityPark",
+                       @"Cat-Climbing",
                        @"Cat-Club",
+                       @"Cat-Sea",
                        @"Cat-Concert",
                        @"Cat-FoodWine",
+                       @"Cat-Football",
+                       @"Cat-Forest",
+                       @"Cat-Golf",
                        @"Cat-Historic",
                        @"Cat-House",
                        @"Cat-Lake",
@@ -96,25 +111,32 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
                        @"Cat-Misc",
                        @"Cat-Monument",
                        @"Cat-Museum",
+                       @"Cat-NationalPark",
                        @"Cat-Nature",
                        @"Cat-Office",
+                       @"Cat-PetrolStation",
+                       @"Cat-Photography",
                        @"Cat-Restaurant",
+                       @"Cat-River",
+                       @"Cat-Rugby",
+                       @"Cat-Safari",
                        @"Cat-Scenary",
-                       @"Cat-Sea",
+                       @"Cat-School",
                        @"Cat-Ship",
                        @"Cat-Shopping",
                        @"Cat-Ski",
                        @"Cat-Sports",
+                       @"Cat-Swimming",
+                       @"Cat-Tennis",
                        @"Cat-Theatre",
                        @"Cat-ThemePark",
+                       @"Cat-Tower",
                        @"Cat-Train",
                        @"Cat-Trek",
                        @"Cat-Venue",
                        @"Cat-Village",
-                       @"Cat-Zoo",
-                       @"Cat-CarPark",
-                       @"Cat-PetrolStation",
-                       @"Cat-School"
+                       @"Cat-Windmill",
+                       @"Cat-Zoo"
                        ];
     
     
@@ -205,8 +227,20 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
         NSMutableArray *poiitems = [[NSMutableArray alloc] init];
         
         for (ActivityRLM *usedPois in used) {
-            [poiitems addObject:usedPois.poikey];
+            if (usedPois.name == nil) {
+                NSLog(@"Error caused by null named Activity");
+                /*
+                 [self.realm beginWriteTransaction];
+                [self.realm deleteObject:usedPois];
+                [self.realm commitWriteTransaction];
+                */
+            }
+            else {
+                [poiitems addObject:usedPois.poikey];
+            }
         }
+        
+        
         NSSet *typeset = [[NSSet alloc] initWithArray:poiitems];
         
         if (self.SegmentPoiFilterList.selectedSegmentIndex == 0) {
@@ -302,7 +336,7 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
 
 /*
  created date:      30/04/2018
- last modified:     18/11/2018
+ last modified:     27/03/2019
  remarks:
  */
 -(void) LoadPoiBackgroundImageData {
@@ -310,46 +344,56 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
         NSURL *url = [self applicationDocumentsDirectory];
 
         NSData *pngData;
+        UIImage *image;
+        CGSize imagesize = CGSizeMake(100 , 100);
         
         RLMResults <PoiRLM*> *allPoiObjects = [PoiRLM allObjects];
         
         for (PoiRLM *poi in allPoiObjects) {
             
             if (poi.images.count > 0) {
-                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"KeyImage == %@", [NSNumber numberWithInt:1]];
-                RLMResults *filteredArray = [poi.images objectsWithPredicate:predicate];
-                ImageCollectionRLM *imgobject;
-                if (filteredArray.count==0) {
-                    imgobject = [poi.images firstObject];
-                } else {
-                    imgobject = [filteredArray firstObject];
-                }
-                NSURL *imagefile = [url URLByAppendingPathComponent:imgobject.ImageFileReference];
                 NSError *err;
-                pngData = [NSData dataWithContentsOfURL:imagefile options:NSDataReadingMappedIfSafe error:&err];
-                UIImage *image;
+
+                NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+                NSString *imagesDirectory = [paths objectAtIndex:0];
+                NSString *thumbDataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/Images/%@/thumbnail.png",poi.key]];
+                
+                pngData = [NSData dataWithContentsOfFile:thumbDataPath options:NSDataReadingMappedIfSafe error:&err];
+                
                 if (pngData==nil) {
-                    image = [UIImage imageNamed:@"Poi"];
+                    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"KeyImage == %@", [NSNumber numberWithInt:1]];
+                    RLMResults *filteredArray = [poi.images objectsWithPredicate:predicate];
+                    ImageCollectionRLM *imgobject;
+                    if (filteredArray.count==0) {
+                        imgobject = [poi.images firstObject];
+                    } else {
+                        imgobject = [filteredArray firstObject];
+                    }
+                    NSURL *imagefile = [url URLByAppendingPathComponent:imgobject.ImageFileReference];
+                    
+                    pngData = [NSData dataWithContentsOfURL:imagefile options:NSDataReadingMappedIfSafe error:&err];
+                    if (pngData==nil) {
+                        image = [UIImage imageNamed:@"Poi"];
+                    } else {
+                        image = [UIImage imageWithData:pngData];
+                        
+                    }
+                    image = [ToolBoxNSO imageWithImage:image convertToSize:imagesize];
+                    
+                    /* temporary */
+                    /*NSData *imageData =  UIImagePNGRepresentation(image);
+                    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+                    NSString *imagesDirectory = [paths objectAtIndex:0];
+                    NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/Images/%@/thumbnail.png",poi.key]];
+                    [imageData writeToFile:dataPath atomically:YES];
+                    */
                 } else {
                     image =[UIImage imageWithData:pngData];
                 }
-
-                CGSize imagesize = CGSizeMake(100 , 100); // set the width and height
-
-
-                [AppDelegateDef.PoiBackgroundImageDictionary setObject:[self imageWithImage:image convertToSize:imagesize] forKey:poi.key];
-                
+                [AppDelegateDef.PoiBackgroundImageDictionary setObject:image forKey:poi.key];
             }
         }
     }
-}
-
-- (UIImage *)imageWithImage:(UIImage *)image convertToSize:(CGSize)size {
-    UIGraphicsBeginImageContext(size);
-    [image drawInRect:CGRectMake(0, 0, size.width, size.height)];
-    UIImage *destImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return destImage;
 }
 
 
@@ -560,7 +604,7 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
 
 /*
  created date:      05/02/2019
- last modified:     05/02/2019
+ last modified:     23/03/2019
  remarks:           Provide a bit of space if needed.
  */
 -(void)scrollViewWillEndDragging:(UIScrollView *)scrollView
@@ -575,6 +619,10 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
                             options:UIViewAnimationOptionBeginFromCurrentState
                          animations:^{
                              self.FilterOptionHeightConstraint.constant = 0.0f;
+                             
+                             UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 0)];
+                             self.TableViewSearchPoiItems.tableFooterView = footerView;
+                             
                              [self.view layoutIfNeeded];
                          } completion:^(BOOL finished) {
                              
@@ -588,6 +636,10 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
                          animations:^{
                              
                              self.FilterOptionHeightConstraint.constant = lastPoiSearchFooterFilterHeightConstant;
+                             
+                             UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, self.FilterOptionHeightConstraint.constant)];
+                             self.TableViewSearchPoiItems.tableFooterView = footerView;
+                             
                              [self.view layoutIfNeeded];
                              
                          } completion:^(BOOL finished) {
@@ -655,7 +707,7 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
 
 /*
  created date:      30/04/2018
- last modified:     06/10/2018
+ last modified:     20/03/2019
  remarks:           segue controls.  We need to work here next - get selection Project==null
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -664,15 +716,25 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
         LocatorVC *controller = (LocatorVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.realm = self.realm;
-        if (self.Project == nil) {
+        if (self.TripItem == nil) {
             controller.fromproject = false;
         }
         else {
             controller.fromproject = true;
+            controller.TripItem = self.TripItem;
+            controller.ActivityItem = self.Activity;
         }
     } else if([segue.identifier isEqualToString:@"ShowNearby"]){
         NearbyListingVC *controller = (NearbyListingVC *)segue.destinationViewController;
         controller.delegate = self;
+        if (self.TripItem == nil) {
+            controller.fromproject = false;
+        }
+        else {
+            controller.TripItem = self.TripItem;
+            controller.ActivityItem = self.Activity;
+            controller.fromproject = true;
+        }
         
         if ([sender isKindOfClass: [UIButton class]]) {
             UIView * cellView=(UIView*)sender;
@@ -685,11 +747,20 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
                 }
             }
         }
-    } else if([segue.identifier isEqualToString:@"ShowNearbyMe"]){
+    } else if([segue.identifier isEqualToString:@"ShowNearbyMe"])
+    {
         NearbyListingVC *controller = (NearbyListingVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.realm = self.realm;
         controller.PointOfInterest = nil;
+        if (self.TripItem == nil) {
+            controller.fromproject = false;
+        }
+        else {
+            controller.fromproject = true;
+            controller.ActivityItem = self.Activity;
+            controller.fromproject = true;
+        }
     }
     
 }
@@ -825,7 +896,7 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
 
 /*
  created date:      12/08/2018
- last modified:     18/11/2018
+ last modified:     27/03/2019
  remarks:
  */
 - (void)didUpdatePoi :(NSString*)Method :(PoiRLM*)Object {
@@ -855,8 +926,15 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
         }
        
         CGSize imagesize = CGSizeMake(100 , 100); // set the width and height
-    
-        [AppDelegateDef.PoiBackgroundImageDictionary setObject:[self imageWithImage:image convertToSize:imagesize] forKey:Object.key];
+        UIImage *thumbImage = [ToolBoxNSO imageWithImage:image convertToSize:imagesize];
+        NSData *imageData =  UIImagePNGRepresentation(thumbImage);
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *imagesDirectory = [paths objectAtIndex:0];
+        NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/Images/%@/thumbnail.png",Object.key]];
+        [imageData writeToFile:dataPath atomically:YES];
+        
+        
+        [AppDelegateDef.PoiBackgroundImageDictionary setObject:thumbImage forKey:Object.key];
         
     }
 }

@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "petrol-station-128x128.png",
+      "filename" : "cat-gas-station-100.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "petrol-station-128x128-1.png",
+      "filename" : "cat-gas-station-101.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "petrol-station-128x128-2.png",
+      "filename" : "cat-gas-station-102.png",
       "scale" : "3x"
     }
   ],

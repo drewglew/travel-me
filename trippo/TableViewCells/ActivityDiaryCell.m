@@ -35,12 +35,12 @@
     UIBarButtonItem *space=[[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     [ self.datePickerToolbar setItems:[NSArray arrayWithObjects:space,doneBtn, nil]];
     
-    self.TextFieldStartDt.delegate = self;
+    //self.TextFieldStartDt.delegate = self;
     self.TextFieldStartDt.inputView = self.datePickerStart;
     self.TextFieldStartDt.inputAccessoryView = self.datePickerToolbar;
     
 
-    self.TextFieldEndDt.delegate = self;
+    //self.TextFieldEndDt.delegate = self;
     self.TextFieldEndDt.inputView = self.datePickerEnd;
     self.TextFieldEndDt.inputAccessoryView = self.datePickerToolbar;
    

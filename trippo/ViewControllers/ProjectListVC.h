@@ -32,5 +32,6 @@
 @property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentFilterProjects;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *FooterWithSegmentConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *HeaderViewHeightConstraint;
 
 @end

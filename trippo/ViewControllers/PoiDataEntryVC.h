@@ -23,11 +23,12 @@
 #import "TypeCell.h"
 #import "HCSStarRatingView.h"
 #import "PoiRLM.h"
+#import "TripRLM.h"
 #import "SettingsRLM.h"
 #import <TesseractOCR/TesseractOCR.h>
 #import "TOCropViewController.h"
 #import "AnnotationMK.h"
-
+#import "ActivityDataEntryVC.h"
 
 
 @protocol PoiDataEntryDelegate <NSObject>
@@ -35,7 +36,8 @@
 - (void)didUpdatePoi :(NSString*)Method :(PoiRLM*)Object;
 @end
 
-@interface PoiDataEntryVC : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, ImagePickerDelegate, WikiGeneratorDelegate, UIScrollViewDelegate, UITextViewDelegate,UITextFieldDelegate, CLLocationManagerDelegate, G8TesseractDelegate, TOCropViewControllerDelegate>
+
+@interface PoiDataEntryVC : UIViewController<UICollectionViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, ImagePickerDelegate, WikiGeneratorDelegate, UIScrollViewDelegate, UITextViewDelegate,UITextFieldDelegate, CLLocationManagerDelegate, G8TesseractDelegate, TOCropViewControllerDelegate, ActivityDataEntryDelegate>
 
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;
 @property (nonatomic) NSString *Title;
@@ -53,11 +55,15 @@
 @property (weak, nonatomic) IBOutlet UICollectionView *CollectionViewPoiImages;
 @property (strong, nonatomic) NSMutableDictionary *PoiImageDictionary;
 @property (strong, nonatomic) PoiRLM *PointOfInterest;
+@property (strong, nonatomic) TripRLM *TripItem;
+@property (strong, nonatomic) ActivityRLM *ActivityItem;
 @property RLMRealm *realm;
 @property (strong, nonatomic) NSArray *TypeItems;
 @property (strong, nonatomic) NSMutableArray *CategoryItems;
 @property (strong, nonatomic) NSArray *TypeLabelItems;
 @property (strong, nonatomic) NSArray *TypeDistanceItems;
+@property (strong, nonatomic) NSArray *DistancePickerItems;
+
 @property (weak, nonatomic) IBOutlet UITextView *TextViewNotes;
 // only used on preview controller
 @property (weak, nonatomic) IBOutlet MKMapView *MapView;
@@ -107,5 +113,7 @@
 @property (strong, nonatomic) SettingsRLM *Settings;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonMapUpdate;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonMapRevert;
+@property (weak, nonatomic) IBOutlet UIPickerView *PickerDistance;
+@property (weak, nonatomic) IBOutlet UIView *ViewDistancePicker;
 
 @end

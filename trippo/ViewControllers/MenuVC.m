@@ -40,15 +40,7 @@ bool FirstLoad;
     
     [self.CollectionViewPreviewPanel reloadData];
     
-    /*self.LabelFeaturedPoi.attributedText=[[NSAttributedString alloc]
-                                          initWithString:@"In focus..."
-                                          attributes:@{
-                                                       NSStrokeWidthAttributeName: @-1.0,
-                                                       NSStrokeColorAttributeName:[UIColor blackColor],
-                                                       NSForegroundColorAttributeName:[UIColor whiteColor]
-                                                       }
-                                          ];
-    */
+    
     self.LabelFeaturedPoi.text = @"In focus...";
 
     __weak typeof(self) weakSelf = self;
@@ -71,20 +63,7 @@ bool FirstLoad;
     [self LoadFeaturedPoi];
     
     self.alltripitems = [TripRLM allObjects];
-    /*
-    for (TripRLM *item in self.alltripitems) {
-        RLMResults <ActivityRLM*> *activities = [ActivityRLM objectsWhere:@"tripkey = %@ and state==1", item.key];
-        if (activities.count>0) {
-            NSDate *startdt = [activities minOfProperty:@"startdt"];
-            NSDate *enddt = [activities maxOfProperty:@"enddt"];
-            
-            [self.realm transactionWithBlock:^{
-                item.startdt = startdt;
-                item.enddt = enddt;
-            }];
-        }
-    }
-     */
+
     FirstLoad = false;
     
     RLMResults <SettingsRLM*> *settings = [SettingsRLM allObjects];
@@ -116,7 +95,7 @@ bool FirstLoad;
 
 /*
  created date:      15/08/2018
- last modified:     20/10/2018
+ last modified:     23/04/2019
  remarks:
  */
 -(void)LocateTripContent {
@@ -138,7 +117,7 @@ bool FirstLoad;
     [self.alltripitems sortedResultsUsingDescriptors:[NSArray arrayWithObject:sort]];
 
     NSDate* tripdt = nil;
-    
+    NSLog(@"debugger completed menu block 0");
     for (TripRLM* trip in self.alltripitems) {
         RLMResults <ActivityRLM*> *allActivities = [ActivityRLM objectsWhere:@"tripkey=%@", trip.key];
         NSDate *LastestDate = [allActivities maxOfProperty:@"enddt"];
@@ -150,15 +129,19 @@ bool FirstLoad;
                 lasttrip.itemgrouping = [NSNumber numberWithInt:1];
                 lasttrip.key = trip.key;
                 lasttrip.name = trip.name;
+                lasttrip.startdt = trip.startdt;
+                lasttrip.enddt = trip.enddt;
             } else if ([tripdt compare: LastestDate] == NSOrderedAscending) {
                 lasttrip.key = trip.key;
                 lasttrip.name = trip.name;
+                lasttrip.startdt = trip.startdt;
+                lasttrip.enddt = trip.enddt;
                 lasttrip.itemgrouping = [NSNumber numberWithInt:1];
                 tripdt = trip.enddt;
             }
         }
     }
-    
+    NSLog(@"debugger completed menu block 1");
     if (lasttrip.itemgrouping==[NSNumber numberWithInt:1]) {
         TripRLM *trip = [TripRLM objectForPrimaryKey:lasttrip.key];
         [self RetrieveImageItem :trip :imagesDirectory];
@@ -171,21 +154,23 @@ bool FirstLoad;
         RLMResults <ActivityRLM*> *allActivities = [ActivityRLM objectsWhere:@"tripkey=%@", trip.key];
         NSDate *EarliestDate = [allActivities maxOfProperty:@"startdt"];
         NSDate *LatestDate = [allActivities maxOfProperty:@"enddt"];
-        //if (EarliestDate != nil && LatestDate != nil ) {
-            if ([currentDate compare: EarliestDate] == NSOrderedDescending && [currentDate compare: LatestDate] == NSOrderedAscending) {
-                
-                TripRLM* tripobject = [[TripRLM alloc] init];
-                tripobject.key = trip.key;
-                tripobject.name = trip.name;
-                tripobject.itemgrouping = [NSNumber numberWithInt:2];
-                
-                [self.selectedtripitems addObject:tripobject];
-                found_active = true;
-                [self RetrieveImageItem :trip :imagesDirectory];
-            }
-        //}
+
+        if ([currentDate compare: EarliestDate] == NSOrderedDescending && [currentDate compare: LatestDate] == NSOrderedAscending) {
+            
+            TripRLM* tripobject = [[TripRLM alloc] init];
+            tripobject.key = trip.key;
+            tripobject.name = trip.name;
+            tripobject.startdt = trip.startdt;
+            tripobject.enddt = trip.enddt;
+            tripobject.itemgrouping = [NSNumber numberWithInt:2];
+            
+            [self.selectedtripitems addObject:tripobject];
+            found_active = true;
+            [self RetrieveImageItem :trip :imagesDirectory];
+        }
+
     }
-    
+    NSLog(@"debugger completed menu block 2");
     /* optional new if no active trip found */
     if (!found_active) {
         TripRLM* emptytrip = [[TripRLM alloc] init];
@@ -195,7 +180,7 @@ bool FirstLoad;
         [self.selectedtripitems addObject:emptytrip];
         [self.TripImageDictionary setObject:[UIImage imageNamed:@"Project"] forKey:emptytrip.key];
     }
-    
+    NSLog(@"debugger completed menu block 3");
     sort = [RLMSortDescriptor sortDescriptorWithKeyPath:@"startdt" ascending:NO];
     [self.alltripitems sortedResultsUsingDescriptors:[NSArray arrayWithObject:sort]];
 
@@ -224,13 +209,13 @@ bool FirstLoad;
             }
         }
     }
-
+NSLog(@"debugger completed menu block 4");
     if (nexttrip.itemgrouping == [NSNumber numberWithInt:4]) {
         TripRLM *trip = [TripRLM objectForPrimaryKey:nexttrip.key];
         [self RetrieveImageItem :trip :imagesDirectory];
         [self.selectedtripitems addObject:nexttrip];
     }
-    
+    NSLog(@"debugger completed menu block 5");
      /* optional new if active trip found */
     if (found_active) {
         TripRLM* emptytrip = [[TripRLM alloc] init];
@@ -240,6 +225,7 @@ bool FirstLoad;
         [self.TripImageDictionary setObject:[UIImage imageNamed:@"Project"] forKey:emptytrip.key];
         [self.selectedtripitems addObject:emptytrip];
     }
+    NSLog(@"debugger completed menu block 6");
 }
 
 /*
@@ -403,16 +389,7 @@ bool FirstLoad;
     ProjectListCell *cell=[collectionView dequeueReusableCellWithReuseIdentifier:@"projectCellId" forIndexPath:indexPath];
     TripRLM *trip = [self.selectedtripitems objectAtIndex:indexPath.row];
     cell.ImageViewProject.image = [self.TripImageDictionary objectForKey:trip.key];
-    /*
-    cell.LabelProjectName.attributedText=[[NSAttributedString alloc]
-                               initWithString:trip.name
-                               attributes:@{
-                                            NSStrokeWidthAttributeName: @-1.0,
-                                            NSStrokeColorAttributeName:[UIColor blackColor],
-                                            NSForegroundColorAttributeName:[UIColor whiteColor]
-                                            }
-                               ];
-    */
+
     cell.LabelProjectName.text = trip.name;
     
     //cell.LabelProjectName.text = trip.name;
@@ -430,16 +407,7 @@ bool FirstLoad;
     } else {
         reference = @"New";
     }
-    /*
-    cell.LabelDateRange.attributedText=[[NSAttributedString alloc]
-                                          initWithString:reference
-                                          attributes:@{
-                                                       NSStrokeWidthAttributeName: @-1.0,
-                                                       NSStrokeColorAttributeName:[UIColor blackColor],
-                                                       NSForegroundColorAttributeName:[UIColor whiteColor]
-                                                       }
-                                          ];
-    */
+
     cell.LabelDateRange.text = reference;
     
     //TODO
@@ -454,7 +422,7 @@ bool FirstLoad;
 
 /*
  created date:      15/08/2018
- last modified:     31/08/2018
+ last modified:     23/04/2019
  remarks:
  */
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -462,14 +430,11 @@ bool FirstLoad;
     TripRLM *trip = [self.selectedtripitems objectAtIndex:indexPath.row];
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
 
-    //self.FeaturedViewTrailingConstraint.constant = self.FeaturedViewTrailingConstraint.constant - Adjustment;
-
     if (trip.itemgrouping==[NSNumber numberWithInt:3] || trip.itemgrouping==[NSNumber numberWithInt:5]) {
         ProjectDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ProjectDataEntryViewController"];
         controller.delegate = self;
         controller.Trip = [[TripRLM alloc] init];
         controller.newitem = true;
-        controller.deleteitem = false;
         controller.realm = self.realm;
         [controller setModalPresentationStyle:UIModalPresentationFullScreen];
         [self presentViewController:controller animated:YES completion:nil];
@@ -477,7 +442,9 @@ bool FirstLoad;
         ActivityListVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ActivityListViewController"];
         controller.delegate = self;
         controller.realm = self.realm;
-        controller.Trip = [self.selectedtripitems objectAtIndex:indexPath.row];
+        
+        controller.Trip = trip;
+        NSLog(@"startdt = %@",controller.Trip.startdt);
         [controller setModalPresentationStyle:UIModalPresentationFullScreen];
         [self presentViewController:controller animated:YES completion:nil];
     }

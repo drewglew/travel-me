@@ -9,9 +9,10 @@
 #import <UIKit/UIKit.h>
 #import "ProjectNSO.h"
 #import "TripRLM.h"
+#import "TTTAttributedLabel.h"
 
 @interface ProjectListCell : UICollectionViewCell
-@property (weak, nonatomic) IBOutlet UILabel *LabelProjectName;
+@property (weak, nonatomic) IBOutlet TTTAttributedLabel *LabelProjectName;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewProject;
 @property (weak, nonatomic) IBOutlet UIButton *editButton;
 @property (weak, nonatomic) IBOutlet UIButton *deleteButton;
@@ -26,6 +27,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelNbrOfActivities3;
 @property (weak, nonatomic) IBOutlet UIView *RotatingView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *ImageConstraint;
-
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *ActivityIndicatorView;
+@property (weak, nonatomic) IBOutlet UIView *ViewMain;
 
 @end

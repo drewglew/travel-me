@@ -13,7 +13,7 @@
 #import "ActivityNSO.h"
 #import "PoiListCell.h"
 #import "PoiImageNSO.h"
-#import "PoiDataEntryVC.h"
+#import "ImagePickerVC.h"
 #import "DirectionsVC.h"
 #import "PaymentListingVC.h"
 #import "HCSStarRatingView.h"
@@ -25,16 +25,19 @@
 #import "OptionButton.h"
 #import "AttachmentCell.h"
 #import "DocumentsVC.h"
+#import "PoiPreviewVC.h"
+#import <WebKit/WebKit.h>
 
 @protocol ActivityDataEntryDelegate <NSObject>
 - (void)didUpdateActivityImages :(bool) ForceUpdate;
 @end
 
-@interface ActivityDataEntryVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, MKMapViewDelegate, PoiDataEntryDelegate, DirectionsDelegate, PaymentListingDelegate, DocumentsDelegate, UITextViewDelegate,UITextFieldDelegate, UICollectionViewDelegate, UICollectionViewDataSource,UIImagePickerControllerDelegate, UINavigationControllerDelegate, ImagePickerDelegate, UIScrollViewDelegate,G8TesseractDelegate, TOCropViewControllerDelegate>
+@interface ActivityDataEntryVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, MKMapViewDelegate, DirectionsDelegate, PaymentListingDelegate, DocumentsDelegate, UITextViewDelegate,UITextFieldDelegate, UICollectionViewDelegate, UICollectionViewDataSource,UIImagePickerControllerDelegate, UINavigationControllerDelegate, ImagePickerDelegate, UIScrollViewDelegate,G8TesseractDelegate, TOCropViewControllerDelegate, PoiPreviewDelegate>
 @property (nonatomic) UIImage *PoiImage;
 @property (assign) bool newitem;
 @property (assign) bool transformed;
 @property (assign) bool deleteitem;
+@property (assign) bool fromproject;
 @property (assign) int imagestate;
 @property (nonatomic) NSString *SelectedImageReference;
 @property (nonatomic) NSString *SelectedImageKey;
@@ -79,7 +82,6 @@
 @property (weak, nonatomic) IBOutlet UIView *ViewSelectedKey;
 @property (weak, nonatomic) IBOutlet UIImageView *ImagePicture;
 @property (weak, nonatomic) IBOutlet UIScrollView *ScrollViewImage;
-@property (strong, nonatomic) NSArray *TypeDistanceItems;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewKeyActivity;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonUploadImage;
 @property (weak, nonatomic) IBOutlet UITextField *TextFieldReference;
@@ -94,6 +96,15 @@
 @property (weak, nonatomic) IBOutlet UIButton *ButtonExpandCollapseList;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *ViewDocumentListHeightConstraint;
 @property (weak, nonatomic) IBOutlet UISwitch *SwitchTweet;
+@property (weak, nonatomic) IBOutlet UISwitch *SwitchCheckInNotification;
+@property (weak, nonatomic) IBOutlet UISwitch *SwitchCheckOutNotification;
+@property (weak, nonatomic) IBOutlet UIView *ViewSettings;
+@property (weak, nonatomic) IBOutlet UILabel *LabelCheckInDt;
+@property (weak, nonatomic) IBOutlet UILabel *LabelCheckOutDt;
+@property (weak, nonatomic) IBOutlet UIImageView *ImageTwitterSetting;
+@property (weak, nonatomic) IBOutlet UIImageView *ImageNotificationSetting;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonSetCheckInNotify;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonSetCheckOutNotify;
 
 
 @end

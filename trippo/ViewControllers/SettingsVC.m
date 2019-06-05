@@ -196,5 +196,31 @@
 }
 
 
+/*
+ created date:      26/03/2019
+ last modified:     26/03/2019
+ remarks:
+ */
+- (IBAction)DismissAllPendingNotificationsPressed:(id)sender {
+    
+    [AppDelegateDef.UserNotificationCenter removeAllPendingNotificationRequests];
+    
+    /*
+    [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *requests){
+        NSLog(@"requests: %@", requests);
+        for (UNNotificationRequest *object in requests) {
+            NSString *identifier = object.identifier;
+            NSArray *activityNotification = [NSArray arrayWithObjects:identifier, nil];
+                                             
+            [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:activityNotification];
+        }
+        NSLog(@"Completed! removed ");
+        
+        // TODO add message box here.
+        
+    }];
+    */
+}
+
 
 @end

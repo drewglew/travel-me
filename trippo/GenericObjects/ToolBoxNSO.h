@@ -15,5 +15,8 @@
 + (UIImage*)resizeImage:(UIImage*)image toFitInSize:(CGSize)toSize;
 + (NSString*)PrettyDateDifference :(NSDate*)Start :(NSDate*)End :(NSString*) PostFixText;
 + (NSString*)FormatPrettyDate :(NSDate*)Dt;
++ (NSString*)FormatPrettySimpleDate :(NSDate*)Dt;
++ (NSString*)FormatPrettyTime :(NSDate*)Dt;
 + (UIImage *)convertImageToGrayScale:(UIImage *)image ;
++ (bool)HasTopNotch;
 @end

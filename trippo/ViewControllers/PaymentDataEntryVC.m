@@ -272,12 +272,12 @@
 
 /*
  created date:      14/05/2018
- last modified:     15/09/2018
+ last modified:     07/04/2019
  remarks:           A little complex.  This code is processed when we do not have the exchange rate requested.
  */
 - (void) GetExchangeRates {
   
-        NSString *AccessKey = @"";
+        NSString *AccessKey = @"a0cb78570a1e24afda3d";
         NSString *DateValue = self.ExpenseItem.date_act;
         
         if (self.ExpenseItem.status==[NSNumber numberWithLong:0]) {
@@ -291,7 +291,7 @@
         if (exrateexisting == nil) {
         
             if ([self checkInternet]) {
-                NSString *url = [NSString stringWithFormat:@"https://free.currencyconverterapi.com/api/v5/convert?q=%@_%@&compact=ultra&date=%@&apikey=%@", self.ExpenseItem.localcurrencycode, self.ExpenseItem.homecurrencycode, DateValue, AccessKey];
+                NSString *url = [NSString stringWithFormat:@"https://free.currencyconverterapi.com/api/v6/convert?q=%@_%@&compact=ultra&date=%@&apiKey=%@", self.ExpenseItem.localcurrencycode, self.ExpenseItem.homecurrencycode, DateValue, AccessKey];
 
                 [self fetchFromExchangeRateApi:url withDictionary:^(NSDictionary *data) {
 

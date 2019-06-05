@@ -10,6 +10,7 @@
 #import <Photos/Photos.h>
 #import <Realm/Realm.h>
 #import "SettingsRLM.h"
+#import "AppDelegate.h"
 
 @protocol SettingsDelegate <NSObject>
 @end
@@ -25,5 +26,6 @@
 @property (weak, nonatomic) IBOutlet UIView *ViewUserName;
 @property (weak, nonatomic) IBOutlet UIView *ViewEmailInfo;
 @property (weak, nonatomic) IBOutlet UIView *ViewTwitterLogIn;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonDismissAllPendingNotifications;
 
 @end

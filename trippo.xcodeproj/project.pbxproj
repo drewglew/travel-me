@@ -10,7 +10,6 @@
 		3A046D4B222303DA00EA26A9 /* AttachmentRLM.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A046D4A222303DA00EA26A9 /* AttachmentRLM.m */; };
 		3A046D4E2223461300EA26A9 /* AttachmentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A046D4D2223461300EA26A9 /* AttachmentCell.m */; };
 		3A046D512224621200EA26A9 /* DocumentsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A046D502224621200EA26A9 /* DocumentsVC.m */; };
-		3A082776211B4EBE00363BB7 /* CurrencyPickerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A082775211B4EBE00363BB7 /* CurrencyPickerVC.m */; };
 		3A0BDE34217E299D006A746E /* TextFieldDatePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A0BDE33217E299D006A746E /* TextFieldDatePicker.m */; };
 		3A0BDE37217E4EDD006A746E /* OptionButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A0BDE36217E4EDD006A746E /* OptionButton.m */; };
 		3A12B8DA21010680006B621D /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A12B8D921010680006B621D /* SystemConfiguration.framework */; };
@@ -47,20 +46,23 @@
 		3A374F152093877F00E5A652 /* PoiNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F142093877F00E5A652 /* PoiNSO.m */; };
 		3A374F1E2093939400E5A652 /* LocatorVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F1D2093939400E5A652 /* LocatorVC.m */; };
 		3A374F212093D55500E5A652 /* PoiDataEntryVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A374F202093D55500E5A652 /* PoiDataEntryVC.m */; };
+		3A523F622242CAD60073305D /* PoiPreviewVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A523F612242CAD60073305D /* PoiPreviewVC.m */; };
 		3A58B4C0211F534E00699008 /* TypeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A58B4BF211F534E00699008 /* TypeCell.m */; };
 		3A58B4C3211F547100699008 /* TypeNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A58B4C2211F547100699008 /* TypeNSO.m */; };
 		3A6349432129C61500BE53FC /* ActivityImageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A6349422129C61500BE53FC /* ActivityImageCell.m */; };
 		3A634970212F12AA00BE53FC /* SettingsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A63496F212F12AA00BE53FC /* SettingsVC.m */; };
 		3A72E1CF21B28EC2007C40FC /* PhotoswithGeoTagListingVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A72E1CE21B28EC2007C40FC /* PhotoswithGeoTagListingVC.m */; };
+		3A7397B0225A183800781004 /* ExpenseDataEntryVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A7397AF225A183800781004 /* ExpenseDataEntryVC.m */; };
 		3A79F213222D912500C68D77 /* MultiplierConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A79F212222D912500C68D77 /* MultiplierConstraint.m */; };
 		3A81B509209D80B8005CABDA /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A81B508209D80B8005CABDA /* Photos.framework */; };
 		3A81B50C209D90CA005CABDA /* AlphaView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A81B50B209D90CA005CABDA /* AlphaView.m */; };
+		3A97DCA62250A66100B64D7C /* CustomCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A97DCA52250A66100B64D7C /* CustomCollectionView.m */; };
+		3A97DCA92250FBE400B64D7C /* TTTAttributedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A97DCA72250FBE400B64D7C /* TTTAttributedLabel.m */; };
 		3A9CE745221C879700A4CB98 /* SettingsRLM.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9CE744221C879700A4CB98 /* SettingsRLM.m */; };
 		3A9EA18620AE17DF0052CC4F /* ScheduleBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9EA18520AE17DF0052CC4F /* ScheduleBackgroundView.m */; };
 		3A9F73A320A0FB5A00D61666 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 3A9F73A220A0FB5A00D61666 /* Settings.bundle */; };
 		3A9F73A620A1FFE400D61666 /* country.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A9F73A520A1FFE400D61666 /* country.json */; };
 		3A9F73A920A2444A00D61666 /* PaymentListingVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9F73A820A2444A00D61666 /* PaymentListingVC.m */; };
-		3A9F73AC20A36A1D00D61666 /* PaymentDataEntryVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9F73AB20A36A1D00D61666 /* PaymentDataEntryVC.m */; };
 		3A9F73AF20A3747300D61666 /* PaymentNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9F73AE20A3747300D61666 /* PaymentNSO.m */; };
 		3A9F73B520A3784400D61666 /* PaymentListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9F73B420A3784400D61666 /* PaymentListCell.m */; };
 		3AA4DA6821267FE900F7CAC9 /* CirclePart.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA4DA6721267FE900F7CAC9 /* CirclePart.m */; };
@@ -111,8 +113,6 @@
 		3A046D4D2223461300EA26A9 /* AttachmentCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AttachmentCell.m; sourceTree = "<group>"; };
 		3A046D4F2224621200EA26A9 /* DocumentsVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DocumentsVC.h; sourceTree = "<group>"; };
 		3A046D502224621200EA26A9 /* DocumentsVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DocumentsVC.m; sourceTree = "<group>"; };
-		3A082774211B4EBE00363BB7 /* CurrencyPickerVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurrencyPickerVC.h; sourceTree = "<group>"; };
-		3A082775211B4EBE00363BB7 /* CurrencyPickerVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CurrencyPickerVC.m; sourceTree = "<group>"; };
 		3A0BDE32217E299D006A746E /* TextFieldDatePicker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TextFieldDatePicker.h; sourceTree = "<group>"; };
 		3A0BDE33217E299D006A746E /* TextFieldDatePicker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TextFieldDatePicker.m; sourceTree = "<group>"; };
 		3A0BDE35217E4EDD006A746E /* OptionButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OptionButton.h; sourceTree = "<group>"; };
@@ -178,6 +178,8 @@
 		3A374F1D2093939400E5A652 /* LocatorVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LocatorVC.m; sourceTree = "<group>"; };
 		3A374F1F2093D55500E5A652 /* PoiDataEntryVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PoiDataEntryVC.h; sourceTree = "<group>"; };
 		3A374F202093D55500E5A652 /* PoiDataEntryVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PoiDataEntryVC.m; sourceTree = "<group>"; };
+		3A523F602242CAD60073305D /* PoiPreviewVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PoiPreviewVC.h; sourceTree = "<group>"; };
+		3A523F612242CAD60073305D /* PoiPreviewVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PoiPreviewVC.m; sourceTree = "<group>"; };
 		3A58B4BE211F534E00699008 /* TypeCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TypeCell.h; sourceTree = "<group>"; };
 		3A58B4BF211F534E00699008 /* TypeCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TypeCell.m; sourceTree = "<group>"; };
 		3A58B4C1211F547100699008 /* TypeNSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TypeNSO.h; sourceTree = "<group>"; };
@@ -190,11 +192,17 @@
 		3A63496F212F12AA00BE53FC /* SettingsVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingsVC.m; sourceTree = "<group>"; };
 		3A72E1CD21B28EC2007C40FC /* PhotoswithGeoTagListingVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PhotoswithGeoTagListingVC.h; sourceTree = "<group>"; };
 		3A72E1CE21B28EC2007C40FC /* PhotoswithGeoTagListingVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PhotoswithGeoTagListingVC.m; sourceTree = "<group>"; };
+		3A7397AE225A183800781004 /* ExpenseDataEntryVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpenseDataEntryVC.h; sourceTree = "<group>"; };
+		3A7397AF225A183800781004 /* ExpenseDataEntryVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExpenseDataEntryVC.m; sourceTree = "<group>"; };
 		3A79F211222D912500C68D77 /* MultiplierConstraint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MultiplierConstraint.h; sourceTree = "<group>"; };
 		3A79F212222D912500C68D77 /* MultiplierConstraint.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MultiplierConstraint.m; sourceTree = "<group>"; };
 		3A81B508209D80B8005CABDA /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		3A81B50A209D90CA005CABDA /* AlphaView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AlphaView.h; sourceTree = "<group>"; };
 		3A81B50B209D90CA005CABDA /* AlphaView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AlphaView.m; sourceTree = "<group>"; };
+		3A97DCA42250A66100B64D7C /* CustomCollectionView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CustomCollectionView.h; sourceTree = "<group>"; };
+		3A97DCA52250A66100B64D7C /* CustomCollectionView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CustomCollectionView.m; sourceTree = "<group>"; };
+		3A97DCA72250FBE400B64D7C /* TTTAttributedLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTTAttributedLabel.m; sourceTree = "<group>"; };
+		3A97DCA82250FBE400B64D7C /* TTTAttributedLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTTAttributedLabel.h; sourceTree = "<group>"; };
 		3A98851A22403F3D00D19186 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		3A98851C22403F4D00D19186 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		3A98851E22403F5E00D19186 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -206,8 +214,6 @@
 		3A9F73A520A1FFE400D61666 /* country.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = country.json; sourceTree = "<group>"; };
 		3A9F73A720A2444A00D61666 /* PaymentListingVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PaymentListingVC.h; sourceTree = "<group>"; };
 		3A9F73A820A2444A00D61666 /* PaymentListingVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PaymentListingVC.m; sourceTree = "<group>"; };
-		3A9F73AA20A36A1D00D61666 /* PaymentDataEntryVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PaymentDataEntryVC.h; sourceTree = "<group>"; };
-		3A9F73AB20A36A1D00D61666 /* PaymentDataEntryVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PaymentDataEntryVC.m; sourceTree = "<group>"; };
 		3A9F73AD20A3747300D61666 /* PaymentNSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PaymentNSO.h; sourceTree = "<group>"; };
 		3A9F73AE20A3747300D61666 /* PaymentNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PaymentNSO.m; sourceTree = "<group>"; };
 		3A9F73B320A3784400D61666 /* PaymentListCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PaymentListCell.h; path = ../../PaymentListCell.h; sourceTree = "<group>"; };
@@ -385,10 +391,8 @@
 				3AEE018A209F3BC600AE260E /* DirectionsVC.m */,
 				3A9F73A720A2444A00D61666 /* PaymentListingVC.h */,
 				3A9F73A820A2444A00D61666 /* PaymentListingVC.m */,
-				3A9F73AA20A36A1D00D61666 /* PaymentDataEntryVC.h */,
-				3A9F73AB20A36A1D00D61666 /* PaymentDataEntryVC.m */,
-				3A082774211B4EBE00363BB7 /* CurrencyPickerVC.h */,
-				3A082775211B4EBE00363BB7 /* CurrencyPickerVC.m */,
+				3A7397AE225A183800781004 /* ExpenseDataEntryVC.h */,
+				3A7397AF225A183800781004 /* ExpenseDataEntryVC.m */,
 				3AAF154620A8AD9800F8DE0C /* InfoVC.h */,
 				3AAF154720A8AD9800F8DE0C /* InfoVC.m */,
 				3AB915EA20CD972F001A08A9 /* ImagePickerVC.h */,
@@ -405,6 +409,8 @@
 				3A72E1CE21B28EC2007C40FC /* PhotoswithGeoTagListingVC.m */,
 				3A046D4F2224621200EA26A9 /* DocumentsVC.h */,
 				3A046D502224621200EA26A9 /* DocumentsVC.m */,
+				3A523F602242CAD60073305D /* PoiPreviewVC.h */,
+				3A523F612242CAD60073305D /* PoiPreviewVC.m */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -412,6 +418,8 @@
 		3A374F072093738F00E5A652 /* GenericObjects */ = {
 			isa = PBXGroup;
 			children = (
+				3A97DCA82250FBE400B64D7C /* TTTAttributedLabel.h */,
+				3A97DCA72250FBE400B64D7C /* TTTAttributedLabel.m */,
 				3A224CB22095E13600075457 /* ProjectNSO.h */,
 				3A224CB32095E13600075457 /* ProjectNSO.m */,
 				3A374F132093877F00E5A652 /* PoiNSO.h */,
@@ -456,6 +464,8 @@
 				3A23B0002221FED2003ACF7B /* DiaryDatesNSO.m */,
 				3A79F211222D912500C68D77 /* MultiplierConstraint.h */,
 				3A79F212222D912500C68D77 /* MultiplierConstraint.m */,
+				3A97DCA42250A66100B64D7C /* CustomCollectionView.h */,
+				3A97DCA52250A66100B64D7C /* CustomCollectionView.m */,
 			);
 			path = GenericObjects;
 			sourceTree = "<group>";
@@ -533,8 +543,8 @@
 				3A374EDE20936A9200E5A652 /* Frameworks */,
 				3A374EDF20936A9200E5A652 /* Resources */,
 				3AF240372180E237007B280F /* Embed App Extensions */,
-				371E07B03423567062B1850E /* [CP] Copy Pods Resources */,
-				AB12406B1EE6A86E9351863E /* [CP] Embed Pods Frameworks */,
+				7BB8FB98C2949D8229570198 /* [CP] Embed Pods Frameworks */,
+				0DD9C825850CD32CB20C330C /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -558,6 +568,9 @@
 						CreatedOnToolsVersion = 9.3;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+							com.apple.Push = {
 								enabled = 1;
 							};
 						};
@@ -600,7 +613,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		371E07B03423567062B1850E /* [CP] Copy Pods Resources */ = {
+		0DD9C825850CD32CB20C330C /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -648,7 +661,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		AB12406B1EE6A86E9351863E /* [CP] Embed Pods Frameworks */ = {
+		7BB8FB98C2949D8229570198 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -705,7 +718,6 @@
 				3AF785E221319D2200DD5A5B /* ImageCollectionRLM.m in Sources */,
 				3A9CE745221C879700A4CB98 /* SettingsRLM.m in Sources */,
 				3A224CCF209A178700075457 /* ToolBoxNSO.m in Sources */,
-				3A9F73AC20A36A1D00D61666 /* PaymentDataEntryVC.m in Sources */,
 				3A6349432129C61500BE53FC /* ActivityImageCell.m in Sources */,
 				3AB915EC20CD972F001A08A9 /* ImagePickerVC.m in Sources */,
 				3A374EF420936A9600E5A652 /* main.m in Sources */,
@@ -714,7 +726,6 @@
 				3A224CAC2094736200075457 /* SearchResultListCell.m in Sources */,
 				3AAB60C520FCFEA600A22047 /* NearbyPoiNSO.m in Sources */,
 				3A3075DE21220446007D53C9 /* HCSStarRatingView.m in Sources */,
-				3A082776211B4EBE00363BB7 /* CurrencyPickerVC.m in Sources */,
 				3AF785DF21319C8C00DD5A5B /* PoiRLM.m in Sources */,
 				3A224CC92097950600075457 /* ActivityDataEntryVC.m in Sources */,
 				3A374F1E2093939400E5A652 /* LocatorVC.m in Sources */,
@@ -723,9 +734,11 @@
 				3AB915F220CDB3E5001A08A9 /* ImageNSO.m in Sources */,
 				3A273B95214CD95E00E3793E /* PaymentRLM.m in Sources */,
 				3A0BDE34217E299D006A746E /* TextFieldDatePicker.m in Sources */,
+				3A97DCA92250FBE400B64D7C /* TTTAttributedLabel.m in Sources */,
 				3AB915F520D1917B001A08A9 /* WikiVC.m in Sources */,
 				3A58B4C0211F534E00699008 /* TypeCell.m in Sources */,
 				3AB915EF20CD9BE4001A08A9 /* ImageCollectionCell.m in Sources */,
+				3A97DCA62250A66100B64D7C /* CustomCollectionView.m in Sources */,
 				3AEE018F20A0B05700AE260E /* AnnotationMK.m in Sources */,
 				3A046D512224621200EA26A9 /* DocumentsVC.m in Sources */,
 				3AAB60C220FCFCE800A22047 /* NearbyPoiCell.m in Sources */,
@@ -743,7 +756,9 @@
 				3A374F212093D55500E5A652 /* PoiDataEntryVC.m in Sources */,
 				3A224CB42095E13600075457 /* ProjectNSO.m in Sources */,
 				3AAF154820A8AD9800F8DE0C /* InfoVC.m in Sources */,
+				3A523F622242CAD60073305D /* PoiPreviewVC.m in Sources */,
 				3A0BDE37217E4EDD006A746E /* OptionButton.m in Sources */,
+				3A7397B0225A183800781004 /* ExpenseDataEntryVC.m in Sources */,
 				3A374EE620936A9300E5A652 /* AppDelegate.m in Sources */,
 				3AEE018B209F3BC700AE260E /* DirectionsVC.m in Sources */,
 				3A81B50C209D90CA005CABDA /* AlphaView.m in Sources */,

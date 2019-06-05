@@ -12,6 +12,7 @@
 #import "PoiNSO.h"
 #import "PoiListCell.h"
 #import "ActivityDataEntryVC.h"
+#import "PoiDataEntryVC.h"
 #import "ProjectNSO.h"
 #import "LocatorVC.h"
 #import "NearbyListingVC.h"

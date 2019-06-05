@@ -20,7 +20,7 @@ CGFloat ProjectListFooterFilterHeightConstant;
 
 /*
  created date:      29/04/2018
- last modified:     29/08/2018
+ last modified:     29/03/2019
  remarks:
  */
 - (void)viewDidLoad {
@@ -29,49 +29,44 @@ CGFloat ProjectListFooterFilterHeightConstant;
     
     self.editmode = true;
     
+    if (![ToolBoxNSO HasTopNotch]) {
+        self.HeaderViewHeightConstraint.constant = 70.0f;
+    }
+    
     /* user selected specific option from startup view */
-
     __weak typeof(self) weakSelf = self;
     self.notification = [self.realm addNotificationBlock:^(NSString *note, RLMRealm *realm) {
         [weakSelf LoadSupportingData];
         [weakSelf.CollectionViewProjects reloadData];
     }];
-    
-    self.ImageCollection = [[NSMutableArray alloc] init];
-    
     [self LoadSupportingData];
-    
     ProjectListFooterFilterHeightConstant = self.FooterWithSegmentConstraint.constant;
-    
-    
 }
 
 
 /*
  created date:      29/04/2018
- last modified:     20/10/2018
+ last modified:     29/03/2019
  remarks:
  */
 -(void) LoadSupportingData {
-    /* 1. Get Images from file. */
+
     self.tripcollection = [TripRLM allObjects];
+    self.ImageCollection = [[NSMutableArray alloc] init];
 
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *imagesDirectory = [paths objectAtIndex:0];
+    
     for (TripRLM *trip in self.tripcollection) {
-        
         ImageCollectionRLM *image = [trip.images firstObject];
         NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",image.ImageFileReference]];
         NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
         if (pngData!=nil) {
-            //image.Image = [UIImage imageWithData:pngData];
             [self.ImageCollection addObject:[UIImage imageWithData:pngData]];
         } else {
-            
             UIImage *dummy = [[UIImage alloc] init];
             [self.ImageCollection addObject:dummy];
         }
-        
     }
 }
 
@@ -87,7 +82,7 @@ CGFloat ProjectListFooterFilterHeightConstant;
 
 /*
  created date:      29/04/2018
- last modified:     03/03/2019
+ last modified:     10/04/2019
  remarks:
  */
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -95,6 +90,7 @@ CGFloat ProjectListFooterFilterHeightConstant;
     ProjectListCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"projectCellId" forIndexPath:indexPath];
     
     NSInteger NumberOfItems = self.tripcollection.count + 1;
+   
     if (indexPath.row == NumberOfItems -1) {
         cell.ImageViewProject.image = [UIImage imageNamed:@"AddItem"];
         [cell.ImageViewProject setTintColor: [UIColor colorWithRed:255.0f/255.0f green:91.0f/255.0f blue:73.0f/255.0f alpha:1.0]];
@@ -103,7 +99,7 @@ CGFloat ProjectListFooterFilterHeightConstant;
         cell.ImageConstraint = [cell.ImageConstraint updateMultiplier:0.6];
         // TODO ISSUES!!!
     } else {
-        TripRLM *trip = [self.tripcollection objectAtIndex:indexPath.row];
+        cell.trip = [self.tripcollection objectAtIndex:indexPath.row];
         
         UIImage *image = [self.ImageCollection objectAtIndex:indexPath.row];
         
@@ -113,9 +109,9 @@ CGFloat ProjectListFooterFilterHeightConstant;
             cell.ImageViewProject.image = image;
         }
 
-        cell.LabelProjectName.text = trip.name;
         
-        if (trip.startdt != nil) {
+        
+        if (cell.trip.startdt != nil) {
             NSDateFormatter *dtformatter = [[NSDateFormatter alloc] init];
             [dtformatter setDateFormat:@"EEE, dd MMM HH:mm"];
         } 
@@ -131,6 +127,15 @@ CGFloat ProjectListFooterFilterHeightConstant;
             cell.VisualEffectsViewBlur.hidden = true;
         }
         cell.ImageConstraint = [cell.ImageConstraint updateMultiplier:0.995];
+
+        //UIFont *font = [UIFont fontWithName:@"AmericanTypewriter" size:17.0];
+        UIFont *font = [UIFont systemFontOfSize:22.0];
+        //NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+        //paragraphStyle.paragraphSpacing = 0.5 * font.lineHeight;
+        NSDictionary *attributes = @{NSBackgroundColorAttributeName:[UIColor colorWithRed:35.0f/255.0f green:35.0f/255.0f blue:35.0f/255.0f alpha:1.0], NSForegroundColorAttributeName:[UIColor whiteColor], NSFontAttributeName:font};
+        NSAttributedString *string = [[NSAttributedString alloc] initWithString:cell.trip.name attributes:attributes];
+        cell.LabelProjectName.attributedText = string;
+
         
     }
     return cell;
@@ -139,7 +144,7 @@ CGFloat ProjectListFooterFilterHeightConstant;
 
 /*
  created date:      29/04/2018
- last modified:     29/04/2018
+ last modified:     30/03/2019
  remarks:
  */
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -150,6 +155,10 @@ CGFloat ProjectListFooterFilterHeightConstant;
         /* insert new project item */
         [self performSegueWithIdentifier:@"ShowNewProject" sender:nil];
     } else {
+        ProjectListCell *cell = (ProjectListCell *)[self.CollectionViewProjects cellForItemAtIndexPath:indexPath];
+
+        [cell.ActivityIndicatorView startAnimating];
+        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate date]];
         /* we select project and go onto it's activities! */
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         ActivityListVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ActivityListViewController"];
@@ -160,7 +169,8 @@ CGFloat ProjectListFooterFilterHeightConstant;
         NSLog(@"startdt = %@",controller.Trip.startdt);
         [controller setModalPresentationStyle:UIModalPresentationFullScreen];
         [self presentViewController:controller animated:YES completion:nil];
-        
+
+        [cell.ActivityIndicatorView stopAnimating];
     }
 }
 
@@ -268,26 +278,10 @@ CGFloat ProjectListFooterFilterHeightConstant;
             }
          }
         controller.newitem = false;
-        controller.deleteitem = false;
 
-        
     } else if([segue.identifier isEqualToString:@"ShowDeleteProject"]){
-        ProjectDataEntryVC *controller = (ProjectDataEntryVC *)segue.destinationViewController;
-        controller.delegate = self;
-        if ([sender isKindOfClass: [UIButton class]]) {
-            UIView * cellView=(UIView*)sender;
-            while ((cellView= [cellView superview])) {
-                if([cellView isKindOfClass:[ProjectListCell class]]) {
-                    ProjectListCell *cell = (ProjectListCell*)cellView;
-                    NSIndexPath *indexPath = [self.CollectionViewProjects indexPathForCell:cell];
-                    controller.Trip = [self.tripcollection objectAtIndex:indexPath.row];
-                }
-            }
-        }
-        controller.realm = self.realm;
-        controller.newitem = false;
-        controller.deleteitem = true;
-
+        [self DeleteTrip:sender];
+        
     } else if([segue.identifier isEqualToString:@"ShowNewProject"]){
         ProjectDataEntryVC *controller = (ProjectDataEntryVC *)segue.destinationViewController;
         controller.delegate = self;
@@ -295,7 +289,6 @@ CGFloat ProjectListFooterFilterHeightConstant;
         controller.Trip = [[TripRLM alloc] init];
         controller.Project = [[ProjectNSO alloc] init];
         controller.newitem = true;
-        controller.deleteitem = false;
     }
 }
 /*
@@ -307,6 +300,7 @@ CGFloat ProjectListFooterFilterHeightConstant;
     //NSLog(@"%@",[NSNumber numberWithInteger:self.SegmentFilterProjects.selectedSegmentIndex]);
     [self FilterProjectCollectionView];
 }
+
 /*
  created date:      24/06/2018
  last modified:     20/10/2018
@@ -345,7 +339,6 @@ CGFloat ProjectListFooterFilterHeightConstant;
     [self.CollectionViewProjects reloadData];
 }
 
-
 /*
  created date:      07/10/2018
  last modified:     07/10/2018
@@ -364,6 +357,85 @@ CGFloat ProjectListFooterFilterHeightConstant;
     return [[NSString alloc] initWithBytes:bytes
                                     length:countryCode.length *sizeof(wchar_t)
                                   encoding:NSUTF32LittleEndianStringEncoding];
+}
+
+/*
+ created date:      30/03/2019
+ last modified:     30/03/2019
+ remarks:
+ */
+-(void)DeleteTrip: (id)sender {
+    
+    TripRLM *TripToDelete = [[TripRLM alloc] init];
+    if ([sender isKindOfClass: [UIButton class]]) {
+        UIView * cellView=(UIView*)sender;
+        while ((cellView= [cellView superview])) {
+            if([cellView isKindOfClass:[ProjectListCell class]]) {
+                ProjectListCell *cell = (ProjectListCell*)cellView;
+                TripToDelete = cell.trip;
+            }
+        }
+    }
+    
+    if (TripToDelete!=nil) {
+        UIAlertController* alert = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"Delete Trip\n%@", TripToDelete.name ] message:@"Are you sure you want to remove complete trip and all activities?"
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {
+                                                                  
+                                                                  dispatch_async(dispatch_get_main_queue(), ^{
+                                                                      
+                                                                      /* locate all activities */
+                                                                      RLMResults <ActivityRLM*> *activities = [ActivityRLM objectsWhere:@"tripkey=%@",self.Trip.key];
+                                                                      
+                                                                      /* remove any notifications attached */
+                                                                      for (ActivityRLM* activity in activities) {
+                                                                          [self RemoveGeoNotification :true :activity];
+                                                                          [self RemoveGeoNotification :false :activity];
+                                                                      }
+                                                                      
+                                                                      /* delete actvities */
+                                                                      [self.realm transactionWithBlock:^{
+                                                                          [self.realm deleteObjects:activities];
+                                                                      }];
+                                                                      
+                                                                      /* finally delete trip */
+                                                                      [self.realm transactionWithBlock:^{
+                                                                          [self.realm deleteObject:TripToDelete];
+                                                                      }];
+                                                                      
+                                                                  });
+                                                              }];
+        
+        UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Canel" style:UIAlertActionStyleDefault
+                                                             handler:^(UIAlertAction * action) {
+                                                                 // do nothing..
+                                                                 
+                                                             }];
+        
+        [alert addAction:defaultAction];
+        [alert addAction:cancelAction];
+        [self presentViewController:alert animated:YES completion:nil];
+    }
+}
+
+/*
+ created date:      30/03/2019
+ last modified:     30/03/2019
+ remarks:
+ */
+-(void) RemoveGeoNotification :(bool) NotifyOnEntry :(ActivityRLM*) activity {
+    NSString *identifier;
+    
+    if (NotifyOnEntry) {
+        identifier = [NSString stringWithFormat:@"CHECKIN~%@", activity.compondkey];
+    } else {
+        identifier = [NSString stringWithFormat:@"CHECKOUT~%@", activity.compondkey];
+    }
+    
+    NSArray *pendingNotification = [NSArray arrayWithObjects:identifier, nil];
+    [AppDelegateDef.UserNotificationCenter removePendingNotificationRequestsWithIdentifiers:pendingNotification];
 }
 
 @end

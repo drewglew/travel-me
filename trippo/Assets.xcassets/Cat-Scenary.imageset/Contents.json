@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "scenary-100x100-1.png",
+      "filename" : "cat-landscape-101.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "scenary-100x100-2.png",
+      "filename" : "cat-landscape-100.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "scenary-100x100.png",
+      "filename" : "cat-landscape-102.png",
       "scale" : "3x"
     }
   ],

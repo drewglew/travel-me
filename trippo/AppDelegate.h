@@ -10,9 +10,9 @@
 #import "ImageCollectionRLM.h"
 #import "ToolBoxNSO.h"
 #import "AttachmentRLM.h"
+@import UserNotifications;
 
-
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate>
 #define AppDelegateDef ((AppDelegate *)[[UIApplication sharedApplication] delegate])
 @property (strong, nonatomic) UIWindow *window;
 @property (nonatomic) NSString *databasename;
@@ -20,11 +20,11 @@
 @property (nonatomic) NSString *HomeCountryCode;
 @property (nonatomic) NSString *MeasurementSystem;
 @property (assign) bool MetricSystem;
-@property (assign) bool HasTopNotch;
 @property (strong, nonatomic) NSMutableArray *poiitems;
 @property (strong, nonatomic) NSMutableDictionary *PoiBackgroundImageDictionary;
 @property (strong, nonatomic) NSMutableDictionary *CountryDictionary;
 @property (strong, nonatomic) NSString *twitterConsumerKey;
 @property (strong, nonatomic) NSString *twitterSecretKey;
+@property (strong, nonatomic) UNUserNotificationCenter *UserNotificationCenter;
 @end
 

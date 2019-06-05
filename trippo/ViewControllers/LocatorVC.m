@@ -468,6 +468,10 @@ MKLocalSearchResponse *results;
         controller.PointOfInterest.wikititle = @"";
         controller.readonlyitem = false;
         controller.fromproject = self.fromproject;
+        if (self.fromproject) {
+            controller.TripItem = self.TripItem;
+            controller.ActivityItem = self.ActivityItem;
+        }
         controller.fromnearby = false;
     } else if([segue.identifier isEqualToString:@"ShowPoiWithoutMapData"]){
         PoiDataEntryVC *controller = (PoiDataEntryVC *)segue.destinationViewController;

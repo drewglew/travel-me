@@ -57,21 +57,54 @@
             }
         }
     }
+    
+    self.UserNotificationCenter = [UNUserNotificationCenter currentNotificationCenter];
+    
+    self.UserNotificationCenter.delegate = self;
+    
+    UNAuthorizationOptions options = UNAuthorizationOptionAlert + UNAuthorizationOptionSound;
 
-    // determine if iPhone has a top notch (iPhoneX etc) or not.
-    self.HasTopNotch = NO;
-    if (@available(iOS 11.0, *)) {
-        UIWindow *mainWindow = [[[UIApplication sharedApplication] delegate] window];
-        if (mainWindow.safeAreaInsets.top > 24.0) {
-            self.HasTopNotch = YES;
-        }
-    }
-
+    UNNotificationAction *checkinAction = [UNNotificationAction actionWithIdentifier:@"CheckIn" title:@"Check In" options:UNNotificationActionOptionNone];
+    
+    UNNotificationAction *checkoutAction = [UNNotificationAction actionWithIdentifier:@"CheckOut" title:@"Check Out" options:UNNotificationActionOptionNone];
+    
+    UNNotificationAction *deleteAction = [UNNotificationAction actionWithIdentifier:@"Dismiss"
+                                                                              title:@"Dismiss" options:UNNotificationActionOptionDestructive];
+    
+    UNNotificationAction *IgnoreAction = [UNNotificationAction actionWithIdentifier:@"Ignore"
+                                                                              title:@"Ignore" options:UNNotificationActionOptionNone ];
+    
+    
+    
+    
+    UNNotificationCategory *checkinCategory = [UNNotificationCategory categoryWithIdentifier:@"CheckInCategory"
+                                                                              actions:@[checkinAction,IgnoreAction,deleteAction] intentIdentifiers:@[]
+                                                                              options:UNNotificationCategoryOptionNone];
+    
+    UNNotificationCategory *checkoutCategory = [UNNotificationCategory categoryWithIdentifier:@"CheckOutCategory"
+                                                                                     actions:@[checkoutAction,IgnoreAction, deleteAction] intentIdentifiers:@[]
+                                                                                     options:UNNotificationCategoryOptionNone];
+    
+    NSSet *categories = [NSSet setWithObjects:checkinCategory, checkoutCategory, nil];
+    
+    [self.UserNotificationCenter setNotificationCategories:categories];
+    
+    
+    
+    [self.UserNotificationCenter requestAuthorizationWithOptions:options
+                          completionHandler:^(BOOL granted, NSError * _Nullable error) {
+                              if (!granted) {
+                                  NSLog(@"Something went wrong");
+                              }
+                          }];
+    
+    
+    
     /*
      Migration block - to use if we change the model..
     */
     RLMRealmConfiguration *config = [RLMRealmConfiguration defaultConfiguration];
-    config.schemaVersion = 1;
+    config.schemaVersion = 4;
     config.migrationBlock = ^(RLMMigration *migration, uint64_t oldSchemaVersion) { };
     [RLMRealmConfiguration setDefaultConfiguration:config];
     
@@ -477,6 +510,161 @@
     return ImportedFile;
 }
 
+
+
+
+-(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler{
+    
+    //Called when a notification is delivered to a foreground app.
+    NSLog(@"willPresentNotification > Userinfo %@",notification.request.content.userInfo);
+    completionHandler(UNNotificationPresentationOptionAlert);
+}
+
+
+/*
+ created date:      24/03/2019
+ last modified:     24/04/2019
+ remarks:           Have plugged in Poi.
+ */
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+didReceiveNotificationResponse:(UNNotificationResponse *)response
+         withCompletionHandler:(void (^)(void))completionHandler {
+    
+    //Called to let your app know which action was selected by the user for a given notification.
+    
+    NSLog(@"didReceiveNotificationResponse > Userinfo %@",response.notification.request.content.userInfo);
+    
+    if ([response.actionIdentifier isEqualToString:UNNotificationDefaultActionIdentifier ]) {
+    
+        
+        
+    } else if ([response.actionIdentifier isEqualToString:@"CheckIn"]) {
+        
+        RLMRealm *realm = [RLMRealm defaultRealm];
+        
+        NSString *CompondKey  = [response.notification.request.identifier stringByReplacingOccurrencesOfString:@"CHECKIN~" withString:@""];
+        ActivityRLM *plannedactivity = [ActivityRLM objectForPrimaryKey: CompondKey];
+        NSString *ActualCompondKey  = [CompondKey stringByReplacingOccurrencesOfString:@"~0" withString:@"~1"];
+        ActivityRLM *actualactivity = [ActivityRLM objectForPrimaryKey: ActualCompondKey];
+        
+        if (plannedactivity != nil && actualactivity == nil) {
+
+            ActivityRLM *actualactivity = [[ActivityRLM alloc] init];
+            actualactivity.key = plannedactivity.key;
+            actualactivity.state = [NSNumber numberWithInt:1];
+            actualactivity.compondkey = [NSString stringWithFormat:@"%@~1",plannedactivity.key];
+            actualactivity.name = plannedactivity.name;
+            actualactivity.tripkey = plannedactivity.tripkey;
+            actualactivity.poikey = plannedactivity.poikey;
+            actualactivity.poi = plannedactivity.poi;
+            actualactivity.createddt = [NSDate date];
+            actualactivity.modifieddt = [NSDate date];
+            actualactivity.startdt = response.notification.date;
+            actualactivity.enddt = response.notification.date;
+            actualactivity.privatenotes = [NSString stringWithFormat:@"Actual activity auto-generated from notification centre"];
+            actualactivity.IncludeInTweet = plannedactivity.IncludeInTweet;
+            actualactivity.geonotification = plannedactivity.geonotification;
+            actualactivity.geonotifycheckout = plannedactivity.geonotifycheckout;
+            actualactivity.geonotifycheckindt = plannedactivity.geonotifycheckindt;
+            actualactivity.geonotifycheckoutdt = plannedactivity.geonotifycheckoutdt;
+            [realm beginWriteTransaction];
+            [realm addObject:actualactivity];
+            
+            /* we need to remove the previous check out on the planned activity as it now resides on the actual one */
+            if (plannedactivity.geonotifycheckoutdt != nil) {
+                plannedactivity.geonotifycheckoutdt = nil;
+                NSString *CompondKeyForCheckOut  = [response.notification.request.identifier stringByReplacingOccurrencesOfString:@"CHECKIN~" withString:@"CHECKOUT~"];
+                NSArray *activityNotification = [NSArray arrayWithObjects:CompondKeyForCheckOut, nil];
+                [self.UserNotificationCenter removePendingNotificationRequestsWithIdentifiers:activityNotification];
+                [self.UserNotificationCenter removeDeliveredNotificationsWithIdentifiers:activityNotification];
+            }
+
+            [realm commitWriteTransaction];
+            
+        } else if (actualactivity != nil) {
+            // the actual activity has been either created by the check out notification or manually by the user in the App
+            [realm beginWriteTransaction];
+            actualactivity.modifieddt = [NSDate date];
+            actualactivity.startdt = response.notification.date;
+            actualactivity.privatenotes = [NSString stringWithFormat:@"%@\nActual activity updated from checkin notification", actualactivity.privatenotes];
+            actualactivity.geonotification = 0;
+            [realm commitWriteTransaction];
+        } else {
+            NSLog(@"Error, Cannot locate the item from notification!");
+        }
+
+        /* remove pending notification */
+        NSString *identifier = response.notification.request.identifier;
+        
+        NSArray *activityNotification = [NSArray arrayWithObjects:identifier, nil];
+        [self.UserNotificationCenter removePendingNotificationRequestsWithIdentifiers:activityNotification];
+        [self.UserNotificationCenter removeDeliveredNotificationsWithIdentifiers:activityNotification];
+
+        
+    } else if ([response.actionIdentifier isEqualToString:@"CheckOut"]) {
+
+        RLMRealm *realm = [RLMRealm defaultRealm];
+
+        NSString *CompondKey  = [response.notification.request.identifier stringByReplacingOccurrencesOfString:@"CHECKOUT~" withString:@""];
+        ActivityRLM *plannedactivity = [ActivityRLM objectForPrimaryKey: CompondKey];
+        NSString *ActualCompondKey  = [CompondKey stringByReplacingOccurrencesOfString:@"~0" withString:@"~1"];
+        ActivityRLM *actualactivity = [ActivityRLM objectForPrimaryKey: ActualCompondKey];
+
+        if (plannedactivity != nil && actualactivity == nil) {
+         
+            ActivityRLM *actualactivity = [[ActivityRLM alloc] init];
+            actualactivity.key = plannedactivity.key;
+            actualactivity.state = [NSNumber numberWithInt:1];
+            actualactivity.compondkey = [NSString stringWithFormat:@"%@~1",plannedactivity.key];
+            actualactivity.name = plannedactivity.name;
+            actualactivity.tripkey = plannedactivity.tripkey;
+            actualactivity.poikey = plannedactivity.poikey;
+            actualactivity.poi = plannedactivity.poi;
+            actualactivity.createddt = [NSDate date];
+            actualactivity.modifieddt = [NSDate date];
+            actualactivity.startdt = response.notification.date;
+            actualactivity.enddt = response.notification.date;
+            actualactivity.privatenotes = [NSString stringWithFormat:@"Actual activity auto-generated from notification centre"];
+            actualactivity.IncludeInTweet = plannedactivity.IncludeInTweet;
+            actualactivity.geonotification = plannedactivity.geonotification;
+            actualactivity.geonotifycheckout = plannedactivity.geonotifycheckout;
+            actualactivity.geonotifycheckindt = plannedactivity.geonotifycheckindt;
+            actualactivity.geonotifycheckoutdt = plannedactivity.geonotifycheckoutdt;
+
+            [realm beginWriteTransaction];
+            [realm addObject:actualactivity];
+            [realm commitWriteTransaction];
+            
+         } else if (actualactivity != nil) {
+         
+            [realm beginWriteTransaction];
+            actualactivity.modifieddt = [NSDate date];
+            actualactivity.enddt = response.notification.date;
+            actualactivity.privatenotes = [NSString stringWithFormat:@"%@\nActual activity updated from checkout notification", actualactivity.privatenotes];
+            actualactivity.geonotification = 0;
+            [realm commitWriteTransaction];
+            /* remove pending notification */
+         } else {
+             NSLog(@"Error, Cannot locate the item from notification on check out!");
+         }
+        
+        /* remove pending notification */
+        NSString *identifier = response.notification.request.identifier;
+        NSArray *activityNotification = [NSArray arrayWithObjects:identifier, nil];
+        [self.UserNotificationCenter removePendingNotificationRequestsWithIdentifiers:activityNotification];
+        [self.UserNotificationCenter removeDeliveredNotificationsWithIdentifiers:activityNotification];
+    
+    } else if ([response.actionIdentifier isEqualToString:@"Ignore"]) {
+        NSLog(@"Skip the thing!  Userinfo %@",response.notification.request.content.userInfo);
+        
+    } else if ([response.actionIdentifier isEqualToString:@"Dismiss"]) {
+        NSLog(@"Remove the thing!  Userinfo %@",response.notification.request.content.userInfo);
+        NSString *identifier = response.notification.request.identifier;
+        NSArray *activityNotification = [NSArray arrayWithObjects:identifier, nil];
+        [self.UserNotificationCenter removePendingNotificationRequestsWithIdentifiers:activityNotification];
+        [self.UserNotificationCenter removeDeliveredNotificationsWithIdentifiers:activityNotification];
+    }
+}
 
 
 @end

@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "skiing-100x100.png",
+      "filename" : "cat-skiing-100.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "skiing-100x100-1.png",
+      "filename" : "cat-skiing-101.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "skiing-100x100-2.png",
+      "filename" : "cat-skiing-102.png",
       "scale" : "3x"
     }
   ],

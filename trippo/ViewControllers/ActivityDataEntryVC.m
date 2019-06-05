@@ -21,10 +21,11 @@ int DocumentListingViewPresentedHeight = 250;
 
 /*
  created date:      01/05/2018
- last modified:     21/02/2019
+ last modified:     30/03/2019
  remarks:
  */
 - (void)viewDidLoad {
+    
     [super viewDidLoad];
     
     if (self.Activity.state == [NSNumber  numberWithInteger:0]) {
@@ -45,15 +46,11 @@ int DocumentListingViewPresentedHeight = 250;
     self.TextFieldName.layer.masksToBounds=YES;
     self.TextFieldName.layer.borderColor=[[UIColor clearColor] CGColor];
     self.TextFieldName.layer.borderWidth= 1.0f;
-    
-    self.TextFieldReference.layer.cornerRadius=8.0f;
-    self.TextFieldReference.layer.borderColor=[[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]CGColor];
-    self.TextFieldReference.layer.borderWidth = 2.0f;
 
     self.TextViewNotes.layer.cornerRadius=8.0f;
     self.TextViewNotes.layer.masksToBounds=YES;
     self.TextViewNotes.layer.borderColor=[[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]CGColor];
-    self.TextViewNotes.layer.borderWidth= 2.0f;
+    self.TextViewNotes.layer.borderWidth= 1.0f;
     
     self.ViewSelectedKey.layer.cornerRadius=28;
     self.ViewSelectedKey.layer.masksToBounds=YES;
@@ -61,60 +58,13 @@ int DocumentListingViewPresentedHeight = 250;
     self.ViewTrash.layer.cornerRadius=28;
     self.ViewTrash.layer.masksToBounds=YES;
     
-    self.TypeDistanceItems  = @[
-                                @40, // accomodation 0
-                                @500, // airport 1
-                                @20000, // astronaut 2
-                                @50, // beer 3
-                                @50, // bicyle 4
-                                @300, //bridge 5
-                                @100, // car hire 6
-                                @500, // casino 7
-                                @200, // church 8
-                                @2000, // city 9
-                                @250, // club 10
-                                @250, // concert 11
-                                @50, // food and drink 12
-                                @400, // historic, 13
-                                @20, // house, 14
-                                @500, // lake, 15
-                                @250, // lighthouse, 16
-                                @10000, // metropolis, 17
-                                @10000, // misc, 18
-                                @1000, // monument, 19
-                                @1000, // museum, 20
-                                @10000, // nature, 21
-                                @250, // office, 22
-                                @150, // restuarnat, 23
-                                @5000, // scenary, 24
-                                @5000, // coast, 25
-                                @1000, // ship, 26
-                                @250, // shopping, 27
-                                @5000, // skiing, 28
-                                @250, // sports, 29
-                                @150, // theatre, 30
-                                @500, // theme park, 31
-                                @150, // train, 32
-                                @10000, // trekking, 33
-                                @150, // venue, 34
-                                @1000, // village 35
-                                @1000, // zoo, 36
-                                @250, // car park, 37
-                                @100, // fuel pump, 38
-                                @150 // school, 39
-                                ];
-    
     NSDate *defaultStartDt = [NSDate date];
     NSDate *defaultEndDt = [NSDate date];
     
     NSDate *today = [NSDate date];
     if (self.deleteitem) {
         UIImage *btnImage = [UIImage imageNamed:@"TrashCan"];
-        
-        
-    
         [self.ButtonAction setImage:btnImage forState:UIControlStateNormal];
-        //[self.ButtonAction setBackgroundColor:[UIColor colorWithRed:251.0f/255.0f green:13.0f/255.0f blue:68.0f/255.0f alpha:1.0]];
         [self.ButtonAction setTitle:@"" forState:UIControlStateNormal];
         
         [self LoadActivityData];
@@ -149,8 +99,25 @@ int DocumentListingViewPresentedHeight = 250;
         [self.ButtonAction setTitle:@"Update" forState:UIControlStateNormal];
         [self LoadActivityData];
         self.CollectionViewActivityImages.scrollEnabled = true;
+        if ([self.Activity.geonotification intValue]==0) {
+            [self.SwitchCheckInNotification setOn:false];
+        } else {
+            [self.SwitchCheckInNotification setOn:true];
+        }
+        self.SwitchCheckInNotification.enabled = false;
         
-        // HERE
+        if ([self.Activity.geonotifycheckout intValue]==0) {
+            [self.SwitchCheckOutNotification setOn:false];
+        } else {
+            [self.SwitchCheckOutNotification setOn:true];
+        }
+        if (self.Activity.geonotifycheckoutdt != nil) {
+            
+            self.SwitchCheckOutNotification.enabled = true;
+        } else {
+            self.SwitchCheckOutNotification.enabled = false;
+        }
+
         defaultStartDt = self.Activity.startdt;
         defaultEndDt = self.Activity.enddt;
         
@@ -159,9 +126,7 @@ int DocumentListingViewPresentedHeight = 250;
 
         
     } else if (self.newitem) {
-        
-        NSLog(@"StartDt = %@ and EndDt = %@", self.Trip.startdt, self.Trip.enddt);
-        
+
         self.TextFieldName.text = self.Poi.name;
         
         if (self.Activity.startdt==nil) {
@@ -173,7 +138,15 @@ int DocumentListingViewPresentedHeight = 250;
                 self.Activity.enddt = [NSDate date];
             }
         }
+        [self.SwitchCheckInNotification setOn:false];
+        [self.SwitchCheckOutNotification setOn:false];
         
+        [self.SwitchTweet setOn:false];
+
+        if (self.Activity.state==[NSNumber numberWithInteger:1]) {
+            self.SwitchCheckInNotification.enabled = false;
+            self.SwitchCheckOutNotification.enabled = false;
+        }
         [self LoadPoiData];
     }
     [self addDoneToolBarToKeyboard:self.TextViewNotes];
@@ -224,11 +197,8 @@ int DocumentListingViewPresentedHeight = 250;
     } else {
          [self.datePickerEnd setDate:self.Activity.enddt];
     }
-    
-   
-    
+
     [self.datePickerEnd addTarget:self action:@selector(onDatePickerEndValueChanged:) forControlEvents:UIControlEventValueChanged];
-    
     
     /* add toolbar control for 'Done' option */
     UIToolbar *toolBar=[[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
@@ -244,7 +214,6 @@ int DocumentListingViewPresentedHeight = 250;
     
     /* extend features on the input view of the text field for end dt */
     self.TextFieldEndDt.inputView = self.datePickerEnd;
-    
     
     NSDateFormatter *dateformatter = [[NSDateFormatter alloc] init];
     [dateformatter setDateFormat:@"EEE, dd MMM yyyy"];
@@ -264,6 +233,18 @@ int DocumentListingViewPresentedHeight = 250;
         }
     }
     
+    UIImage *image = self.ImageTwitterSetting.image;
+    
+    [self setGeoNotifyButton :self.ButtonSetCheckInNotify :true];
+    [self setGeoNotifyButton :self.ButtonSetCheckOutNotify :false];
+    
+    
+    self.ImageTwitterSetting.image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [self.ImageTwitterSetting setTintColor:[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]];
+    image = self.ImageNotificationSetting.image;
+    self.ImageNotificationSetting.image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [self.ImageNotificationSetting setTintColor:[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]];
+
     [self.TextFieldEndDt setInputAccessoryView:toolBar];
     self.TableViewAttachments.rowHeight = 60.0f;
     //self.WebViewPreview.scrollView.delegate = self;
@@ -288,7 +269,6 @@ int DocumentListingViewPresentedHeight = 250;
 -(void)LoadDocuments {
     self.DocumentDictionary = [[NSMutableDictionary alloc] init];
     for (AttachmentRLM *attachmentobject in self.Activity.attachments) {
-        //NSString *dataFilePath = [fileDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/PdfImportedDocs/%@",attachmentobject.filename]];
         [self.DocumentDictionary setObject:attachmentobject forKey:attachmentobject.key];
     }
 }
@@ -306,8 +286,8 @@ int DocumentListingViewPresentedHeight = 250;
 
 /*
  created date:      01/05/2018
- last modified:     17/03/2019
- remarks: Load the activity data received from the views 
+ last modified:     23/03/2019
+ remarks:           create a thumbnail image if it doesn't exist.
  */
 -(void) LoadActivityData {
     /* set text data */
@@ -319,6 +299,36 @@ int DocumentListingViewPresentedHeight = 250;
         [self.SwitchTweet setOn:false];
     } else {
         [self.SwitchTweet setOn:true];
+    }
+    
+    if ([self.Activity.geonotification intValue] == 0) {
+        [self.SwitchCheckInNotification setOn:false];
+    } else {
+        [self.SwitchCheckInNotification setOn:true];
+    }
+    if ([self.Activity.geonotifycheckout intValue] == 0) {
+        [self.SwitchCheckOutNotification setOn:false];
+    } else {
+        [self.SwitchCheckOutNotification setOn:true];
+    }
+    
+    // HERE we need to also add extra
+    if (self.Activity.state==[NSNumber numberWithInteger:1]) {
+        self.SwitchCheckInNotification.enabled = false;
+    }
+    
+    if (self.Activity.geonotifycheckindt != nil) {
+         self.SwitchCheckInNotification.enabled = false;
+         self.LabelCheckInDt.text =  [NSString stringWithFormat:@"Notification setup on %@",[ToolBoxNSO FormatPrettyDate:self.Activity.geonotifycheckindt]];
+    } else {
+        self.LabelCheckInDt.text = @"Not Used";
+    }
+    
+    if (self.Activity.geonotifycheckoutdt != nil) {
+        self.SwitchCheckOutNotification.enabled = false;
+        self.LabelCheckOutDt.text = [NSString stringWithFormat:@"Notification setup on %@",[ToolBoxNSO FormatPrettyDate:self.Activity.geonotifycheckoutdt]];
+    } else {
+        self.LabelCheckOutDt.text = @"Not Used";
     }
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -352,13 +362,8 @@ int DocumentListingViewPresentedHeight = 250;
         
         ImageIndex ++;
     }
-    
-    
     [self LoadPoiData];
 }
-
-
-
 
 /*
  created date:      01/05/2018
@@ -378,7 +383,7 @@ int DocumentListingViewPresentedHeight = 250;
     
     anno.coordinate = coord;
 
-    NSNumber *radius = [self.TypeDistanceItems objectAtIndex:[self.Poi.categoryid unsignedLongValue]];
+    NSNumber *radius = self.Poi.radius;
     
     [self.PoiMapView setCenterCoordinate:coord animated:YES];
     
@@ -420,14 +425,22 @@ int DocumentListingViewPresentedHeight = 250;
     
 }
 
-
+/*
+ created date:      14/07/2018
+ last modified:     28/03/2019
+ remarks: this method handles the map circle that is placed as overlay onto map
+ */
 - (MKOverlayRenderer *) mapView:(MKMapView *)mapView rendererForOverlay:(id)overlay {
     if([overlay isKindOfClass:[MKCircle class]])
     {
         MKCircleRenderer* aRenderer = [[MKCircleRenderer
                                         alloc]initWithCircle:(MKCircle *)overlay];
-        aRenderer.strokeColor = [[UIColor orangeColor] colorWithAlphaComponent:0.9];
-        aRenderer.lineWidth = 1;
+        
+        
+        
+        aRenderer.strokeColor = [UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0];
+        aRenderer.lineWidth = 2;
+        aRenderer.fillColor = [UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:0.25];
         return aRenderer;
     }
     else
@@ -435,6 +448,8 @@ int DocumentListingViewPresentedHeight = 250;
         return nil;
     }
 }
+
+
 
 /*
  created date:      01/05/2018
@@ -459,14 +474,15 @@ int DocumentListingViewPresentedHeight = 250;
         return;
     }
     
-    /* delete and finish oof */
+    /* delete and finish off */
     if (self.deleteitem) {
         [self.realm transactionWithBlock:^{
             [self.realm deleteObject:[ActivityRLM objectForPrimaryKey:self.Activity.compondkey]];
+            
+            
         }];
         [self dismissViewControllerAnimated:YES completion:Nil];
-        return;
-    }
+    } else {
     
     /*
     if user does not enter any dates, the dates stored match the project dates entered.
@@ -506,105 +522,105 @@ int DocumentListingViewPresentedHeight = 250;
     */
     
     
-    NSDate *startdt = self.datePickerStart.date;
-    NSDate *enddt = self.datePickerEnd.date;
+        NSDate *startdt = self.datePickerStart.date;
+        NSDate *enddt = self.datePickerEnd.date;
 
-    /* validate against the Trip */
-    bool AdjustTripStartDt = false;
-    bool AdjustTripEndDt = false;
+        /* validate against the Trip */
+        bool AdjustTripStartDt = false;
+        bool AdjustTripEndDt = false;
 
-    if (self.Activity.state == 0) {
-        NSComparisonResult resulttripstartdt = [startdt compare:self.Trip.startdt];
-        NSComparisonResult resulttripenddt = [enddt compare:self.Trip.enddt];
+        if (self.Activity.state == 0) {
+            NSComparisonResult resulttripstartdt = [startdt compare:self.Trip.startdt];
+            NSComparisonResult resulttripenddt = [enddt compare:self.Trip.enddt];
 
-        if (resulttripstartdt == NSOrderedDescending) {
-            AdjustTripStartDt = true;
-        }
-        if (resulttripenddt == NSOrderedAscending) {
-            AdjustTripEndDt = true;
-        }
-    }
-
-    RLMResults <ActivityRLM*> *activities = [ActivityRLM objectsWhere:@"tripkey=%@ and state=%@",self.Trip.key, self.Activity.state];
-
-    if (activities.count==0) {
-        [self UpdateActivityRealmData];
-    } else {
-        
-        NSString *AlertMessage = [[NSString alloc] init];
-
-        bool ErrorInCurrentItem = false;
-        for (ActivityRLM* activity in activities) {
-            
-            /* we do not want to waste comparing activity against itself */
-            if (![self.Activity.key isEqualToString:activity.key]) {
-                NSDate *activitystartdt = activity.startdt;
-                NSDate *activityenddt = activity.enddt;
-                
-                NSComparisonResult resultactivitystartdtstartdt = [activitystartdt compare:startdt];
-                NSComparisonResult resultactivitystartdtenddt = [activitystartdt compare:enddt];
-                NSComparisonResult resultactivityenddtstartdt = [activityenddt compare:startdt];
-                NSComparisonResult resultactivityenddtenddt = [activityenddt compare:enddt];
-                
-                //whats bad??
-                if ((resultactivitystartdtstartdt == NSOrderedAscending && resultactivitystartdtenddt == NSOrderedDescending && resultactivityenddtenddt == NSOrderedDescending) ||
-                    (resultactivityenddtstartdt == NSOrderedDescending && resultactivityenddtenddt == NSOrderedAscending && resultactivitystartdtstartdt ==  NSOrderedAscending)) {
-                    ErrorInCurrentItem = true;
-                    NSString *prettystartdt = [ToolBoxNSO FormatPrettyDate :activity.startdt];
-                    NSString *prettyenddt = [ToolBoxNSO FormatPrettyDate :activity.enddt];
-                    AlertMessage = [NSString stringWithFormat:@"This activity must be contained within the date range %@ and %@ found in activity %@ or outside these bounds.  Please modify and correct before updating.", prettystartdt, prettyenddt, activity.name];
-                    break;
-                }
+            if (resulttripstartdt == NSOrderedDescending) {
+                AdjustTripStartDt = true;
+            }
+            if (resulttripenddt == NSOrderedAscending) {
+                AdjustTripEndDt = true;
             }
         }
-        if (ErrorInCurrentItem) {
+
+        RLMResults <ActivityRLM*> *activities = [ActivityRLM objectsWhere:@"tripkey=%@ and state=%@",self.Trip.key, self.Activity.state];
+
+        if (activities.count==0) {
+            [self UpdateActivityRealmData];
+        } else {
             
-            UIAlertController * alert = [UIAlertController
-                                         alertControllerWithTitle:@"Error in date range"
-                                         message:AlertMessage
-                                         preferredStyle:UIAlertControllerStyleAlert];
-            
-            UIAlertAction* okButton = [UIAlertAction
-                                       actionWithTitle:@"Ok"
-                                       style:UIAlertActionStyleDefault
-                                       handler:^(UIAlertAction * action) {
-                                           
-                                       }];
-            
-            [alert addAction:okButton];
-            [self presentViewController:alert animated:YES completion:nil];
-            
-        } else  {
-            /* only perform this batch update if no errors have occurred beforehand & we are working on planned activities */
-            if (self.Activity.state==0) {
-                for (ActivityRLM* activity in activities) {
-                    /* we do not want to waste comparing activity against itself */
-                    if (![self.Activity.key isEqualToString:activity.key]) {
-                        NSDate *activitystartdt = activity.startdt;
-                        NSDate *activityenddt = activity.enddt;
-                        /* organize planned draft items to match expected modification to Trip  */
-                        if (AdjustTripStartDt || AdjustTripEndDt) {
-                            NSComparisonResult resultoriginalstartdt = [self.Trip.startdt compare:activitystartdt];
-                            NSComparisonResult resultoriginalenddt = [self.Trip.enddt compare:activityenddt];
-                            if (resultoriginalstartdt == NSOrderedSame && resultoriginalenddt == NSOrderedSame) {
-                                [activity.realm beginWriteTransaction];
-                                activity.startdt = startdt;
-                                activity.enddt = enddt;
-                                [activity.realm commitWriteTransaction];
+            NSString *AlertMessage = [[NSString alloc] init];
+
+            bool ErrorInCurrentItem = false;
+            for (ActivityRLM* activity in activities) {
+                
+                /* we do not want to waste comparing activity against itself */
+                if (![self.Activity.key isEqualToString:activity.key]) {
+                    NSDate *activitystartdt = activity.startdt;
+                    NSDate *activityenddt = activity.enddt;
+                    
+                    NSComparisonResult resultactivitystartdtstartdt = [activitystartdt compare:startdt];
+                    NSComparisonResult resultactivitystartdtenddt = [activitystartdt compare:enddt];
+                    NSComparisonResult resultactivityenddtstartdt = [activityenddt compare:startdt];
+                    NSComparisonResult resultactivityenddtenddt = [activityenddt compare:enddt];
+                    
+                    //whats bad??
+                    if ((resultactivitystartdtstartdt == NSOrderedAscending && resultactivitystartdtenddt == NSOrderedDescending && resultactivityenddtenddt == NSOrderedDescending) ||
+                        (resultactivityenddtstartdt == NSOrderedDescending && resultactivityenddtenddt == NSOrderedAscending && resultactivitystartdtstartdt ==  NSOrderedAscending)) {
+                        ErrorInCurrentItem = true;
+                        NSString *prettystartdt = [ToolBoxNSO FormatPrettyDate :activity.startdt];
+                        NSString *prettyenddt = [ToolBoxNSO FormatPrettyDate :activity.enddt];
+                        AlertMessage = [NSString stringWithFormat:@"This activity must be contained within the date range %@ and %@ found in activity %@ or outside these bounds.  Please modify and correct before updating.", prettystartdt, prettyenddt, activity.name];
+                        break;
+                    }
+                }
+            }
+            if (ErrorInCurrentItem) {
+                
+                UIAlertController * alert = [UIAlertController
+                                             alertControllerWithTitle:@"Error in date range"
+                                             message:AlertMessage
+                                             preferredStyle:UIAlertControllerStyleAlert];
+                
+                UIAlertAction* okButton = [UIAlertAction
+                                           actionWithTitle:@"Ok"
+                                           style:UIAlertActionStyleDefault
+                                           handler:^(UIAlertAction * action) {
+                                               
+                                           }];
+                
+                [alert addAction:okButton];
+                [self presentViewController:alert animated:YES completion:nil];
+                
+            } else  {
+                /* only perform this batch update if no errors have occurred beforehand & we are working on planned activities */
+                if (self.Activity.state==0) {
+                    for (ActivityRLM* activity in activities) {
+                        /* we do not want to waste comparing activity against itself */
+                        if (![self.Activity.key isEqualToString:activity.key]) {
+                            NSDate *activitystartdt = activity.startdt;
+                            NSDate *activityenddt = activity.enddt;
+                            /* organize planned draft items to match expected modification to Trip  */
+                            if (AdjustTripStartDt || AdjustTripEndDt) {
+                                NSComparisonResult resultoriginalstartdt = [self.Trip.startdt compare:activitystartdt];
+                                NSComparisonResult resultoriginalenddt = [self.Trip.enddt compare:activityenddt];
+                                if (resultoriginalstartdt == NSOrderedSame && resultoriginalenddt == NSOrderedSame) {
+                                    [activity.realm beginWriteTransaction];
+                                    activity.startdt = startdt;
+                                    activity.enddt = enddt;
+                                    [activity.realm commitWriteTransaction];
+                                }
                             }
                         }
                     }
                 }
+                [self UpdateActivityRealmData];
             }
-            [self UpdateActivityRealmData];
         }
     }
 }
 
-
 /*
  created date:      21/02/2019
- last modified:     17/03/2019
+ last modified:     25/03/2019
  remarks:           TODO - add switch control item for Tweet
  */
 - (void)UpdateActivityRealmData
@@ -623,7 +639,7 @@ int DocumentListingViewPresentedHeight = 250;
         self.Activity.startdt = self.datePickerStart.date;
         self.Activity.enddt = self.datePickerEnd.date;
         
-        if ([self.SwitchTweet isSelected]) {
+        if ([self.SwitchTweet isOn]) {
             self.Activity.IncludeInTweet = [NSNumber numberWithInt:1];
         } else {
             self.Activity.IncludeInTweet = [NSNumber numberWithInt:0];
@@ -631,6 +647,20 @@ int DocumentListingViewPresentedHeight = 250;
 
         if (self.newitem) self.Activity.key = [[NSUUID UUID] UUIDString];
         self.Activity.compondkey = [NSString stringWithFormat:@"%@~%@",self.Activity.key,self.Activity.state];
+        
+        if ([self.SwitchCheckInNotification isOn]) {
+            // we have only just switched this on.
+            [self InitGeoNotification:@"CheckInCategory" :true :[NSString stringWithFormat: @"Arrived at location you planned to arrive at %@", [ToolBoxNSO FormatPrettyDate :self.Activity.startdt]]];
+            self.Activity.geonotification = [NSNumber numberWithInt:1];
+            self.Activity.geonotifycheckindt = [NSDate date];
+        }
+        
+        if ([self.SwitchCheckOutNotification isOn]) {
+            // we have only just switched this on.
+            [self InitGeoNotification:@"CheckOutCategory" :false :[NSString stringWithFormat: @"Departed location you planned to leave at %@", [ToolBoxNSO FormatPrettyDate :self.Activity.enddt]]];
+            self.Activity.geonotifycheckout = [NSNumber numberWithInt:1];
+            self.Activity.geonotifycheckoutdt = [NSDate date];
+        }
         
         if (self.Activity.images.count > 0) {
 
@@ -657,14 +687,8 @@ int DocumentListingViewPresentedHeight = 250;
         [self.realm beginWriteTransaction];
         [self.realm addObject:self.Activity];
         [self.realm commitWriteTransaction];
-        
-        [delegate didUpdateActivityImages:true];
-        
-        if (self.newitem) {
-            [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
-        } else {
-            [self dismissViewControllerAnimated:YES completion:Nil];
-        }
+        [self dismissModalStack];
+
     } else {
         [self.Activity.realm beginWriteTransaction];
         self.Activity.name = self.TextFieldName.text;
@@ -680,7 +704,20 @@ int DocumentListingViewPresentedHeight = 250;
         } else {
             self.Activity.IncludeInTweet = [NSNumber numberWithInt:0];
         }
+ 
+        if ([self.SwitchCheckInNotification isOn]) {
+            // we have only just switched this on.
+            [self InitGeoNotification:@"CheckInCategory" :true :[NSString stringWithFormat: @"Arrived at location you planned to arrive at %@", [ToolBoxNSO FormatPrettyDate :self.Activity.startdt]]];
+            self.Activity.geonotification = [NSNumber numberWithInt:1];
+            self.Activity.geonotifycheckindt = [NSDate date];
+        }
         
+        if ([self.SwitchCheckOutNotification isOn]) {
+            // we have only just switched this on.
+            [self InitGeoNotification:@"CheckOutCategory" :false :[NSString stringWithFormat: @"Departed location you planned to leave at %@", [ToolBoxNSO FormatPrettyDate :self.Activity.enddt]]];
+            self.Activity.geonotifycheckout = [NSNumber numberWithInt:1];
+            self.Activity.geonotifycheckoutdt = [NSDate date];
+        } 
         
         if (self.Activity.images.count>0) {
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -731,9 +768,8 @@ int DocumentListingViewPresentedHeight = 250;
             }
         }
         [self.Activity.realm commitWriteTransaction];
-        [self dismissViewControllerAnimated:YES completion:Nil];
+        [self dismissModalStack];
     }
-
 }
 
 
@@ -804,8 +840,7 @@ int DocumentListingViewPresentedHeight = 250;
 
         NSURL *targetURL = [NSURL fileURLWithPath:PdfDataFilePath];
         NSData *data = [NSData dataWithContentsOfURL:targetURL];
-        
-        
+
         [self.WebViewPreview loadData:data MIMEType:@"application/pdf" characterEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@""]];
         
     }
@@ -819,28 +854,22 @@ int DocumentListingViewPresentedHeight = 250;
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     // rows in section 0 should not be selectable
     if ( indexPath.row ==  self.Activity.attachments.count) return nil;
-    
     return indexPath;
 }
 
 /*
  created date:      03/05/2018
- last modified:     09/10/2018
+ last modified:     20/03/2019
  remarks:           segue controls .
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     
-    if([segue.identifier isEqualToString:@"ShowPoiDetail"]){
-        PoiDataEntryVC *controller = (PoiDataEntryVC *)segue.destinationViewController;
+    if([segue.identifier isEqualToString:@"ShowPoiPreview"]){
+        PoiPreviewVC *controller = (PoiPreviewVC *)segue.destinationViewController;
         controller.delegate = self;
-        //PoiRLM *poiobject = [PoiRLM objectForPrimaryKey:self.Activity.poikey];
         controller.PointOfInterest = self.Poi;
-        controller.newitem = false;
-        controller.readonlyitem = true;
-        controller.fromproject = false;
-    }
-    
-    else if ([segue.identifier isEqualToString:@"ShowDocuments"]){
+        controller.headerImage = self.ImageViewPoi.image;
+    } else if ([segue.identifier isEqualToString:@"ShowDocuments"]){
         DocumentsVC *controller = (DocumentsVC *)segue.destinationViewController;
         controller.delegate = self;
         controller.Activity = self.Activity;
@@ -862,8 +891,6 @@ int DocumentListingViewPresentedHeight = 250;
                 } else {
                     controller.headerImage = [UIImage imageNamed:@"Activity"];
                 }
-                
-                
             }
         }
         /* here we add something new */
@@ -908,7 +935,22 @@ int DocumentListingViewPresentedHeight = 250;
             [self.realm commitWriteTransaction];
         }
     }
-    [self dismissViewControllerAnimated:YES completion:Nil];
+    [self dismissModalStack];
+}
+
+/*
+ created date:      19/03/2019
+ last modified:     19/03/2019
+ remarks:
+ */
+-(void)dismissModalStack {
+    UIViewController *vc = self.presentingViewController;
+    NSString *strClass = NSStringFromClass([vc class]);
+    while (![strClass isEqualToString:@"ActivityListVC"]) {
+        vc = vc.presentingViewController;
+        strClass = NSStringFromClass([vc class]);
+    }
+    [vc dismissViewControllerAnimated:YES completion:NULL];
 }
 
 /*
@@ -937,11 +979,9 @@ int DocumentListingViewPresentedHeight = 250;
    return [NSString stringWithFormat:@"%@ %@",[dateformatter stringFromDate:Dt], [timeformatter stringFromDate:Dt]];
 }
 
-
-
 /*
  created date:      13/05/2018
- last modified:     21/10/2018
+ last modified:     20/03/2019
  remarks:
  */
 - (IBAction)CheckInOutPressed:(id)sender {
@@ -962,18 +1002,23 @@ int DocumentListingViewPresentedHeight = 250;
 
         [self.delegate didUpdateActivityImages :true];
         // double dismissing so we flow back to the activity window bypassing the search..
+        [self dismissModalStack];
+        /*
         if (self.newitem) {
-            [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+            [self dismissModalStack];
+            //[self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
         } else {
             [self dismissViewControllerAnimated:YES completion:Nil];
         }
+         */
         
     } else {
         [self.realm beginWriteTransaction];
         self.Activity.enddt = today;
         [self.realm commitWriteTransaction];
         [self.delegate didUpdateActivityImages :true];
-        [self dismissViewControllerAnimated:YES completion:Nil];
+        //[self dismissViewControllerAnimated:YES completion:Nil];
+        [self dismissModalStack];
     }
 }
 
@@ -1000,8 +1045,6 @@ int DocumentListingViewPresentedHeight = 250;
     self.TextViewNotes = textView;
 }
 
-
-
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
      self.TextFieldName.backgroundColor = [UIColor whiteColor];
     return YES;
@@ -1015,12 +1058,12 @@ int DocumentListingViewPresentedHeight = 250;
 -(void)doneButtonClickedDismissKeyboard
 {
     [self.TextViewNotes resignFirstResponder];
-    self.ConstraintBottomNotes.constant = 60;
+    self.ConstraintBottomNotes.constant = 100;
 }
 
 /*
  created date:      13/05/2018
- last modified:     24/02/2019
+ last modified:     26/03/2019
  remarks:
  */
 - (IBAction)SegmentPresenterChanged:(id)sender {
@@ -1030,28 +1073,31 @@ int DocumentListingViewPresentedHeight = 250;
         self.ViewNotes.hidden = true;
         self.ViewPhotos.hidden = true;
         self.ViewDocuments.hidden = true;
+        self.ViewSettings.hidden = true;
         self.ButtonScan.hidden = true;
         self.ButtonUploadImage.hidden = true;
         self.ButtonPayment.hidden = false;
         self.ButtonDirections.hidden = false;
-        
         self.SwitchViewPhotoOptions.hidden = true;
+        
     } else if ([self.SegmentPresenter selectedSegmentIndex] == 1) {
         self.ViewMain.hidden = true;
         self.ViewNotes.hidden = false;
         self.ViewPhotos.hidden = true;
         self.ViewDocuments.hidden = true;
+        self.ViewSettings.hidden = true;
         self.ButtonScan.hidden = false;
         self.ButtonUploadImage.hidden = true;
         self.ButtonPayment.hidden = true;
         self.ButtonDirections.hidden = true;
-        
         self.SwitchViewPhotoOptions.hidden = true;
+        
     } else if ([self.SegmentPresenter selectedSegmentIndex] == 2) {
         self.ViewMain.hidden = true;
         self.ViewNotes.hidden = true;
         self.ViewPhotos.hidden = false;
         self.ViewDocuments.hidden = true;
+        self.ViewSettings.hidden = true;
         self.ButtonScan.hidden = true;
         self.ButtonUploadImage.hidden = false;
         self.ButtonPayment.hidden = true;
@@ -1062,19 +1108,34 @@ int DocumentListingViewPresentedHeight = 250;
         self.ViewMain.hidden = true;
         self.ViewNotes.hidden = true;
         self.ViewDocuments.hidden = false;
+        self.ViewSettings.hidden = true;
         self.ViewPhotos.hidden = true;
-        self.ButtonScan.hidden = false;
+        self.ButtonScan.hidden = true;
         self.ButtonUploadImage.hidden = true;
         self.ButtonPayment.hidden = true;
         self.ButtonDirections.hidden = true;
+        self.SwitchViewPhotoOptions.hidden = true;
+        
+    } else if ([self.SegmentPresenter selectedSegmentIndex] == 4) {
+        self.ViewMain.hidden = true;
+        self.ViewNotes.hidden = true;
+        self.ViewDocuments.hidden = true;
+        self.ViewSettings.hidden = false;
+        self.ViewPhotos.hidden = true;
+        self.ButtonScan.hidden = true;
+        self.ButtonUploadImage.hidden = false;
+        self.ButtonPayment.hidden = true;
+        self.ButtonDirections.hidden = true;
+        self.SwitchViewPhotoOptions.hidden = true;
     }
+    
 }
 
 
 
 /*
  created date:      19/08/2018
- last modified:     01/09/2018
+ last modified:     30/03/2019
  remarks:
  */
 -(void)InsertActivityImage {
@@ -1154,7 +1215,7 @@ int DocumentListingViewPresentedHeight = 250;
                                                                          
                                                                          controller.PointOfInterest = copiedpoi;
                                                                          
-                                                                         controller.distance = [self.TypeDistanceItems objectAtIndex:[self.Poi.categoryid longValue]];
+                                                                         controller.distance = self.Poi.radius;
                                                                          
                                                                          controller.wikiimages = false;
                                                                          
@@ -1180,7 +1241,7 @@ int DocumentListingViewPresentedHeight = 250;
                                                                   copiedpoi.wikititle = self.Poi.wikititle;
                                                                   controller.PointOfInterest = copiedpoi;
                                                                   
-                                                                  controller.distance = [self.TypeDistanceItems objectAtIndex:[self.Poi.categoryid longValue]];
+                                                                  controller.distance = self.Poi.radius;
                                                                   
                                                                   controller.wikiimages = true;
                                                                   
@@ -1748,15 +1809,10 @@ int DocumentListingViewPresentedHeight = 250;
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"startdt < %@", self.Activity.startdt];
     
     RLMResults *filteredActivities = [ActivitiesInTrip objectsWithPredicate:predicate];
-    
-    //RLMSortDescriptor *sort = [RLMSortDescriptor sortDescriptorWithKeyPath:@"startdt" ascending:YES];
-    
-    
-    
+
     filteredActivities = [filteredActivities sortedResultsUsingDescriptors:@[
                                                                              [RLMSortDescriptor sortDescriptorWithKeyPath:@"startdt" ascending:NO]]];
-                          
-    //[filteredActivities sortedResultsUsingDescriptors:[NSArray arrayWithObject:sort]];
+
     
     int MaxList = 8;
     if (filteredActivities.count < MaxList) {
@@ -1830,10 +1886,6 @@ int DocumentListingViewPresentedHeight = 250;
  last modified:     03/03/2019
  remarks:
  */
-
-
-
-
 - (void)onDatePickerStartValueChanged:(UIDatePicker *)datePicker
 {
     self.TextFieldStartDt.text = [self FormatPrettyDate:datePicker.date];
@@ -1878,7 +1930,6 @@ int DocumentListingViewPresentedHeight = 250;
         case NSOrderedSame: NSLog(@"%@ is the same as %@", self.datePickerStart.date, datePicker.date); break;
         default: NSLog(@"erorr dates %@, %@", self.datePickerStart.date, datePicker.date); break;
     }
-    //self.LabelDuration.text = [ToolBoxNSO PrettyDateDifference:self.datePickerStart.date :datePicker.date :@""];
 }
 
 
@@ -1891,10 +1942,6 @@ int DocumentListingViewPresentedHeight = 250;
     NSLog(@"Button cancelled Pressed!");
     [[self.view.subviews objectAtIndex:(self.view.subviews.count - 1)]removeFromSuperview];
 }
-
-
-
-
 
 -(void)doneButtonClickedDismissDatePicker
 {
@@ -1920,7 +1967,6 @@ int DocumentListingViewPresentedHeight = 250;
     self.ConstraintBottomNotes.constant = keyboardRect.size.height - 132;
     
     [self.TextViewNotes scrollRangeToVisible:self.TextViewNotes.selectedRange];
-   // [self.TextViewNotes setNeedsDisplay];
 }
 
 /*
@@ -1968,6 +2014,182 @@ int DocumentListingViewPresentedHeight = 250;
         }];
     }
 }
+
+/*
+ created date:      25/03/2019
+ last modified:     27/03/2019
+ remarks:           Create requested checkin/checkout notification.
+ */
+-(void) InitGeoNotification :(NSString *) CategoryIdentifier :(bool) NotifyOnEntry :(NSString *) Body {
+    
+    UNMutableNotificationContent *content = [UNMutableNotificationContent new];
+    content.title = [NSString stringWithFormat: @"Trippo Activity - %@", self.Activity.name];
+    if (NotifyOnEntry) {
+        content.subtitle = @"Check In";
+    } else {
+        content.subtitle = @"Check Out";
+    }
+    content.body = Body;
+    content.sound = [UNNotificationSound defaultSound];
+    content.categoryIdentifier = CategoryIdentifier;
+    
+    NSString *identifier;
+    
+    if (NotifyOnEntry) {
+        identifier = [NSString stringWithFormat:@"CHECKIN~%@", self.Activity.compondkey];
+    } else {
+        identifier = [NSString stringWithFormat:@"CHECKOUT~%@", self.Activity.compondkey];
+    }
+    
+    NSNumber *radius = self.Poi.radius;
+    if([radius longValue] > 7500) {
+        radius = [NSNumber numberWithBool:7500];
+    }
+
+    CLLocationCoordinate2D center = CLLocationCoordinate2DMake([self.Poi.lat doubleValue], [self.Poi.lon doubleValue]);
+    CLCircularRegion* region = [[CLCircularRegion alloc] initWithCenter:center
+                                                                 radius:[radius longValue] identifier:[NSString stringWithFormat:@"REGION~%@", identifier]];
+    
+    region.notifyOnEntry = NotifyOnEntry;
+    region.notifyOnExit = !NotifyOnEntry;
+    
+    UNLocationNotificationTrigger *locTrigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:YES];
+
+   // UNTimeIntervalNotificationTrigger *timeintervaltrigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:180 repeats:YES];
+    
+
+    
+    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier
+                                                                          content:content trigger:locTrigger];
+    
+    
+    [AppDelegateDef.UserNotificationCenter addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
+        if (error != nil) {
+            NSLog(@"Something went wrong: %@",error);
+        }
+    }];
+}
+
+
+/*
+ created date:      23/03/2019
+ last modified:     25/03/2019
+ remarks:           TODO!
+ */
+-(void) RemoveGeoNotification :(bool) NotifyOnEntry {
+    NSString *identifier;
+    
+    if (NotifyOnEntry) {
+        identifier = [NSString stringWithFormat:@"CHECKIN~%@", self.Activity.compondkey];
+    } else {
+        identifier = [NSString stringWithFormat:@"CHECKOUT~%@", self.Activity.compondkey];
+    }
+    
+    NSArray *pendingNotification = [NSArray arrayWithObjects:identifier, nil];
+    [AppDelegateDef.UserNotificationCenter removePendingNotificationRequestsWithIdentifiers:pendingNotification];
+}
+
+
+
+/*
+ created date:      10/04/2019
+ last modified:     10/04/2019
+ remarks:           TODO!
+ */
+-(void) setGeoNotifyButton :(UIButton*)button :(bool)NotifyOnEntry {
+
+    NSString *ActivityIdentifier;
+
+    if (NotifyOnEntry) {
+        ActivityIdentifier = [NSString stringWithFormat:@"CHECKIN~%@", self.Activity.compondkey];
+    } else {
+        ActivityIdentifier = [NSString stringWithFormat:@"CHECKOUT~%@", self.Activity.compondkey];
+    }
+    [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *requests){
+        
+        NSLog(@"requests: %@", requests);
+        for (UNNotificationRequest *object in requests) {
+            NSString *identifier = object.identifier;
+            
+            if ([ActivityIdentifier isEqualToString:identifier]) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                        button.hidden = false;
+                });
+            }
+            
+        }
+    }];
+}
+
+
+
+/*
+ created date:      10/04/2019
+ last modified:     10/04/2019
+ remarks:           TODO!
+ */
+-(void) setGeoNotifyOff :(id)sender :(NSString*)GeoNotifyType :(bool)NotifyOnEntry {
+    
+    NSString *AlertMessage = [NSString stringWithFormat:@"Are you sure you wish to remove this %@ Notification Alert?", GeoNotifyType];
+    
+    UIAlertController * alertQuestion = [UIAlertController
+                                 alertControllerWithTitle:@"Delete pending Geo Notification"
+                                 message:AlertMessage
+                                 preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction* yesButton = [UIAlertAction
+                               actionWithTitle:@"Yes"
+                               style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction * action) {
+
+                                    NSString *identifier;
+
+                                    if (NotifyOnEntry) {
+                                       identifier = [NSString stringWithFormat:@"CHECKIN~%@", self.Activity.compondkey];
+                                    } else {
+                                       identifier = [NSString stringWithFormat:@"CHECKOUT~%@", self.Activity.compondkey];
+                                    }
+
+                                    NSArray *pendingNotification = [NSArray arrayWithObjects:identifier, nil];
+                                    [AppDelegateDef.UserNotificationCenter removePendingNotificationRequestsWithIdentifiers:pendingNotification];
+
+                                    if ([sender isKindOfClass:[UIButton class]]) {
+                                       UIButton *button=(UIButton*)sender;
+                                       button.hidden = true;
+                                    }
+                               }];
+    
+    UIAlertAction* noButton = [UIAlertAction
+                               actionWithTitle:@"No"
+                               style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction * action) {}];
+    
+    [alertQuestion addAction:yesButton];
+    [alertQuestion addAction:noButton];
+
+    [self presentViewController:alertQuestion animated:YES completion:nil];
+}
+
+
+/*
+ created date:      10/04/2019
+ last modified:     10/04/2019
+ remarks:           TODO!
+ */
+- (IBAction)ButtonSetCheckInNotifyPressed:(id)sender {
+    [self setGeoNotifyOff :sender :@"Check In" :true];
+    
+}
+
+/*
+ created date:      10/04/2019
+ last modified:     10/04/2019
+ remarks:           TODO!
+ */
+- (IBAction)ButtonSetCheckOutNotifyPressed:(id)sender {
+    [self setGeoNotifyOff :sender :@"Check Out" :false];
+}
+
 
 
 @end

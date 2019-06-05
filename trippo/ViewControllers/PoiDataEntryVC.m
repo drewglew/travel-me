@@ -39,6 +39,7 @@ bool CenterSelectedType;
     }
 
     self.PoiImageDictionary = [[NSMutableDictionary alloc] init];
+    
     if (self.newitem && !self.fromnearby) {
         if (![self.PointOfInterest.name isEqualToString:@""]) {
             self.TextFieldTitle.text = self.PointOfInterest.name;
@@ -81,6 +82,7 @@ bool CenterSelectedType;
         /* Text fields and Segment */
         self.TextViewNotes.text = self.PointOfInterest.privatenotes;
         self.TextFieldTitle.text = self.PointOfInterest.name;
+        
     }
     
     self.ImagePicture.frame = CGRectMake(0, 0, self.ScrollViewImage.frame.size.width, self.ScrollViewImage.frame.size.height);
@@ -109,6 +111,13 @@ bool CenterSelectedType;
     self.TextFieldTitle.layer.masksToBounds=YES;
     self.TextFieldTitle.layer.borderColor=[[UIColor clearColor]CGColor];
     self.TextFieldTitle.layer.borderWidth= 1.0f;
+    
+    // Map Distance Picker frame
+    self.ViewDistancePicker.layer.cornerRadius=8.0f;
+    self.ViewDistancePicker.layer.masksToBounds=YES;
+    self.ViewDistancePicker.layer.borderColor=[[UIColor colorWithRed:255.0f/255.0f green:91.0f/255.0f blue:73.0f/255.0f alpha:1.0]CGColor];
+    self.ViewDistancePicker.layer.borderWidth= 2.5f;
+    
     
     self.TextViewNotes.layer.cornerRadius=8.0f;
     self.TextViewNotes.layer.masksToBounds=YES;
@@ -211,7 +220,7 @@ bool CenterSelectedType;
 
 /*
  created date:      28/04/2018
- last modified:     30/01/2019
+ last modified:     28/03/2019
  remarks: TODO - split load existing data into 2 - map data and images.
  */
 -(void)viewDidAppear:(BOOL)animated {
@@ -229,7 +238,7 @@ bool CenterSelectedType;
 
 /*
  created date:      11/06/2018
- last modified:     05/10/2018
+ last modified:     28/03/2019
  remarks:
  */
 -(void) LoadCategoryData {
@@ -237,16 +246,26 @@ bool CenterSelectedType;
     self.TypeItems = @[@"Cat-Accomodation",
                        @"Cat-Airport",
                        @"Cat-Astronaut",
+                       @"Cat-Bakery",
                        @"Cat-Beer",
                        @"Cat-Bike",
                        @"Cat-Bridge",
                        @"Cat-CarHire",
+                       @"Cat-CarPark",
                        @"Cat-Casino",
+                       @"Cat-Cave",
                        @"Cat-Church",
+                       @"Cat-Cinema",
                        @"Cat-City",
+                       @"Cat-CityPark",
+                       @"Cat-Climbing",
                        @"Cat-Club",
+                       @"Cat-Sea",
                        @"Cat-Concert",
                        @"Cat-FoodWine",
+                       @"Cat-Football",
+                       @"Cat-Forest",
+                       @"Cat-Golf",
                        @"Cat-Historic",
                        @"Cat-House",
                        @"Cat-Lake",
@@ -255,123 +274,247 @@ bool CenterSelectedType;
                        @"Cat-Misc",
                        @"Cat-Monument",
                        @"Cat-Museum",
+                       @"Cat-NationalPark",
                        @"Cat-Nature",
                        @"Cat-Office",
+                       @"Cat-PetrolStation",
+                       @"Cat-Photography",
                        @"Cat-Restaurant",
+                       @"Cat-River",
+                       @"Cat-Rugby",
+                       @"Cat-Safari",
                        @"Cat-Scenary",
-                       @"Cat-Sea",
+                       @"Cat-School",
                        @"Cat-Ship",
                        @"Cat-Shopping",
                        @"Cat-Ski",
                        @"Cat-Sports",
+                       @"Cat-Swimming",
+                       @"Cat-Tennis",
                        @"Cat-Theatre",
                        @"Cat-ThemePark",
+                       @"Cat-Tower",
                        @"Cat-Train",
                        @"Cat-Trek",
                        @"Cat-Venue",
                        @"Cat-Village",
-                       @"Cat-Zoo",
-                       @"Cat-CarPark",
-                       @"Cat-PetrolStation",
-                       @"Cat-School"
+                       @"Cat-Windmill",
+                       @"Cat-Zoo"
                        ];
     
     self.TypeLabelItems  = @[
                              @"Accomodation",
                              @"Airport",
                              @"Astronaut",
+                             @"Bakery",
                              @"Beer",
                              @"Bicycle",
                              @"Bridge",
                              @"Car Hire",
+                             @"Car Park",
                              @"Casino",
+                             @"Cave",
                              @"Church",
+                             @"Cinema",
                              @"City",
+                             @"CityPark",
+                             @"Climbing",
                              @"Club",
+                             @"Coast",
                              @"Concert",
                              @"Food and Wine",
+                             @"Football",
+                             @"Forest",
+                             @"Golf",
                              @"Historic",
-                             @"House",
+                             @"Home",
                              @"Lake",
                              @"Lighthouse",
                              @"Metropolis",
                              @"Miscellaneous",
                              @"Monument/Statue",
                              @"Museum",
+                             @"National Park",
                              @"Nature",
                              @"Office",
+                             @"Petrol Station",
+                             @"Photography",
                              @"Restaurant",
-                             @"Scenery",
-                             @"Coast",
+                             @"River",
+                             @"Rugby",
+                             @"Safari",
+                             @"Scenary",
+                             @"School",
                              @"Ship",
                              @"Shopping",
                              @"Skiing",
-                             @"Sports",
+                             @"Sports/Exercise",
+                             @"Swimming",
+                             @"Tennis",
                              @"Theatre",
                              @"Theme Park",
+                             @"Tower",
                              @"Train",
                              @"Trekking",
                              @"Venue",
                              @"Village",
-                             @"Zoo",
-                             @"Car Park",
-                             @"Fuel Station",
-                             @"Education"
+                             @"Windmill",
+                             @"Zoo"
                              ];
     
     self.TypeDistanceItems  = @[
-                             @40, // accomodation 0
-                             @500, // airport 1
-                             @20000, // astronaut 2
-                             @50, // beer 3
-                             @50, // bicyle 4
-                             @300, //bridge 5
-                             @100, // car hire 6
-                             @500, // casino 7
-                             @200, // church 8
-                             @2000, // city 9
-                             @250, // club 10
-                             @250, // concert 11
-                             @50, // food and drink 12
-                             @400, // historic, 13
-                             @20, // house, 14
-                             @500, // lake, 15
-                             @250, // lighthouse, 16
-                             @10000, // metropolis, 17
-                             @10000, // misc, 18
-                             @1000, // monument, 19
-                             @1000, // museum, 20
-                             @10000, // nature, 21
-                             @250, // office, 22
-                             @150, // restuarnat, 23
-                             @5000, // scenary, 24
-                             @5000, // coast, 25
-                             @1000, // ship, 26
-                             @250, // shopping, 27
-                             @5000, // skiing, 28
-                             @250, // sports, 29
-                             @150, // theatre, 30
-                             @500, // theme park, 31
-                             @150, // train, 32
-                             @10000, // trekking, 33
-                             @150, // venue, 34
-                             @1000, // village 35
-                             @1000, // zoo, 36
-                             @250, // car park, 37
-                             @100, // fuel pump, 38
-                             @150 // school, 39
+                                @40,// @“Accomodation", = 0
+                                @500, // @"Airport", = 1
+                                @20000, // @"Astronaut", = 2
+                                @40, // @"Bakery”, = 3
+                                @50, // @"Beer", = 4
+                                @50, // @“Bicycle”, = 5
+                                @150, // @"Bridge", = 6
+                                @100, // @"Car Hire", = 7
+                                @100, // @“Car Park", = 8
+                                @200, // @"Casino", = 9
+                                @250, // @"Cave", = 10
+                                @250, // @"Church", = 11
+                                @250, // @"Cinema", = 12
+                                @2000, // @"City", = 13
+                                @5000, // @"CityPark", = 14
+                                @1000, // @"Climbing", = 15
+                                @250, // @"Club", = 16
+                                @5000, // @"Coast”, = 17
+                                @300, // @"Concert", = 18
+                                @50, // @"Food and Wine", = 19
+                                @1000, // @"Football", = 20
+                                @5000, // @"Forest", = 21
+                                @5000, // @"Golf", = 22
+                                @500, // @"Historic", = 23
+                                @20, // @"Home”, = 24
+                                @500, // @"Lake", = 25
+                                @200, // @"Lighthouse", = 26
+                                @10000, // @"Metropolis", = 27
+                                @10000, // @"Miscellaneous”, = 28
+                                @1000, // @"Monument/Statue“, = 29
+                                @1000, // @"Museum", = 30
+                                @10000, // @"National Park", = 31
+                                @10000, // @"Nature", = 32
+                                @250, // @"Office", = 33
+                                @100, // @"Petrol Station", = 34
+                                @10000, // @"Photography", = 35
+                                @150, // @"Restaurant", = 36
+                                @1500, // @"River", = 37
+                                @1000, // @"Rugby", = 38
+                                @10000, // @"Safari", = 39
+                                @5000, // @"Scenery", = 40
+                                @150, // @"School", = 41
+                                @1000, // @"Ship", = 42
+                                @250, // @"Shopping", = 43
+                                @5000, // @"Skiing”, = 44
+                                @250, // @"Sports/Exercise“, = 45
+                                @250, // @"Swimming", = 46
+                                @250, // @"Tennis", = 47
+                                @150, // @"Theatre", = 48
+                                @500, // @"Theme Park", = 49
+                                @1000, // @"Tower", = 50
+                                @150, // @"Train", = 51
+                                @10000, // @"Trekking”, = 52
+                                @250, // @"Venue", = 53
+                                @1000, // @"Village", = 54
+                                @1000, // @"Windmill", = 55
+                                @1000 // @"Zoo", = 56
                              ];
 
     self.LabelPoi.text = [self GetPoiLabelWithType:self.PointOfInterest.categoryid];
     
-    if (self.newitem) {
-        self.PointOfInterest.categoryid = [NSNumber numberWithLong:0];
+    
+    
+    
+    self.DistancePickerItems = @[@"10",@"20",@"30",@"40",@"50",@"60",@"70",@"80",@"90",@"100",@"125",@"150",@"175",@"200",@"225",@"250",@"275",@"300",@"325",@"350",@"375",@"400",@"425",@"450",@"475",@"500",@"600",@"700",@"800",@"900",@"1000",@"1250",@"1500",@"1750",@"2000",@"2500",@"3000",@"3500",@"4000",@"4500",@"5000",@"6000",@"7000",@"8000",@"9000",@"10000",@"20000"];
+    
+    self.PickerDistance.delegate = self;
+    self.PickerDistance.dataSource = self;
+    
+    if (self.newitem || self.PointOfInterest.radius == nil) {
+        
+        if (self.newitem) {
+            self.PointOfInterest.categoryid = [NSNumber numberWithLong:0];
+        }
+        NSString *distanceFromTypeSelected = [NSString stringWithFormat:@"%@",[self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]]];
+        [self.PickerDistance selectRow:[self.DistancePickerItems indexOfObject: distanceFromTypeSelected] inComponent:0 animated:YES];
+        
+    } else {
+        NSString *distanceFromTypeSelected = [NSString stringWithFormat:@"%@",self.PointOfInterest.radius];
+        [self.PickerDistance selectRow:[self.DistancePickerItems indexOfObject: distanceFromTypeSelected] inComponent:0 animated:YES];
     }
 }
 
 /*
+ created date:      28/03/2019
+ last modified:     28/03/2019
+ remarks:
+ */
+- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
+{
+    return 1;
+}
+
+/*
+ created date:      28/03/2019
+ last modified:     28/03/2019
+ remarks:
+ */
+- (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
+{
+    return self.DistancePickerItems.count;
+}
+
+/*
+ created date:      28/03/2019
+ last modified:     28/03/2019
+ remarks:
+ */
+- (UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(UIView *)view {
+    UILabel *pickerLabel = (UILabel *)view;
+    // Reuse the label if possible, otherwise create and configure a new one
+    if ((pickerLabel == nil) || ([pickerLabel class] != [UILabel class])) { //newlabel
+        CGRect frame = CGRectMake(0.0, 0.0, 270, 32.0);
+        pickerLabel = [[UILabel alloc] initWithFrame:frame];
+        pickerLabel.textAlignment =NSTextAlignmentCenter;
+        pickerLabel.backgroundColor = [UIColor clearColor];
+        pickerLabel.font = [UIFont fontWithName:@"AmericanTypewriter" size:12];
+    }
+    pickerLabel.textColor = [UIColor colorWithRed:255.0f/255.0f green:91.0f/255.0f blue:73.0f/255.0f alpha:1.0];
+    pickerLabel.text = [self.DistancePickerItems objectAtIndex:row];
+    return pickerLabel;
+}
+
+/*
+ created date:      28/03/2019
+ last modified:     28/03/2019
+ remarks:
+ */
+- (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
+    
+    
+    NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+    f.numberStyle = NSNumberFormatterDecimalStyle;
+    NSNumber *radius = [f numberFromString:[self.DistancePickerItems objectAtIndex: row]];
+    
+    CLLocationDistance RadiusAmt = [radius doubleValue];
+    ModifiedCoordinate = CLLocationCoordinate2DMake([self.PointOfInterest.lat doubleValue], [self.PointOfInterest.lon doubleValue]);
+    
+    [self.MapView removeOverlay:self.CircleRange];
+    self.CircleRange = [MKCircle circleWithCenterCoordinate:ModifiedCoordinate radius:RadiusAmt];
+    [self.MapView addOverlay:self.CircleRange];
+    
+    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(ModifiedCoordinate, [radius doubleValue] * 2.1, [radius doubleValue] * 2.1);
+    MKCoordinateRegion adjustedRegion = [self.MapView regionThatFits:viewRegion];
+    [self.MapView setRegion:adjustedRegion animated:YES];
+}
+
+
+
+/*
  created date:      11/06/2018
- last modified:     10/08/2018
+ last modified:     28/03/2019
  remarks:
  */
 -(void) LoadMapData {
@@ -387,9 +530,12 @@ bool CenterSelectedType;
     ModifiedCoordinate = CLLocationCoordinate2DMake([self.PointOfInterest.lat doubleValue], [self.PointOfInterest.lon doubleValue]);
     
     anno.coordinate = ModifiedCoordinate;
-    
-    NSNumber *radius = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
-    
+
+    //NSNumber *radius = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
+    NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+    f.numberStyle = NSNumberFormatterDecimalStyle;
+    NSNumber *radius = [f numberFromString:[self.DistancePickerItems objectAtIndex: [self.PickerDistance selectedRowInComponent:0]]];
+
     [self.MapView setCenterCoordinate:ModifiedCoordinate animated:YES];
     MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(ModifiedCoordinate, [radius doubleValue] * 2.1, [radius doubleValue] * 2.1);
     MKCoordinateRegion adjustedRegion = [self.MapView regionThatFits:viewRegion];
@@ -402,7 +548,7 @@ bool CenterSelectedType;
 
 /*
  created date:      16/03/2019
- last modified:     16/03/2019
+ last modified:     28/03/2019
  remarks: User gestures a long tap, the annotation is placed where the figure is.
  */
 -(void)AddAnnotationToMap:(UILongPressGestureRecognizer *)gesture
@@ -451,7 +597,13 @@ bool CenterSelectedType;
                 self.ButtonMapUpdate.hidden = false;
                 self.ButtonMapRevert.hidden = false;
                 
-                NSNumber *radius = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
+                //NSNumber *radius = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
+                
+                NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+                f.numberStyle = NSNumberFormatterDecimalStyle;
+                NSNumber *radius = [f numberFromString:[self.DistancePickerItems objectAtIndex: [self.PickerDistance selectedRowInComponent:0]]];
+                
+                
                 
                 [self.MapView setCenterCoordinate:anno.coordinate animated:YES];
                 MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(anno.coordinate, [radius doubleValue] * 2.1, [radius doubleValue] * 2.1);
@@ -479,7 +631,7 @@ bool CenterSelectedType;
 
 /*
  created date:      16/03/2019
- last modified:     16/03/2019
+ last modified:     28/03/2019
  remarks:
  */
 - (IBAction)RevertMapButtonPressed:(id)sender {
@@ -491,7 +643,13 @@ bool CenterSelectedType;
     }
     [self LoadMapData];
     
-    NSNumber *radius = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
+    //NSNumber *radius = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
+    
+    NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+    f.numberStyle = NSNumberFormatterDecimalStyle;
+    NSNumber *radius = [f numberFromString:[self.DistancePickerItems objectAtIndex: [self.PickerDistance selectedRowInComponent:0]]];
+    
+    
     CLLocationDistance RadiusAmt = [radius doubleValue];
     ModifiedCoordinate = CLLocationCoordinate2DMake([self.PointOfInterest.lat doubleValue], [self.PointOfInterest.lon doubleValue]);
     
@@ -524,7 +682,7 @@ bool CenterSelectedType;
 
 /*
  created date:      14/07/2018
- last modified:     19/07/2018
+ last modified:     28/03/2019
  remarks: this method handles the map circle that is placed as overlay onto map
  */
 - (MKOverlayRenderer *) mapView:(MKMapView *)mapView rendererForOverlay:(id)overlay {
@@ -532,8 +690,13 @@ bool CenterSelectedType;
     {
         MKCircleRenderer* aRenderer = [[MKCircleRenderer
                                         alloc]initWithCircle:(MKCircle *)overlay];
-        aRenderer.strokeColor = [[UIColor orangeColor] colorWithAlphaComponent:0.9];
+        
+        
+        
+        aRenderer.strokeColor = [UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0];
         aRenderer.lineWidth = 2;
+        aRenderer.fillColor = [UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:0.25];
+                               // colorWithAlphaComponent:0.25]
         return aRenderer;
     }
     else
@@ -632,7 +795,7 @@ bool CenterSelectedType;
 
 /*
  created date:      28/04/2018
- last modified:     17/08/2018
+ last modified:     28/03/2019
  remarks:
  */
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -676,6 +839,10 @@ bool CenterSelectedType;
         if (!self.readonlyitem) {
             [self.realm beginWriteTransaction];
             self.PointOfInterest.categoryid = [NSNumber numberWithLong:indexPath.row];
+            
+            NSString *distanceFromTypeSelected = [NSString stringWithFormat:@"%@",[self.TypeDistanceItems objectAtIndex:indexPath.row]];
+            [self.PickerDistance selectRow:[self.DistancePickerItems indexOfObject: distanceFromTypeSelected] inComponent:0 animated:YES];
+            
             [self.realm commitWriteTransaction];
             self.LabelPoi.text = [NSString stringWithFormat:@"Point Of Interest - %@",[self.TypeLabelItems objectAtIndex:[self.PointOfInterest.categoryid longValue]]];
             [collectionView reloadData];
@@ -797,7 +964,7 @@ bool CenterSelectedType;
                                                                   
                                                                   controller.PointOfInterest = copiedpoi;
                                                                   
-                                                                  controller.distance = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
+                                                                  controller.distance = self.PointOfInterest.radius;
                                                                   
                                                                   controller.wikiimages = false;
                                                                   
@@ -987,11 +1154,6 @@ bool CenterSelectedType;
 
 }
 
-
-
-
-
-
 /*
  created date:      26/09/2018
  last modified:     26/09/2018
@@ -1002,8 +1164,7 @@ bool CenterSelectedType;
     G8Tesseract *tesseract = [[G8Tesseract alloc] initWithLanguage:@"eng"];
     tesseract.delegate = self;
     //tesseract.charWhitelist = @"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'-?@$%&().,:;";
-    
-    
+
     tesseract.image = [ToolBoxNSO convertImageToGrayScale :image];
     tesseract.maximumRecognitionTime = 20.0;
     [tesseract recognize];
@@ -1020,10 +1181,6 @@ bool CenterSelectedType;
     [cropViewController dismissViewControllerAnimated:YES completion:NULL];
 }
 
-
-
-
-
 /*
  created date:      21/05/2018
  last modified:     15/03/2019
@@ -1032,9 +1189,6 @@ bool CenterSelectedType;
 -(CGSize)collectionView:(UICollectionView *) collectionView layout:(UICollectionViewLayout* )collectionViewLayout sizeForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
     CGSize size;
     if (collectionView == self.CollectionViewPoiImages) {
-        /*CGFloat collectionWidth = self.CollectionViewPoiImages.frame.size.width - 20;
-        float cellWidth = collectionWidth/6.0f;
-        size = CGSizeMake(cellWidth,cellWidth);*/
         size = CGSizeMake(100,100);
     } else {
         return CGSizeMake(self.view.frame.size.height/8,self.view.frame.size.height/8 );
@@ -1064,12 +1218,16 @@ bool CenterSelectedType;
     [self.TextFieldTitle endEditing:YES];
 }
 
-
+    
+- (NSURL *)applicationDocumentsDirectory
+{
+    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+}
 
 /*
  created date:      28/04/2018
- last modified:     18/08/2018
- remarks:
+ last modified:     28/03/2019
+ remarks:           
  */
 - (IBAction)ActionButtonPressed:(id)sender {
 
@@ -1100,24 +1258,83 @@ bool CenterSelectedType;
         self.PointOfInterest.privatenotes = self.TextViewNotes.text;
         self.PointOfInterest.modifieddt = [NSDate date];
         self.PointOfInterest.createddt = [NSDate date];
+        
+        NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+        f.numberStyle = NSNumberFormatterDecimalStyle;
+        self.PointOfInterest.radius = [f numberFromString:[self.DistancePickerItems objectAtIndex: [self.PickerDistance selectedRowInComponent:0]]];
+
         self.PointOfInterest.searchstring =  [NSString stringWithFormat:@"%@|%@|%@|%@|%@|%@|%@",self.PointOfInterest.name,self.PointOfInterest.administrativearea,self.PointOfInterest.subadministrativearea,self.PointOfInterest.postcode,self.PointOfInterest.locality,self.PointOfInterest.sublocality,self.PointOfInterest.country];
         
         [self.realm beginWriteTransaction];
         [self.realm addObject:self.PointOfInterest];
         [self.realm commitWriteTransaction];
 
-        
-        if (self.fromproject) {
-            [self.delegate didCreatePoiFromProject :self.PointOfInterest];
-            [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
-        } else if (self.fromnearby) {
-            [self.delegate didUpdatePoi:@"created" :self.PointOfInterest];
-             [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+        if (!self.fromproject) {
+            // standard funationality required for POI module
+            if (self.fromnearby) {
+                [self.delegate didUpdatePoi:@"created" :self.PointOfInterest];
+                [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+            } else {
+                [self.delegate didCreatePoiFromProject :self.PointOfInterest];
+                [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+            }
         } else {
-            [self.delegate didUpdatePoi:@"created" :self.PointOfInterest];
-            [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
-        }
+            // special functionality needed here for Trip items.  We must present the Activity data entry view
+            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            ActivityDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ActivityDataEntryViewController"];
+            controller.delegate = self;
+            controller.realm = self.realm;
+            controller.Activity = self.ActivityItem;
+            controller.Trip = self.TripItem;
 
+            controller.Poi = self.PointOfInterest;
+            controller.newitem = true;
+            controller.transformed = false;
+            controller.deleteitem = false;
+            // important property this.  when finally updating the activity, we will use this to go back to the activity-list view
+            controller.fromproject = true;
+            
+            /* manage the Poi Key image */
+            NSURL *url = [self applicationDocumentsDirectory];
+            NSData *pngData;
+            if (self.PointOfInterest.images.count>0) {
+                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"KeyImage == %@", [NSNumber numberWithInt:1]];
+                RLMResults *filteredArray = [self.PointOfInterest.images objectsWithPredicate:predicate];
+                ImageCollectionRLM *imgobject;
+                if (filteredArray.count==0) {
+                    imgobject = [self.PointOfInterest.images firstObject];
+                } else {
+                    imgobject = [filteredArray firstObject];
+                }
+                NSURL *imagefile = [url URLByAppendingPathComponent:imgobject.ImageFileReference];
+                NSError *err;
+                pngData = [NSData dataWithContentsOfURL:imagefile options:NSDataReadingMappedIfSafe error:&err];
+                UIImage *image;
+                if (pngData!=nil) {
+                    image =[UIImage imageWithData:pngData];
+                }
+                else {
+                    image =[UIImage imageNamed:@"Poi"];
+                }
+                
+                // save the thumb image to file
+                CGSize imagesize = CGSizeMake(100 , 100); // set the width and height
+                UIImage *thumbImage = [ToolBoxNSO imageWithImage:image convertToSize:imagesize];
+                NSData *imageData =  UIImagePNGRepresentation(thumbImage);
+                NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+                NSString *imagesDirectory = [paths objectAtIndex:0];
+                NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/Images/%@",self.PointOfInterest.key]];
+                NSString *thumbImagefilename = @"thumbnail.png";
+                NSString *filepathname = [dataPath stringByAppendingPathComponent:thumbImagefilename];
+                [imageData writeToFile:filepathname atomically:YES];
+                
+                [AppDelegateDef.PoiBackgroundImageDictionary setObject:thumbImage forKey:self.PointOfInterest.key];
+            }
+            
+            [controller setModalPresentationStyle:UIModalPresentationFullScreen];
+            [self presentViewController:controller animated:YES completion:nil];
+        }
+    
     } else {
         [self.realm beginWriteTransaction];
         self.PointOfInterest.name = self.TextFieldTitle.text;
@@ -1126,10 +1343,23 @@ bool CenterSelectedType;
         self.PointOfInterest.searchstring =  [NSString stringWithFormat:@"%@|%@|%@|%@|%@|%@|%@",self.PointOfInterest.name,self.PointOfInterest.administrativearea,self.PointOfInterest.subadministrativearea,self.PointOfInterest.postcode,self.PointOfInterest.locality,self.PointOfInterest.sublocality,self.PointOfInterest.country];
         
         if ([self.PointOfInterest.privatenotes isEqualToString:@""]) {
-            self.PointOfInterest.privatenotes = [NSString stringWithFormat:@"%@\n%@\n%@\n%@\n%@\n%@\n%@", self.PointOfInterest.name, self.PointOfInterest.fullthoroughfare, self.PointOfInterest.administrativearea, self.PointOfInterest.subadministrativearea,  self.PointOfInterest.locality, self.PointOfInterest.sublocality, self.PointOfInterest.postcode];
+            
+            NSString *Address = [NSString stringWithFormat:@"%@\n%@\n%@\n%@\n%@\n%@", self.PointOfInterest.fullthoroughfare, self.PointOfInterest.sublocality, self.PointOfInterest.locality, self.PointOfInterest.administrativearea,   self.PointOfInterest.postcode,self.PointOfInterest.country];
+            
+            Address  = [Address stringByReplacingOccurrencesOfString:@", (null)" withString:@""];
+            Address  = [Address stringByReplacingOccurrencesOfString:@"(null)" withString:@""];
+            Address  = [Address stringByReplacingOccurrencesOfString:@"\n\n\n" withString:@"\n"];
+            Address  = [Address stringByReplacingOccurrencesOfString:@"\n\n" withString:@"\n"];
+            Address = [Address stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+        
+            self.PointOfInterest.privatenotes = Address;
         
         }
     
+        NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+        f.numberStyle = NSNumberFormatterDecimalStyle;
+        self.PointOfInterest.radius = [f numberFromString:[self.DistancePickerItems objectAtIndex: [self.PickerDistance selectedRowInComponent:0]]];
+        
         if (self.PointOfInterest.images.count > 0) {
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
             NSString *imagesDirectory = [paths objectAtIndex:0];
@@ -1237,8 +1467,16 @@ bool CenterSelectedType;
         
         //CLLocationCoordinate2D coord = CLLocationCoordinate2DMake([self.PointOfInterest.lat doubleValue], [self.PointOfInterest.lon doubleValue]);
         
-        NSNumber *radius = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
+         NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+         f.numberStyle = NSNumberFormatterDecimalStyle;
+         NSNumber *radius = [f numberFromString:[self.DistancePickerItems objectAtIndex: [self.PickerDistance selectedRowInComponent:0]]];
+
+         
+         
+        //NSNumber *radius = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
         
+         
+         
         [self.MapView setCenterCoordinate:ModifiedCoordinate animated:YES];
         MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(ModifiedCoordinate, [radius doubleValue] * 2.1, [radius doubleValue] * 2.1);
         MKCoordinateRegion adjustedRegion = [self.MapView regionThatFits:viewRegion];
@@ -1398,7 +1636,7 @@ bool CenterSelectedType;
 
 /*
  created date:      13/06/2018
- last modified:     09/10/2018
+ last modified:     28/03/2019
  remarks:           segue controls .
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -1417,14 +1655,19 @@ bool CenterSelectedType;
         
         controller.PointOfInterest = poi;
         controller.PointOfInterest.name = self.TextFieldTitle.text;
-        controller.gsradius = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
+        
+        NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+        f.numberStyle = NSNumberFormatterDecimalStyle;
+        controller.gsradius = [f numberFromString:[self.DistancePickerItems objectAtIndex: [self.PickerDistance selectedRowInComponent:0]]];
+        
+        //controller.gsradius = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
     } 
 }
 
 
 /*
  created date:      26/09/2018
- last modified:     09/10/2018
+ last modified:     28/03/2019
  remarks:
  */
 - (IBAction)ButtonWikiPressed:(id)sender {
@@ -1446,7 +1689,12 @@ bool CenterSelectedType;
         
         controller.PointOfInterest = poi;
         controller.PointOfInterest.name = self.TextFieldTitle.text;
-        controller.gsradius = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
+        NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+        f.numberStyle = NSNumberFormatterDecimalStyle;
+        controller.gsradius = [f numberFromString:[self.DistancePickerItems objectAtIndex: [self.PickerDistance selectedRowInComponent:0]]];
+        
+        
+        //controller.gsradius = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
         
         [self presentViewController:controller animated:YES completion:nil];
         
@@ -1986,5 +2234,12 @@ bool CenterSelectedType;
     [self.TextViewNotes scrollRangeToVisible:self.TextViewNotes.selectedRange];
     [self.TextViewNotes setNeedsDisplay];
 }
+
+
+- (void)didUpdateActivityImages :(bool) ForceUpdate {
+    
+}
+
+
 
 @end

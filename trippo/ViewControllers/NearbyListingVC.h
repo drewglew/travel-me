@@ -16,6 +16,7 @@
 #import "PoiRLM.h"
 
 
+
 @protocol NearbyListingDelegate <NSObject>
 - (void)didUpdatePoi :(NSString*)Method :(PoiRLM*)Object;
 @end
@@ -38,7 +39,12 @@
 @property (strong, nonatomic) IBOutlet UIImage *WikiMainImage;
 @property (weak, nonatomic) IBOutlet UILabel *LabelTotalItems;
 @property (weak, nonatomic) IBOutlet UIView *ViewLoading;
+@property (assign) bool fromproject;
+@property (strong, nonatomic) TripRLM *TripItem;
+@property (strong, nonatomic) ActivityRLM *ActivityItem;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonPaneResize;
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *FooterWithSegmentConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *HeaderHeightConstraint;
 
 @end

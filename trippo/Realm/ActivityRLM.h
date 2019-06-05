@@ -25,10 +25,13 @@
 @property NSDate *createddt;
 @property NSDate *modifieddt;
 @property NSNumber<RLMFloat> *rating;
-@property NSNumber<RLMInt> *legendref;
+@property NSNumber<RLMInt> *geonotification;
+@property NSNumber<RLMInt> *geonotifycheckout;
 @property NSNumber<RLMInt> *IncludeInTweet;
 @property NSDate *startdt;
 @property NSDate *enddt;
+@property NSDate *geonotifycheckindt;
+@property NSDate *geonotifycheckoutdt;
 @property NSString *identitystartdate;
 @property NSString *identityenddate;
 

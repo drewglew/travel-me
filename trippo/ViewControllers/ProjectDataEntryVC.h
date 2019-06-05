@@ -30,7 +30,6 @@
 @property (weak, nonatomic) IBOutlet UITextView *TextViewNotes;
 @property (weak, nonatomic) IBOutlet UITextField *TextFieldName;
 @property (assign) bool newitem;
-@property (assign) bool deleteitem;
 @property (assign) bool updatedimage;
 @property RLMRealm *realm;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonAction;

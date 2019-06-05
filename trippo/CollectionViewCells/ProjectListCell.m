@@ -12,17 +12,8 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    [self.RotatingView setTransform:CGAffineTransformMakeRotation(M_PI_2)];
-
-    //self.editButton.layer.cornerRadius = 15;
-    //self.editButton.clipsToBounds = YES;
-    //self.editButton.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
-    
-    
-   // self.deleteButton.layer.cornerRadius = 15;
-   // self.deleteButton.clipsToBounds = YES;
-   // self.deleteButton.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
-    
+    self.ViewMain.layer.cornerRadius = self.ViewMain.layer.bounds.size.width / 12;
+    self.ViewMain.clipsToBounds = YES;
 }
 
 

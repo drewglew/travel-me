@@ -9,16 +9,20 @@
 #import <UIKit/UIKit.h>
 #import "ActivityNSO.h"
 #import "ActivityRLM.h"
+#import "TTTAttributedLabel.h"
+
 
 @interface ActivityListCell : UICollectionViewCell
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewActivity;
 @property (strong, nonatomic) ActivityRLM *activity;
-@property (weak, nonatomic) IBOutlet UILabel *LabelName;
+@property (weak, nonatomic) IBOutlet TTTAttributedLabel *LabelName;
 @property (weak, nonatomic) IBOutlet UIVisualEffectView *VisualViewBlur;
 @property (weak, nonatomic) IBOutlet UIView *ViewMain;
 
 @property (weak, nonatomic) IBOutlet UIButton *ButtonDelete;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageBlurBackground;
+@property (weak, nonatomic) IBOutlet UIImageView *ImageBlurBackgroundBottomHalf;
+
 @property (weak, nonatomic) IBOutlet UIVisualEffectView *VisualViewBlurBehindImage;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewBookmark;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewTypeOfPoi;

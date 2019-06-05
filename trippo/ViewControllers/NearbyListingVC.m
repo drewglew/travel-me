@@ -13,9 +13,23 @@
 @end
 
 @implementation NearbyListingVC
-CGFloat NearbyListingFooterFilterHeightConstant;
+CGFloat lastNearbyListingFooterFilterHeightConstant;
+
+
 - (void)viewDidLoad {
+    
     [super viewDidLoad];
+    
+    if (![ToolBoxNSO HasTopNotch]) {
+        self.HeaderHeightConstraint.constant = 70.0f;
+    }
+    lastNearbyListingFooterFilterHeightConstant = self.FooterWithSegmentConstraint.constant;
+    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 50)];
+    
+    
+    
+    
+    self.TableViewNearbyPoi.tableHeaderView = headerView;
     
     if ([self checkInternet]) {
         if (self.PointOfInterest==nil) {
@@ -33,9 +47,7 @@ CGFloat NearbyListingFooterFilterHeightConstant;
     
     self.TableViewNearbyPoi.delegate = self;
     self.TableViewNearbyPoi.rowHeight = 100;
-    NearbyListingFooterFilterHeightConstant = self.FooterWithSegmentConstraint.constant;
     
-
     self.ViewLoading.layer.cornerRadius=8.0f;
     self.ViewLoading.layer.masksToBounds=YES;
     self.ViewLoading.layer.borderWidth = 1.0f;
@@ -379,7 +391,7 @@ CGFloat NearbyListingFooterFilterHeightConstant;
 
 /*
  created date:      16/07/2018
- last modified:     02/02/2019
+ last modified:     20/03/2019
  remarks:
  */
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -484,7 +496,10 @@ CGFloat NearbyListingFooterFilterHeightConstant;
                                     controller.realm = self.realm;
                                     controller.newitem = true;
                                     controller.readonlyitem = false;
-                                    controller.fromproject = false;
+                                    controller.fromproject = self.fromproject;
+                                    controller.TripItem = self.TripItem;
+                                     
+                                    controller.ActivityItem = self.ActivityItem;
                                     controller.fromnearby = true;
                                     if (image!=nil) {
                                         UIImage *squareimage = image;
@@ -531,7 +546,9 @@ CGFloat NearbyListingFooterFilterHeightConstant;
                             controller.realm = self.realm;
                             controller.newitem = true;
                             controller.readonlyitem = false;
-                            controller.fromproject = false;
+                            controller.fromproject = self.fromproject;
+                            controller.TripItem = self.TripItem;
+                            controller.ActivityItem = self.ActivityItem;
                             controller.fromnearby = true;
                             controller.haswikimainimage = false;
                             
@@ -547,38 +564,31 @@ CGFloat NearbyListingFooterFilterHeightConstant;
     }
 }
 
-
-- (UIView*)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.TableViewNearbyPoi.frame.size.width, 70)];
-    return footerView;
-}
-
-- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.TableViewNearbyPoi.frame.size.width, 110)];
-    return headerView;
-}
-
 /*
  created date:      05/02/2019
- last modified:     05/02/2019
+ last modified:     23/03/2019
  remarks:
  */
 -(void)scrollViewWillEndDragging:(UIScrollView *)scrollView
                     withVelocity:(CGPoint)velocity
              targetContentOffset:(inout CGPoint *)targetContentOffset{
     
-    if (velocity.y > 0 && self.FooterWithSegmentConstraint.constant == NearbyListingFooterFilterHeightConstant){
+    if (velocity.y > 0 && self.FooterWithSegmentConstraint.constant == lastNearbyListingFooterFilterHeightConstant){
         NSLog(@"scrolling down");
         
         [UIView animateWithDuration:0.4f
                               delay:0.0f
                             options:UIViewAnimationOptionBeginFromCurrentState
                          animations:^{
-            self.FooterWithSegmentConstraint.constant = 0.0f;
-            [self.view layoutIfNeeded];
-        } completion:^(BOOL finished) {
-
-        }];
+                             self.FooterWithSegmentConstraint.constant = 0.0f;
+                             
+                             UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 0)];
+                             self.TableViewNearbyPoi.tableFooterView = footerView;
+                             
+                             [self.view layoutIfNeeded];
+                         } completion:^(BOOL finished) {
+                             
+                         }];
     }
     if (velocity.y < 0  && self.FooterWithSegmentConstraint.constant == 0.0f){
         NSLog(@"scrolling up");
@@ -586,14 +596,19 @@ CGFloat NearbyListingFooterFilterHeightConstant;
                               delay:0.0f
                             options:UIViewAnimationOptionBeginFromCurrentState
                          animations:^{
-            
-            self.FooterWithSegmentConstraint.constant = NearbyListingFooterFilterHeightConstant;
-            [self.view layoutIfNeeded];
-            
-        } completion:^(BOOL finished) {
+                             
+                             self.FooterWithSegmentConstraint.constant = lastNearbyListingFooterFilterHeightConstant;
 
-        }];
+                             UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, self.FooterWithSegmentConstraint.constant)];
+                             self.TableViewNearbyPoi.tableFooterView = footerView;
+                             
+                             [self.view layoutIfNeeded];
+                             
+                         } completion:^(BOOL finished) {
+                             
+                         }];
     }
+
 }
 
 
@@ -686,7 +701,6 @@ CGFloat NearbyListingFooterFilterHeightConstant;
     }
 }
 
-
 /*
  created date:      05/02/2019
  last modified:     05/02/2019
@@ -696,6 +710,41 @@ CGFloat NearbyListingFooterFilterHeightConstant;
     [self LoadNearbyPoiItemsData];
 }
 
+/*
+ created date:      23/03/2019
+ last modified:     23/03/2019
+ remarks:
+ */
+- (IBAction)ButtonPaneResizePressed:(id)sender {
+    
+    [self.view layoutIfNeeded];
+    if (self.FooterWithSegmentConstraint.constant==98) {
+        [UIView animateWithDuration:0.25f animations:^{
+            self.FooterWithSegmentConstraint.constant=350;
+            [self.ButtonPaneResize setImage:[UIImage imageNamed:@"Close-Pane"] forState:UIControlStateNormal];
+            [self.view layoutIfNeeded];
+        } completion:^(BOOL finished) {
+            UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, self.FooterWithSegmentConstraint.constant)];
+            self.TableViewNearbyPoi.tableFooterView = footerView;
+            [self.TableViewNearbyPoi reloadData];
+        }];
+        
+    } else {
+        [UIView animateWithDuration:0.25f animations:^{
+            self.FooterWithSegmentConstraint.constant=98;
+            [self.ButtonPaneResize setImage:[UIImage imageNamed:@"Present-List"] forState:UIControlStateNormal];
+            [self.view layoutIfNeeded];
+        } completion:^(BOOL finished) {
+            UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, self.FooterWithSegmentConstraint.constant)];
+            self.TableViewNearbyPoi.tableFooterView = footerView;
+            [self.TableViewNearbyPoi reloadData];
+        }];
+        
+    }
+    lastNearbyListingFooterFilterHeightConstant = self.FooterWithSegmentConstraint.constant;
+
+    
+}
 
 
 

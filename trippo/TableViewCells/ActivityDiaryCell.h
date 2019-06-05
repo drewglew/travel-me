@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIView *CellBorder;
 @property (weak, nonatomic) IBOutlet UIView *DurationView;
 @property (weak, nonatomic) IBOutlet UILabel *LabelDuration;
-@property (weak, nonatomic) IBOutlet UIView *DurationBar;
+
 @end
 
 NS_ASSUME_NONNULL_END

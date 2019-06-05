@@ -15,6 +15,7 @@
 @property (strong, nonatomic) NSString *name;
 @property (strong, nonatomic) NSNumber<RLMInt> *categoryid;
 @property (strong, nonatomic) NSNumber<RLMInt> *transportid;
+@property (strong, nonatomic) NSNumber<RLMInt> *radius;
 @property (strong, nonatomic) NSString *countrykey;
 @property (strong, nonatomic) NSString *country;
 @property (strong, nonatomic) NSString *countrycode;

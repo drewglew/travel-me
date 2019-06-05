@@ -307,12 +307,14 @@
 
     PaymentRLM *item = [[self.paymentsections objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
     
-    if (item.activityname != nil) {
-        cell.LabelDescription.text = [NSString stringWithFormat:@"%@: %@",item.activityname, item.desc];
-    } else {
+   
+    if (self.TripItem == nil) {
         cell.LabelDescription.text = item.desc;
+    } else {
+        NSLog(@"%@",item.activityname);
+        cell.LabelDescription.text = [NSString stringWithFormat:@"%@: %@",item.activityname, item.desc];
     }
-        
+
     /* might need to adjust this with rate */
     cell.LabelLocalAmt.text = [NSString stringWithFormat:@"%@",item.amt_act];
     double localamt = ([item.amt_act doubleValue] / 100);
@@ -332,13 +334,7 @@
         cell.LabelHomeAmt.text = cell.LabelLocalAmt.text;
         cell.LabelLocalCurrencyCode.text = item.localcurrencycode;
         
-    } else /*if ([item.rate_act.rate intValue]==0) {
-        
-        NSLog(@"item1 %@",item.rate_act.rate);
-        
-        cell.LabelHomeAmt.text = @"unknown rate";
-        cell.LabelHomeCurrencyCode.hidden = true;
-    } else */{
+    } else {
         cell.LabelHomeAmt.hidden = false;
         cell.LabelHomeCurrencyCode.hidden = false;
         double rate = [item.rate_act.rate doubleValue] / 10000;
@@ -390,7 +386,7 @@
 
 /*
 created date:      15/05/2018
-last modified:     16/05/2018
+last modified:     09/04/2019
 remarks:
 */
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -406,9 +402,18 @@ remarks:
 
 
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    PaymentDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"PaymentDataEntryId"];
+    ExpenseDataEntryVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ExpenseDataEntryId"];
     controller.delegate = self;
     controller.ExpenseItem = Expense;
+    NSString *Title = [NSString stringWithFormat:@"Expense on %@", self.ActivityItem.name];
+    if (self.TripItem != nil) {
+        self.ActivityItem = [[ActivityRLM alloc] init];
+        self.ActivityItem.tripkey = self.TripItem.key;
+        self.ActivityItem.state = self.activitystate;
+        Title = [NSString stringWithFormat:@"General Trip Expense for %@", self.TripItem.name];
+    }
+    controller.TitleText = Title;
+    
     controller.ActivityItem = self.ActivityItem;
     controller.newitem = false;
     controller.realm = self.realm;
@@ -447,7 +452,7 @@ remarks:
 
 /*
  created date:      03/05/2018
- last modified:     07/08/2018
+ last modified:     09/08/2018
  remarks:           segue controls .
  */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -464,9 +469,27 @@ remarks:
         controller.ActivityItem  = self.ActivityItem;
         controller.ExpenseItem = nil;
         controller.newitem = true;
+    } else if([segue.identifier isEqualToString:@"ShowNewExpense"]){
+        ExpenseDataEntryVC *controller = (ExpenseDataEntryVC *)segue.destinationViewController;
+        controller.delegate = self;
+        if (self.TripItem != nil) {
+            self.ActivityItem = [[ActivityRLM alloc] init];
+            self.ActivityItem.tripkey = self.TripItem.key;
+            self.ActivityItem.state = self.activitystate;
+        }
+        NSString *Title = [NSString stringWithFormat:@"New Expense on %@", self.ActivityItem.name];
+        if (self.TripItem != nil) {
+            Title = [NSString stringWithFormat:@"General Trip Expense for %@", self.TripItem.name];
+        }
+        controller.TitleText = Title;
+        
+        controller.realm = self.realm;
+        controller.ActivityItem  = self.ActivityItem;
+        controller.newitem = true;
     }
         
 }
+
 
 
 /*

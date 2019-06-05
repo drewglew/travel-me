@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "office-100x100.png",
+      "filename" : "cat-organization-100.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "office-100x100-1.png",
+      "filename" : "cat-organization-101.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "office-100x100-2.png",
+      "filename" : "cat-organization-102.png",
       "scale" : "3x"
     }
   ],

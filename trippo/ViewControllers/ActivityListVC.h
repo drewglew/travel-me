@@ -9,8 +9,8 @@
 #import <UIKit/UIKit.h>
 #import "ProjectNSO.h"
 #import "AppDelegate.h"
-#import "ActivityListCell.h"
 #import "PoiSearchVC.h"
+#import "ActivityListCell.h"
 #import "ActivityDataEntryVC.h"
 #import "ActivityDiaryCell.h"
 #import "PoiImageNSO.h"
@@ -22,18 +22,19 @@
 #import "ToolboxNSO.h"
 #import "DiaryDatesNSO.h"
 #import "MultiplierConstraint.h"
+#import "CustomCollectionView.h"
 
 
 @protocol ActivityListDelegate <NSObject>
 @end
 
-@interface ActivityListVC : UIViewController <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UITableViewDelegate,    UITextFieldDelegate, PoiSearchDelegate, ActivityDataEntryDelegate, ScheduleListDelegate, PaymentListingDelegate>
+@interface ActivityListVC : UIViewController <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UITableViewDelegate,    UITextFieldDelegate, ActivityDataEntryDelegate, ScheduleListDelegate, PaymentListingDelegate, PoiSearchDelegate>
 
 @property (assign) bool editmode;
 
 @property TripRLM *Trip;
 @property (nonatomic, weak) id <ActivityListDelegate> delegate;
-@property (weak, nonatomic) IBOutlet UICollectionView *CollectionViewActivities;
+@property (weak, nonatomic) IBOutlet CustomCollectionView *CollectionViewActivities;
 @property (weak, nonatomic) IBOutlet UILabel *LabelProject;
 @property (strong, nonatomic) NSMutableArray *activityitems;
 @property NSMutableArray *activitycollection;
@@ -56,4 +57,6 @@
 @property (nonatomic) NSDate *IdentityEndDt;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonTweet;
 @property (assign) bool tweetview;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *HeaderViewHeightConstraint;
+
 @end

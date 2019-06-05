@@ -157,6 +157,28 @@
     return [NSString stringWithFormat:@"%@ %@",[dateformatter stringFromDate:Dt], [timeformatter stringFromDate:Dt]];
 }
 
+/*
+ created date:      08/04/2019
+ last modified:     08/04/2019
+ remarks:
+ */
++ (NSString*)FormatPrettySimpleDate :(NSDate*)Dt {
+    NSDateFormatter *dateformatter = [[NSDateFormatter alloc] init];
+    [dateformatter setDateFormat:@"dd MMM yyyy"];
+    return [NSString stringWithFormat:@"%@",[dateformatter stringFromDate:Dt]];
+}
+
+/*
+ created date:      22/10/2018
+ last modified:     24/03/2019
+ remarks:           Time formatter
+ */
++ (NSString*)FormatPrettyTime :(NSDate*)Dt {
+    
+    NSDateFormatter *timeformatter = [[NSDateFormatter alloc] init];
+    [timeformatter setDateFormat:@"HH:mm"];
+    return [NSString stringWithFormat:@"%@", [timeformatter stringFromDate:Dt]];
+}
 
 /*
  created date:      19/03/2019
@@ -193,5 +215,23 @@
     // Return the new grayscale image
     return newImage;
 }
+
+/*
+ created date:      01/04/2019
+ last modified:     01/04/2019
+ remarks:           taken from StackOverflow
+ */
++(bool)HasTopNotch {
+    bool HasTopNotch = NO;
+    if (@available(iOS 11.0, *)) {
+        UIWindow *mainWindow = [[[UIApplication sharedApplication] delegate] window];
+        if (mainWindow.safeAreaInsets.top >= 24.0) {
+            HasTopNotch = YES;
+        }
+    }
+    return HasTopNotch;
+}
+
+
 
 @end

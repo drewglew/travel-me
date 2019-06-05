@@ -10,6 +10,7 @@
 #import "ActivityNSO.h"
 #import "ProjectNSO.h"
 #import "PaymentDataEntryVC.h"
+#import "ExpenseDataEntryVC.h"
 #import "PaymentNSO.h"
 #import "AppDelegate.h"
 #import "PaymentListCell.h"
@@ -20,7 +21,7 @@
 @protocol PaymentListingDelegate <NSObject>
 @end
 
-@interface PaymentListingVC : UIViewController <PaymentDetailDelegate>
+@interface PaymentListingVC : UIViewController <PaymentDetailDelegate, ExpenseDetailDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *TableViewPayment;
 @property (weak, nonatomic) IBOutlet UILabel *LabelTitle;
 @property (strong, nonatomic) NSMutableArray *paymentitems;

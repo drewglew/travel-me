@@ -30,6 +30,8 @@
 @property (weak, nonatomic) IBOutlet UISearchBar *SearchBar;
 @property (strong, nonatomic) PoiRLM *PointOfInterest;
 @property (strong, nonatomic) PoiRLM *TempPoi;
+@property (strong, nonatomic) TripRLM *TripItem;
+@property (strong, nonatomic) ActivityRLM *ActivityItem;
 @property RLMRealm *realm;
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;
 @property (assign) bool fromproject;
