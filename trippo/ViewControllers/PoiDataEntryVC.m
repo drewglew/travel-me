@@ -880,7 +880,7 @@ bool CenterSelectedType;
 
 /*
  created date:      28/04/2018
- last modified:     21/10/2018
+ last modified:     15/06/2019
  remarks:
  */
 -(void)InsertPoiImage {
@@ -964,7 +964,7 @@ bool CenterSelectedType;
                                                                   
                                                                   controller.PointOfInterest = copiedpoi;
                                                                   
-                                                                  controller.distance = self.PointOfInterest.radius;
+                                                                  controller.distance = [self.TypeDistanceItems objectAtIndex:[self.PointOfInterest.categoryid longValue]];
                                                                   
                                                                   controller.wikiimages = false;
                                                                   

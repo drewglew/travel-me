@@ -117,12 +117,11 @@ bool FirstLoad;
     [self.alltripitems sortedResultsUsingDescriptors:[NSArray arrayWithObject:sort]];
 
     NSDate* tripdt = nil;
-    NSLog(@"debugger completed menu block 0");
     for (TripRLM* trip in self.alltripitems) {
         RLMResults <ActivityRLM*> *allActivities = [ActivityRLM objectsWhere:@"tripkey=%@", trip.key];
         NSDate *LastestDate = [allActivities maxOfProperty:@"enddt"];
         // past item
-        NSLog(@"trip enddt=%@",LastestDate);
+        //NSLog(@"trip enddt=%@",LastestDate);
         if([currentDate compare: LastestDate] == NSOrderedDescending ) {
             if (tripdt == nil) {
                 tripdt = LastestDate;
@@ -141,7 +140,7 @@ bool FirstLoad;
             }
         }
     }
-    NSLog(@"debugger completed menu block 1");
+    
     if (lasttrip.itemgrouping==[NSNumber numberWithInt:1]) {
         TripRLM *trip = [TripRLM objectForPrimaryKey:lasttrip.key];
         [self RetrieveImageItem :trip :imagesDirectory];
@@ -170,7 +169,7 @@ bool FirstLoad;
         }
 
     }
-    NSLog(@"debugger completed menu block 2");
+   
     /* optional new if no active trip found */
     if (!found_active) {
         TripRLM* emptytrip = [[TripRLM alloc] init];
@@ -180,7 +179,7 @@ bool FirstLoad;
         [self.selectedtripitems addObject:emptytrip];
         [self.TripImageDictionary setObject:[UIImage imageNamed:@"Project"] forKey:emptytrip.key];
     }
-    NSLog(@"debugger completed menu block 3");
+    
     sort = [RLMSortDescriptor sortDescriptorWithKeyPath:@"startdt" ascending:NO];
     [self.alltripitems sortedResultsUsingDescriptors:[NSArray arrayWithObject:sort]];
 
@@ -209,13 +208,13 @@ bool FirstLoad;
             }
         }
     }
-NSLog(@"debugger completed menu block 4");
+
     if (nexttrip.itemgrouping == [NSNumber numberWithInt:4]) {
         TripRLM *trip = [TripRLM objectForPrimaryKey:nexttrip.key];
         [self RetrieveImageItem :trip :imagesDirectory];
         [self.selectedtripitems addObject:nexttrip];
     }
-    NSLog(@"debugger completed menu block 5");
+    
      /* optional new if active trip found */
     if (found_active) {
         TripRLM* emptytrip = [[TripRLM alloc] init];
@@ -225,7 +224,7 @@ NSLog(@"debugger completed menu block 4");
         [self.TripImageDictionary setObject:[UIImage imageNamed:@"Project"] forKey:emptytrip.key];
         [self.selectedtripitems addObject:emptytrip];
     }
-    NSLog(@"debugger completed menu block 6");
+    
 }
 
 /*
@@ -395,7 +394,7 @@ NSLog(@"debugger completed menu block 4");
     //cell.LabelProjectName.text = trip.name;
     
     NSString *reference = @"";
-    NSLog(@"itemgrouping=%@",trip.itemgrouping);
+    //NSLog(@"itemgrouping=%@",trip.itemgrouping);
     
     if (trip.itemgrouping==[NSNumber numberWithInt:1]) {
         reference = @"Previous";

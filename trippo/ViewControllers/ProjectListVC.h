@@ -24,7 +24,7 @@
 @property (strong, nonatomic) NSMutableArray *projectitems;
 @property RLMRealm *realm;
 @property RLMResults<TripRLM *> *tripcollection;
-@property NSMutableArray *ImageCollection;
+@property (strong, nonatomic) NSMutableDictionary *TripImageDictionary;
 @property (assign) bool editmode;
 @property (nonatomic, weak) id <ProjectListDelegate> delegate;
 @property (strong, nonatomic) ProjectNSO *Trip;

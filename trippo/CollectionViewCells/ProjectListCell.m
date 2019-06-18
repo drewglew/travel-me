@@ -12,8 +12,8 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    self.ViewMain.layer.cornerRadius = self.ViewMain.layer.bounds.size.width / 12;
-    self.ViewMain.clipsToBounds = YES;
+    //self.ViewMain.layer.cornerRadius = self.ViewMain.layer.bounds.size.width / 12;
+    //self.ViewMain.clipsToBounds = YES;
 }
 
 

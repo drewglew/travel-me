@@ -78,13 +78,13 @@
         self.ExpenseCollection = [PaymentRLM objectsWhere:@"tripkey=%@",self.TripItem.key];
     }
 
+    NSLog(@"%@",self.ExpenseCollection);
+    
     self.localcurrencyitems = [[NSSet setWithArray:[self.ExpenseCollection valueForKey:@"localcurrencycode"]] allObjects];
     
     
     self.paymentsections = [[NSMutableArray alloc] initWithCapacity:self.localcurrencyitems.count];
     RLMResults <PaymentRLM*> *rows;
-    //NSArray *rows = [[NSArray alloc] init];
-    
     
     for (NSString *item in self.localcurrencyitems) {
         NSLog(@"item=%@", item);
@@ -93,7 +93,12 @@
         rows = [self.ExpenseCollection objectsWithPredicate:predicate];
         
         for (PaymentRLM *test in rows) {
-            NSLog(@"localcurrencycode=%@", test.localcurrencycode);
+            if (test.localcurrencycode == nil) {
+                NSLog(@"localcurrencycode=%@ - why does this happen??", test.localcurrencycode);
+                [self.realm transactionWithBlock:^{
+                    test.localcurrencycode = test.homecurrencycode;
+                }];
+            }
         }
         
         [self.paymentsections addObject:rows];
@@ -217,7 +222,7 @@
     UIView* backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 50)];
 
     // 2. Set a custom background color and a border footer summary
-    backgroundView.backgroundColor = [UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0];
+    backgroundView.backgroundColor = [UIColor colorWithRed:0.0f/255.0f green:102.0f/255.0f blue:51.0f/255.0f alpha:1.0];
 
     [footerView addSubview:backgroundView];
     
@@ -299,7 +304,7 @@
 
 /*
  created date:      30/04/2018
- last modified:     19/09/2018
+ last modified:     15/06/2019
  remarks:           table view with sections.
  */
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -308,10 +313,9 @@
     PaymentRLM *item = [[self.paymentsections objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
     
    
-    if (self.TripItem == nil) {
+    if (self.TripItem == nil || item.activityname == nil) {
         cell.LabelDescription.text = item.desc;
     } else {
-        NSLog(@"%@",item.activityname);
         cell.LabelDescription.text = [NSString stringWithFormat:@"%@: %@",item.activityname, item.desc];
     }
 
@@ -375,7 +379,7 @@
 - (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section
 {
     // Background color
-    view.tintColor = [UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0];
+    view.tintColor = [UIColor colorWithRed:0.0f/255.0f green:102.0f/255.0f blue:51.0f/255.0f alpha:1.0];
     
     // Text Color
     UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
@@ -440,14 +444,19 @@ remarks:
 }
 /*
  created date:      15/05/2018
- last modified:     16/05/2018
+ last modified:     15/06/2019
  remarks:           Might not be totally necessary, but seperated out from editActionsForRowAtIndexPath method above.
  */
 - (void)tableView:(UITableView *)tableView deletePayment:(NSIndexPath *)indexPath  {
- //   if ([AppDelegateDef.Db DeletePayment:[[self.paymentsections objectAtIndex:indexPath.section] objectAtIndex:indexPath.row]] == true)
-   // {
-   //     [self LoadPaymentData];
-   // }
+    
+    NSLog(@"should be able to delete any records here?");
+    PaymentRLM *Expense = [[self.paymentsections objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+
+    [self.realm transactionWithBlock:^{
+        [self.realm deleteObject:Expense];
+    }];
+    
+    NSLog(@"delete called!");
 }
 
 /*

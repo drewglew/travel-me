@@ -8,6 +8,7 @@
 
 #import "ImageCollectionRLM.h"
 #import "AttachmentRLM.h"
+#import "WeatherRLM.h"
 #import <Realm/Realm.h>
 
 @interface PoiRLM : RLMObject
@@ -37,6 +38,8 @@
 @property (strong, nonatomic) NSString *sharedby;
 @property (strong, nonatomic) NSString *devicesharedby;
 @property (strong, nonatomic) NSDate *importeddt;
+@property (strong, nonatomic) NSNumber<RLMInt> *IncludeWeather;
 @property RLMArray<ImageCollectionRLM *><ImageCollectionRLM> *images;
 @property RLMArray<AttachmentRLM *><AttachmentRLM> *attachments;
+@property RLMArray<WeatherRLM *><WeatherRLM> *weather;
 @end

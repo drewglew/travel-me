@@ -1,6 +1,6 @@
 //
 //  ActivityListVC.m
-//  travelme
+//  travelmegetActivityImage
 //
 //  Created by andrew glew on 29/04/2018.
 //  Copyright © 2018 andrew glew. All rights reserved.
@@ -18,12 +18,13 @@
 
 @implementation ActivityListVC
 CGFloat ActivityListFooterFilterHeightConstant;
-
+CGFloat NumberOfCellsInRow = 3.0f;
+CGFloat LastScale = 0.0f;
 @synthesize delegate;
 
 /*
  created date:      30/04/2018
- last modified:     22/02/2019
+ last modified:     10/06/2019
  remarks:
  */
 - (void)viewDidLoad {
@@ -31,7 +32,7 @@ CGFloat ActivityListFooterFilterHeightConstant;
     self.ActivityImageDictionary = [[NSMutableDictionary alloc] init];
     self.CollectionViewActivities.delegate = self;
     self.TableViewDiary.delegate = self;
-    self.editmode = true;
+    self.editmode = false;
     
     
     if (![ToolBoxNSO HasTopNotch]) {
@@ -71,7 +72,13 @@ CGFloat ActivityListFooterFilterHeightConstant;
     
     UILongPressGestureRecognizer* longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPress:)];
     [self.CollectionViewActivities addGestureRecognizer:longPressRecognizer];
-
+    
+    
+    UIPinchGestureRecognizer *pinch =[[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(onPinch:)];
+    [self.CollectionViewActivities addGestureRecognizer:pinch];
+    
+    
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHidden:)
@@ -102,6 +109,60 @@ CGFloat ActivityListFooterFilterHeightConstant;
     return [[NSCalendar currentCalendar] dateFromComponents:comps];
 }
 
+
+
+/*
+ created date:      10/06/2019
+ last modified:     11/06/2019
+ remarks:
+ */
+-(void)onPinch:(UIPinchGestureRecognizer*)gestureRecognizer {
+    
+    if([gestureRecognizer state] == UIGestureRecognizerStateBegan) {
+        // Reset the last scale, necessary if there are multiple objects with different scales.
+        LastScale = [gestureRecognizer scale];
+    }
+    
+    if ([gestureRecognizer state] == UIGestureRecognizerStateBegan ||
+        [gestureRecognizer state] == UIGestureRecognizerStateChanged) {
+        
+        double CurrentScale = [gestureRecognizer scale];
+        double pinchscale = CurrentScale;
+
+        if (pinchscale  < 1.0f) {
+            pinchscale *= 5;
+        }
+
+        if (NumberOfCellsInRow==5.0f && pinchscale > 0.5f && CurrentScale > LastScale) {
+            NumberOfCellsInRow=4.0f;
+            [self.CollectionViewActivities performBatchUpdates:^{ } completion:^(BOOL finished) { [self.CollectionViewActivities reloadData];}];
+        } else if (NumberOfCellsInRow==4.0f && pinchscale > 1.5f && CurrentScale > LastScale) {
+            NumberOfCellsInRow=3.0f;
+            [self.CollectionViewActivities performBatchUpdates:^{ } completion:^(BOOL finished) { [self.CollectionViewActivities reloadData];}];
+        } else if (NumberOfCellsInRow==3.0f && pinchscale > 3.0f && CurrentScale > LastScale) {
+            NumberOfCellsInRow=2.0f;
+            [self.CollectionViewActivities performBatchUpdates:^{ } completion:^(BOOL finished) { [self.CollectionViewActivities reloadData];}];
+        } else if (NumberOfCellsInRow==2.0f && pinchscale > 4.0f && CurrentScale > LastScale) {
+            NumberOfCellsInRow=1.0f;
+            [self.CollectionViewActivities performBatchUpdates:^{ } completion:^(BOOL finished) { [self.CollectionViewActivities reloadData];}];
+        } else if (NumberOfCellsInRow==4.0f && pinchscale < 1.5f && CurrentScale < LastScale) {
+            NumberOfCellsInRow=5.0f;
+            [self.CollectionViewActivities performBatchUpdates:^{ } completion:^(BOOL finished) { [self.CollectionViewActivities reloadData];}];
+        } else if (NumberOfCellsInRow==3.0f && pinchscale < 3.00f && CurrentScale < LastScale) {
+            NumberOfCellsInRow=4.0f;
+            [self.CollectionViewActivities performBatchUpdates:^{ } completion:^(BOOL finished) { [self.CollectionViewActivities reloadData];}];
+        } else if (NumberOfCellsInRow==2.0f && pinchscale < 4.00f && CurrentScale < LastScale) {
+            NumberOfCellsInRow=3.0f;
+            [self.CollectionViewActivities performBatchUpdates:^{ } completion:^(BOOL finished) { [self.CollectionViewActivities reloadData];}];
+        } else if (NumberOfCellsInRow==1.0f && pinchscale < 5.00f && CurrentScale < LastScale) {
+            NumberOfCellsInRow=2.0f;
+            [self.CollectionViewActivities performBatchUpdates:^{ } completion:^(BOOL finished) { [self.CollectionViewActivities reloadData];}];
+        }
+        LastScale = [gestureRecognizer scale];  // Store the previous. scale factor for the next pinch gesture call
+    }
+    
+}
+
 /*
  created date:      27/09/2018
  last modified:     27/09/2018
@@ -109,31 +170,33 @@ CGFloat ActivityListFooterFilterHeightConstant;
  */
 -(void)onLongPress:(UILongPressGestureRecognizer*)pGesture
 {
-    NSInteger NumberOfItems = self.activitycollection.count + 1;
-    
+    if (NumberOfCellsInRow<=3.0f) {
         
-    if (pGesture.state == UIGestureRecognizerStateBegan)
-    {
-        CGPoint touchPoint = [pGesture locationInView:self.CollectionViewActivities];
-        self.LongGesturedPressedSelectedIndexPath = [self.CollectionViewActivities indexPathForItemAtPoint:touchPoint];
-        if (self.LongGesturedPressedSelectedIndexPath != nil) {
-            if (self.LongGesturedPressedSelectedIndexPath.row == NumberOfItems -1) {
-                return;
+        NSInteger NumberOfItems = self.activitycollection.count + 1;
+
+        if (pGesture.state == UIGestureRecognizerStateBegan)
+        {
+            CGPoint touchPoint = [pGesture locationInView:self.CollectionViewActivities];
+            self.LongGesturedPressedSelectedIndexPath = [self.CollectionViewActivities indexPathForItemAtPoint:touchPoint];
+            if (self.LongGesturedPressedSelectedIndexPath != nil) {
+                if (self.LongGesturedPressedSelectedIndexPath.row == NumberOfItems -1) {
+                    return;
+                }
+                //Handle the long press on row
+                // NSLog(@"%ld row pressed",(long)self.LongGesturedPressedSelectedIndexPath.row);
+                ActivityListCell *cell= (ActivityListCell*)[self.CollectionViewActivities cellForItemAtIndexPath:self.LongGesturedPressedSelectedIndexPath ];
+                cell.ViewDateInfo.hidden = false;
             }
-            //Handle the long press on row
-            NSLog(@"%ld row pressed",(long)self.LongGesturedPressedSelectedIndexPath.row);
-            ActivityListCell *cell= (ActivityListCell*)[self.CollectionViewActivities cellForItemAtIndexPath:self.LongGesturedPressedSelectedIndexPath ];
-            cell.ViewDateInfo.hidden = false;
         }
-    }
-    if (pGesture.state == UIGestureRecognizerStateEnded)
-    {
-        if (self.LongGesturedPressedSelectedIndexPath != nil) {
-            //Handle the long press on row
-            NSLog(@"%ld row unpressed",(long)self.LongGesturedPressedSelectedIndexPath.row);
-            ActivityListCell *cell= (ActivityListCell*)[self.CollectionViewActivities cellForItemAtIndexPath:self.LongGesturedPressedSelectedIndexPath ];
-            cell.ViewDateInfo.hidden = true;
-            
+        if (pGesture.state == UIGestureRecognizerStateEnded)
+        {
+            if (self.LongGesturedPressedSelectedIndexPath != nil) {
+                //Handle the long press on row
+                // NSLog(@"%ld row unpressed",(long)self.LongGesturedPressedSelectedIndexPath.row);
+                ActivityListCell *cell= (ActivityListCell*)[self.CollectionViewActivities cellForItemAtIndexPath:self.LongGesturedPressedSelectedIndexPath ];
+                cell.ViewDateInfo.hidden = true;
+                
+            }
         }
     }
 }
@@ -145,7 +208,7 @@ CGFloat ActivityListFooterFilterHeightConstant;
  */
 -(void) LoadActivityData:(NSNumber*) State {
     
-    NSLog(@"completed loadactivity code block");
+    // NSLog(@"completed loadactivity code block");
     
     NSDateFormatter *DateIdentityFormatter = [[NSDateFormatter alloc] init];
     [DateIdentityFormatter setDateFormat:@"YYYY-MM-dd"];
@@ -268,7 +331,7 @@ CGFloat ActivityListFooterFilterHeightConstant;
         dd.enddt = StartDt;
         [self.sectionheaderdaystitle addObject:dd];
     }
-    NSLog(@"completed loadactivity code block");
+    // NSLog(@"completed loadactivity code block");
 }
 
 /*
@@ -284,6 +347,7 @@ CGFloat ActivityListFooterFilterHeightConstant;
     for (ActivityRLM *activityobj in activities) {
         [self getActivityImage :activityobj];
     }
+    // NSLog(@"completed");
 }
 
 /*
@@ -320,14 +384,27 @@ CGFloat ActivityListFooterFilterHeightConstant;
     NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
     if (pngData==nil) {
         if (activity.state == [NSNumber numberWithInteger:0]) {
-            [self.ActivityImageDictionary setObject:[ToolBoxNSO imageWithImage:[UIImage imageNamed:@"Planning"] convertToSize:CellSize] forKey:activity.compondkey];
-            
+            @autoreleasepool {
+                UIImage *image = [ToolBoxNSO resizeImage:[UIImage imageNamed:@"Planning"] toFitInSize:CellSize];
+                [self.ActivityImageDictionary setObject:image forKey:activity.compondkey];
+                image = nil;
+            }
         } else {
-            [self.ActivityImageDictionary setObject:[ToolBoxNSO imageWithImage:[UIImage imageNamed:@"Activity"] convertToSize:CellSize]  forKey:activity.compondkey];
+            @autoreleasepool {
+                UIImage *image = [ToolBoxNSO resizeImage:[UIImage imageNamed:@"Activity"] toFitInSize:CellSize];
+                [self.ActivityImageDictionary setObject:image  forKey:activity.compondkey];
+                image = nil;
+            }
         }
     } else {
-        [self.ActivityImageDictionary setObject:[ToolBoxNSO imageWithImage:[UIImage imageWithData:pngData]  convertToSize:CellSize] forKey:activity.compondkey];
+        @autoreleasepool {
+            UIImage *image = [ToolBoxNSO resizeImage:[UIImage imageWithData:pngData]  toFitInSize:CellSize];
+            [self.ActivityImageDictionary setObject:image forKey:activity.compondkey];
+            image = nil;
+        }
+        
     }
+    // NSLog(@"%@",activity.compondkey);
 }
 
 -(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
@@ -374,12 +451,19 @@ CGFloat ActivityListFooterFilterHeightConstant;
         [cell.ImageViewActivity setTintColor: [UIColor colorWithRed:255.0f/255.0f green:91.0f/255.0f blue:73.0f/255.0f alpha:1.0]];
         cell.ImageConstraint = [cell.ImageConstraint updateMultiplier:0.6];
         cell.VisualViewBlur.hidden = true;
-        cell.VisualViewBlurBehindImage.hidden = true;
+        cell.ViewOverlay.hidden = true;
         cell.ImageBlurBackground.hidden = true;
         cell.ImageBlurBackgroundBottomHalf.hidden = true;
         cell.ViewActiveBadge.hidden = true;
         cell.ViewActiveItem.backgroundColor = [UIColor clearColor];
     } else {
+        
+        if (!self.editmode) {
+            cell.ViewOverlay.hidden = false;
+        } else {
+            cell.ViewOverlay.hidden = true;
+        }
+        
         cell.activity = [self.activitycollection objectAtIndex:indexPath.row];
         cell.ImageConstraint = [cell.ImageConstraint updateMultiplier:0.992];
         
@@ -452,6 +536,9 @@ CGFloat ActivityListFooterFilterHeightConstant;
             } else {
                 cell.ViewActiveBadge.hidden = true;
             }
+            
+
+            
  
         } else {
 
@@ -540,9 +627,15 @@ CGFloat ActivityListFooterFilterHeightConstant;
         
         cell.ImageViewTypeOfPoi.image = [UIImage imageNamed:[TypeItems objectAtIndex:[poiobject.categoryid integerValue]]];
 
-        cell.VisualViewBlurBehindImage.hidden = false;
+        if (!self.editmode || indexPath.row == NumberOfItems -1) {
+             cell.ViewOverlay.hidden = false;
+        } else {
+            cell.ViewOverlay.hidden = true;
+        }
+       
+        
         cell.ImageBlurBackground.hidden = false;
-        cell.ImageBlurBackgroundBottomHalf.hidden = false;
+        //cell.ImageBlurBackgroundBottomHalf.hidden = false;
         
         if ([self.ActivityImageDictionary objectForKey:cell.activity.compondkey] == nil) {
             [self getActivityImage :cell.activity];
@@ -551,13 +644,13 @@ CGFloat ActivityListFooterFilterHeightConstant;
         cell.ImageViewActivity.image = [self.ActivityImageDictionary objectForKey:cell.activity.compondkey];
         
         if (self.tweetview) {
-            [cell.VisualViewBlurBehindImage setBackgroundColor:[UIColor whiteColor]];
-            //cell.VisualViewBlurBehindImage.layer.borderWidth = 1.5;
-            cell.VisualViewBlurBehindImage.layer.backgroundColor = [UIColor colorWithRed:230.0f/255.0f green:230.0f/255.0f blue:230.0f/255.0f alpha:1.0].CGColor;
+            //[cell.ViewOverlay setBackgroundColor:[UIColor whiteColor]];
+            
+            //cell.ViewOverlay.layer.backgroundColor = [UIColor colorWithRed:230.0f/255.0f green:230.0f/255.0f blue:230.0f/255.0f alpha:1.0].CGColor;
             cell.ViewPoiType.backgroundColor = [UIColor colorWithRed:255.0f/255.0f green:91.0f/255.0f blue:73.0f/255.0f alpha:1.0];
         } else {
-            [cell.VisualViewBlurBehindImage setBackgroundColor:[UIColor clearColor]];
-            cell.VisualViewBlurBehindImage.layer.backgroundColor = [UIColor clearColor].CGColor;
+            //[cell.ViewOverlay setBackgroundColor:[UIColor clearColor]];
+            //cell.ViewOverlay.layer.backgroundColor = [UIColor clearColor].CGColor;
             cell.ImageBlurBackground.image = [self.ActivityImageDictionary objectForKey:cell.activity.compondkey];
             cell.ImageBlurBackgroundBottomHalf.image = [self.ActivityImageDictionary objectForKey:cell.activity.compondkey];
             cell.ViewPoiType.backgroundColor = [UIColor lightGrayColor];
@@ -565,6 +658,30 @@ CGFloat ActivityListFooterFilterHeightConstant;
         
         //UIFont *font = [UIFont fontWithName:@"AmericanTypewriter" size:14.0];
         UIFont *font = [UIFont systemFontOfSize:16.0];
+        
+        if (NumberOfCellsInRow >= 3.0f) {
+            font = [UIFont systemFontOfSize:12.0];
+            
+            if (NumberOfCellsInRow > 3.0f) {
+                if (self.editmode == 0) {
+                    cell.ButtonDelete.hidden = true;
+                    if (NumberOfCellsInRow == 5.0f) {
+                        cell.ViewPoiType.hidden = true;
+                    } else {
+                        cell.ViewPoiType.hidden = false;
+                    }
+                } else {
+                    cell.ButtonDelete.hidden = false;
+                    cell.ViewPoiType.hidden = false;
+                }
+            }
+        } else {
+            if (self.editmode == 0) {
+                cell.ButtonDelete.hidden = false;
+                cell.ViewPoiType.hidden = false;
+            }
+        }
+        
         NSDictionary *attributes = @{NSBackgroundColorAttributeName:[UIColor colorWithRed:35.0f/255.0f green:35.0f/255.0f blue:35.0f/255.0f alpha:1.0], NSForegroundColorAttributeName:[UIColor whiteColor], NSFontAttributeName:font};
         NSAttributedString *string = [[NSAttributedString alloc] initWithString:cell.activity.name attributes:attributes];
         cell.LabelName.attributedText = string;
@@ -576,18 +693,15 @@ CGFloat ActivityListFooterFilterHeightConstant;
 
 /*
  created date:      30/04/2018
- last modified:     30/04/2018
+ last modified:     11/06/2019
  remarks: manages the dynamic width of the cells.
  */
 -(CGSize)collectionView:(UICollectionView *) collectionView layout:(UICollectionViewLayout* )collectionViewLayout sizeForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
     
     CGFloat collectionWidth = self.CollectionViewActivities.frame.size.width;
-    float cellWidth = collectionWidth/3.0f;
-    CGSize size = CGSizeMake(cellWidth, cellWidth);
-    if (self.editmode) {
-        size = CGSizeMake(cellWidth,cellWidth*2);
-        
-    }
+    double cellWidth = collectionWidth / NumberOfCellsInRow;
+    double rounded = round (cellWidth * 100.0) / 100.0;
+    CGSize size = CGSizeMake(rounded, rounded);
     return size;
 }
 
@@ -900,7 +1014,7 @@ remarks:           table view with sections.
              targetContentOffset:(inout CGPoint *)targetContentOffset{
     
     if (velocity.y > 0 && self.FooterWithSegmentConstraint.constant == ActivityListFooterFilterHeightConstant){
-        NSLog(@"scrolling down");
+        // NSLog(@"scrolling down");
         
         [UIView animateWithDuration:0.4f
                               delay:0.0f
@@ -913,7 +1027,7 @@ remarks:           table view with sections.
                          }];
     }
     if (velocity.y < 0  && self.FooterWithSegmentConstraint.constant == 0.0f){
-        NSLog(@"scrolling up");
+        // NSLog(@"scrolling up");
         [UIView animateWithDuration:0.4f
                               delay:0.0f
                             options:UIViewAnimationOptionBeginFromCurrentState
@@ -1080,9 +1194,10 @@ remarks:           table view with sections.
 }
 
 - (IBAction)SwitchEditModeChanged:(id)sender {
-    self.editmode = !self.editmode;
-    [self.CollectionViewActivities performBatchUpdates:^{ } completion:^(BOOL finished) { }];
-    [self.CollectionViewActivities reloadData];
+        self.editmode = !self.editmode;
+    [self.CollectionViewActivities performBatchUpdates:^{ } completion:^(BOOL finished) { [self.CollectionViewActivities reloadData];}];
+    
+
 }
 
 /*
@@ -1104,11 +1219,11 @@ remarks:           table view with sections.
 }
 
 - (IBAction)ShowDatePressed:(id)sender {
-    NSLog(@"TOUCHED");
+    // NSLog(@"TOUCHED");
 }
 
 - (IBAction)RemoveDatePressedUp:(id)sender {
-    NSLog(@"UNTOUCHED");
+    // NSLog(@"UNTOUCHED");
 }
 
 /*

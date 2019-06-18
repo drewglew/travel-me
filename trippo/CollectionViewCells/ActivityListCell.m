@@ -36,8 +36,8 @@
     [super layoutSubviews];
     self.ViewPoiType.layer.cornerRadius = 17.5;
     self.ViewPoiType.clipsToBounds = YES;
-    self.ViewMain.layer.cornerRadius = 14;
-    self.ViewMain.clipsToBounds = YES;
+    //self.ViewMain.layer.cornerRadius = 14;
+    //self.ViewMain.clipsToBounds = YES;
 }
 
 

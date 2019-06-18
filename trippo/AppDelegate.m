@@ -24,7 +24,7 @@
 
 /*
  created date:      27/04/2018
- last modified:     16/03/2019
+ last modified:     16/06/2019
  remarks:
  */
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -49,7 +49,7 @@
         if (Languages.count>0) {
             for (NSDictionary *language in Languages) {
                 LanguageCode = [language objectForKey:@"iso639_1"];
-                NSLog(@"%@-%@",LanguageCode,CountryCode);
+                //NSLog(@"%@-%@",LanguageCode,CountryCode);
                 break;
             }
             if (CountryCode != nil && LanguageCode != nil) {
@@ -72,7 +72,7 @@
                                                                               title:@"Dismiss" options:UNNotificationActionOptionDestructive];
     
     UNNotificationAction *IgnoreAction = [UNNotificationAction actionWithIdentifier:@"Ignore"
-                                                                              title:@"Ignore" options:UNNotificationActionOptionNone ];
+                                                                              title:@"Ignore - we'll resend" options:UNNotificationActionOptionNone ];
     
     
     
@@ -104,7 +104,7 @@
      Migration block - to use if we change the model..
     */
     RLMRealmConfiguration *config = [RLMRealmConfiguration defaultConfiguration];
-    config.schemaVersion = 4;
+    config.schemaVersion = 5;
     config.migrationBlock = ^(RLMMigration *migration, uint64_t oldSchemaVersion) { };
     [RLMRealmConfiguration setDefaultConfiguration:config];
     
@@ -515,7 +515,7 @@
 
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler{
     
-    //Called when a notification is delivered to a foreground app.
+    //Called when a notification is delivered to the foreground.
     NSLog(@"willPresentNotification > Userinfo %@",notification.request.content.userInfo);
     completionHandler(UNNotificationPresentationOptionAlert);
 }
@@ -532,19 +532,32 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
     
     //Called to let your app know which action was selected by the user for a given notification.
     
+    NSString *DefaultOverrideItdentifier = @"";
+    
     NSLog(@"didReceiveNotificationResponse > Userinfo %@",response.notification.request.content.userInfo);
     
     if ([response.actionIdentifier isEqualToString:UNNotificationDefaultActionIdentifier ]) {
+        /* this is where the code flows if user taps on notification and app is in background / phone on standby */
+        /* opens App */
+        /* lets force the option again.. */
     
-        
-        
-    } else if ([response.actionIdentifier isEqualToString:@"CheckIn"]) {
+        if ([response.notification.request.identifier containsString:@"CHECKIN~"]) {
+            DefaultOverrideItdentifier = @"CheckIn";
+            
+        } else if ([response.notification.request.identifier containsString:@"CHECKOUT~"]) {
+            DefaultOverrideItdentifier = @"CheckOut";
+        }
+    }
+    
+    if ([response.actionIdentifier isEqualToString:@"CheckIn"] || [DefaultOverrideItdentifier isEqualToString:@"CheckIn"]) {
         
         RLMRealm *realm = [RLMRealm defaultRealm];
         
-        NSString *CompondKey  = [response.notification.request.identifier stringByReplacingOccurrencesOfString:@"CHECKIN~" withString:@""];
-        ActivityRLM *plannedactivity = [ActivityRLM objectForPrimaryKey: CompondKey];
-        NSString *ActualCompondKey  = [CompondKey stringByReplacingOccurrencesOfString:@"~0" withString:@"~1"];
+        NSString *Key  = [response.notification.request.identifier stringByReplacingOccurrencesOfString:@"CHECKIN~" withString:@""];
+        NSString *PlannedCompondKey = [NSString stringWithFormat:@"%@~0",Key];
+        ActivityRLM *plannedactivity = [ActivityRLM objectForPrimaryKey: PlannedCompondKey];
+        
+        NSString *ActualCompondKey = [NSString stringWithFormat:@"%@~1",Key];
         ActivityRLM *actualactivity = [ActivityRLM objectForPrimaryKey: ActualCompondKey];
         
         if (plannedactivity != nil && actualactivity == nil) {
@@ -552,7 +565,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
             ActivityRLM *actualactivity = [[ActivityRLM alloc] init];
             actualactivity.key = plannedactivity.key;
             actualactivity.state = [NSNumber numberWithInt:1];
-            actualactivity.compondkey = [NSString stringWithFormat:@"%@~1",plannedactivity.key];
+            actualactivity.compondkey = ActualCompondKey;
             actualactivity.name = plannedactivity.name;
             actualactivity.tripkey = plannedactivity.tripkey;
             actualactivity.poikey = plannedactivity.poikey;
@@ -563,22 +576,14 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
             actualactivity.enddt = response.notification.date;
             actualactivity.privatenotes = [NSString stringWithFormat:@"Actual activity auto-generated from notification centre"];
             actualactivity.IncludeInTweet = plannedactivity.IncludeInTweet;
-            actualactivity.geonotification = plannedactivity.geonotification;
+            actualactivity.geonotification = 0;
             actualactivity.geonotifycheckout = plannedactivity.geonotifycheckout;
             actualactivity.geonotifycheckindt = plannedactivity.geonotifycheckindt;
             actualactivity.geonotifycheckoutdt = plannedactivity.geonotifycheckoutdt;
             [realm beginWriteTransaction];
             [realm addObject:actualactivity];
             
-            /* we need to remove the previous check out on the planned activity as it now resides on the actual one */
-            if (plannedactivity.geonotifycheckoutdt != nil) {
-                plannedactivity.geonotifycheckoutdt = nil;
-                NSString *CompondKeyForCheckOut  = [response.notification.request.identifier stringByReplacingOccurrencesOfString:@"CHECKIN~" withString:@"CHECKOUT~"];
-                NSArray *activityNotification = [NSArray arrayWithObjects:CompondKeyForCheckOut, nil];
-                [self.UserNotificationCenter removePendingNotificationRequestsWithIdentifiers:activityNotification];
-                [self.UserNotificationCenter removeDeliveredNotificationsWithIdentifiers:activityNotification];
-            }
-
+            
             [realm commitWriteTransaction];
             
         } else if (actualactivity != nil) {
@@ -601,21 +606,23 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
         [self.UserNotificationCenter removeDeliveredNotificationsWithIdentifiers:activityNotification];
 
         
-    } else if ([response.actionIdentifier isEqualToString:@"CheckOut"]) {
+    } else if ([response.actionIdentifier isEqualToString:@"CheckOut"] || [DefaultOverrideItdentifier isEqualToString:@"CheckOut"]) {
 
         RLMRealm *realm = [RLMRealm defaultRealm];
-
-        NSString *CompondKey  = [response.notification.request.identifier stringByReplacingOccurrencesOfString:@"CHECKOUT~" withString:@""];
-        ActivityRLM *plannedactivity = [ActivityRLM objectForPrimaryKey: CompondKey];
-        NSString *ActualCompondKey  = [CompondKey stringByReplacingOccurrencesOfString:@"~0" withString:@"~1"];
+        
+        NSString *Key  = [response.notification.request.identifier stringByReplacingOccurrencesOfString:@"CHECKOUT~" withString:@""];
+        NSString *PlannedCompondKey = [NSString stringWithFormat:@"%@~0",Key];
+        ActivityRLM *plannedactivity = [ActivityRLM objectForPrimaryKey: PlannedCompondKey];
+        
+        NSString *ActualCompondKey = [NSString stringWithFormat:@"%@~1",Key];
         ActivityRLM *actualactivity = [ActivityRLM objectForPrimaryKey: ActualCompondKey];
-
+        
         if (plannedactivity != nil && actualactivity == nil) {
          
             ActivityRLM *actualactivity = [[ActivityRLM alloc] init];
             actualactivity.key = plannedactivity.key;
             actualactivity.state = [NSNumber numberWithInt:1];
-            actualactivity.compondkey = [NSString stringWithFormat:@"%@~1",plannedactivity.key];
+            actualactivity.compondkey = ActualCompondKey;
             actualactivity.name = plannedactivity.name;
             actualactivity.tripkey = plannedactivity.tripkey;
             actualactivity.poikey = plannedactivity.poikey;
@@ -626,8 +633,8 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
             actualactivity.enddt = response.notification.date;
             actualactivity.privatenotes = [NSString stringWithFormat:@"Actual activity auto-generated from notification centre"];
             actualactivity.IncludeInTweet = plannedactivity.IncludeInTweet;
-            actualactivity.geonotification = plannedactivity.geonotification;
-            actualactivity.geonotifycheckout = plannedactivity.geonotifycheckout;
+            actualactivity.geonotification = 0;
+            actualactivity.geonotifycheckout = 0;
             actualactivity.geonotifycheckindt = plannedactivity.geonotifycheckindt;
             actualactivity.geonotifycheckoutdt = plannedactivity.geonotifycheckoutdt;
 
@@ -642,6 +649,8 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
             actualactivity.enddt = response.notification.date;
             actualactivity.privatenotes = [NSString stringWithFormat:@"%@\nActual activity updated from checkout notification", actualactivity.privatenotes];
             actualactivity.geonotification = 0;
+            actualactivity.geonotifycheckout = 0;
+             
             [realm commitWriteTransaction];
             /* remove pending notification */
          } else {

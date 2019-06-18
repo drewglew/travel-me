@@ -28,7 +28,7 @@
 @protocol ActivityListDelegate <NSObject>
 @end
 
-@interface ActivityListVC : UIViewController <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UITableViewDelegate,    UITextFieldDelegate, ActivityDataEntryDelegate, ScheduleListDelegate, PaymentListingDelegate, PoiSearchDelegate>
+@interface ActivityListVC : UIViewController <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UITableViewDelegate,    UITextFieldDelegate, ActivityDataEntryDelegate, ScheduleListDelegate, PaymentListingDelegate, PoiSearchDelegate >
 
 @property (assign) bool editmode;
 

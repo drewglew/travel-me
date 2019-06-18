@@ -14,15 +14,19 @@
 
 @implementation ProjectDataEntryVC
 @synthesize delegate;
+bool loadedActualWeatherData = false;
+bool loadedPlannedWeatherData = false;
 
 /*
  created date:      29/04/2018
- last modified:     30/03/2019
+ last modified:     12/06/2019
  remarks:
  */
 - (void)viewDidLoad {
     [super viewDidLoad];
  
+    self.loadedActualWeatherData = false;
+    self.loadedPlannedWeatherData = false;
     // Do any additional setup after loading the view.
     if (!self.newitem) {
         [self.ButtonAction setTitle:@"Update" forState:UIControlStateNormal];
@@ -33,11 +37,18 @@
     [self addDoneToolBarToKeyboard:self.TextViewNotes];
     self.TextViewNotes.delegate = self;
     self.TextFieldName.delegate = self;
+    self.MapView.delegate = self;
     
     self.TextViewNotes.layer.cornerRadius=8.0f;
     self.TextViewNotes.layer.masksToBounds=YES;
-    self.TextViewNotes.layer.borderColor=[[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]CGColor];
-    self.TextViewNotes.layer.borderWidth= 2.0f;
+    //self.TextViewNotes.layer.borderColor=[[UIColor colorWithRed:0.0f/255.0f green:102.0f/255.0f blue:51.0f/255.0f alpha:1.0]CGColor];
+    //self.TextViewNotes.layer.borderWidth= 2.0f;
+    
+    self.ViewSummary.layer.cornerRadius=8.0f;
+    self.ViewSummary.layer.masksToBounds=YES;
+    //self.ViewSummary.layer.borderColor=[[UIColor colorWithRed:0.0f/255.0f green:102.0f/255.0f blue:51.0f/255.0f alpha:1.0]CGColor];
+    //self.ViewSummary.layer.borderWidth= 2.0f;
+    
     
     NSDate *startOfToday = [[NSDate alloc] init];
     
@@ -92,8 +103,141 @@
     self.TextFieldEndDt.inputView = self.datePickerEnd;
     self.TextFieldEndDt.text = [NSString stringWithFormat:@"%@", [self FormatPrettyDate :self.datePickerEnd.date]];
     [self.TextFieldEndDt setInputAccessoryView:toolBar];
+
+   
+}
+
+
+
+/*
+ created date:      14/06/2019
+ last modified:     14/06/2019
+ remarks:           This procedure handles the call to the web service and returns a dictionary back to GetExchangeRates method.
+ */
+-(void)fetchFromDarkSkyApi:(NSString *)url withDictionary:(void (^)(NSDictionary* data))dictionary{
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:url]];
+    [request setHTTPMethod:@"GET"];
+    
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+    
+    
+    NSURLSessionDataTask *task = [session dataTaskWithRequest:request
+                                            completionHandler:
+                                  ^(NSData *data, NSURLResponse *response, NSError *error) {
+                                      NSDictionary *dicData = [NSJSONSerialization JSONObjectWithData:data
+                                                                                              options:0
+                                                                                                error:NULL];
+                                      dictionary(dicData);
+                                  }];
+    [task resume];
+}
+
+/*
+ created date:      14/06/2019
+ last modified:     14/06/2019
+ */
+- (bool)checkInternet
+{
+    if ([[Reachability reachabilityForInternetConnection]currentReachabilityStatus] == NotReachable)
+    {
+        return false;
+    }
+    else
+    {
+        //connection available
+        return true;
+    }
     
 }
+
+
+- (MKAnnotationView *) mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>) annotation {
+    
+    
+    MKAnnotationView *pinView = (MKAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:@"pinView"];
+    
+    AnnotationMK *myAnnotation = (AnnotationMK*) annotation;
+    
+    if (!pinView) {
+        pinView = [[MKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"pinView"];
+        
+        //pinView.animatesDrop = YES;
+        pinView.canShowCallout = YES;
+        
+        UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+        pinView.rightCalloutAccessoryView = rightButton;
+    } else {
+        pinView.annotation = annotation;
+    }
+    
+    pinView.image = [UIImage imageNamed:myAnnotation.Type];
+    pinView.calloutOffset = CGPointMake(0, 0);
+    pinView.centerOffset = CGPointMake(0, -pinView.image.size.height / 2);
+    return pinView;
+}
+
+
+/*
+ created date:      08/05/2018
+ last modified:     08/05/2018
+ remarks:
+ */
+- (void) zoomToAnnotationsBounds:(NSArray *)annotations {
+    
+    CLLocationDegrees minLatitude = DBL_MAX;
+    CLLocationDegrees maxLatitude = -DBL_MAX;
+    CLLocationDegrees minLongitude = DBL_MAX;
+    CLLocationDegrees maxLongitude = -DBL_MAX;
+    
+    for (AnnotationMK *annotation in annotations) {
+        double annotationLat = annotation.coordinate.latitude;
+        double annotationLong = annotation.coordinate.longitude;
+        minLatitude = fmin(annotationLat, minLatitude);
+        maxLatitude = fmax(annotationLat, maxLatitude);
+        minLongitude = fmin(annotationLong, minLongitude);
+        maxLongitude = fmax(annotationLong, maxLongitude);
+    }
+    
+    // See function below
+    [self setMapRegionForMinLat:minLatitude minLong:minLongitude maxLat:maxLatitude maxLong:maxLongitude];
+    
+    // If your markers were 40 in height and 20 in width, this would zoom the map to fit them perfectly. Note that there is a bug in mkmapview's set region which means it will snap the map to the nearest whole zoom level, so you will rarely get a perfect fit. But this will ensure a minimum padding.
+    UIEdgeInsets mapPadding = UIEdgeInsetsMake(40.0, 40.0, 40.0, 40.0);
+    CLLocationCoordinate2D relativeFromCoord = [self.MapView convertPoint:CGPointMake(0, 0) toCoordinateFromView:self.MapView];
+    
+    // Calculate the additional lat/long required at the current zoom level to add the padding
+    CLLocationCoordinate2D topCoord = [self.MapView convertPoint:CGPointMake(0, mapPadding.top) toCoordinateFromView:self.MapView];
+    CLLocationCoordinate2D rightCoord = [self.MapView convertPoint:CGPointMake(0, mapPadding.right) toCoordinateFromView:self.MapView];
+    CLLocationCoordinate2D bottomCoord = [self.MapView convertPoint:CGPointMake(0, mapPadding.bottom) toCoordinateFromView:self.MapView];
+    CLLocationCoordinate2D leftCoord = [self.MapView convertPoint:CGPointMake(0, mapPadding.left) toCoordinateFromView:self.MapView];
+    
+    double latitudeSpanToBeAddedToTop = relativeFromCoord.latitude - topCoord.latitude;
+    double longitudeSpanToBeAddedToRight = relativeFromCoord.latitude - rightCoord.latitude;
+    double latitudeSpanToBeAddedToBottom = relativeFromCoord.latitude - bottomCoord.latitude;
+    double longitudeSpanToBeAddedToLeft = relativeFromCoord.latitude - leftCoord.latitude;
+    
+    maxLatitude = maxLatitude + latitudeSpanToBeAddedToTop;
+    minLatitude = minLatitude - latitudeSpanToBeAddedToBottom;
+    
+    maxLongitude = maxLongitude + longitudeSpanToBeAddedToRight;
+    minLongitude = minLongitude - longitudeSpanToBeAddedToLeft;
+    
+    [self setMapRegionForMinLat:minLatitude minLong:minLongitude maxLat:maxLatitude maxLong:maxLongitude];
+}
+
+-(void) setMapRegionForMinLat:(double)minLatitude minLong:(double)minLongitude maxLat:(double)maxLatitude maxLong:(double)maxLongitude {
+    
+    MKCoordinateRegion region;
+    region.center.latitude = (minLatitude + maxLatitude) / 2;
+    region.center.longitude = (minLongitude + maxLongitude) / 2;
+    region.span.latitudeDelta = (maxLatitude - minLatitude);
+    region.span.longitudeDelta = (maxLongitude - minLongitude);
+    
+    // MKMapView BUG: this snaps to the nearest whole zoom level, which is wrong- it doesn't respect the exact region you asked for. See http://stackoverflow.com/questions/1383296/why-mkmapview-region-is-different-than-requested
+    [self.MapView setRegion:region animated:NO];
+}
+
 
 /*
  created date:      16/02/2019
@@ -688,17 +832,7 @@
     [textField resignFirstResponder];
     return YES;
 }
-- (IBAction)SegmentViewChanged:(id)sender {
-    UISegmentedControl *segment = sender;
-    if (segment.selectedSegmentIndex==0) {
-        self.ViewMain.hidden = false;
-        self.ViewNotes.hidden = true;
-    } else {
-        self.ViewMain.hidden = true;
-        self.ViewNotes.hidden = false;
-    }
-    
-}
+
 
 /*
  created date:      09/09/2018
@@ -790,6 +924,144 @@
     }
 }
 
+
+/*
+ created date:      12/06/2019
+ last modified:     15/06/2019
+ remarks:           Plan is as follows:
+ Obtain actual activities unique to poi key.
+ load into new object array containing the activity name and the coordinates along with color X marker
+ Next get estimated activities unique to poi key
+ test if they exist in the obect array already.  if they do set the marker to a different color Y, if they do not
+ set marker to color Z.
+ */
+-(void) constructWeatherMapPointData :(bool)IsActual {
+
+    if ([self checkInternet]) {
+        double spacer = self.MapView.bounds.size.width / 5.0f;
+        for (int column = 0; column < 5; column++)
+        {
+            if (column == 1 || column == 4) {
+                for (int row = 0; row < 5; row++)
+                {
+                    if (row == 1 || row == 4) {
+                        CGPoint Point = CGPointMake(spacer * row, spacer * column);
+                        CLLocationCoordinate2D Coord;
+                        Coord = [self.MapView convertPoint:Point toCoordinateFromView:self.MapView];
+                        
+                        NSString *url = [NSString stringWithFormat:@"https://api.darksky.net/forecast/d339db567160bdd560169ea4eef3ee5a/%.4f,%.4f?exclude=minutely,flags,alerts&units=uk2", Coord.latitude, Coord.longitude];
+                        
+                        [self fetchFromDarkSkyApi:url withDictionary:^(NSDictionary *data) {
+                            
+                            dispatch_sync(dispatch_get_main_queue(), ^(void){
+                                NSLog(@"%@",data);
+                               
+                                NSDictionary *JSONdata = [data objectForKey:@"currently"];
+
+                                NSString *iconItem = [JSONdata valueForKey:@"icon"];
+                                AnnotationMK *annotation = [[AnnotationMK alloc] init];
+                                annotation.coordinate = Coord;
+                                annotation.title = [JSONdata valueForKey:@"summary"];
+                                annotation.subtitle = [NSString stringWithFormat:@"%@ °C",[JSONdata valueForKey:@"temperature"]];
+                                annotation.Type = [NSString stringWithFormat:@"weather-%@",iconItem];
+                                
+                                if (IsActual) {
+                                    [self.WeatherActualAnnotationCollection addObject:annotation];
+                                } else {
+                                     [self.WeatherPlannedAnnotationCollection addObject:annotation];
+                                }
+                                
+                                [self.MapView addAnnotation:annotation];
+                            });
+                        }];
+                    }
+                }
+            }
+        }
+            
+    }
+}
+
+
+/*
+ created date:      15/06/2019
+ last modified:     15/06/2019
+ remarks:
+ */
+- (IBAction)SegmentAnnotationsChanged:(id)sender {
+    
+    self.AnnotationCollection = [[NSMutableArray alloc] init];
+    
+    [self.MapView removeAnnotations:self.MapView.annotations];
+    
+    NSArray *keypaths  = [[NSArray alloc] initWithObjects:@"poikey", nil];
+    
+    if (self.SegmentAnnotations.selectedSegmentIndex == 0) {
+
+        RLMResults<ActivityRLM *> *PlannedActivitiesCollection = [[ActivityRLM objectsWhere:@"tripkey = %@ and state = 0",self.Trip.key] distinctResultsUsingKeyPaths:keypaths];
+        
+        for (ActivityRLM* PlannedActivity in PlannedActivitiesCollection) {
+            AnnotationMK *annotation = [[AnnotationMK alloc] init];
+            annotation.coordinate = CLLocationCoordinate2DMake([PlannedActivity.poi.lat doubleValue], [PlannedActivity.poi.lon doubleValue]);
+            annotation.title = PlannedActivity.name;
+            annotation.subtitle = @"Planned";
+            annotation.PoiKey = PlannedActivity.poi.key;
+            annotation.Type = @"marker-planned";
+            
+            
+            [self.AnnotationCollection addObject:annotation];
+        }
+        
+        for (AnnotationMK *annotation in self.AnnotationCollection) {
+            [self.MapView addAnnotation:annotation];
+        }
+
+        if (self.AnnotationCollection.count > 0) {
+            [self zoomToAnnotationsBounds :self.MapView.annotations];
+            if (!self.loadedPlannedWeatherData) {
+                self.WeatherPlannedAnnotationCollection  = [[NSMutableArray alloc] init];
+                [self constructWeatherMapPointData :false];
+                self.loadedPlannedWeatherData = true;
+            } else {
+                for (AnnotationMK *annotation in self.WeatherPlannedAnnotationCollection) {
+                    [self.MapView addAnnotation:annotation];
+                }
+            }
+        }
+    } else if (self.SegmentAnnotations.selectedSegmentIndex == 1) {
+        
+        RLMResults<ActivityRLM *> *ActualActivitiesCollection = [[ActivityRLM objectsWhere:@"tripkey = %@ and state = 1",self.Trip.key] distinctResultsUsingKeyPaths:keypaths];
+        
+        
+        for (ActivityRLM* ActualActivity in ActualActivitiesCollection) {
+            AnnotationMK *annotation = [[AnnotationMK alloc] init];
+            annotation.coordinate = CLLocationCoordinate2DMake([ActualActivity.poi.lat doubleValue], [ActualActivity.poi.lon doubleValue]);
+            annotation.title = ActualActivity.name;
+            annotation.subtitle = @"Actual";
+            annotation.PoiKey = ActualActivity.poi.key;
+            annotation.Type = @"marker-actual";
+            
+            [self.AnnotationCollection addObject:annotation];
+        }
+        
+        for (AnnotationMK *annotation in self.AnnotationCollection) {
+            [self.MapView addAnnotation:annotation];
+        }
+
+        if (self.AnnotationCollection.count > 0) {
+            [self zoomToAnnotationsBounds :self.MapView.annotations];
+            if (!self.loadedActualWeatherData) {
+                self.WeatherActualAnnotationCollection  = [[NSMutableArray alloc] init];
+                [self constructWeatherMapPointData :true];
+                self.loadedActualWeatherData = true;
+            } else {
+                for (AnnotationMK *annotation in self.WeatherActualAnnotationCollection) {
+                    [self.MapView addAnnotation:annotation];
+                }
+            }
+        }
+    }
+}
 
 
 @end

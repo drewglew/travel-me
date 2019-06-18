@@ -51,6 +51,8 @@
 @property (strong, nonatomic) NSMutableDictionary *DocumentDictionary;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewPoi;
 @property (weak, nonatomic) IBOutlet MKMapView *PoiMapView;
+@property (weak, nonatomic) IBOutlet MKMapView *NotificationMapView;
+
 @property (weak, nonatomic) IBOutlet UITextField *TextFieldName;
 @property (weak, nonatomic) IBOutlet UITextView *TextViewNotes;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonAction;
@@ -96,15 +98,14 @@
 @property (weak, nonatomic) IBOutlet UIButton *ButtonExpandCollapseList;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *ViewDocumentListHeightConstraint;
 @property (weak, nonatomic) IBOutlet UISwitch *SwitchTweet;
-@property (weak, nonatomic) IBOutlet UISwitch *SwitchCheckInNotification;
-@property (weak, nonatomic) IBOutlet UISwitch *SwitchCheckOutNotification;
 @property (weak, nonatomic) IBOutlet UIView *ViewSettings;
-@property (weak, nonatomic) IBOutlet UILabel *LabelCheckInDt;
-@property (weak, nonatomic) IBOutlet UILabel *LabelCheckOutDt;
-@property (weak, nonatomic) IBOutlet UIImageView *ImageTwitterSetting;
-@property (weak, nonatomic) IBOutlet UIImageView *ImageNotificationSetting;
-@property (weak, nonatomic) IBOutlet UIButton *ButtonSetCheckInNotify;
-@property (weak, nonatomic) IBOutlet UIButton *ButtonSetCheckOutNotify;
+@property (assign) int toggleNotifyArrivingFlag;
+@property (assign) int toggleNotifyLeavingFlag;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonArriving;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonLeaving;
+@property (weak, nonatomic) IBOutlet UILabel *LabelGeoWarningNotice;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *GeoWarningLabelHeightConstraint;
+
 
 
 @end

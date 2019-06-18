@@ -11,6 +11,7 @@
 #import "AttachmentRLM.h"
 #import "ExpenseRLM.h"
 #import "PoiRLM.h"
+#import "WeatherRLM.h"
 
 @interface ActivityRLM : RLMObject
 @property NSString *key;
@@ -28,6 +29,7 @@
 @property NSNumber<RLMInt> *geonotification;
 @property NSNumber<RLMInt> *geonotifycheckout;
 @property NSNumber<RLMInt> *IncludeInTweet;
+@property NSNumber<RLMInt> *IncludeWeather;
 @property NSDate *startdt;
 @property NSDate *enddt;
 @property NSDate *geonotifycheckindt;
@@ -37,6 +39,7 @@
 
 @property RLMArray<ImageCollectionRLM *><ImageCollectionRLM> *images;
 @property RLMArray<AttachmentRLM *><AttachmentRLM> *attachments;
+@property RLMArray<WeatherRLM *><WeatherRLM> *weather;
 @end
 
 RLM_ARRAY_TYPE(ActivityRLM)

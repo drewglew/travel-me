@@ -46,26 +46,26 @@ CGFloat ProjectListFooterFilterHeightConstant;
 
 /*
  created date:      29/04/2018
- last modified:     29/03/2019
+ last modified:     15/06/2019
  remarks:
  */
 -(void) LoadSupportingData {
 
     self.tripcollection = [TripRLM allObjects];
-    self.ImageCollection = [[NSMutableArray alloc] init];
+    self.TripImageDictionary = [[NSMutableDictionary alloc] init];
 
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *imagesDirectory = [paths objectAtIndex:0];
-    
+  
     for (TripRLM *trip in self.tripcollection) {
         ImageCollectionRLM *image = [trip.images firstObject];
         NSString *dataFilePath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",image.ImageFileReference]];
         NSData *pngData = [NSData dataWithContentsOfFile:dataFilePath];
         if (pngData!=nil) {
-            [self.ImageCollection addObject:[UIImage imageWithData:pngData]];
+            [self.TripImageDictionary setObject:[UIImage imageWithData:pngData] forKey:trip.key];
         } else {
             UIImage *dummy = [[UIImage alloc] init];
-            [self.ImageCollection addObject:dummy];
+            [self.TripImageDictionary setObject:dummy forKey:trip.key];
         }
     }
 }
@@ -82,7 +82,7 @@ CGFloat ProjectListFooterFilterHeightConstant;
 
 /*
  created date:      29/04/2018
- last modified:     10/04/2019
+ last modified:     15/06/2019
  remarks:
  */
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -101,7 +101,7 @@ CGFloat ProjectListFooterFilterHeightConstant;
     } else {
         cell.trip = [self.tripcollection objectAtIndex:indexPath.row];
         
-        UIImage *image = [self.ImageCollection objectAtIndex:indexPath.row];
+        UIImage *image = [self.TripImageDictionary objectForKey:cell.trip.key];
         
         if (CGSizeEqualToSize(image.size, CGSizeZero)) {
             cell.ImageViewProject.image = [UIImage imageNamed:@"Project"];
@@ -109,8 +109,6 @@ CGFloat ProjectListFooterFilterHeightConstant;
             cell.ImageViewProject.image = image;
         }
 
-        
-        
         if (cell.trip.startdt != nil) {
             NSDateFormatter *dtformatter = [[NSDateFormatter alloc] init];
             [dtformatter setDateFormat:@"EEE, dd MMM HH:mm"];
@@ -303,7 +301,7 @@ CGFloat ProjectListFooterFilterHeightConstant;
 
 /*
  created date:      24/06/2018
- last modified:     20/10/2018
+ last modified:     15/06/2019
  remarks:
  */
 -(void)FilterProjectCollectionView {
@@ -326,12 +324,9 @@ CGFloat ProjectListFooterFilterHeightConstant;
         
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"startdt > %@", currentDate];
         self.tripcollection = [self.tripcollection objectsWithPredicate:predicate];
-        
-        
-        //self.tripcollection = [TripRLM objectsInRealm:self.realm where:@"startdt > %@",currentDate];
     } else {
         
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"startdt >= %@ AND enddt <= %@", currentDate,currentDate];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"startdt <= %@ AND enddt >= %@", currentDate,currentDate];
         
         self.tripcollection = [self.tripcollection objectsWithPredicate:predicate];
         // date BETWEEN {%@, %@}

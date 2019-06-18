@@ -20,6 +20,14 @@
     
     self.LabelVersion.text = [NSString stringWithFormat: @"%@ build %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"], [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleVersionKey]];
     
+    
+    
+    
+    
+    
+    
+    
+    
    
 }
 

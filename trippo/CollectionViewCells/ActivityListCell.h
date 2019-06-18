@@ -23,6 +23,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *ImageBlurBackground;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageBlurBackgroundBottomHalf;
 
+@property (weak, nonatomic) IBOutlet UIView *ViewOverlay;
 @property (weak, nonatomic) IBOutlet UIVisualEffectView *VisualViewBlurBehindImage;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewBookmark;
 @property (weak, nonatomic) IBOutlet UIImageView *ImageViewTypeOfPoi;

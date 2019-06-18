@@ -28,7 +28,7 @@
     [super setEnabled:enabled];
     // Do your customization here, eg:
     if (enabled) {
-        self.backgroundColor = [UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0];
+        self.backgroundColor = [UIColor colorWithRed:0.0f/255.0f green:102.0f/255.0f blue:51.0f/255.0f alpha:1.0];
     } else {
         self.backgroundColor = [UIColor lightGrayColor];
     }
@@ -46,12 +46,10 @@
 - (BOOL)resignFirstResponder {
     BOOL outcome = [super resignFirstResponder];
     if (outcome) {
-        self.backgroundColor = [UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0];
+        self.backgroundColor = [UIColor colorWithRed:0.0f/255.0f green:102.0f/255.0f blue:51.0f/255.0f alpha:1.0];
     }
     return outcome;
 }
-
-
 
 
 

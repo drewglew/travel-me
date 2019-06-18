@@ -19,4 +19,7 @@
 + (NSString*)FormatPrettyTime :(NSDate*)Dt;
 + (UIImage *)convertImageToGrayScale:(UIImage *)image ;
 + (bool)HasTopNotch;
++ (BOOL)isSameDt:(NSDate*)date1 otherDay:(NSDate*)date2;
++ (BOOL)isSameDay:(NSDate*)date1 otherDay:(NSDate*)date2;
++ (UIImage *)imageWithColor:(UIColor *)color ;
 @end

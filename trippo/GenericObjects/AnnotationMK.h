@@ -16,6 +16,8 @@
     NSString *Locality;
     NSString *SubLocality;
     NSString *PostCode;
+    NSString *Type;
+    NSString *PoiKey;
 }
 @property (nonatomic) NSString *AdministrativeArea;
 @property (nonatomic) NSString *SubAdministrativeArea;
@@ -25,5 +27,6 @@
 @property (nonatomic) NSString *SubLocality;
 @property (nonatomic) NSString *FullThoroughFare;
 @property (nonatomic) NSString *PostCode;
-
+@property (nonatomic) NSString *Type;
+@property (nonatomic) NSString *PoiKey;
 @end

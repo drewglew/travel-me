@@ -233,5 +233,57 @@
 }
 
 
+/*
+ created date:      15/06/2019
+ last modified:     15/06/2019
+ remarks:           taken from StackOverflow
+ */
++ (BOOL)isSameDay:(NSDate*)date1 otherDay:(NSDate*)date2 {
+    NSCalendar* calendar = [NSCalendar currentCalendar];
+    
+    unsigned unitFlags = NSCalendarUnitYear | NSCalendarUnitMonth |  NSCalendarUnitDay;
+    NSDateComponents* comp1 = [calendar components:unitFlags fromDate:date1];
+    NSDateComponents* comp2 = [calendar components:unitFlags fromDate:date2];
+    
+    return [comp1 day]   == [comp2 day] &&
+    [comp1 month] == [comp2 month] &&
+    [comp1 year]  == [comp2 year];
+}
+
+/*
+ created date:      15/06/2019
+ last modified:     15/06/2019
+ remarks:           taken from StackOverflow
+ */
++ (BOOL)isSameDt:(NSDate*)date1 otherDay:(NSDate*)date2 {
+    NSCalendar* calendar = [NSCalendar currentCalendar];
+    
+    unsigned unitFlags = NSCalendarUnitYear | NSCalendarUnitMonth |  NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute;
+    NSDateComponents* comp1 = [calendar components:unitFlags fromDate:date1];
+    NSDateComponents* comp2 = [calendar components:unitFlags fromDate:date2];
+    
+    return [comp1 day]   == [comp2 day] &&
+    [comp1 month] == [comp2 month] &&
+    [comp1 year]  == [comp2 year];
+}
+
+/*
+ created date:      17/06/2019
+ last modified:     17/06/2019
+ remarks:           taken from StackOverflow
+ */
++ (UIImage *)imageWithColor:(UIColor *)color {
+    CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
+    UIGraphicsBeginImageContext(rect.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CGContextSetFillColorWithColor(context, [color CGColor]);
+    CGContextFillRect(context, rect);
+    
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return image;
+}
 
 @end

@@ -16,4 +16,6 @@
 @synthesize Locality;
 @synthesize SubLocality;
 @synthesize PostCode;
+@synthesize Type;
+@synthesize PoiKey;
 @end

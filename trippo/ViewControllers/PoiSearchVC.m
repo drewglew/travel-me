@@ -211,8 +211,8 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
 
 /*
  created date:      03/05/2018
- last modified:     10/09/2018
- remarks:
+ last modified:     15/06/2019
+ remarks:           called twice???
  */
 -(void)RefreshPoiFilteredData :(bool) UpdateTypes {
     
@@ -239,8 +239,7 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
                 [poiitems addObject:usedPois.poikey];
             }
         }
-        
-        
+
         NSSet *typeset = [[NSSet alloc] initWithArray:poiitems];
         
         if (self.SegmentPoiFilterList.selectedSegmentIndex == 0) {
@@ -278,52 +277,75 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
         self.poifilteredcollection = [self.poifilteredcollection objectsWithPredicate:[NSPredicate predicateWithFormat:@"countrycode IN %@",projectcountries]];
     }
     
-    if (self.isSearching) {
+    // here we must apply in case isSearching is false and text is not ""... when we return from Poi Data Entry
+    if (self.isSearching || (![self.SearchBarPoi.text isEqualToString:@""] && self.isSearching == false)) {
         self.poifilteredcollection = [self.poifilteredcollection objectsWithPredicate:[NSPredicate predicateWithFormat:@"searchstring CONTAINS %@",self.SearchBarPoi.text]];
     }
     
     
     if (UpdateTypes) {
-        
+
         NSCountedSet* countedSet = [[NSCountedSet alloc] init];
         
         for (PoiRLM* poi in self.poifilteredcollection) {
             [countedSet addObject:poi.categoryid];
         }
         
-        self.PoiTypes = [[NSMutableArray alloc] init];
+        if (self.PoiTypes.count>0) {
+            // need to process each selected to check counter if there are still Poi selected.
+
+            for (id item in countedSet)
+            {
+                //u_long number = [item unsignedLongValue];
+                //TypeNSO *type = [self.PoiTypes objectAtIndex:number];
+                
+                for (TypeNSO* type in self.PoiTypes) {
+                    if (type.categoryid == item) {
+                        type.occurances = [NSNumber numberWithInteger:[countedSet countForObject:type.categoryid]];
+                        
+                        break;
+                    }
+                }
+            }
+
+        } else {
         
-        for (id item in countedSet)
-        {
-            TypeNSO *type = [[TypeNSO alloc] init];
-            type.occurances = [NSNumber numberWithInteger:[countedSet countForObject:item]];
-            type.categoryid = item;
-            u_long number = [item unsignedLongValue];
-            type.imagename = [self.TypeItems objectAtIndex: number];
-            type.selected = true;
-            [self.PoiTypes addObject:type];
+            self.PoiTypes = [[NSMutableArray alloc] init];
+            
+            for (id item in countedSet)
+            {
+                TypeNSO *type = [[TypeNSO alloc] init];
+                type.occurances = [NSNumber numberWithInteger:[countedSet countForObject:item]];
+                type.categoryid = item;
+                u_long number = [item unsignedLongValue];
+                type.imagename = [self.TypeItems objectAtIndex: number];
+                type.selected = true;
+                [self.PoiTypes addObject:type];
+            }
+            
         }
     
-    } else {
-        // here we filter on existing types instead..
-
-        NSMutableArray *types = [[NSMutableArray alloc] init];
-        for (TypeNSO *type in self.PoiTypes) {
-            if (type.selected) {
-                [types addObject:type.categoryid];
-            }
+    }
+    // here we filter on existing types ..
+    bool TypesExcluded = false;
+    NSMutableArray *types = [[NSMutableArray alloc] init];
+    for (TypeNSO *type in self.PoiTypes) {
+        if (type.selected) {
+            [types addObject:type.categoryid];
+        } else {
+            TypesExcluded = true;
         }
-        
+    }
+    
+    if (TypesExcluded) {
         NSSet *typeset = [[NSSet alloc] initWithArray:types];
-        
+    
         self.poifilteredcollection = [self.poifilteredcollection objectsWithPredicate:[NSPredicate predicateWithFormat:@"categoryid IN %@",typeset]];
     }
 
-    
     self.poifilteredcollection = [self.poifilteredcollection sortedResultsUsingDescriptors:@[
                                                        [RLMSortDescriptor sortDescriptorWithKeyPath:@"name" ascending:YES],
                                                        ]];
-    
     
     [self.LabelCounter setText:[NSString stringWithFormat:@"%lu Items", (unsigned long)self.poifilteredcollection.count]];
     
@@ -379,14 +401,7 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
                         
                     }
                     image = [ToolBoxNSO imageWithImage:image convertToSize:imagesize];
-                    
-                    /* temporary */
-                    /*NSData *imageData =  UIImagePNGRepresentation(image);
-                    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-                    NSString *imagesDirectory = [paths objectAtIndex:0];
-                    NSString *dataPath = [imagesDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/Images/%@/thumbnail.png",poi.key]];
-                    [imageData writeToFile:dataPath atomically:YES];
-                    */
+
                 } else {
                     image =[UIImage imageWithData:pngData];
                 }

@@ -21,13 +21,12 @@ int DocumentListingViewPresentedHeight = 250;
 
 /*
  created date:      01/05/2018
- last modified:     30/03/2019
+ last modified:     15/06/2019
  remarks:
  */
 - (void)viewDidLoad {
     
-    [super viewDidLoad];
-    
+    [super viewDidLoad];    
     if (self.Activity.state == [NSNumber  numberWithInteger:0]) {
         self.ImagePicture.image = [UIImage imageNamed:@"Planning"];
         self.ImageViewKeyActivity.image = [UIImage imageNamed:@"Planning"];
@@ -61,7 +60,7 @@ int DocumentListingViewPresentedHeight = 250;
     NSDate *defaultStartDt = [NSDate date];
     NSDate *defaultEndDt = [NSDate date];
     
-    NSDate *today = [NSDate date];
+    //NSDate *today = [NSDate date];
     if (self.deleteitem) {
         UIImage *btnImage = [UIImage imageNamed:@"TrashCan"];
         [self.ButtonAction setImage:btnImage forState:UIControlStateNormal];
@@ -75,10 +74,35 @@ int DocumentListingViewPresentedHeight = 250;
         
         [self LoadActivityData];
         self.CollectionViewActivityImages.scrollEnabled = true;
-        NSComparisonResult result = [self.Activity.startdt compare:today];
-        NSComparisonResult resultStartEnd = [self.Activity.startdt compare:self.Activity.enddt];
+        //NSComparisonResult result = [self.Activity.startdt compare:today];
+        
+        if (self.Activity.state == [NSNumber numberWithInteger:0]) {
+            // validate if we have an related actual item.
+            NSString* ActualCompondKey = [self.Activity.compondkey stringByReplacingOccurrencesOfString:@"~0" withString:@"~1"];
+            
+            ActivityRLM *activity = [ActivityRLM objectForPrimaryKey:ActualCompondKey];
+            
+            if (activity != nil) {
+                self.ButtonArriving.enabled = false;
+                self.ButtonLeaving.enabled = false;
+                self.LabelGeoWarningNotice.text = @"It is no longer possible to modify the notification settings on this planned item because it is also an actual activity.";
+                self.GeoWarningLabelHeightConstraint.constant = 75.0f;
+                [self.ButtonArriving setBackgroundColor:[UIColor colorWithRed:179.0f/255.0f green:25.0f/255.0f blue:49.0f/255.0f alpha:1.0]];
+                [self.ButtonLeaving setBackgroundColor:[UIColor colorWithRed:179.0f/255.0f green:25.0f/255.0f blue:49.0f/255.0f alpha:1.0]];
+            }
+        }
+        
+        BOOL datesAreEqual = [[NSCalendar currentCalendar] isDate:self.Activity.startdt
+                                                      equalToDate:self.Activity.enddt toUnitGranularity:NSCalendarUnitMinute];
+        
+        if (datesAreEqual && self.Activity.state==[NSNumber numberWithInteger:1]) {
+            
+            // we set the colour in the main method that covers its normal set.
+            self.ButtonArriving.enabled = false;
+            self.LabelGeoWarningNotice.text = @"It is impractical to set arrival notifications on actual activity that is already checked in.";
+            self.GeoWarningLabelHeightConstraint.constant = 75.0f;
+            [self.ButtonArriving setBackgroundColor:[UIColor colorWithRed:179.0f/255.0f green:25.0f/255.0f blue:49.0f/255.0f alpha:1.0]];
 
-        if (resultStartEnd == NSOrderedSame && result==NSOrderedAscending && self.Activity.state==[NSNumber numberWithInteger:1]) {
             self.ViewCheckInOut.layer.cornerRadius = 100;
             self.ViewCheckInOut.clipsToBounds = YES;
             self.ViewCheckInOut.transform = CGAffineTransformMakeRotation(-.34906585);
@@ -88,7 +112,23 @@ int DocumentListingViewPresentedHeight = 250;
             self.LabelCheckInOut.text = @"Check\nOut";
             [self.LabelCheckInOut setTextColor:[UIColor whiteColor]];
             
+           
+        } else if (self.Activity.state==[NSNumber numberWithInteger:1]) {
+            // we set the colour in the main method that covers its normal set.
+            self.ButtonArriving.enabled = false;
+            self.ButtonLeaving.enabled = false;
+            self.LabelGeoWarningNotice.text = @"It is no longer possible to set notifications on this item because it is completed.";
+            self.GeoWarningLabelHeightConstraint.constant = 75.0f;
+            [self.ButtonArriving setBackgroundColor:[UIColor colorWithRed:179.0f/255.0f green:25.0f/255.0f blue:49.0f/255.0f alpha:1.0]];
+            [self.ButtonLeaving setBackgroundColor:[UIColor colorWithRed:179.0f/255.0f green:25.0f/255.0f blue:49.0f/255.0f alpha:1.0]];
         }
+        
+        
+        self.toggleNotifyArrivingFlag = [self.Activity.geonotification intValue];
+        self.toggleNotifyLeavingFlag = [self.Activity.geonotifycheckout intValue];
+        
+        
+        
 
     } else if (self.transformed) {
         self.ViewCheckInOut.layer.cornerRadius = 100;
@@ -99,28 +139,18 @@ int DocumentListingViewPresentedHeight = 250;
         [self.ButtonAction setTitle:@"Update" forState:UIControlStateNormal];
         [self LoadActivityData];
         self.CollectionViewActivityImages.scrollEnabled = true;
-        if ([self.Activity.geonotification intValue]==0) {
-            [self.SwitchCheckInNotification setOn:false];
-        } else {
-            [self.SwitchCheckInNotification setOn:true];
-        }
-        self.SwitchCheckInNotification.enabled = false;
-        
-        if ([self.Activity.geonotifycheckout intValue]==0) {
-            [self.SwitchCheckOutNotification setOn:false];
-        } else {
-            [self.SwitchCheckOutNotification setOn:true];
-        }
-        if (self.Activity.geonotifycheckoutdt != nil) {
-            
-            self.SwitchCheckOutNotification.enabled = true;
-        } else {
-            self.SwitchCheckOutNotification.enabled = false;
-        }
-
+        self.toggleNotifyArrivingFlag = 0;
+        self.toggleNotifyLeavingFlag = 0;
         defaultStartDt = self.Activity.startdt;
         defaultEndDt = self.Activity.enddt;
         
+        // we set the colour in the main method that covers its normal set.
+        self.ButtonArriving.enabled = false;
+        self.LabelGeoWarningNotice.text = @"It is impractical to set arrival notifications on actual activity when creating them from a planned activity.";
+        self.GeoWarningLabelHeightConstraint.constant = 75.0f;
+        [self.ButtonArriving setBackgroundColor:[UIColor colorWithRed:179.0f/255.0f green:25.0f/255.0f blue:49.0f/255.0f alpha:1.0]];
+        //[self.view layoutIfNeeded];
+
         self.Activity.startdt = [NSDate date];
         self.Activity.enddt = [NSDate date];
 
@@ -138,15 +168,23 @@ int DocumentListingViewPresentedHeight = 250;
                 self.Activity.enddt = [NSDate date];
             }
         }
-        [self.SwitchCheckInNotification setOn:false];
-        [self.SwitchCheckOutNotification setOn:false];
+        self.toggleNotifyArrivingFlag = 0;
+        self.toggleNotifyLeavingFlag = 0;
+        
+        if (self.Activity.state == [NSNumber numberWithInteger:1]) {
+            // we set the colour in the main method that covers its normal set.
+            self.ButtonArriving.enabled = false;
+            self.ButtonLeaving.enabled = false;
+            self.LabelGeoWarningNotice.text = @"It is impractical to set notifications on actual activity when creating them.  Once updated, it is possible to create a leaving notification if item is 'Checked-In'.";
+            self.GeoWarningLabelHeightConstraint.constant = 75.0f;
+            [self.ButtonArriving setBackgroundColor:[UIColor colorWithRed:179.0f/255.0f green:25.0f/255.0f blue:49.0f/255.0f alpha:1.0]];
+            [self.ButtonLeaving setBackgroundColor:[UIColor colorWithRed:179.0f/255.0f green:25.0f/255.0f blue:49.0f/255.0f alpha:1.0]];
+            //[self.view layoutIfNeeded];
+        }
+        
         
         [self.SwitchTweet setOn:false];
 
-        if (self.Activity.state==[NSNumber numberWithInteger:1]) {
-            self.SwitchCheckInNotification.enabled = false;
-            self.SwitchCheckOutNotification.enabled = false;
-        }
         [self LoadPoiData];
     }
     [self addDoneToolBarToKeyboard:self.TextViewNotes];
@@ -232,18 +270,21 @@ int DocumentListingViewPresentedHeight = 250;
             self.TextFieldEndDt.text = PrettyDateDifference;
         }
     }
-    
-    UIImage *image = self.ImageTwitterSetting.image;
-    
-    [self setGeoNotifyButton :self.ButtonSetCheckInNotify :true];
-    [self setGeoNotifyButton :self.ButtonSetCheckOutNotify :false];
-    
-    
-    self.ImageTwitterSetting.image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    [self.ImageTwitterSetting setTintColor:[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]];
-    image = self.ImageNotificationSetting.image;
-    self.ImageNotificationSetting.image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    [self.ImageNotificationSetting setTintColor:[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]];
+
+    if ([self.ButtonArriving isEnabled]) {
+        if (self.toggleNotifyArrivingFlag == 1) {
+            [self.ButtonArriving setBackgroundColor:[UIColor colorWithRed:0.0f/255.0f green:102.0f/255.0f blue:51.0f/255.0f alpha:1.0]];
+        } else {
+            [self.ButtonArriving setBackgroundColor:[UIColor lightGrayColor]];
+        }
+    }
+    if ([self.ButtonLeaving isEnabled]) {
+        if (self.toggleNotifyLeavingFlag == 1) {
+            [self.ButtonLeaving setBackgroundColor:[UIColor colorWithRed:0.0f/255.0f green:102.0f/255.0f blue:51.0f/255.0f alpha:1.0]];
+        } else {
+            [self.ButtonLeaving setBackgroundColor:[UIColor lightGrayColor]];
+        }
+    }
 
     [self.TextFieldEndDt setInputAccessoryView:toolBar];
     self.TableViewAttachments.rowHeight = 60.0f;
@@ -266,6 +307,7 @@ int DocumentListingViewPresentedHeight = 250;
 
 }
 
+
 -(void)LoadDocuments {
     self.DocumentDictionary = [[NSMutableDictionary alloc] init];
     for (AttachmentRLM *attachmentobject in self.Activity.attachments) {
@@ -286,7 +328,7 @@ int DocumentListingViewPresentedHeight = 250;
 
 /*
  created date:      01/05/2018
- last modified:     23/03/2019
+ last modified:     17/06/2019
  remarks:           create a thumbnail image if it doesn't exist.
  */
 -(void) LoadActivityData {
@@ -299,36 +341,6 @@ int DocumentListingViewPresentedHeight = 250;
         [self.SwitchTweet setOn:false];
     } else {
         [self.SwitchTweet setOn:true];
-    }
-    
-    if ([self.Activity.geonotification intValue] == 0) {
-        [self.SwitchCheckInNotification setOn:false];
-    } else {
-        [self.SwitchCheckInNotification setOn:true];
-    }
-    if ([self.Activity.geonotifycheckout intValue] == 0) {
-        [self.SwitchCheckOutNotification setOn:false];
-    } else {
-        [self.SwitchCheckOutNotification setOn:true];
-    }
-    
-    // HERE we need to also add extra
-    if (self.Activity.state==[NSNumber numberWithInteger:1]) {
-        self.SwitchCheckInNotification.enabled = false;
-    }
-    
-    if (self.Activity.geonotifycheckindt != nil) {
-         self.SwitchCheckInNotification.enabled = false;
-         self.LabelCheckInDt.text =  [NSString stringWithFormat:@"Notification setup on %@",[ToolBoxNSO FormatPrettyDate:self.Activity.geonotifycheckindt]];
-    } else {
-        self.LabelCheckInDt.text = @"Not Used";
-    }
-    
-    if (self.Activity.geonotifycheckoutdt != nil) {
-        self.SwitchCheckOutNotification.enabled = false;
-        self.LabelCheckOutDt.text = [NSString stringWithFormat:@"Notification setup on %@",[ToolBoxNSO FormatPrettyDate:self.Activity.geonotifycheckoutdt]];
-    } else {
-        self.LabelCheckOutDt.text = @"Not Used";
     }
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -374,6 +386,7 @@ int DocumentListingViewPresentedHeight = 250;
 
     /* set map */
     self.PoiMapView.delegate = self;
+    self.NotificationMapView.delegate = self;
 
     MKPointAnnotation *anno = [[MKPointAnnotation alloc] init];
     anno.title = self.Poi.name;
@@ -385,14 +398,25 @@ int DocumentListingViewPresentedHeight = 250;
 
     NSNumber *radius = self.Poi.radius;
     
-    [self.PoiMapView setCenterCoordinate:coord animated:YES];
+    [self.PoiMapView setCenterCoordinate:coord animated:NO];
+    
+    self.PoiMapView.zoomEnabled = false;
+    self.PoiMapView.scrollEnabled = false;
+    self.PoiMapView.userInteractionEnabled = false;
+    
+    [self.NotificationMapView setCenterCoordinate:coord animated:YES];
     
     MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(coord, [radius doubleValue] * 2.2, [radius doubleValue] * 2.2);
-    
     MKCoordinateRegion adjustedRegion = [self.PoiMapView regionThatFits:viewRegion];
     [self.PoiMapView setRegion:adjustedRegion animated:YES];
     [self.PoiMapView addAnnotation:anno];
     [self.PoiMapView selectAnnotation:anno animated:YES];
+    
+    viewRegion = MKCoordinateRegionMakeWithDistance(coord, [radius doubleValue] * 5, [radius doubleValue] * 5);
+    adjustedRegion = [self.NotificationMapView regionThatFits:viewRegion];
+    [self.NotificationMapView setRegion:adjustedRegion animated:YES];
+    [self.NotificationMapView addAnnotation:anno];
+    [self.NotificationMapView selectAnnotation:anno animated:YES];
     
     /* load images from file - TODO make sure we locate them all */
     if (self.PoiImage==nil) {
@@ -422,6 +446,7 @@ int DocumentListingViewPresentedHeight = 250;
     MKCircle *myCircle = [MKCircle circleWithCenterCoordinate:coord radius:[radius doubleValue]];
     [self.PoiMapView addOverlay:myCircle];
     
+    [self.NotificationMapView addOverlay:myCircle];
     
 }
 
@@ -465,7 +490,7 @@ int DocumentListingViewPresentedHeight = 250;
 
 /*
  created date:      01/05/2018
- last modified:     17/03/2019
+ last modified:     15/06/2019
  remarks:  TODO [self.delegate didUpdateActivityImage]; add to update
  */
 - (IBAction)ActionButtonPressed:(id)sender {
@@ -473,17 +498,7 @@ int DocumentListingViewPresentedHeight = 250;
     if (self.TextFieldName.text == nil) {
         return;
     }
-    
-    /* delete and finish off */
-    if (self.deleteitem) {
-        [self.realm transactionWithBlock:^{
-            [self.realm deleteObject:[ActivityRLM objectForPrimaryKey:self.Activity.compondkey]];
-            
-            
-        }];
-        [self dismissViewControllerAnimated:YES completion:Nil];
-    } else {
-    
+   
     /*
     if user does not enter any dates, the dates stored match the project dates entered.
     If user modifies the dates and start date is earlier than project start date or end date is later than end date -
@@ -529,18 +544,16 @@ int DocumentListingViewPresentedHeight = 250;
         bool AdjustTripStartDt = false;
         bool AdjustTripEndDt = false;
 
-        if (self.Activity.state == 0) {
-            NSComparisonResult resulttripstartdt = [startdt compare:self.Trip.startdt];
-            NSComparisonResult resulttripenddt = [enddt compare:self.Trip.enddt];
+        NSComparisonResult resulttripstartdt = [startdt compare:self.Trip.startdt];
+        NSComparisonResult resulttripenddt = [enddt compare:self.Trip.enddt];
 
-            if (resulttripstartdt == NSOrderedDescending) {
-                AdjustTripStartDt = true;
-            }
-            if (resulttripenddt == NSOrderedAscending) {
-                AdjustTripEndDt = true;
-            }
+        if (resulttripstartdt == NSOrderedAscending) {
+            AdjustTripStartDt = true;
         }
-
+        if (resulttripenddt == NSOrderedDescending) {
+            AdjustTripEndDt = true;
+        }
+    
         RLMResults <ActivityRLM*> *activities = [ActivityRLM objectsWhere:@"tripkey=%@ and state=%@",self.Trip.key, self.Activity.state];
 
         if (activities.count==0) {
@@ -592,36 +605,51 @@ int DocumentListingViewPresentedHeight = 250;
                 
             } else  {
                 /* only perform this batch update if no errors have occurred beforehand & we are working on planned activities */
-                if (self.Activity.state==0) {
-                    for (ActivityRLM* activity in activities) {
-                        /* we do not want to waste comparing activity against itself */
-                        if (![self.Activity.key isEqualToString:activity.key]) {
-                            NSDate *activitystartdt = activity.startdt;
-                            NSDate *activityenddt = activity.enddt;
-                            /* organize planned draft items to match expected modification to Trip  */
-                            if (AdjustTripStartDt || AdjustTripEndDt) {
-                                NSComparisonResult resultoriginalstartdt = [self.Trip.startdt compare:activitystartdt];
-                                NSComparisonResult resultoriginalenddt = [self.Trip.enddt compare:activityenddt];
-                                if (resultoriginalstartdt == NSOrderedSame && resultoriginalenddt == NSOrderedSame) {
-                                    [activity.realm beginWriteTransaction];
-                                    activity.startdt = startdt;
-                                    activity.enddt = enddt;
-                                    [activity.realm commitWriteTransaction];
-                                }
+            
+                for (ActivityRLM* activity in activities) {
+                    /* we do not want to waste comparing activity against itself */
+                    if (![self.Activity.key isEqualToString:activity.key]) {
+                        NSDate *activitystartdt = activity.startdt;
+                        NSDate *activityenddt = activity.enddt;
+                        /* organize planned draft items to match expected modification to Trip  */
+                        if (AdjustTripStartDt || AdjustTripEndDt) {
+                            NSComparisonResult resultoriginalstartdt = [self.Trip.startdt compare:activitystartdt];
+                            NSComparisonResult resultoriginalenddt = [self.Trip.enddt compare:activityenddt];
+                            if (resultoriginalstartdt == NSOrderedSame && resultoriginalenddt == NSOrderedSame) {
+                                [activity.realm beginWriteTransaction];
+                                activity.startdt = startdt;
+                                activity.enddt = enddt;
+                                [activity.realm commitWriteTransaction];
                             }
                         }
                     }
                 }
+                /* new block to update also the Trip information to reflect changes made over the activity */
+                if (AdjustTripStartDt || AdjustTripEndDt) {
+            
+                    if (AdjustTripStartDt) {
+                        [self.Trip.realm beginWriteTransaction];
+                        self.Trip.startdt = startdt;
+                        [self.Trip.realm commitWriteTransaction];
+                    }
+                    if (AdjustTripEndDt) {
+                        [self.Trip.realm beginWriteTransaction];
+                        self.Trip.enddt = enddt;
+                        [self.Trip.realm commitWriteTransaction];
+                    }
+                    
+                }
+
                 [self UpdateActivityRealmData];
             }
         }
-    }
+    
 }
 
 /*
  created date:      21/02/2019
- last modified:     25/03/2019
- remarks:           TODO - add switch control item for Tweet
+ last modified:     17/06/2019
+ remarks:           
  */
 - (void)UpdateActivityRealmData
 {
@@ -648,14 +676,14 @@ int DocumentListingViewPresentedHeight = 250;
         if (self.newitem) self.Activity.key = [[NSUUID UUID] UUIDString];
         self.Activity.compondkey = [NSString stringWithFormat:@"%@~%@",self.Activity.key,self.Activity.state];
         
-        if ([self.SwitchCheckInNotification isOn]) {
+        if (self.toggleNotifyArrivingFlag == 1) {
             // we have only just switched this on.
-            [self InitGeoNotification:@"CheckInCategory" :true :[NSString stringWithFormat: @"Arrived at location you planned to arrive at %@", [ToolBoxNSO FormatPrettyDate :self.Activity.startdt]]];
+            [self InitGeoNotification:@"CheckInCategory" :true :[NSString stringWithFormat: @"Arrived at location you planned to be at %@", [ToolBoxNSO FormatPrettyDate :self.Activity.startdt]]];
             self.Activity.geonotification = [NSNumber numberWithInt:1];
             self.Activity.geonotifycheckindt = [NSDate date];
         }
         
-        if ([self.SwitchCheckOutNotification isOn]) {
+        if (self.toggleNotifyLeavingFlag == 1) {
             // we have only just switched this on.
             [self InitGeoNotification:@"CheckOutCategory" :false :[NSString stringWithFormat: @"Departed location you planned to leave at %@", [ToolBoxNSO FormatPrettyDate :self.Activity.enddt]]];
             self.Activity.geonotifycheckout = [NSNumber numberWithInt:1];
@@ -705,20 +733,25 @@ int DocumentListingViewPresentedHeight = 250;
             self.Activity.IncludeInTweet = [NSNumber numberWithInt:0];
         }
  
-        if ([self.SwitchCheckInNotification isOn]) {
+        if (self.toggleNotifyArrivingFlag == 1 && self.Activity.geonotification == [NSNumber numberWithInt:0]) {
             // we have only just switched this on.
-            [self InitGeoNotification:@"CheckInCategory" :true :[NSString stringWithFormat: @"Arrived at location you planned to arrive at %@", [ToolBoxNSO FormatPrettyDate :self.Activity.startdt]]];
+            [self InitGeoNotification:@"CheckInCategory" :true :[NSString stringWithFormat: @"Arrived at location you originally planned to be at %@", [ToolBoxNSO FormatPrettyDate :self.Activity.startdt]]];
             self.Activity.geonotification = [NSNumber numberWithInt:1];
             self.Activity.geonotifycheckindt = [NSDate date];
+        } else if (self.toggleNotifyArrivingFlag == 0 && self.Activity.geonotification == [NSNumber numberWithInt:1]) {
+            // run through removal
+             [self setGeoNotifyOff :true];
         }
         
-        if ([self.SwitchCheckOutNotification isOn]) {
+        if (self.toggleNotifyLeavingFlag == 1 && self.Activity.geonotifycheckout == [NSNumber numberWithInt:0]) {
             // we have only just switched this on.
-            [self InitGeoNotification:@"CheckOutCategory" :false :[NSString stringWithFormat: @"Departed location you planned to leave at %@", [ToolBoxNSO FormatPrettyDate :self.Activity.enddt]]];
+            [self InitGeoNotification:@"CheckOutCategory" :false :[NSString stringWithFormat: @"Departed location you originally planned to leave at %@", [ToolBoxNSO FormatPrettyDate :self.Activity.enddt]]];
             self.Activity.geonotifycheckout = [NSNumber numberWithInt:1];
             self.Activity.geonotifycheckoutdt = [NSDate date];
-        } 
-        
+        } else if (self.toggleNotifyLeavingFlag == 0 && self.Activity.geonotifycheckout == [NSNumber numberWithInt:1]) {
+            // run through removal
+             [self setGeoNotifyOff :false];
+        }
         if (self.Activity.images.count>0) {
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
             NSString *imagesDirectory = [paths objectAtIndex:0];
@@ -1105,6 +1138,23 @@ int DocumentListingViewPresentedHeight = 250;
         self.SwitchViewPhotoOptions.hidden = false;
         
     } else if ([self.SegmentPresenter selectedSegmentIndex] == 3) {
+        
+        
+        // only do this once.
+        if (self.Activity.attachments.count > 0 && [self.WebViewPreview isHidden]) {
+            AttachmentRLM *attachmentobject = [self.Activity.attachments objectAtIndex:0];
+            
+            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+            NSString *documentDirectory = [paths objectAtIndex:0];
+            
+            NSString *PdfDataFilePath = [documentDirectory stringByAppendingPathComponent:attachmentobject.filename];
+            
+            NSURL *targetURL = [NSURL fileURLWithPath:PdfDataFilePath];
+            NSData *data = [NSData dataWithContentsOfURL:targetURL];
+            
+            [self.WebViewPreview loadData:data MIMEType:@"application/pdf" characterEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@""]];
+        }
+        [self.WebViewPreview setHidden:FALSE];
         self.ViewMain.hidden = true;
         self.ViewNotes.hidden = true;
         self.ViewDocuments.hidden = false;
@@ -1115,6 +1165,7 @@ int DocumentListingViewPresentedHeight = 250;
         self.ButtonPayment.hidden = true;
         self.ButtonDirections.hidden = true;
         self.SwitchViewPhotoOptions.hidden = true;
+        
         
     } else if ([self.SegmentPresenter selectedSegmentIndex] == 4) {
         self.ViewMain.hidden = true;
@@ -2017,13 +2068,13 @@ int DocumentListingViewPresentedHeight = 250;
 
 /*
  created date:      25/03/2019
- last modified:     27/03/2019
+ last modified:     16/06/2019
  remarks:           Create requested checkin/checkout notification.
  */
 -(void) InitGeoNotification :(NSString *) CategoryIdentifier :(bool) NotifyOnEntry :(NSString *) Body {
     
     UNMutableNotificationContent *content = [UNMutableNotificationContent new];
-    content.title = [NSString stringWithFormat: @"Trippo Activity - %@", self.Activity.name];
+    content.title = [NSString stringWithFormat: @"Trippo Activity - %@\nOn Trip %@", self.Activity.name, self.Trip.name];
     if (NotifyOnEntry) {
         content.subtitle = @"Check In";
     } else {
@@ -2036,9 +2087,9 @@ int DocumentListingViewPresentedHeight = 250;
     NSString *identifier;
     
     if (NotifyOnEntry) {
-        identifier = [NSString stringWithFormat:@"CHECKIN~%@", self.Activity.compondkey];
+        identifier = [NSString stringWithFormat:@"CHECKIN~%@", self.Activity.key];
     } else {
-        identifier = [NSString stringWithFormat:@"CHECKOUT~%@", self.Activity.compondkey];
+        identifier = [NSString stringWithFormat:@"CHECKOUT~%@", self.Activity.key];
     }
     
     NSNumber *radius = self.Poi.radius;
@@ -2053,9 +2104,9 @@ int DocumentListingViewPresentedHeight = 250;
     region.notifyOnEntry = NotifyOnEntry;
     region.notifyOnExit = !NotifyOnEntry;
     
-    UNLocationNotificationTrigger *locTrigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:YES];
+     UNLocationNotificationTrigger *locTrigger = [UNLocationNotificationTrigger triggerWithRegion:region repeats:YES];
 
-   // UNTimeIntervalNotificationTrigger *timeintervaltrigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:180 repeats:YES];
+     // UNTimeIntervalNotificationTrigger *locTrigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:60 repeats:YES];
     
 
     
@@ -2073,16 +2124,16 @@ int DocumentListingViewPresentedHeight = 250;
 
 /*
  created date:      23/03/2019
- last modified:     25/03/2019
+ last modified:     16/06/2019
  remarks:           TODO!
  */
 -(void) RemoveGeoNotification :(bool) NotifyOnEntry {
     NSString *identifier;
     
     if (NotifyOnEntry) {
-        identifier = [NSString stringWithFormat:@"CHECKIN~%@", self.Activity.compondkey];
+        identifier = [NSString stringWithFormat:@"CHECKIN~%@", self.Activity.key];
     } else {
-        identifier = [NSString stringWithFormat:@"CHECKOUT~%@", self.Activity.compondkey];
+        identifier = [NSString stringWithFormat:@"CHECKOUT~%@", self.Activity.key];
     }
     
     NSArray *pendingNotification = [NSArray arrayWithObjects:identifier, nil];
@@ -2093,7 +2144,7 @@ int DocumentListingViewPresentedHeight = 250;
 
 /*
  created date:      10/04/2019
- last modified:     10/04/2019
+ last modified:     16/06/2019
  remarks:           TODO!
  */
 -(void) setGeoNotifyButton :(UIButton*)button :(bool)NotifyOnEntry {
@@ -2101,9 +2152,9 @@ int DocumentListingViewPresentedHeight = 250;
     NSString *ActivityIdentifier;
 
     if (NotifyOnEntry) {
-        ActivityIdentifier = [NSString stringWithFormat:@"CHECKIN~%@", self.Activity.compondkey];
+        ActivityIdentifier = [NSString stringWithFormat:@"CHECKIN~%@", self.Activity.key];
     } else {
-        ActivityIdentifier = [NSString stringWithFormat:@"CHECKOUT~%@", self.Activity.compondkey];
+        ActivityIdentifier = [NSString stringWithFormat:@"CHECKOUT~%@", self.Activity.key];
     }
     [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *requests){
         
@@ -2125,69 +2176,61 @@ int DocumentListingViewPresentedHeight = 250;
 
 /*
  created date:      10/04/2019
- last modified:     10/04/2019
- remarks:           TODO!
+ last modified:     16/06/2019
+ remarks:
  */
--(void) setGeoNotifyOff :(id)sender :(NSString*)GeoNotifyType :(bool)NotifyOnEntry {
-    
-    NSString *AlertMessage = [NSString stringWithFormat:@"Are you sure you wish to remove this %@ Notification Alert?", GeoNotifyType];
-    
-    UIAlertController * alertQuestion = [UIAlertController
-                                 alertControllerWithTitle:@"Delete pending Geo Notification"
-                                 message:AlertMessage
-                                 preferredStyle:UIAlertControllerStyleAlert];
-    
-    UIAlertAction* yesButton = [UIAlertAction
-                               actionWithTitle:@"Yes"
-                               style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction * action) {
+-(void) setGeoNotifyOff :(bool)NotifyOnEntry {
+    NSString *identifier;
 
-                                    NSString *identifier;
+    if (NotifyOnEntry) {
+       identifier = [NSString stringWithFormat:@"CHECKIN~%@", self.Activity.key];
+    } else {
+       identifier = [NSString stringWithFormat:@"CHECKOUT~%@", self.Activity.key];
+    }
 
-                                    if (NotifyOnEntry) {
-                                       identifier = [NSString stringWithFormat:@"CHECKIN~%@", self.Activity.compondkey];
-                                    } else {
-                                       identifier = [NSString stringWithFormat:@"CHECKOUT~%@", self.Activity.compondkey];
-                                    }
-
-                                    NSArray *pendingNotification = [NSArray arrayWithObjects:identifier, nil];
-                                    [AppDelegateDef.UserNotificationCenter removePendingNotificationRequestsWithIdentifiers:pendingNotification];
-
-                                    if ([sender isKindOfClass:[UIButton class]]) {
-                                       UIButton *button=(UIButton*)sender;
-                                       button.hidden = true;
-                                    }
-                               }];
-    
-    UIAlertAction* noButton = [UIAlertAction
-                               actionWithTitle:@"No"
-                               style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction * action) {}];
-    
-    [alertQuestion addAction:yesButton];
-    [alertQuestion addAction:noButton];
-
-    [self presentViewController:alertQuestion animated:YES completion:nil];
+    NSArray *pendingNotification = [NSArray arrayWithObjects:identifier, nil];
+    [AppDelegateDef.UserNotificationCenter removePendingNotificationRequestsWithIdentifiers:pendingNotification];
 }
 
 
+
 /*
- created date:      10/04/2019
- last modified:     10/04/2019
+ created date:      17/06/2019
+ last modified:     17/06/2019
  remarks:           TODO!
  */
-- (IBAction)ButtonSetCheckInNotifyPressed:(id)sender {
-    [self setGeoNotifyOff :sender :@"Check In" :true];
+-(int) setNotifyButtonToggle :(UIButton*) button :(int) ToggleFlag   {
     
+    int ModifiedToggleFlag=0;
+    
+    if (ToggleFlag == 0) {
+        [button setBackgroundColor:[UIColor colorWithRed:0.0f/255.0f green:102.0f/255.0f blue:51.0f/255.0f alpha:1.0]];
+        ModifiedToggleFlag = 1;
+    } else if(ToggleFlag == 1){
+        // set whatever color you want after tap button
+        [button setBackgroundColor:[UIColor lightGrayColor]];
+    }
+
+    
+    return ModifiedToggleFlag;
 }
 
 /*
- created date:      10/04/2019
- last modified:     10/04/2019
+ created date:      17/06/2019
+ last modified:     17/06/2019
  remarks:           TODO!
  */
-- (IBAction)ButtonSetCheckOutNotifyPressed:(id)sender {
-    [self setGeoNotifyOff :sender :@"Check Out" :false];
+- (IBAction)ButonArrivingPressed:(id)sender {
+    self.toggleNotifyArrivingFlag = [self setNotifyButtonToggle:self.ButtonArriving :self.toggleNotifyArrivingFlag];
+}
+
+/*
+ created date:      17/06/2019
+ last modified:     17/06/2019
+ remarks:           TODO!
+ */
+- (IBAction)ButtonLeavingPressed:(id)sender {
+    self.toggleNotifyLeavingFlag = [self setNotifyButtonToggle:self.ButtonLeaving :self.toggleNotifyLeavingFlag];
 }
 
 
