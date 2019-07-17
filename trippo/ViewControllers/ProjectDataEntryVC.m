@@ -925,141 +925,220 @@ bool loadedPlannedWeatherData = false;
 }
 
 
+
 /*
  created date:      12/06/2019
- last modified:     15/06/2019
- remarks:           Plan is as follows:
- Obtain actual activities unique to poi key.
- load into new object array containing the activity name and the coordinates along with color X marker
- Next get estimated activities unique to poi key
- test if they exist in the obect array already.  if they do set the marker to a different color Y, if they do not
- set marker to color Z.
+ last modified:     22/06/2019
+ remarks:           Loads weather data from API and distributes across the annotations on the map.
  */
 -(void) constructWeatherMapPointData :(bool)IsActual {
 
-    if ([self checkInternet]) {
-        double spacer = self.MapView.bounds.size.width / 5.0f;
-        for (int column = 0; column < 5; column++)
-        {
-            if (column == 1 || column == 4) {
-                for (int row = 0; row < 5; row++)
-                {
-                    if (row == 1 || row == 4) {
-                        CGPoint Point = CGPointMake(spacer * row, spacer * column);
-                        CLLocationCoordinate2D Coord;
-                        Coord = [self.MapView convertPoint:Point toCoordinateFromView:self.MapView];
-                        
-                        NSString *url = [NSString stringWithFormat:@"https://api.darksky.net/forecast/d339db567160bdd560169ea4eef3ee5a/%.4f,%.4f?exclude=minutely,flags,alerts&units=uk2", Coord.latitude, Coord.longitude];
-                        
-                        [self fetchFromDarkSkyApi:url withDictionary:^(NSDictionary *data) {
-                            
-                            dispatch_sync(dispatch_get_main_queue(), ^(void){
-                                NSLog(@"%@",data);
-                               
-                                NSDictionary *JSONdata = [data objectForKey:@"currently"];
+    [self.MapView removeAnnotations:self.MapView.annotations];
 
-                                NSString *iconItem = [JSONdata valueForKey:@"icon"];
-                                AnnotationMK *annotation = [[AnnotationMK alloc] init];
-                                annotation.coordinate = Coord;
-                                annotation.title = [JSONdata valueForKey:@"summary"];
-                                annotation.subtitle = [NSString stringWithFormat:@"%@ °C",[JSONdata valueForKey:@"temperature"]];
-                                annotation.Type = [NSString stringWithFormat:@"weather-%@",iconItem];
-                                
-                                if (IsActual) {
-                                    [self.WeatherActualAnnotationCollection addObject:annotation];
-                                } else {
-                                     [self.WeatherPlannedAnnotationCollection addObject:annotation];
-                                }
-                                
-                                [self.MapView addAnnotation:annotation];
-                            });
+    NSArray *keypaths  = [[NSArray alloc] initWithObjects:@"poikey", nil];
+
+    RLMResults<ActivityRLM *> *ActivitiesByState;
+
+    if (IsActual) {
+        ActivitiesByState = [[ActivityRLM objectsWhere:@"tripkey = %@ and state = 1",self.Trip.key] distinctResultsUsingKeyPaths:keypaths];
+        
+    } else {
+        ActivitiesByState = [[ActivityRLM objectsWhere:@"tripkey = %@ and state = 0",self.Trip.key] distinctResultsUsingKeyPaths:keypaths];
+    }
+
+    __block NSDate *updatedTime;
+    __block int PoiCounter = 0;
+    for (ActivityRLM *activity in ActivitiesByState) {
+
+        if ([activity.poi.IncludeWeather intValue] == 1) {
+            
+            /* we only want to update the forecast if it is older than 1 hour */
+            RLMResults <WeatherRLM*> *weatherresult = [activity.poi.weather objectsWhere:@"timedefition='currently'"];
+            NSNumber *maxtime = [weatherresult maxOfProperty:@"time"];
+            
+            updatedTime = [NSDate dateWithTimeIntervalSince1970: [maxtime doubleValue]];
+            
+            NSTimeInterval timestamp = [[NSDate date] timeIntervalSince1970];
+            NSNumber *now = [NSNumber numberWithDouble: timestamp];
+            
+            if ([self checkInternet]) {
+            
+                //NSLog(@"number of seconds past=%0.2f", [now doubleValue] - [maxtime doubleValue]);
+                
+                if (([maxtime doubleValue] + 3600 < [now doubleValue]) || maxtime == nil) {
+                    
+                    /* clean up previous data */
+                    if (maxtime != nil) {
+                        [self.realm transactionWithBlock:^{
+                            [self.realm deleteObjects:activity.poi.weather];
                         }];
                     }
+                    
+                    NSString *url = [NSString stringWithFormat:@"https://api.darksky.net/forecast/d339db567160bdd560169ea4eef3ee5a/%@,%@?exclude=minutely,flags,alerts&units=uk2", activity.poi.lat, activity.poi.lon];
+                    
+                    [self fetchFromDarkSkyApi:url withDictionary:^(NSDictionary *data) {
+                        
+                        dispatch_sync(dispatch_get_main_queue(), ^(void){
+                            
+                            WeatherRLM *weather = [[WeatherRLM alloc] init];
+                            NSDictionary *JSONdata = [data objectForKey:@"currently"];
+                            weather.icon = [NSString stringWithFormat:@"weather-%@",[JSONdata valueForKey:@"icon"]];
+                            weather.summary = [JSONdata valueForKey:@"summary"];
+                            double myDouble = [[JSONdata valueForKey:@"temperature"] doubleValue];
+                            NSNumberFormatter *fmt = [[NSNumberFormatter alloc] init];
+                            [fmt setPositiveFormat:@"0.#"];
+                            weather.temperature = [NSString stringWithFormat:@"%@",[fmt stringFromNumber:[NSNumber numberWithFloat:myDouble]]];
+                            weather.timedefition = @"currently";
+                            weather.time = [JSONdata valueForKey:@"time"];
+                            updatedTime = [NSDate dateWithTimeIntervalSince1970: [weather.time doubleValue]];
+                            
+                            /* Annotation for map  - begin */
+                            
+                            CLLocationCoordinate2D Coord = CLLocationCoordinate2DMake([activity.poi.lat doubleValue], [activity.poi.lon doubleValue]);
+
+                            AnnotationMK *annotation = [[AnnotationMK alloc] init];
+                            annotation.coordinate = Coord;
+                            annotation.title = [NSString stringWithFormat:@"%@", activity.name];
+                            annotation.subtitle = [NSString stringWithFormat:@"%@ °C (%@)",weather.temperature, weather.summary];
+                            annotation.Type = weather.icon;
+
+                            [self.MapView addAnnotation:annotation];
+                            /* Annotation for map  - end */
+
+                            
+                            [self.realm transactionWithBlock:^{
+                                [activity.poi.weather addObject:weather];
+                            }];
+                            
+                            NSDictionary *JSONHourlyData = [data objectForKey:@"hourly"];
+                            NSArray *dataHourly = [JSONHourlyData valueForKey:@"data"];
+                            
+                            for (NSMutableDictionary *item in dataHourly) {
+                                WeatherRLM *weather = [[WeatherRLM alloc] init];
+                                weather.icon = [NSString stringWithFormat:@"weather-%@",[item valueForKey:@"icon"]];
+                                weather.summary = [item valueForKey:@"summary"];
+                                double myDouble = [[item valueForKey:@"temperature"] doubleValue];
+                                NSNumberFormatter *fmt = [[NSNumberFormatter alloc] init];
+                                [fmt setPositiveFormat:@"0.#"];
+                                weather.temperature = [NSString stringWithFormat:@"%@",[fmt stringFromNumber:[NSNumber numberWithFloat:myDouble]]];
+                                weather.timedefition = @"hourly";
+                                weather.time = [item valueForKey:@"time"];
+                                
+                                [self.realm transactionWithBlock:^{
+                                    [activity.poi.weather addObject:weather];
+                                }];
+                            }
+                            NSDictionary *JSONDailyData = [data objectForKey:@"daily"];
+                            NSArray *dataDaily = [JSONDailyData valueForKey:@"data"];
+                            
+                            for (NSMutableDictionary *item in dataDaily) {
+                                WeatherRLM *weather = [[WeatherRLM alloc] init];
+                                weather.icon = [NSString stringWithFormat:@"weather-%@",[item valueForKey:@"icon"]];
+                                weather.summary = [item valueForKey:@"summary"];
+                                double tempLow = [[item valueForKey:@"temperatureLow"] doubleValue];
+                                double tempHigh = [[item valueForKey:@"temperatureHigh"] doubleValue];
+                                NSNumberFormatter *fmt = [[NSNumberFormatter alloc] init];
+                                [fmt setPositiveFormat:@"0.#"];
+                                weather.temperature = [NSString stringWithFormat:@"Lowest %@ °C, Highest %@ °C",[fmt stringFromNumber:[NSNumber numberWithFloat:tempLow]], [fmt stringFromNumber:[NSNumber numberWithFloat:tempHigh]]];
+                                weather.timedefition = @"daily";
+                                weather.time = [item valueForKey:@"time"];
+                                
+                                [self.realm transactionWithBlock:^{
+                                    [activity.poi.weather addObject:weather];
+                                }];
+                            }
+                            PoiCounter ++;
+                        });
+                    }];
+                } else {
+                    
+                    /* we have weather that is already available without calling the API */
+                    CLLocationCoordinate2D Coord = CLLocationCoordinate2DMake([activity.poi.lat doubleValue], [activity.poi.lon doubleValue]);
+                    
+                    WeatherRLM *weather = [weatherresult firstObject];
+                    
+                    AnnotationMK *annotation = [[AnnotationMK alloc] init];
+                    annotation.coordinate = Coord;
+                    annotation.title = [NSString stringWithFormat:@"%@", activity.name];
+                    annotation.subtitle = [NSString stringWithFormat:@"%@ °C (%@)",weather.temperature, weather.summary];
+                    annotation.Type = weather.icon;
+                    
+                    [self.MapView addAnnotation:annotation];
+                    PoiCounter ++;
                 }
+            } else {
+                /* without internet: */
+                CLLocationCoordinate2D Coord = CLLocationCoordinate2DMake([activity.poi.lat doubleValue], [activity.poi.lon doubleValue]);
+                
+                AnnotationMK *annotation = [[AnnotationMK alloc] init];
+                annotation.coordinate = Coord;
+                annotation.title = activity.name;
+
+                if (weatherresult.count > 0) {
+                    WeatherRLM *weather = [weatherresult firstObject];
+
+                    if (([maxtime doubleValue] + 3600 < [now doubleValue]) || maxtime == nil) {
+                        annotation.subtitle = [NSString stringWithFormat:@"Offline %@ °C (%@)",weather.temperature, weather.summary];
+                    } else {
+                        annotation.subtitle = [NSString stringWithFormat:@"%@ °C (%@)",weather.temperature, weather.summary];
+                    }
+                    annotation.Type = weather.icon;
+                } else {
+                    annotation.PoiKey = activity.poi.key;
+                    if (IsActual) {
+                        annotation.subtitle = @"Actual";
+                        annotation.Type = @"marker-actual";
+                    } else {
+                        annotation.subtitle = @"Planned";
+                        annotation.Type = @"marker-planned";
+                    }
+                }
+                [self.MapView addAnnotation:annotation];
+                PoiCounter ++;
             }
-        }
+        } else {
+            /* an item without weather option */
+            AnnotationMK *annotation = [[AnnotationMK alloc] init];
+            annotation.coordinate = CLLocationCoordinate2DMake([activity.poi.lat doubleValue], [activity.poi.lon doubleValue]);
+            annotation.title = activity.name;
+            annotation.PoiKey = activity.poi.key;
+            if (IsActual) {
+                annotation.subtitle = @"Actual";
+                annotation.Type = @"marker-actual";
+            } else {
+                annotation.subtitle = @"Planned";
+                annotation.Type = @"marker-planned";
+            }
             
+            [self.MapView addAnnotation:annotation];
+            PoiCounter ++;
+        }
+        if (PoiCounter == ActivitiesByState.count) {
+            
+            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
+            [dateFormatter setDateFormat:@"dd/MM/yyyy HH:mm"];
+            self.LabelWeatherLastUpdatedAt.text = [NSString stringWithFormat:@"Weather data from DarkSky last updated at\n %@",[dateFormatter stringFromDate:updatedTime]];
+            [self zoomToAnnotationsBounds :self.MapView.annotations];
+        }
     }
 }
 
 
+
+
 /*
  created date:      15/06/2019
- last modified:     15/06/2019
+ last modified:     23/06/2019
  remarks:
  */
 - (IBAction)SegmentAnnotationsChanged:(id)sender {
     
-    self.AnnotationCollection = [[NSMutableArray alloc] init];
-    
     [self.MapView removeAnnotations:self.MapView.annotations];
     
-    NSArray *keypaths  = [[NSArray alloc] initWithObjects:@"poikey", nil];
-    
     if (self.SegmentAnnotations.selectedSegmentIndex == 0) {
-
-        RLMResults<ActivityRLM *> *PlannedActivitiesCollection = [[ActivityRLM objectsWhere:@"tripkey = %@ and state = 0",self.Trip.key] distinctResultsUsingKeyPaths:keypaths];
-        
-        for (ActivityRLM* PlannedActivity in PlannedActivitiesCollection) {
-            AnnotationMK *annotation = [[AnnotationMK alloc] init];
-            annotation.coordinate = CLLocationCoordinate2DMake([PlannedActivity.poi.lat doubleValue], [PlannedActivity.poi.lon doubleValue]);
-            annotation.title = PlannedActivity.name;
-            annotation.subtitle = @"Planned";
-            annotation.PoiKey = PlannedActivity.poi.key;
-            annotation.Type = @"marker-planned";
-            
-            
-            [self.AnnotationCollection addObject:annotation];
-        }
-        
-        for (AnnotationMK *annotation in self.AnnotationCollection) {
-            [self.MapView addAnnotation:annotation];
-        }
-
-        if (self.AnnotationCollection.count > 0) {
-            [self zoomToAnnotationsBounds :self.MapView.annotations];
-            if (!self.loadedPlannedWeatherData) {
-                self.WeatherPlannedAnnotationCollection  = [[NSMutableArray alloc] init];
-                [self constructWeatherMapPointData :false];
-                self.loadedPlannedWeatherData = true;
-            } else {
-                for (AnnotationMK *annotation in self.WeatherPlannedAnnotationCollection) {
-                    [self.MapView addAnnotation:annotation];
-                }
-            }
-        }
+        [self constructWeatherMapPointData :false];
     } else if (self.SegmentAnnotations.selectedSegmentIndex == 1) {
-        
-        RLMResults<ActivityRLM *> *ActualActivitiesCollection = [[ActivityRLM objectsWhere:@"tripkey = %@ and state = 1",self.Trip.key] distinctResultsUsingKeyPaths:keypaths];
-        
-        
-        for (ActivityRLM* ActualActivity in ActualActivitiesCollection) {
-            AnnotationMK *annotation = [[AnnotationMK alloc] init];
-            annotation.coordinate = CLLocationCoordinate2DMake([ActualActivity.poi.lat doubleValue], [ActualActivity.poi.lon doubleValue]);
-            annotation.title = ActualActivity.name;
-            annotation.subtitle = @"Actual";
-            annotation.PoiKey = ActualActivity.poi.key;
-            annotation.Type = @"marker-actual";
-            
-            [self.AnnotationCollection addObject:annotation];
-        }
-        
-        for (AnnotationMK *annotation in self.AnnotationCollection) {
-            [self.MapView addAnnotation:annotation];
-        }
-
-        if (self.AnnotationCollection.count > 0) {
-            [self zoomToAnnotationsBounds :self.MapView.annotations];
-            if (!self.loadedActualWeatherData) {
-                self.WeatherActualAnnotationCollection  = [[NSMutableArray alloc] init];
-                [self constructWeatherMapPointData :true];
-                self.loadedActualWeatherData = true;
-            } else {
-                for (AnnotationMK *annotation in self.WeatherActualAnnotationCollection) {
-                    [self.MapView addAnnotation:annotation];
-                }
-            }
-        }
+        [self constructWeatherMapPointData :true];
     }
 }
 

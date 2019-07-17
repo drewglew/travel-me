@@ -21,7 +21,7 @@ bool CenterSelectedType;
 
 /*
  created date:      28/04/2018
- last modified:     19/02/2019
+ last modified:     22/06/2019
  remarks: Need to optimize the call to settings so it ends up as part of the appdelegate or something
  */
 - (void)viewDidLoad {
@@ -39,6 +39,12 @@ bool CenterSelectedType;
     }
 
     self.PoiImageDictionary = [[NSMutableDictionary alloc] init];
+    
+    if (self.PointOfInterest.IncludeWeather == nil || [self.PointOfInterest.IncludeWeather intValue] == 0) {
+        [self.SwitchWeather setOn:false];
+    } else {
+        [self.SwitchWeather setOn:true];
+    }
     
     if (self.newitem && !self.fromnearby) {
         if (![self.PointOfInterest.name isEqualToString:@""]) {
@@ -82,7 +88,6 @@ bool CenterSelectedType;
         /* Text fields and Segment */
         self.TextViewNotes.text = self.PointOfInterest.privatenotes;
         self.TextFieldTitle.text = self.PointOfInterest.name;
-        
     }
     
     self.ImagePicture.frame = CGRectMake(0, 0, self.ScrollViewImage.frame.size.width, self.ScrollViewImage.frame.size.height);
@@ -121,8 +126,8 @@ bool CenterSelectedType;
     
     self.TextViewNotes.layer.cornerRadius=8.0f;
     self.TextViewNotes.layer.masksToBounds=YES;
-    self.TextViewNotes.layer.borderColor=[[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]CGColor];
-    self.TextViewNotes.layer.borderWidth= 2.0f;
+    //self.TextViewNotes.layer.borderColor=[[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]CGColor];
+    //self.TextViewNotes.layer.borderWidth= 2.0f;
 
     // heigtht of option blurred view is 60; view is 4 less; to make a circle we need half the remainder.
     self.ViewSelectedKey.layer.cornerRadius=28;
@@ -1226,7 +1231,7 @@ bool CenterSelectedType;
 
 /*
  created date:      28/04/2018
- last modified:     28/03/2019
+ last modified:     22/06/2019
  remarks:           
  */
 - (IBAction)ActionButtonPressed:(id)sender {
@@ -1259,6 +1264,12 @@ bool CenterSelectedType;
         self.PointOfInterest.modifieddt = [NSDate date];
         self.PointOfInterest.createddt = [NSDate date];
         
+        if ([self.SwitchWeather isOn]) {
+            self.PointOfInterest.IncludeWeather = [NSNumber numberWithInt:1];
+        } else {
+            self.PointOfInterest.IncludeWeather = [NSNumber numberWithInt:0];
+        }
+
         NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
         f.numberStyle = NSNumberFormatterDecimalStyle;
         self.PointOfInterest.radius = [f numberFromString:[self.DistancePickerItems objectAtIndex: [self.PickerDistance selectedRowInComponent:0]]];
@@ -1341,6 +1352,13 @@ bool CenterSelectedType;
         self.PointOfInterest.privatenotes = self.TextViewNotes.text;
         self.PointOfInterest.modifieddt = [NSDate date];
         self.PointOfInterest.searchstring =  [NSString stringWithFormat:@"%@|%@|%@|%@|%@|%@|%@",self.PointOfInterest.name,self.PointOfInterest.administrativearea,self.PointOfInterest.subadministrativearea,self.PointOfInterest.postcode,self.PointOfInterest.locality,self.PointOfInterest.sublocality,self.PointOfInterest.country];
+        
+        
+        if ([self.SwitchWeather isOn]) {
+            self.PointOfInterest.IncludeWeather = [NSNumber numberWithInt:1];
+        } else {
+            self.PointOfInterest.IncludeWeather = [NSNumber numberWithInt:0];
+        }
         
         if ([self.PointOfInterest.privatenotes isEqualToString:@""]) {
             
@@ -1432,25 +1450,15 @@ bool CenterSelectedType;
         self.ViewMap.hidden = true;
         self.ViewPhotos.hidden =true;
         self.ViewInfo.hidden = true;
+        self.ButtonScan.hidden = false;
         self.SwitchViewPhotoOptions.hidden=true;
         if (self.checkInternet) {
             if ([self.PointOfInterest.countrycode isEqualToString:@""] || self.PointOfInterest.countrycode==nil) {
                 self.ButtonGeo.hidden = false;
             }
         }
-        self.ButtonScan.hidden = true;
-
-    } else if (segment.selectedSegmentIndex==1) {
-        self.ViewMain.hidden = true;
-        self.ViewNotes.hidden = false;
-        self.ButtonScan.hidden = false;
-        self.ViewMap.hidden = true;
-        self.ViewPhotos.hidden =true;
-        self.ViewInfo.hidden = true;
-        self.SwitchViewPhotoOptions.hidden=true;
-        self.ButtonGeo.hidden = true;
         
-     } else if (segment.selectedSegmentIndex==2) {
+     } else if (segment.selectedSegmentIndex==1) {
          self.ViewMain.hidden = true;
          self.ViewNotes.hidden = true;
          self.ViewMap.hidden = false;
@@ -1489,7 +1497,7 @@ bool CenterSelectedType;
         [self.MapView addOverlay:self.CircleRange];
         
         
-    } else if (segment.selectedSegmentIndex==3) {
+    } else if (segment.selectedSegmentIndex==2) {
         self.ViewMain.hidden = true;
         self.ViewNotes.hidden = true;
         self.ViewMap.hidden = true;

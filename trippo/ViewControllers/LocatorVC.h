@@ -35,6 +35,7 @@
 @property RLMRealm *realm;
 @property (nonatomic, readwrite) CLLocationCoordinate2D Coordinates;
 @property (assign) bool fromproject;
+@property (assign) bool firstactivityinproject;
 @property (nonatomic, weak) id <LocatorDelegate> delegate;
 @property (weak, nonatomic) IBOutlet UITableView *TableViewSearchResult;
 @property (strong, nonatomic)  CLLocationManager *locationManager;

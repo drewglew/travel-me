@@ -16,11 +16,13 @@
 
 @implementation ProjectListVC
 CGFloat ProjectListFooterFilterHeightConstant;
+CGFloat TripNumberOfCellsInRow = 2.0f;
+CGFloat TripScale = 4.14f;
 @synthesize delegate;
 
 /*
  created date:      29/04/2018
- last modified:     29/03/2019
+ last modified:     21/06/2019
  remarks:
  */
 - (void)viewDidLoad {
@@ -41,6 +43,9 @@ CGFloat ProjectListFooterFilterHeightConstant;
     }];
     [self LoadSupportingData];
     ProjectListFooterFilterHeightConstant = self.FooterWithSegmentConstraint.constant;
+    
+    UIPinchGestureRecognizer *pinch =[[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(onPinch:)];
+    [self.CollectionViewProjects addGestureRecognizer:pinch];
 }
 
 
@@ -70,6 +75,71 @@ CGFloat ProjectListFooterFilterHeightConstant;
     }
 }
 
+/*
+ created date:      21/06/2019
+ last modified:     21/06/2019
+ remarks:
+ */
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:
+(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:
+(NSIndexPath *)indexPath
+{
+    return CGSizeMake(50*TripScale, 50*TripScale);
+}
+
+/*
+ created date:      21/06/2019
+ last modified:     21/06/2019
+ remarks:           Works on iPhone XR - will it work on an smaller iPhone 7?
+ */
+-(void)onPinch:(UIPinchGestureRecognizer*)gestureRecognizer
+{
+    static CGFloat scaleStart;
+    CGFloat collectionWidth = self.CollectionViewProjects.frame.size.width;
+    
+    if (gestureRecognizer.state == UIGestureRecognizerStateBegan)
+    {
+        scaleStart = TripScale;
+    }
+    else if (gestureRecognizer.state == UIGestureRecognizerStateChanged)
+    {
+        TripScale = scaleStart * gestureRecognizer.scale;
+        
+        if ( TripScale*50 < collectionWidth / 6) {
+            TripScale = (collectionWidth / 6) / 50;
+        }
+        else
+        {
+            [self.CollectionViewProjects.collectionViewLayout invalidateLayout];
+        }
+    }
+    else if (gestureRecognizer.state == UIGestureRecognizerStateEnded)
+    {
+        // snap to pretty border distribution
+        if ( TripScale*50 < collectionWidth / 5) {
+            TripScale = (collectionWidth / 5) / 50;
+            TripNumberOfCellsInRow = 5.0f;
+        } else if (TripScale*50 < collectionWidth / 4) {
+            TripScale = (collectionWidth / 4) / 50;
+            TripNumberOfCellsInRow = 4.0f;
+        } else if (TripScale*50 < collectionWidth / 3) {
+            TripScale = (collectionWidth / 3) / 50;
+            TripNumberOfCellsInRow = 3.0f;
+        } else if (TripScale*50 < collectionWidth / 2) {
+            TripScale = (collectionWidth / 2) / 50;
+            TripNumberOfCellsInRow = 2.0f;
+        } else {
+            TripScale = collectionWidth / 50;
+            TripNumberOfCellsInRow = 1.0f;
+        }
+        
+        [self.CollectionViewProjects.collectionViewLayout invalidateLayout];
+        [self.CollectionViewProjects reloadData];
+        
+    }
+    
+}
+
 
 /*
  created date:      29/04/2018
@@ -82,7 +152,7 @@ CGFloat ProjectListFooterFilterHeightConstant;
 
 /*
  created date:      29/04/2018
- last modified:     15/06/2019
+ last modified:     21/06/2019
  remarks:
  */
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -126,14 +196,23 @@ CGFloat ProjectListFooterFilterHeightConstant;
         }
         cell.ImageConstraint = [cell.ImageConstraint updateMultiplier:0.995];
 
-        //UIFont *font = [UIFont fontWithName:@"AmericanTypewriter" size:17.0];
-        UIFont *font = [UIFont systemFontOfSize:22.0];
-        //NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-        //paragraphStyle.paragraphSpacing = 0.5 * font.lineHeight;
+        
+        //UIFont *font = [UIFont fontWithName:@"AmericanTypewriter" size:14.0];
+        UIFont *font = [UIFont systemFontOfSize:16.0];
+        
+        if (TripNumberOfCellsInRow >= 3.0f) {
+            font = [UIFont systemFontOfSize:12.0];
+            
+            if (TripNumberOfCellsInRow > 3.0f) {
+                cell.deleteButton.hidden = true;
+            }
+        } else {
+            cell.deleteButton.hidden = false;
+        }
+        
         NSDictionary *attributes = @{NSBackgroundColorAttributeName:[UIColor colorWithRed:35.0f/255.0f green:35.0f/255.0f blue:35.0f/255.0f alpha:1.0], NSForegroundColorAttributeName:[UIColor whiteColor], NSFontAttributeName:font};
         NSAttributedString *string = [[NSAttributedString alloc] initWithString:cell.trip.name attributes:attributes];
         cell.LabelProjectName.attributedText = string;
-
         
     }
     return cell;
@@ -143,7 +222,7 @@ CGFloat ProjectListFooterFilterHeightConstant;
 /*
  created date:      29/04/2018
  last modified:     30/03/2019
- remarks:
+ remarks:           presents the trip data entry view in various forms as well as loading from API any weather data.
  */
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     
@@ -164,13 +243,177 @@ CGFloat ProjectListFooterFilterHeightConstant;
         controller.realm = self.realm;
         
         controller.Trip = [self.tripcollection objectAtIndex:indexPath.row];
-        NSLog(@"startdt = %@",controller.Trip.startdt);
-        [controller setModalPresentationStyle:UIModalPresentationFullScreen];
-        [self presentViewController:controller animated:YES completion:nil];
+        if ([self checkInternet]) {
+            NSArray *keypaths  = [[NSArray alloc] initWithObjects:@"poikey", nil];
+            RLMResults<ActivityRLM *> *ActivitiesCollection = [[ActivityRLM objectsWhere:@"tripkey = %@",controller.Trip.key] distinctResultsUsingKeyPaths:keypaths];
 
-        [cell.ActivityIndicatorView stopAnimating];
+            if (ActivitiesCollection.count == 0)  {
+                [controller setModalPresentationStyle:UIModalPresentationFullScreen];
+                [self presentViewController:controller animated:YES completion:nil];
+                [cell.ActivityIndicatorView stopAnimating];
+            } else {
+            
+                __block int PoiCounter = 1;
+                for (ActivityRLM *activity in ActivitiesCollection) {
+
+                    if ([activity.poi.IncludeWeather intValue] == 1) {
+
+                        /* we only want to update the forecast if it is older than 1 hour */
+                        RLMResults <WeatherRLM*> *weatherresult = [activity.poi.weather objectsWhere:@"timedefition='currently'"];
+                        NSNumber *maxtime = [weatherresult maxOfProperty:@"time"];
+     
+                        NSTimeInterval timestamp = [[NSDate date] timeIntervalSince1970];
+                        NSNumber *now = [NSNumber numberWithDouble: timestamp];
+                        
+                        if (([maxtime doubleValue] + 3600 < [now doubleValue]) || maxtime == nil) {
+                        
+                            /* clean up previous data */
+                            if (maxtime != nil) {
+                                [self.realm transactionWithBlock:^{
+                                    [self.realm deleteObjects:activity.poi.weather];
+                                }];
+                            }
+                            NSString *url = [NSString stringWithFormat:@"https://api.darksky.net/forecast/d339db567160bdd560169ea4eef3ee5a/%@,%@?exclude=minutely,flags,alerts&units=uk2", activity.poi.lat, activity.poi.lon];
+                            
+                             [self fetchFromDarkSkyApi:url withDictionary:^(NSDictionary *data) {
+                             
+                                 dispatch_sync(dispatch_get_main_queue(), ^(void){
+
+                                     WeatherRLM *weather = [[WeatherRLM alloc] init];
+                                     NSDictionary *JSONdata = [data objectForKey:@"currently"];
+                                     weather.icon = [NSString stringWithFormat:@"weather-%@",[JSONdata valueForKey:@"icon"]];
+                                     weather.summary = [JSONdata valueForKey:@"summary"];
+                                     double myDouble = [[JSONdata valueForKey:@"temperature"] doubleValue];
+                                     NSNumberFormatter *fmt = [[NSNumberFormatter alloc] init];
+                                     [fmt setPositiveFormat:@"0.#"];
+                                     weather.temperature = [NSString stringWithFormat:@"%@",[fmt stringFromNumber:[NSNumber numberWithFloat:myDouble]]];
+                                     weather.timedefition = @"currently";
+                                     weather.time = [JSONdata valueForKey:@"time"];
+                                     
+                                     [self.realm transactionWithBlock:^{
+                                         [activity.poi.weather addObject:weather];
+                                     }];
+                                     
+                                     NSDictionary *JSONHourlyData = [data objectForKey:@"hourly"];
+                                     NSArray *dataHourly = [JSONHourlyData valueForKey:@"data"];
+                                     
+                                     for (NSMutableDictionary *item in dataHourly) {
+                                         WeatherRLM *weather = [[WeatherRLM alloc] init];
+                                         weather.icon = [NSString stringWithFormat:@"weather-%@",[item valueForKey:@"icon"]];
+                                         weather.summary = [item valueForKey:@"summary"];
+                                         double myDouble = [[item valueForKey:@"temperature"] doubleValue];
+                                         NSNumberFormatter *fmt = [[NSNumberFormatter alloc] init];
+                                         [fmt setPositiveFormat:@"0.#"];
+                                         weather.temperature = [NSString stringWithFormat:@"%@",[fmt stringFromNumber:[NSNumber numberWithFloat:myDouble]]];
+                                         weather.timedefition = @"hourly";
+                                         weather.time = [item valueForKey:@"time"];
+                                         
+                                         [self.realm transactionWithBlock:^{
+                                             [activity.poi.weather addObject:weather];
+                                         }];
+                                     }
+                                     NSDictionary *JSONDailyData = [data objectForKey:@"daily"];
+                                     NSArray *dataDaily = [JSONDailyData valueForKey:@"data"];
+                                     
+                                     for (NSMutableDictionary *item in dataDaily) {
+                                         WeatherRLM *weather = [[WeatherRLM alloc] init];
+                                         weather.icon = [NSString stringWithFormat:@"weather-%@",[item valueForKey:@"icon"]];
+                                         weather.summary = [item valueForKey:@"summary"];
+                                         double tempLow = [[item valueForKey:@"temperatureLow"] doubleValue];
+                                         double tempHigh = [[item valueForKey:@"temperatureHigh"] doubleValue];
+                                         NSNumberFormatter *fmt = [[NSNumberFormatter alloc] init];
+                                         [fmt setPositiveFormat:@"0.#"];
+                                          weather.temperature = [NSString stringWithFormat:@"Lowest %@ °C, Highest %@ °C",[fmt stringFromNumber:[NSNumber numberWithFloat:tempLow]], [fmt stringFromNumber:[NSNumber numberWithFloat:tempHigh]]];
+                                         weather.timedefition = @"daily";
+                                         weather.time = [item valueForKey:@"time"];
+                                         
+                                         [self.realm transactionWithBlock:^{
+                                             [activity.poi.weather addObject:weather];
+                                         }];
+                                     }
+                                     
+                                     if (PoiCounter == ActivitiesCollection.count) {
+                                         /* after looping through, we fall back into the segue task of presenting next view controller */
+                                         [controller setModalPresentationStyle:UIModalPresentationFullScreen];
+                                         [self presentViewController:controller animated:YES completion:nil];
+                                         [cell.ActivityIndicatorView stopAnimating];
+                                     } else {
+                                         PoiCounter ++;
+                                     }
+                                 });
+                             }];
+                        } else {
+                            if (PoiCounter == ActivitiesCollection.count) {
+                                [controller setModalPresentationStyle:UIModalPresentationFullScreen];
+                                [self presentViewController:controller animated:YES completion:nil];
+                                [cell.ActivityIndicatorView stopAnimating];
+                            } else {
+                                PoiCounter ++;
+                            }
+                        }
+                    } else {
+                        if (PoiCounter == ActivitiesCollection.count) {
+                            [controller setModalPresentationStyle:UIModalPresentationFullScreen];
+                            [self presentViewController:controller animated:YES completion:nil];
+                            [cell.ActivityIndicatorView stopAnimating];
+                        } else {
+                            PoiCounter ++;
+                        }
+                    }
+                }
+            }
+        } else {
+            [controller setModalPresentationStyle:UIModalPresentationFullScreen];
+            [self presentViewController:controller animated:YES completion:nil];
+            [cell.ActivityIndicatorView stopAnimating];
+        }
     }
 }
+
+/*
+ created date:      14/06/2019
+ last modified:     14/06/2019
+ remarks:           This procedure handles the call to the web service and returns a dictionary back to GetExchangeRates method.
+ */
+-(void)fetchFromDarkSkyApi:(NSString *)url withDictionary:(void (^)(NSDictionary* data))dictionary{
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:url]];
+    [request setHTTPMethod:@"GET"];
+    
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+    
+    
+    NSURLSessionDataTask *task = [session dataTaskWithRequest:request
+                                            completionHandler:
+                                  ^(NSData *data, NSURLResponse *response, NSError *error) {
+                                      NSDictionary *dicData = [NSJSONSerialization JSONObjectWithData:data
+                                                                                              options:0
+                                                                                                error:NULL];
+                                      dictionary(dicData);
+                                  }];
+    [task resume];
+}
+
+/*
+ created date:      14/06/2019
+ last modified:     14/06/2019
+ */
+- (bool)checkInternet
+{
+    if ([[Reachability reachabilityForInternetConnection]currentReachabilityStatus] == NotReachable)
+    {
+        return false;
+    }
+    else
+    {
+        //connection available
+        return true;
+    }
+    
+}
+
+
+
 
 /*
  created date:      05/02/2019
@@ -211,19 +454,7 @@ CGFloat ProjectListFooterFilterHeightConstant;
 }
 
 
-/*
- created date:      29/04/2018
- last modified:     29/04/2018
- remarks: manages the dynamic width of the cells.
- */
--(CGSize)collectionView:(UICollectionView *) collectionView layout:(UICollectionViewLayout* )collectionViewLayout sizeForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
-    
-    CGFloat collectionWidth = self.CollectionViewProjects.frame.size.width;
-    float cellWidth = collectionWidth/2.0f;
-    CGSize size = CGSizeMake(cellWidth,cellWidth);
-    
-    return size;
-}
+
 
 
 /*
@@ -265,6 +496,7 @@ CGFloat ProjectListFooterFilterHeightConstant;
     if([segue.identifier isEqualToString:@"ShowUpdateProject"]){
         ProjectDataEntryVC *controller = (ProjectDataEntryVC *)segue.destinationViewController;
         controller.delegate = self;
+        controller.realm = self.realm;
         if ([sender isKindOfClass: [UIButton class]]) {
             UIView * cellView=(UIView*)sender;
             while ((cellView = [cellView superview])) {

@@ -32,7 +32,7 @@
 - (void)didUpdateActivityImages :(bool) ForceUpdate;
 @end
 
-@interface ActivityDataEntryVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, MKMapViewDelegate, DirectionsDelegate, PaymentListingDelegate, DocumentsDelegate, UITextViewDelegate,UITextFieldDelegate, UICollectionViewDelegate, UICollectionViewDataSource,UIImagePickerControllerDelegate, UINavigationControllerDelegate, ImagePickerDelegate, UIScrollViewDelegate,G8TesseractDelegate, TOCropViewControllerDelegate, PoiPreviewDelegate>
+@interface ActivityDataEntryVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, MKMapViewDelegate, DirectionsDelegate, PaymentListingDelegate, DocumentsDelegate, UITextViewDelegate,UITextFieldDelegate, UICollectionViewDelegate, UICollectionViewDataSource,UIImagePickerControllerDelegate, UINavigationControllerDelegate, ImagePickerDelegate, UIScrollViewDelegate,G8TesseractDelegate, TOCropViewControllerDelegate, PoiPreviewDelegate, UIScrollViewDelegate>
 @property (nonatomic) UIImage *PoiImage;
 @property (assign) bool newitem;
 @property (assign) bool transformed;
@@ -105,6 +105,13 @@
 @property (weak, nonatomic) IBOutlet UIButton *ButtonLeaving;
 @property (weak, nonatomic) IBOutlet UILabel *LabelGeoWarningNotice;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *GeoWarningLabelHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *MainImageTrailingConstraint;
+@property (weak, nonatomic) IBOutlet WKWebView *WikipediaView;
+@property (weak, nonatomic) IBOutlet UIImageView *WikiHeaderImage;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *WikiViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonUpdateActualWeather;
+@property (weak, nonatomic) IBOutlet UIView *ViewUpdateActualWeather;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *ViewUpdateActualWeatherHeightConstraint;
 
 
 

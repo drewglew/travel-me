@@ -54,8 +54,11 @@
 		3A72E1CF21B28EC2007C40FC /* PhotoswithGeoTagListingVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A72E1CE21B28EC2007C40FC /* PhotoswithGeoTagListingVC.m */; };
 		3A7397B0225A183800781004 /* ExpenseDataEntryVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A7397AF225A183800781004 /* ExpenseDataEntryVC.m */; };
 		3A79F213222D912500C68D77 /* MultiplierConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A79F212222D912500C68D77 /* MultiplierConstraint.m */; };
+		3A7D8ABB22B82B7A002DC657 /* WeatherRLM.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A7D8ABA22B82B7A002DC657 /* WeatherRLM.m */; };
 		3A81B509209D80B8005CABDA /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A81B508209D80B8005CABDA /* Photos.framework */; };
 		3A81B50C209D90CA005CABDA /* AlphaView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A81B50B209D90CA005CABDA /* AlphaView.m */; };
+		3A85AD7A22BFBC15007965D8 /* WeatherVCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A85AD7922BFBC15007965D8 /* WeatherVCViewController.m */; };
+		3A85AD7D22BFE36E007965D8 /* WeatherCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A85AD7C22BFE36E007965D8 /* WeatherCell.m */; };
 		3A97DCA62250A66100B64D7C /* CustomCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A97DCA52250A66100B64D7C /* CustomCollectionView.m */; };
 		3A97DCA92250FBE400B64D7C /* TTTAttributedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A97DCA72250FBE400B64D7C /* TTTAttributedLabel.m */; };
 		3A9CE745221C879700A4CB98 /* SettingsRLM.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9CE744221C879700A4CB98 /* SettingsRLM.m */; };
@@ -196,9 +199,15 @@
 		3A7397AF225A183800781004 /* ExpenseDataEntryVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExpenseDataEntryVC.m; sourceTree = "<group>"; };
 		3A79F211222D912500C68D77 /* MultiplierConstraint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MultiplierConstraint.h; sourceTree = "<group>"; };
 		3A79F212222D912500C68D77 /* MultiplierConstraint.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MultiplierConstraint.m; sourceTree = "<group>"; };
+		3A7D8AB922B82B7A002DC657 /* WeatherRLM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WeatherRLM.h; sourceTree = "<group>"; };
+		3A7D8ABA22B82B7A002DC657 /* WeatherRLM.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WeatherRLM.m; sourceTree = "<group>"; };
 		3A81B508209D80B8005CABDA /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		3A81B50A209D90CA005CABDA /* AlphaView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AlphaView.h; sourceTree = "<group>"; };
 		3A81B50B209D90CA005CABDA /* AlphaView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AlphaView.m; sourceTree = "<group>"; };
+		3A85AD7822BFBC15007965D8 /* WeatherVCViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WeatherVCViewController.h; sourceTree = "<group>"; };
+		3A85AD7922BFBC15007965D8 /* WeatherVCViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WeatherVCViewController.m; sourceTree = "<group>"; };
+		3A85AD7B22BFE36E007965D8 /* WeatherCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WeatherCell.h; sourceTree = "<group>"; };
+		3A85AD7C22BFE36E007965D8 /* WeatherCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WeatherCell.m; sourceTree = "<group>"; };
 		3A97DCA42250A66100B64D7C /* CustomCollectionView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CustomCollectionView.h; sourceTree = "<group>"; };
 		3A97DCA52250A66100B64D7C /* CustomCollectionView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CustomCollectionView.m; sourceTree = "<group>"; };
 		3A97DCA72250FBE400B64D7C /* TTTAttributedLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTTAttributedLabel.m; sourceTree = "<group>"; };
@@ -303,6 +312,8 @@
 				3A23AFFD221DF3F0003ACF7B /* ActivityDiaryCell.m */,
 				3A046D4C2223461300EA26A9 /* AttachmentCell.h */,
 				3A046D4D2223461300EA26A9 /* AttachmentCell.m */,
+				3A85AD7B22BFE36E007965D8 /* WeatherCell.h */,
+				3A85AD7C22BFE36E007965D8 /* WeatherCell.m */,
 			);
 			path = TableViewCells;
 			sourceTree = "<group>";
@@ -411,6 +422,8 @@
 				3A046D502224621200EA26A9 /* DocumentsVC.m */,
 				3A523F602242CAD60073305D /* PoiPreviewVC.h */,
 				3A523F612242CAD60073305D /* PoiPreviewVC.m */,
+				3A85AD7822BFBC15007965D8 /* WeatherVCViewController.h */,
+				3A85AD7922BFBC15007965D8 /* WeatherVCViewController.m */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -518,6 +531,8 @@
 				3A9CE744221C879700A4CB98 /* SettingsRLM.m */,
 				3A046D49222303DA00EA26A9 /* AttachmentRLM.h */,
 				3A046D4A222303DA00EA26A9 /* AttachmentRLM.m */,
+				3A7D8AB922B82B7A002DC657 /* WeatherRLM.h */,
+				3A7D8ABA22B82B7A002DC657 /* WeatherRLM.m */,
 			);
 			path = Realm;
 			sourceTree = "<group>";
@@ -692,6 +707,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A7D8ABB22B82B7A002DC657 /* WeatherRLM.m in Sources */,
 				3AA4DA6821267FE900F7CAC9 /* CirclePart.m in Sources */,
 				3A224CBA2095F1DF00075457 /* ProjectDataEntryVC.m in Sources */,
 				3A224CC320976B1100075457 /* ActivityNSO.m in Sources */,
@@ -703,6 +719,7 @@
 				3A291BD8213D949F00FDFDFB /* ExpenseRLM.m in Sources */,
 				3A224CBD2095F1FD00075457 /* ActivityListVC.m in Sources */,
 				3A23AFFE221DF3F0003ACF7B /* ActivityDiaryCell.m in Sources */,
+				3A85AD7D22BFE36E007965D8 /* WeatherCell.m in Sources */,
 				3A374EFC209372CC00E5A652 /* MenuVC.m in Sources */,
 				3AF785DC21319BB600DD5A5B /* ActivityRLM.m in Sources */,
 				3A224CC62097792800075457 /* PoiSearchVC.m in Sources */,
@@ -727,6 +744,7 @@
 				3AAB60C520FCFEA600A22047 /* NearbyPoiNSO.m in Sources */,
 				3A3075DE21220446007D53C9 /* HCSStarRatingView.m in Sources */,
 				3AF785DF21319C8C00DD5A5B /* PoiRLM.m in Sources */,
+				3A85AD7A22BFBC15007965D8 /* WeatherVCViewController.m in Sources */,
 				3A224CC92097950600075457 /* ActivityDataEntryVC.m in Sources */,
 				3A374F1E2093939400E5A652 /* LocatorVC.m in Sources */,
 				3A224CA62094338D00075457 /* PoiImageCell.m in Sources */,

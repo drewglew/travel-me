@@ -21,7 +21,7 @@ int DocumentListingViewPresentedHeight = 250;
 
 /*
  created date:      01/05/2018
- last modified:     15/06/2019
+ last modified:     24/06/2019
  remarks:
  */
 - (void)viewDidLoad {
@@ -30,13 +30,33 @@ int DocumentListingViewPresentedHeight = 250;
     if (self.Activity.state == [NSNumber  numberWithInteger:0]) {
         self.ImagePicture.image = [UIImage imageNamed:@"Planning"];
         self.ImageViewKeyActivity.image = [UIImage imageNamed:@"Planning"];
-        
+        self.MainImageTrailingConstraint.constant = [UIScreen mainScreen].bounds.size.width;;
     } else {
         self.ImagePicture.image = [UIImage imageNamed:@"Activity"];
         self.ImageViewKeyActivity.image = [UIImage imageNamed:@"Activity"];
         self.ViewBackground.backgroundColor = [UIColor colorWithRed:22.0f/255.0f green:118.0f/255.0f blue:255.0f/255.0f alpha:1.0];
     }
+    self.WikipediaView.scrollView.delegate = self;
     
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentDirectory = [paths objectAtIndex:0];
+
+    NSString *wikiDataFilePath = [documentDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/WikiDocs/%@.pdf",self.Poi.key]];
+    
+    if ([fileManager fileExistsAtPath:wikiDataFilePath]){
+    
+        NSURL *targetURL = [NSURL fileURLWithPath:wikiDataFilePath];
+        NSData *data = [NSData dataWithContentsOfURL:targetURL];
+        [self.WikipediaView loadData:data MIMEType:@"application/pdf" characterEncodingName:@"UTF-8" baseURL:[NSURL URLWithString:@""]];
+    } else {
+        // address size of view inside scrollview
+        [self.WikipediaView setHidden:true];
+        [self.WikiHeaderImage setHidden:true];
+        self.WikiViewHeightConstraint.constant = 0.0f;
+    }
+        
     self.ActivityImageDictionary = [[NSMutableDictionary alloc] init];
     
     self.TableViewAttachments.delegate = self;
@@ -48,8 +68,8 @@ int DocumentListingViewPresentedHeight = 250;
 
     self.TextViewNotes.layer.cornerRadius=8.0f;
     self.TextViewNotes.layer.masksToBounds=YES;
-    self.TextViewNotes.layer.borderColor=[[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]CGColor];
-    self.TextViewNotes.layer.borderWidth= 1.0f;
+    //self.TextViewNotes.layer.borderColor=[[UIColor colorWithRed:49.0f/255.0f green:163.0f/255.0f blue:0.0f/255.0f alpha:1.0]CGColor];
+    //self.TextViewNotes.layer.borderWidth= 1.0f;
     
     self.ViewSelectedKey.layer.cornerRadius=28;
     self.ViewSelectedKey.layer.masksToBounds=YES;
@@ -72,6 +92,8 @@ int DocumentListingViewPresentedHeight = 250;
         self.CollectionViewActivityImages.scrollEnabled = true;
     } else if (!self.newitem && !self.transformed) {
         
+        // modify activity
+        
         [self LoadActivityData];
         self.CollectionViewActivityImages.scrollEnabled = true;
         //NSComparisonResult result = [self.Activity.startdt compare:today];
@@ -90,6 +112,9 @@ int DocumentListingViewPresentedHeight = 250;
                 [self.ButtonArriving setBackgroundColor:[UIColor colorWithRed:179.0f/255.0f green:25.0f/255.0f blue:49.0f/255.0f alpha:1.0]];
                 [self.ButtonLeaving setBackgroundColor:[UIColor colorWithRed:179.0f/255.0f green:25.0f/255.0f blue:49.0f/255.0f alpha:1.0]];
             }
+            
+            self.ViewUpdateActualWeatherHeightConstraint.constant = 0.0f;
+            [self.ViewUpdateActualWeather setHidden:TRUE];
         }
         
         BOOL datesAreEqual = [[NSCalendar currentCalendar] isDate:self.Activity.startdt
@@ -112,6 +137,8 @@ int DocumentListingViewPresentedHeight = 250;
             self.LabelCheckInOut.text = @"Check\nOut";
             [self.LabelCheckInOut setTextColor:[UIColor whiteColor]];
             
+            self.ViewUpdateActualWeatherHeightConstraint.constant = 0.0f;
+            [self.ViewUpdateActualWeather setHidden:TRUE];
            
         } else if (self.Activity.state==[NSNumber numberWithInteger:1]) {
             // we set the colour in the main method that covers its normal set.
@@ -121,14 +148,17 @@ int DocumentListingViewPresentedHeight = 250;
             self.GeoWarningLabelHeightConstraint.constant = 75.0f;
             [self.ButtonArriving setBackgroundColor:[UIColor colorWithRed:179.0f/255.0f green:25.0f/255.0f blue:49.0f/255.0f alpha:1.0]];
             [self.ButtonLeaving setBackgroundColor:[UIColor colorWithRed:179.0f/255.0f green:25.0f/255.0f blue:49.0f/255.0f alpha:1.0]];
+            
+            // activity is done!
+            if (self.Activity.weather.count > 0) {
+                [self.ButtonUpdateActualWeather setEnabled:FALSE];
+            } else if (self.Activity.poi.IncludeWeather == 0) {
+                self.ViewUpdateActualWeatherHeightConstraint.constant = 0.0f;
+                [self.ViewUpdateActualWeather setHidden:TRUE];
+            }
         }
-        
-        
         self.toggleNotifyArrivingFlag = [self.Activity.geonotification intValue];
         self.toggleNotifyLeavingFlag = [self.Activity.geonotifycheckout intValue];
-        
-        
-        
 
     } else if (self.transformed) {
         self.ViewCheckInOut.layer.cornerRadius = 100;
@@ -153,7 +183,9 @@ int DocumentListingViewPresentedHeight = 250;
 
         self.Activity.startdt = [NSDate date];
         self.Activity.enddt = [NSDate date];
-
+        
+        self.ViewUpdateActualWeatherHeightConstraint.constant = 0.0f;
+        [self.ViewUpdateActualWeather setHidden:TRUE];
         
     } else if (self.newitem) {
 
@@ -161,8 +193,22 @@ int DocumentListingViewPresentedHeight = 250;
         
         if (self.Activity.startdt==nil) {
             if (self.Activity.state==[NSNumber numberWithInteger:0]) {
-                self.Activity.startdt = self.Trip.startdt;
-                self.Activity.enddt = self.Trip.enddt;
+                NSComparisonResult resultstartdt = [[NSDate date] compare:self.Trip.startdt];
+                NSComparisonResult resultenddt = [[NSDate date] compare:self.Trip.enddt];
+                
+                if (resultstartdt == NSOrderedAscending) {
+                     self.Activity.startdt = self.Trip.startdt;
+                } else {
+                     self.Activity.startdt = [NSDate date];
+                }
+                
+                
+                if (resultenddt == NSOrderedAscending) {
+                    self.Activity.enddt = self.Trip.enddt;
+                } else {
+                    self.Activity.enddt = [NSDate date];
+                }
+                
             } else {
                 self.Activity.startdt = [NSDate date];
                 self.Activity.enddt = [NSDate date];
@@ -182,6 +228,8 @@ int DocumentListingViewPresentedHeight = 250;
             //[self.view layoutIfNeeded];
         }
         
+        self.ViewUpdateActualWeatherHeightConstraint.constant = 0.0f;
+        [self.ViewUpdateActualWeather setHidden:TRUE];
         
         [self.SwitchTweet setOn:false];
 
@@ -194,7 +242,7 @@ int DocumentListingViewPresentedHeight = 250;
  
     if (self.Activity.state==[NSNumber numberWithInteger:1]) {
         self.ImageViewIdeaWidthConstraint.constant = 0;
-        BlurredMainViewPresentedHeight = 140;
+        BlurredMainViewPresentedHeight = 190;
         self.ViewEffectBlurDetailHeightConstraint.constant = BlurredMainViewPresentedHeight;
         self.ViewStarRating.hidden = false;
         
@@ -205,7 +253,7 @@ int DocumentListingViewPresentedHeight = 250;
         self.ViewStarRating.accurateHalfStars = YES;
         
     } else {
-        BlurredMainViewPresentedHeight = 100;
+        BlurredMainViewPresentedHeight = 150;
     }
 
     self.CollectionViewActivityImages.dataSource = self;
@@ -285,7 +333,10 @@ int DocumentListingViewPresentedHeight = 250;
             [self.ButtonLeaving setBackgroundColor:[UIColor lightGrayColor]];
         }
     }
-
+    if (![self.ButtonUpdateActualWeather isEnabled]) {
+        [self.ButtonUpdateActualWeather setBackgroundColor:[UIColor colorWithRed:179.0f/255.0f green:25.0f/255.0f blue:49.0f/255.0f alpha:1.0]];
+    }
+    
     [self.TextFieldEndDt setInputAccessoryView:toolBar];
     self.TableViewAttachments.rowHeight = 60.0f;
     //self.WebViewPreview.scrollView.delegate = self;
@@ -648,7 +699,7 @@ int DocumentListingViewPresentedHeight = 250;
 
 /*
  created date:      21/02/2019
- last modified:     17/06/2019
+ last modified:     20/06/2019
  remarks:           
  */
 - (void)UpdateActivityRealmData
@@ -666,7 +717,7 @@ int DocumentListingViewPresentedHeight = 250;
         self.Activity.tripkey = self.Trip.key;
         self.Activity.startdt = self.datePickerStart.date;
         self.Activity.enddt = self.datePickerEnd.date;
-        
+
         if ([self.SwitchTweet isOn]) {
             self.Activity.IncludeInTweet = [NSNumber numberWithInt:1];
         } else {
@@ -681,6 +732,8 @@ int DocumentListingViewPresentedHeight = 250;
             [self InitGeoNotification:@"CheckInCategory" :true :[NSString stringWithFormat: @"Arrived at location you planned to be at %@", [ToolBoxNSO FormatPrettyDate :self.Activity.startdt]]];
             self.Activity.geonotification = [NSNumber numberWithInt:1];
             self.Activity.geonotifycheckindt = [NSDate date];
+        } else {
+            self.Activity.geonotification = [NSNumber numberWithInt:0];
         }
         
         if (self.toggleNotifyLeavingFlag == 1) {
@@ -688,6 +741,8 @@ int DocumentListingViewPresentedHeight = 250;
             [self InitGeoNotification:@"CheckOutCategory" :false :[NSString stringWithFormat: @"Departed location you planned to leave at %@", [ToolBoxNSO FormatPrettyDate :self.Activity.enddt]]];
             self.Activity.geonotifycheckout = [NSNumber numberWithInt:1];
             self.Activity.geonotifycheckoutdt = [NSDate date];
+        } else {
+            self.Activity.geonotifycheckout = [NSNumber numberWithInt:0];
         }
         
         if (self.Activity.images.count > 0) {
@@ -732,18 +787,19 @@ int DocumentListingViewPresentedHeight = 250;
         } else {
             self.Activity.IncludeInTweet = [NSNumber numberWithInt:0];
         }
- 
-        if (self.toggleNotifyArrivingFlag == 1 && self.Activity.geonotification == [NSNumber numberWithInt:0]) {
+        
+        if (self.toggleNotifyArrivingFlag == 1 && (self.Activity.geonotification == [NSNumber numberWithInt:0] || self.Activity.geonotification == nil)) {
             // we have only just switched this on.
             [self InitGeoNotification:@"CheckInCategory" :true :[NSString stringWithFormat: @"Arrived at location you originally planned to be at %@", [ToolBoxNSO FormatPrettyDate :self.Activity.startdt]]];
             self.Activity.geonotification = [NSNumber numberWithInt:1];
             self.Activity.geonotifycheckindt = [NSDate date];
         } else if (self.toggleNotifyArrivingFlag == 0 && self.Activity.geonotification == [NSNumber numberWithInt:1]) {
             // run through removal
-             [self setGeoNotifyOff :true];
+            [self setGeoNotifyOff :true];
+            self.Activity.geonotification = [NSNumber numberWithInt:0];
         }
         
-        if (self.toggleNotifyLeavingFlag == 1 && self.Activity.geonotifycheckout == [NSNumber numberWithInt:0]) {
+        if (self.toggleNotifyLeavingFlag == 1 && (self.Activity.geonotifycheckout == [NSNumber numberWithInt:0] || self.Activity.geonotifycheckout == nil)) {
             // we have only just switched this on.
             [self InitGeoNotification:@"CheckOutCategory" :false :[NSString stringWithFormat: @"Departed location you originally planned to leave at %@", [ToolBoxNSO FormatPrettyDate :self.Activity.enddt]]];
             self.Activity.geonotifycheckout = [NSNumber numberWithInt:1];
@@ -751,7 +807,10 @@ int DocumentListingViewPresentedHeight = 250;
         } else if (self.toggleNotifyLeavingFlag == 0 && self.Activity.geonotifycheckout == [NSNumber numberWithInt:1]) {
             // run through removal
              [self setGeoNotifyOff :false];
+            self.Activity.geonotifycheckout = [NSNumber numberWithInt:0];
         }
+        
+        
         if (self.Activity.images.count>0) {
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
             NSString *imagesDirectory = [paths objectAtIndex:0];
@@ -1107,25 +1166,14 @@ int DocumentListingViewPresentedHeight = 250;
         self.ViewPhotos.hidden = true;
         self.ViewDocuments.hidden = true;
         self.ViewSettings.hidden = true;
-        self.ButtonScan.hidden = true;
+        self.ButtonScan.hidden = false;
         self.ButtonUploadImage.hidden = true;
         self.ButtonPayment.hidden = false;
         self.ButtonDirections.hidden = false;
         self.SwitchViewPhotoOptions.hidden = true;
         
-    } else if ([self.SegmentPresenter selectedSegmentIndex] == 1) {
-        self.ViewMain.hidden = true;
-        self.ViewNotes.hidden = false;
-        self.ViewPhotos.hidden = true;
-        self.ViewDocuments.hidden = true;
-        self.ViewSettings.hidden = true;
-        self.ButtonScan.hidden = false;
-        self.ButtonUploadImage.hidden = true;
-        self.ButtonPayment.hidden = true;
-        self.ButtonDirections.hidden = true;
-        self.SwitchViewPhotoOptions.hidden = true;
         
-    } else if ([self.SegmentPresenter selectedSegmentIndex] == 2) {
+    } else if ([self.SegmentPresenter selectedSegmentIndex] == 1) {
         self.ViewMain.hidden = true;
         self.ViewNotes.hidden = true;
         self.ViewPhotos.hidden = false;
@@ -1137,7 +1185,7 @@ int DocumentListingViewPresentedHeight = 250;
         self.ButtonDirections.hidden = true;
         self.SwitchViewPhotoOptions.hidden = false;
         
-    } else if ([self.SegmentPresenter selectedSegmentIndex] == 3) {
+    } else if ([self.SegmentPresenter selectedSegmentIndex] == 2) {
         
         
         // only do this once.
@@ -1167,7 +1215,7 @@ int DocumentListingViewPresentedHeight = 250;
         self.SwitchViewPhotoOptions.hidden = true;
         
         
-    } else if ([self.SegmentPresenter selectedSegmentIndex] == 4) {
+    } else if ([self.SegmentPresenter selectedSegmentIndex] == 3) {
         self.ViewMain.hidden = true;
         self.ViewNotes.hidden = true;
         self.ViewDocuments.hidden = true;
@@ -2233,6 +2281,126 @@ int DocumentListingViewPresentedHeight = 250;
     self.toggleNotifyLeavingFlag = [self setNotifyButtonToggle:self.ButtonLeaving :self.toggleNotifyLeavingFlag];
 }
 
+/*
+ created date:      24/06/2019
+ last modified:     24/06/2019
+ remarks:           TODO!
+ */
+- (IBAction)ButtonUpdateWeatherForActualPressed:(id)sender {
+
+
+    [self.ButtonUpdateActualWeather setEnabled:FALSE];
+    [self.ButtonUpdateActualWeather setBackgroundColor:[UIColor colorWithRed:179.0f/255.0f green:25.0f/255.0f blue:49.0f/255.0f alpha:1.0]];
+    
+    NSTimeInterval timestamp = [self.Activity.startdt timeIntervalSince1970];
+    NSNumber *dt = [NSNumber numberWithInt: timestamp];
+    
+    
+    NSString *url = [NSString stringWithFormat:@"https://api.darksky.net/forecast/d339db567160bdd560169ea4eef3ee5a/%@,%@,%@?exclude=minutely,flags,alerts&units=uk2", self.Activity.poi.lat, self.Activity.poi.lon,dt];
+    
+    [self fetchFromDarkSkyApi:url withDictionary:^(NSDictionary *data) {
+        
+        dispatch_sync(dispatch_get_main_queue(), ^(void){
+            
+            WeatherRLM *weather = [[WeatherRLM alloc] init];
+            NSDictionary *JSONdata = [data objectForKey:@"currently"];
+            weather.icon = [NSString stringWithFormat:@"weather-%@",[JSONdata valueForKey:@"icon"]];
+            weather.summary = [JSONdata valueForKey:@"summary"];
+            double myDouble = [[JSONdata valueForKey:@"temperature"] doubleValue];
+            NSNumberFormatter *fmt = [[NSNumberFormatter alloc] init];
+            [fmt setPositiveFormat:@"0.#"];
+            weather.temperature = [NSString stringWithFormat:@"%@",[fmt stringFromNumber:[NSNumber numberWithFloat:myDouble]]];
+            weather.timedefition = @"currently";
+            weather.time = [JSONdata valueForKey:@"time"];
+            
+            [self.realm transactionWithBlock:^{
+                [self.Activity.weather addObject:weather];
+            }];
+            
+            NSDictionary *JSONHourlyData = [data objectForKey:@"hourly"];
+            NSArray *dataHourly = [JSONHourlyData valueForKey:@"data"];
+            
+            for (NSMutableDictionary *item in dataHourly) {
+                WeatherRLM *weather = [[WeatherRLM alloc] init];
+                weather.icon = [NSString stringWithFormat:@"weather-%@",[item valueForKey:@"icon"]];
+                weather.summary = [item valueForKey:@"summary"];
+                double myDouble = [[item valueForKey:@"temperature"] doubleValue];
+                NSNumberFormatter *fmt = [[NSNumberFormatter alloc] init];
+                [fmt setPositiveFormat:@"0.#"];
+                weather.temperature = [NSString stringWithFormat:@"%@",[fmt stringFromNumber:[NSNumber numberWithFloat:myDouble]]];
+                weather.timedefition = @"hourly";
+                weather.time = [item valueForKey:@"time"];
+                
+                [self.realm transactionWithBlock:^{
+                    [self.Activity.weather addObject:weather];
+                }];
+            }
+            NSDictionary *JSONDailyData = [data objectForKey:@"daily"];
+            NSArray *dataDaily = [JSONDailyData valueForKey:@"data"];
+            
+            for (NSMutableDictionary *item in dataDaily) {
+                WeatherRLM *weather = [[WeatherRLM alloc] init];
+                weather.icon = [NSString stringWithFormat:@"weather-%@",[item valueForKey:@"icon"]];
+                weather.summary = [item valueForKey:@"summary"];
+                double tempLow = [[item valueForKey:@"temperatureLow"] doubleValue];
+                double tempHigh = [[item valueForKey:@"temperatureHigh"] doubleValue];
+                NSNumberFormatter *fmt = [[NSNumberFormatter alloc] init];
+                [fmt setPositiveFormat:@"0.#"];
+                weather.temperature = [NSString stringWithFormat:@"Lowest %@ °C, Highest %@ °C",[fmt stringFromNumber:[NSNumber numberWithFloat:tempLow]], [fmt stringFromNumber:[NSNumber numberWithFloat:tempHigh]]];
+                weather.timedefition = @"daily";
+                weather.time = [item valueForKey:@"time"];
+                
+                [self.realm transactionWithBlock:^{
+                    [self.Activity.weather addObject:weather];
+                }];
+            }
+            
+        });
+    }];
+}
+    
+
+/*
+ created date:      24/06/2019
+ last modified:     24/06/2019
+ remarks:           This procedure handles the call to the web service and returns a dictionary back to GetExchangeRates method.
+ */
+-(void)fetchFromDarkSkyApi:(NSString *)url withDictionary:(void (^)(NSDictionary* data))dictionary{
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:url]];
+    [request setHTTPMethod:@"GET"];
+    
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+    
+    
+    NSURLSessionDataTask *task = [session dataTaskWithRequest:request
+                                            completionHandler:
+                                  ^(NSData *data, NSURLResponse *response, NSError *error) {
+                                      NSDictionary *dicData = [NSJSONSerialization JSONObjectWithData:data
+                                                                                              options:0
+                                                                                                error:NULL];
+                                      dictionary(dicData);
+                                  }];
+    [task resume];
+}
+
+/*
+ created date:      24/06/2019
+ last modified:     24/06/2019
+ */
+- (bool)checkInternet
+{
+    if ([[Reachability reachabilityForInternetConnection]currentReachabilityStatus] == NotReachable)
+    {
+        return false;
+    }
+    else
+    {
+        //connection available
+        return true;
+    }
+    
+}
 
 
 @end

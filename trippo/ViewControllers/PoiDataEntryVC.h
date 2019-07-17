@@ -115,5 +115,6 @@
 @property (weak, nonatomic) IBOutlet UIButton *ButtonMapRevert;
 @property (weak, nonatomic) IBOutlet UIPickerView *PickerDistance;
 @property (weak, nonatomic) IBOutlet UIView *ViewDistancePicker;
+@property (weak, nonatomic) IBOutlet UISwitch *SwitchWeather;
 
 @end

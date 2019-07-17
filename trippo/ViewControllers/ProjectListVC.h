@@ -15,6 +15,7 @@
 #import "GraphView.h"
 #import "TripRLM.h"
 #import "MultiplierConstraint.h"
+#import "WeatherRLM.h"
 
 @protocol ProjectListDelegate <NSObject>
 @end

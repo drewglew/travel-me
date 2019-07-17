@@ -18,8 +18,9 @@
 
 @implementation ActivityListVC
 CGFloat ActivityListFooterFilterHeightConstant;
-CGFloat NumberOfCellsInRow = 3.0f;
-CGFloat LastScale = 0.0f;
+CGFloat NumberOfCellsInRow = 2.0f;
+CGFloat Scale = 4.14f;
+
 @synthesize delegate;
 
 /*
@@ -38,8 +39,7 @@ CGFloat LastScale = 0.0f;
     if (![ToolBoxNSO HasTopNotch]) {
         self.HeaderViewHeightConstraint.constant = 70.0f;
     }
-    
-    
+
     // Do any additional setup after loading the view.
     if (self.Trip.itemgrouping==[NSNumber numberWithInt:1]) {
         self.SegmentState.selectedSegmentIndex = 1;
@@ -52,6 +52,66 @@ CGFloat LastScale = 0.0f;
     } else {
          self.LabelProject.text =  [NSString stringWithFormat:@"Activities for %@", self.Trip.name];
     }
+    
+   self.TypeItems = @[
+                           @"Cat-Accomodation",
+                           @"Cat-Airport",
+                           @"Cat-Astronaut",
+                           @"Cat-Bakery",
+                           @"Cat-Beer",
+                           @"Cat-Bike",
+                           @"Cat-Bridge",
+                           @"Cat-CarHire",
+                           @"Cat-CarPark",
+                           @"Cat-Casino",
+                           @"Cat-Cave",
+                           @"Cat-Church",
+                           @"Cat-Cinema",
+                           @"Cat-City",
+                           @"Cat-CityPark",
+                           @"Cat-Climbing",
+                           @"Cat-Club",
+                           @"Cat-Sea",
+                           @"Cat-Concert",
+                           @"Cat-FoodWine",
+                           @"Cat-Football",
+                           @"Cat-Forest",
+                           @"Cat-Golf",
+                           @"Cat-Historic",
+                           @"Cat-House",
+                           @"Cat-Lake",
+                           @"Cat-Lighthouse",
+                           @"Cat-Metropolis",
+                           @"Cat-Misc",
+                           @"Cat-Monument",
+                           @"Cat-Museum",
+                           @"Cat-NationalPark",
+                           @"Cat-Nature",
+                           @"Cat-Office",
+                           @"Cat-PetrolStation",
+                           @"Cat-Photography",
+                           @"Cat-Restaurant",
+                           @"Cat-River",
+                           @"Cat-Rugby",
+                           @"Cat-Safari",
+                           @"Cat-Scenary",
+                           @"Cat-School",
+                           @"Cat-Ship",
+                           @"Cat-Shopping",
+                           @"Cat-Ski",
+                           @"Cat-Sports",
+                           @"Cat-Swimming",
+                           @"Cat-Tennis",
+                           @"Cat-Theatre",
+                           @"Cat-ThemePark",
+                           @"Cat-Tower",
+                           @"Cat-Train",
+                           @"Cat-Trek",
+                           @"Cat-Venue",
+                           @"Cat-Village",
+                           @"Cat-Windmill",
+                           @"Cat-Zoo"
+                           ];
     
     [self LoadActivityData :[NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex]];
     [self LoadActivityImageData];
@@ -111,57 +171,73 @@ CGFloat LastScale = 0.0f;
 
 
 
+
 /*
- created date:      10/06/2019
- last modified:     11/06/2019
+ created date:      20/06/2019
+ last modified:     21/06/2019
  remarks:
  */
--(void)onPinch:(UIPinchGestureRecognizer*)gestureRecognizer {
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:
+(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:
+(NSIndexPath *)indexPath
+{
+    return CGSizeMake(50*Scale, 50*Scale);
+}
+
+/*
+ created date:      20/06/2019
+ last modified:     21/06/2019
+ remarks:           Works on iPhone XR - will it work on an smaller iPhone 7?
+ */
+-(void)onPinch:(UIPinchGestureRecognizer*)gestureRecognizer
+{
+    static CGFloat scaleStart;
     
-    if([gestureRecognizer state] == UIGestureRecognizerStateBegan) {
-        // Reset the last scale, necessary if there are multiple objects with different scales.
-        LastScale = [gestureRecognizer scale];
-    }
+    CGFloat collectionWidth = self.CollectionViewActivities.frame.size.width;
     
-    if ([gestureRecognizer state] == UIGestureRecognizerStateBegan ||
-        [gestureRecognizer state] == UIGestureRecognizerStateChanged) {
+    if (gestureRecognizer.state == UIGestureRecognizerStateBegan)
+    {
+        scaleStart = Scale;
         
-        double CurrentScale = [gestureRecognizer scale];
-        double pinchscale = CurrentScale;
-
-        if (pinchscale  < 1.0f) {
-            pinchscale *= 5;
+    }
+    else if (gestureRecognizer.state == UIGestureRecognizerStateChanged)
+    {
+        Scale = scaleStart * gestureRecognizer.scale;
+        
+        if ( Scale*50 < collectionWidth / 6) {
+            Scale = (collectionWidth / 6) / 50;
         }
-
-        if (NumberOfCellsInRow==5.0f && pinchscale > 0.5f && CurrentScale > LastScale) {
-            NumberOfCellsInRow=4.0f;
-            [self.CollectionViewActivities performBatchUpdates:^{ } completion:^(BOOL finished) { [self.CollectionViewActivities reloadData];}];
-        } else if (NumberOfCellsInRow==4.0f && pinchscale > 1.5f && CurrentScale > LastScale) {
-            NumberOfCellsInRow=3.0f;
-            [self.CollectionViewActivities performBatchUpdates:^{ } completion:^(BOOL finished) { [self.CollectionViewActivities reloadData];}];
-        } else if (NumberOfCellsInRow==3.0f && pinchscale > 3.0f && CurrentScale > LastScale) {
-            NumberOfCellsInRow=2.0f;
-            [self.CollectionViewActivities performBatchUpdates:^{ } completion:^(BOOL finished) { [self.CollectionViewActivities reloadData];}];
-        } else if (NumberOfCellsInRow==2.0f && pinchscale > 4.0f && CurrentScale > LastScale) {
-            NumberOfCellsInRow=1.0f;
-            [self.CollectionViewActivities performBatchUpdates:^{ } completion:^(BOOL finished) { [self.CollectionViewActivities reloadData];}];
-        } else if (NumberOfCellsInRow==4.0f && pinchscale < 1.5f && CurrentScale < LastScale) {
-            NumberOfCellsInRow=5.0f;
-            [self.CollectionViewActivities performBatchUpdates:^{ } completion:^(BOOL finished) { [self.CollectionViewActivities reloadData];}];
-        } else if (NumberOfCellsInRow==3.0f && pinchscale < 3.00f && CurrentScale < LastScale) {
-            NumberOfCellsInRow=4.0f;
-            [self.CollectionViewActivities performBatchUpdates:^{ } completion:^(BOOL finished) { [self.CollectionViewActivities reloadData];}];
-        } else if (NumberOfCellsInRow==2.0f && pinchscale < 4.00f && CurrentScale < LastScale) {
-            NumberOfCellsInRow=3.0f;
-            [self.CollectionViewActivities performBatchUpdates:^{ } completion:^(BOOL finished) { [self.CollectionViewActivities reloadData];}];
-        } else if (NumberOfCellsInRow==1.0f && pinchscale < 5.00f && CurrentScale < LastScale) {
-            NumberOfCellsInRow=2.0f;
-            [self.CollectionViewActivities performBatchUpdates:^{ } completion:^(BOOL finished) { [self.CollectionViewActivities reloadData];}];
+        else
+        {
+            [self.CollectionViewActivities.collectionViewLayout invalidateLayout];
         }
-        LastScale = [gestureRecognizer scale];  // Store the previous. scale factor for the next pinch gesture call
+    }
+    else if (gestureRecognizer.state == UIGestureRecognizerStateEnded)
+    {
+        // snap to pretty border distribution
+        if ( Scale*50 < collectionWidth / 5) {
+            Scale = (collectionWidth / 5) / 50;
+            NumberOfCellsInRow = 5.0f;
+        } else if (Scale*50 < collectionWidth / 4) {
+            Scale = (collectionWidth / 4) / 50;
+            NumberOfCellsInRow = 4.0f;
+        } else if (Scale*50 < collectionWidth / 3) {
+            Scale = (collectionWidth / 3) / 50;
+            NumberOfCellsInRow = 3.0f;
+        } else if (Scale*50 < collectionWidth / 2) {
+            Scale = (collectionWidth / 2) / 50;
+            NumberOfCellsInRow = 2.0f;
+        } else {
+            Scale = collectionWidth / 50;
+            NumberOfCellsInRow = 1.0f;
+        }
+        [self.CollectionViewActivities.collectionViewLayout invalidateLayout];
+        [self.CollectionViewActivities reloadData];
+        
     }
     
 }
+
 
 /*
  created date:      27/09/2018
@@ -347,12 +423,11 @@ CGFloat LastScale = 0.0f;
     for (ActivityRLM *activityobj in activities) {
         [self getActivityImage :activityobj];
     }
-    // NSLog(@"completed");
 }
 
 /*
  created date:      21/03/2019
- last modified:     30/03/2019
+ last modified:     25/06/2019
  remarks:           Load single Activity image for Trip - TODO optimize this.
                     use thumbnail image if it exists, else - create it (the activity data entry point will
                     also need to do some management - when it deletes an activity or a key image delete its thumbnail
@@ -364,9 +439,9 @@ CGFloat LastScale = 0.0f;
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"KeyImage == %@", [NSNumber numberWithInt:1]];
     RLMResults *filteredResults;
     ImageCollectionRLM *imgobject = [[ImageCollectionRLM alloc] init];
-    
-    CGSize CellSize = CGSizeMake(self.CollectionViewActivities.collectionViewLayout.collectionViewContentSize.height, self.CollectionViewActivities.collectionViewLayout.collectionViewContentSize.height);
 
+    CGSize CellSize = CGSizeMake(self.CollectionViewActivities.collectionViewLayout.collectionViewContentSize.width * 2, self.CollectionViewActivities.collectionViewLayout.collectionViewContentSize.width * 2);
+    
     filteredResults = [activity.images objectsWithPredicate:predicate];
     if (filteredResults.count>0) {
         imgobject = [filteredResults firstObject];
@@ -428,7 +503,7 @@ CGFloat LastScale = 0.0f;
 
 /*
  created date:      30/04/2018
- last modified:     31/03/2019
+ last modified:     24/06/2019
  remarks:
  */
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -536,9 +611,7 @@ CGFloat LastScale = 0.0f;
             } else {
                 cell.ViewActiveBadge.hidden = true;
             }
-            
 
-            
  
         } else {
 
@@ -562,70 +635,9 @@ CGFloat LastScale = 0.0f;
             cell.ViewActiveBadge.hidden = true;
         }
 
-        NSArray *TypeItems = @[
-                @"Cat-Accomodation",
-                @"Cat-Airport",
-                @"Cat-Astronaut",
-                @"Cat-Bakery",
-                @"Cat-Beer",
-                @"Cat-Bike",
-                @"Cat-Bridge",
-                @"Cat-CarHire",
-                @"Cat-CarPark",
-                @"Cat-Casino",
-                @"Cat-Cave",
-                @"Cat-Church",
-                @"Cat-Cinema",
-                @"Cat-City",
-                @"Cat-CityPark",
-                @"Cat-Climbing",
-                @"Cat-Club",
-                @"Cat-Sea",
-                @"Cat-Concert",
-                @"Cat-FoodWine",
-                @"Cat-Football",
-                @"Cat-Forest",
-                @"Cat-Golf",
-                @"Cat-Historic",
-                @"Cat-House",
-                @"Cat-Lake",
-                @"Cat-Lighthouse",
-                @"Cat-Metropolis",
-                @"Cat-Misc",
-                @"Cat-Monument",
-                @"Cat-Museum",
-                @"Cat-NationalPark",
-                @"Cat-Nature",
-                @"Cat-Office",
-                @"Cat-PetrolStation",
-                @"Cat-Photography",
-                @"Cat-Restaurant",
-                @"Cat-River",
-                @"Cat-Rugby",
-                @"Cat-Safari",
-                @"Cat-Scenary",
-                @"Cat-School",
-                @"Cat-Ship",
-                @"Cat-Shopping",
-                @"Cat-Ski",
-                @"Cat-Sports",
-                @"Cat-Swimming",
-                @"Cat-Tennis",
-                @"Cat-Theatre",
-                @"Cat-ThemePark",
-                @"Cat-Tower",
-                @"Cat-Train",
-                @"Cat-Trek",
-                @"Cat-Venue",
-                @"Cat-Village",
-                @"Cat-Windmill",
-                @"Cat-Zoo"
-        ];
-                               
-        
         PoiRLM *poiobject = [PoiRLM objectForPrimaryKey:cell.activity.poikey];
         
-        cell.ImageViewTypeOfPoi.image = [UIImage imageNamed:[TypeItems objectAtIndex:[poiobject.categoryid integerValue]]];
+        cell.ImageViewTypeOfPoi.image = [UIImage imageNamed:[self.TypeItems objectAtIndex:[poiobject.categoryid integerValue]]];
 
         if (!self.editmode || indexPath.row == NumberOfItems -1) {
              cell.ViewOverlay.hidden = false;
@@ -644,43 +656,172 @@ CGFloat LastScale = 0.0f;
         cell.ImageViewActivity.image = [self.ActivityImageDictionary objectForKey:cell.activity.compondkey];
         
         if (self.tweetview) {
-            //[cell.ViewOverlay setBackgroundColor:[UIColor whiteColor]];
-            
-            //cell.ViewOverlay.layer.backgroundColor = [UIColor colorWithRed:230.0f/255.0f green:230.0f/255.0f blue:230.0f/255.0f alpha:1.0].CGColor;
             cell.ViewPoiType.backgroundColor = [UIColor colorWithRed:255.0f/255.0f green:91.0f/255.0f blue:73.0f/255.0f alpha:1.0];
         } else {
-            //[cell.ViewOverlay setBackgroundColor:[UIColor clearColor]];
-            //cell.ViewOverlay.layer.backgroundColor = [UIColor clearColor].CGColor;
             cell.ImageBlurBackground.image = [self.ActivityImageDictionary objectForKey:cell.activity.compondkey];
             cell.ImageBlurBackgroundBottomHalf.image = [self.ActivityImageDictionary objectForKey:cell.activity.compondkey];
-            cell.ViewPoiType.backgroundColor = [UIColor lightGrayColor];
+            cell.ViewPoiType.backgroundColor = [UIColor colorWithRed:5.0f/255.0f green:102.0f/255.0f blue:141.0f/255.0f alpha:1.0];
         }
+        
+        NSLog(@"cell.activity.poi.IncludeWeather %@",cell.activity.poi.IncludeWeather);
+        if ([cell.activity.poi.IncludeWeather intValue] == 0 || cell.activity.poi.IncludeWeather == nil) {
+            [cell.ViewWeather setHidden:true];
+        } else {
+            //90/120
+            UIBezierPath *path = [UIBezierPath new];
+            [path moveToPoint:(CGPoint){0, 100}];
+            [path addLineToPoint:(CGPoint){100, 100}];
+            [path addLineToPoint:(CGPoint){100, 0}];
+            //[path addLineToPoint:(CGPoint){0, 0}];
+            [path closePath];
+            
+            // Create a CAShapeLayer with this triangular path
+            // Same size as the original imageView
+            CAShapeLayer *mask = [CAShapeLayer new];
+            mask.frame = cell.ViewWeather.bounds;
+            mask.path = path.CGPath;
+            
+            // Mask the imageView's layer with this shape
+            cell.ViewWeather.layer.mask = mask;
+            [cell.ViewWeather setHidden:false];
+            
+            bool HasForecast = false;
+
+            if (self.SegmentState.selectedSegmentIndex == 1 && cell.activity.state == [NSNumber numberWithInteger:1]) { // Collection view is presenting actual and current cell is also actual
+                if ([cell.ViewActiveBadge isHidden]) {
+                    if (cell.activity.weather.count == 0) {
+                        [cell.ImageWeatherIcon setImage:[UIImage imageNamed:@"NotAvailable"]];
+                        cell.LabelWeatherTemp.text = @"";
+                        [cell.ButtonShowWeather setEnabled:FALSE];
+                    } else {
+                        NSLog(@"working with activity actual weather called from history for %@", cell.activity.name);
+                        HasForecast = true;
+                        [cell.ButtonShowWeather setEnabled:TRUE];
+                        RLMResults <WeatherRLM*> *weatherresult = [cell.activity.weather objectsWhere:@"timedefition='currently'"];
+                        NSNumber *maxtime = [weatherresult maxOfProperty:@"time"];
+                        RLMResults <WeatherRLM*> *weathernowresult = [cell.activity.weather objectsWhere:@"time=%@",maxtime];
+                        WeatherRLM *weather = [weathernowresult firstObject];
+                        [cell.ImageWeatherIcon setImage:[UIImage imageNamed:weather.icon]];
+                        cell.LabelWeatherTemp.text = [NSString stringWithFormat:@"%@",weather.temperature];
+                    }
+                }
+                if (HasForecast) {
+                    [cell.ViewWeatherDogEarBackground setBackgroundColor:[UIColor colorWithRed:0.0f/255.0f green:102.0f/255.0f blue:51.0f/255.0f alpha:1.0]];
+                } else {
+                    [cell.ViewWeatherDogEarBackground setBackgroundColor:[UIColor colorWithRed:179.0f/255.0f green:25.0f/255.0f blue:49.0f/255.0f alpha:1.0]];
+                }
+                
+            } else { // Activity can only be planned (placeholder for actual too).
+                RLMResults <WeatherRLM*> *weatherresult = [cell.activity.poi.weather objectsWhere:@"timedefition='currently'"];
+                NSNumber *maxtime = [weatherresult maxOfProperty:@"time"];
+                RLMResults <WeatherRLM*> *weathernowresult = [cell.activity.poi.weather objectsWhere:@"time=%@",maxtime];
+                WeatherRLM *weather = [weathernowresult firstObject];
+                [cell.ImageWeatherIcon setImage:[UIImage imageNamed:weather.icon]];
+                cell.LabelWeatherTemp.text = [NSString stringWithFormat:@"%@",weather.temperature];
+
+                // test if the activity starts today..
+                BOOL today = [[NSCalendar currentCalendar] isDateInToday:cell.activity.startdt];
+
+                if (today) {
+                    weatherresult = [cell.activity.poi.weather objectsWhere:@"timedefition='hourly'"];
+                    NSCalendar *calendar = [NSCalendar currentCalendar];
+                    unsigned unitFlags =  NSCalendarUnitDay | NSCalendarUnitHour;
+                    
+                    NSDateComponents *components = [calendar components:unitFlags fromDate:cell.activity.startdt];
+                    NSInteger activityhour = [components hour];
+                    NSInteger activityday = [components day];
+                    
+                    for (WeatherRLM *weather in weatherresult) {
+                        
+                        components = [calendar components:unitFlags fromDate:[NSDate dateWithTimeIntervalSince1970: [weather.time doubleValue]]];
+                        NSInteger weatherhour = [components hour];
+                        NSInteger weatherday = [components day];
+                        
+                        if (activityhour == weatherhour && activityday == weatherday) {
+                            HasForecast = true;
+                        }
+                    }
+
+                } else {
+                    weatherresult = [cell.activity.poi.weather objectsWhere:@"timedefition='daily'"];
+                    
+                    NSDate *today = [NSDate date];
+                    NSDate *sevenDaysAhead = [today dateByAddingTimeInterval:7*24*60*60];
+                    
+                    if ([cell.activity.startdt compare:today] == NSOrderedDescending &&  [cell.activity.startdt compare:sevenDaysAhead] == NSOrderedAscending) {
+                    
+                        // we loop through
+                        for (WeatherRLM *weather in weatherresult) {
+                            if ([[NSCalendar currentCalendar] isDate:cell.activity.startdt inSameDayAsDate:[NSDate dateWithTimeIntervalSince1970: [weather.time doubleValue]]]) {
+                                //NSLog(@"We have the weather forecast! %@", weather.temperature);
+                                HasForecast = true;
+                            }
+                        }
+                    }
+                    
+                }
+                [cell.ButtonShowWeather setEnabled:TRUE];
+                if (HasForecast) {
+                    [cell.ViewWeatherDogEarBackground setBackgroundColor:[UIColor colorWithRed:0.0f/255.0f green:102.0f/255.0f blue:51.0f/255.0f alpha:1.0]];
+                } else {
+                    [cell.ViewWeatherDogEarBackground setBackgroundColor:[UIColor clearColor]];
+                }
+            }
+            
+            
+            
+           
+        }
+        
         
         //UIFont *font = [UIFont fontWithName:@"AmericanTypewriter" size:14.0];
         UIFont *font = [UIFont systemFontOfSize:16.0];
         
         if (NumberOfCellsInRow >= 3.0f) {
             font = [UIFont systemFontOfSize:12.0];
+            cell.ViewWeather.hidden = true;
             
             if (NumberOfCellsInRow > 3.0f) {
                 if (self.editmode == 0) {
                     cell.ButtonDelete.hidden = true;
                     if (NumberOfCellsInRow == 5.0f) {
                         cell.ViewPoiType.hidden = true;
+                        
                     } else {
                         cell.ViewPoiType.hidden = false;
                     }
                 } else {
-                    cell.ButtonDelete.hidden = false;
+                    if (cell.activity.poi.IncludeWeather == [NSNumber numberWithInt:1]) {
+                        cell.ViewWeather.hidden = false;
+                    }
+                    if (cell.activity.state == [NSNumber numberWithInt:0]) {
+                        cell.ButtonDelete.hidden = false;
+                    }
                     cell.ViewPoiType.hidden = false;
+                }
+            } else {
+                if (cell.activity.state == [NSNumber numberWithInt:0]) {
+                    cell.ButtonDelete.hidden = false;
+                }
+                cell.ViewPoiType.hidden = false;
+                if (cell.activity.poi.IncludeWeather == [NSNumber numberWithInt:1]) {
+                    cell.ViewWeather.hidden = false;
                 }
             }
         } else {
             if (self.editmode == 0) {
-                cell.ButtonDelete.hidden = false;
+                if (cell.activity.state == [NSNumber numberWithInt:0]) {
+                    cell.ButtonDelete.hidden = false;
+                }
                 cell.ViewPoiType.hidden = false;
+                if (cell.activity.poi.IncludeWeather == [NSNumber numberWithInt:1]) {
+                    cell.ViewWeather.hidden = false;
+                }
             }
         }
+        
+        
+        
         
         NSDictionary *attributes = @{NSBackgroundColorAttributeName:[UIColor colorWithRed:35.0f/255.0f green:35.0f/255.0f blue:35.0f/255.0f alpha:1.0], NSForegroundColorAttributeName:[UIColor whiteColor], NSFontAttributeName:font};
         NSAttributedString *string = [[NSAttributedString alloc] initWithString:cell.activity.name attributes:attributes];
@@ -691,19 +832,6 @@ CGFloat LastScale = 0.0f;
 }
 
 
-/*
- created date:      30/04/2018
- last modified:     11/06/2019
- remarks: manages the dynamic width of the cells.
- */
--(CGSize)collectionView:(UICollectionView *) collectionView layout:(UICollectionViewLayout* )collectionViewLayout sizeForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
-    
-    CGFloat collectionWidth = self.CollectionViewActivities.frame.size.width;
-    double cellWidth = collectionWidth / NumberOfCellsInRow;
-    double rounded = round (cellWidth * 100.0) / 100.0;
-    CGSize size = CGSizeMake(rounded, rounded);
-    return size;
-}
 
 /*
  created date:      30/04/2018
@@ -1106,6 +1234,21 @@ remarks:           table view with sections.
         }
         controller.ActivityItem = nil;
         controller.activitystate = [NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex];
+    } else if([segue.identifier isEqualToString:@"ShowWeatherForecastView"]) {
+        WeatherVCViewController *controller = (WeatherVCViewController *)segue.destinationViewController;
+        controller.delegate = self;
+        controller.realm = self.realm;
+        if ([sender isKindOfClass: [UIButton class]]) {
+            UIView * cellView=(UIView*)sender;
+            while ((cellView= [cellView superview])) {
+                if([cellView isKindOfClass:[ActivityListCell class]]) {
+                    ActivityListCell *cell = (ActivityListCell*)cellView;
+                    NSIndexPath *indexPath = [self.CollectionViewActivities indexPathForCell:cell];
+                    controller.ActivityItem = [self.activitycollection objectAtIndex:indexPath.row];
+                    controller.realm = self.realm;
+                }
+            }
+        }
     }
 }
 
@@ -1194,7 +1337,7 @@ remarks:           table view with sections.
 }
 
 - (IBAction)SwitchEditModeChanged:(id)sender {
-        self.editmode = !self.editmode;
+    self.editmode = !self.editmode;
     [self.CollectionViewActivities performBatchUpdates:^{ } completion:^(BOOL finished) { [self.CollectionViewActivities reloadData];}];
     
 

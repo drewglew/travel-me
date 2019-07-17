@@ -37,5 +37,11 @@
 @property (weak, nonatomic) IBOutlet UILabel *LabelEndDate;
 @property (weak, nonatomic) IBOutlet UILabel *LabelDuration;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *ImageConstraint;
+@property (weak, nonatomic) IBOutlet UIView *ViewWeather;
+@property (weak, nonatomic) IBOutlet UIImageView *ImageWeatherIcon;
+@property (weak, nonatomic) IBOutlet UILabel *LabelWeatherTemp;
+@property (weak, nonatomic) IBOutlet UIView *ViewWeatherDogEarBackground;
+@property (weak, nonatomic) IBOutlet UIButton *ButtonShowWeather;
+
 
 @end

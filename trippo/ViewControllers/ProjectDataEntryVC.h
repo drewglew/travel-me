@@ -19,6 +19,7 @@
 #import <MapKit/MapKit.h>
 #import "AnnotationMK.h"
 #import "Reachability.h"
+#import "WeatherRLM.h"
 
 @protocol ProjectDataEntryDelegate <NSObject>
 @end
@@ -60,5 +61,6 @@
 
 @property (nonatomic, weak) id <ProjectDataEntryDelegate> delegate;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentAnnotations;
+@property (weak, nonatomic) IBOutlet UILabel *LabelWeatherLastUpdatedAt;
 
 @end

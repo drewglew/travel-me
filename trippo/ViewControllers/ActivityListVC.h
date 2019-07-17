@@ -23,12 +23,14 @@
 #import "DiaryDatesNSO.h"
 #import "MultiplierConstraint.h"
 #import "CustomCollectionView.h"
+#import "WeatherRLM.h"
+#import "WeatherVCViewController.h"
 
 
 @protocol ActivityListDelegate <NSObject>
 @end
 
-@interface ActivityListVC : UIViewController <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UITableViewDelegate,    UITextFieldDelegate, ActivityDataEntryDelegate, ScheduleListDelegate, PaymentListingDelegate, PoiSearchDelegate >
+@interface ActivityListVC : UIViewController <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UITableViewDelegate,    UITextFieldDelegate, ActivityDataEntryDelegate, ScheduleListDelegate, PaymentListingDelegate, PoiSearchDelegate, WeatherDelegate>
 
 @property (assign) bool editmode;
 
@@ -37,6 +39,7 @@
 @property (weak, nonatomic) IBOutlet CustomCollectionView *CollectionViewActivities;
 @property (weak, nonatomic) IBOutlet UILabel *LabelProject;
 @property (strong, nonatomic) NSMutableArray *activityitems;
+@property (strong, nonatomic) NSArray *TypeItems;
 @property NSMutableArray *activitycollection;
 @property NSMutableArray *diarycollection;
 @property NSMutableArray *sectionheaderdaystitle;
@@ -47,8 +50,8 @@
 @property (weak, nonatomic) IBOutlet UIButton *ButtonRouting;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonPayment;
 @property RLMResults<ActivityRLM*> *AllActivitiesInTrip;
-@property (assign) bool ImagesNeedUpdating;
 @property (assign) bool keyboardIsShowing;
+@property (assign) bool WeatherActualStateIsCompleted;
 @property RLMRealm *realm;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *FooterWithSegmentConstraint;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonSwapMainView;
@@ -58,5 +61,8 @@
 @property (weak, nonatomic) IBOutlet UIButton *ButtonTweet;
 @property (assign) bool tweetview;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *HeaderViewHeightConstraint;
+
+
+
 
 @end

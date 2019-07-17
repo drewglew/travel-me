@@ -24,7 +24,7 @@ MKLocalSearchResponse *results;
 
 /*
  created date:      27/04/2018
- last modified:     12/08/2018
+ last modified:     23/06/2019
  remarks:
  */
 - (void)viewDidLoad {
@@ -38,6 +38,12 @@ MKLocalSearchResponse *results;
     [self.MapView addGestureRecognizer:mapLongPressAddAnnotation];    // Do any additional setup after loading the view.
     self.MapView.delegate = self;
     
+    self.firstactivityinproject = false;
+    
+    if (self.fromproject) {
+        [self zoomToPoiBounds];
+    }
+
     self.PointOfInterest = [[PoiRLM alloc] init];
     self.PointOfInterest.name = @"";
     self.Coordinates = kCLLocationCoordinate2DInvalid;
@@ -75,9 +81,6 @@ MKLocalSearchResponse *results;
 -(void)startUserLocationSearch{
     
     if ([CLLocationManager locationServicesEnabled]) {
-        
-        
-        
         self.locationManager = [[CLLocationManager alloc]init];
         self.locationManager.delegate = self;
         self.locationManager.distanceFilter = kCLDistanceFilterNone;
@@ -95,7 +98,7 @@ MKLocalSearchResponse *results;
 }
 /*
  created date:      06/05/2018
- last modified:     10/08/2018
+ last modified:     23/06/2019
  remarks:
  */
 -(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations{
@@ -130,8 +133,11 @@ MKLocalSearchResponse *results;
                     anno.FullThoroughFare = [NSString stringWithFormat:@"%@, %@", placemark.thoroughfare, placemark.subThoroughfare];
 
                     [self.MapView addAnnotation:anno];
-                    [self.MapView setCenterCoordinate:anno.coordinate animated:YES];
-                    [self.MapView selectAnnotation:anno animated:true];
+                    // issue when fromproject, but without any activities to refer to, this will not catch.
+                    if (!self.fromproject || self.firstactivityinproject) {
+                        [self.MapView setCenterCoordinate:anno.coordinate animated:YES];
+                        [self.MapView selectAnnotation:anno animated:true];
+                    }
                     
                 } else {
                     anno.title = @"Unknown Place";
@@ -555,6 +561,58 @@ MKLocalSearchResponse *results;
             break;
             
     }
+}
+
+/*
+ created date:      23/06/2019
+ last modified:     23/06/2019
+ remarks:
+ */
+- (void) zoomToPoiBounds {
+    
+    CLLocationDegrees minLatitude = DBL_MAX;
+    CLLocationDegrees maxLatitude = -DBL_MAX;
+    CLLocationDegrees minLongitude = DBL_MAX;
+    CLLocationDegrees maxLongitude = -DBL_MAX;
+
+    NSArray *keypaths  = [[NSArray alloc] initWithObjects:@"poikey", nil];
+    RLMResults <ActivityRLM*> *activities = [[ActivityRLM objectsWhere:@"tripkey = %@",self.TripItem.key] distinctResultsUsingKeyPaths:keypaths];
+    
+    if (activities.count>0) {
+
+       
+        
+        for (ActivityRLM *activity in activities) {
+            double Lat = [activity.poi.lat doubleValue];
+            double Lon = [activity.poi.lon doubleValue];
+            NSLog(@"%@", activity.poi.name);
+            minLatitude = fmin(Lat, minLatitude);
+            maxLatitude = fmax(Lat, maxLatitude);
+            minLongitude = fmin(Lon, minLongitude);
+            maxLongitude = fmax(Lon, maxLongitude);
+        }
+
+        [self setMapRegionForMinLat:minLatitude minLong:minLongitude maxLat:maxLatitude maxLong:maxLongitude];
+    } else {
+        self.firstactivityinproject = true;
+    }
+}
+
+/*
+ created date:      23/06/2019
+ last modified:     23/06/2019
+ remarks:
+ */
+-(void) setMapRegionForMinLat:(double)minLatitude minLong:(double)minLongitude maxLat:(double)maxLatitude maxLong:(double)maxLongitude {
+    
+    MKCoordinateRegion region;
+    region.center.latitude = (minLatitude + maxLatitude) / 2;
+    region.center.longitude = (minLongitude + maxLongitude) / 2;
+    region.span.latitudeDelta = (maxLatitude - minLatitude);
+    region.span.longitudeDelta = (maxLongitude - minLongitude);
+    
+    // MKMapView BUG: this snaps to the nearest whole zoom level, which is wrong- it doesn't respect the exact region you asked for. See http://stackoverflow.com/questions/1383296/why-mkmapview-region-is-different-than-requested
+    [self.MapView setRegion:region animated:NO];
 }
 
 

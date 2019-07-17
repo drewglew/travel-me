@@ -211,8 +211,8 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
 
 /*
  created date:      03/05/2018
- last modified:     15/06/2019
- remarks:           called twice???
+ last modified:     23/06/2019
+ remarks:           called twice???  Improved Poi Type processing
  */
 -(void)RefreshPoiFilteredData :(bool) UpdateTypes {
     
@@ -288,25 +288,72 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
         NSCountedSet* countedSet = [[NSCountedSet alloc] init];
         
         for (PoiRLM* poi in self.poifilteredcollection) {
+            NSLog(@"%@ : %@",poi.name, poi.categoryid );
             [countedSet addObject:poi.categoryid];
         }
         
         if (self.PoiTypes.count>0) {
             // need to process each selected to check counter if there are still Poi selected.
-
+            // when adding new items, we need to check if the user has own mixed selection of types.
+            bool isselected = false;
+            bool isunselected = false;
+            /* reset all existing type items in array */
+            for (TypeNSO* type in self.PoiTypes) {
+                type.occurances = [NSNumber numberWithInteger:0];
+                if (type.selected) {
+                    isselected = true;
+                }
+                if (!type.selected) {
+                    isunselected = true;
+                }
+            }
+            
+            /* load up array with any new type items while if we cannot find type in existing list we create new item */
             for (id item in countedSet)
             {
-                //u_long number = [item unsignedLongValue];
-                //TypeNSO *type = [self.PoiTypes objectAtIndex:number];
-                
+                bool found = false;
+
                 for (TypeNSO* type in self.PoiTypes) {
                     if (type.categoryid == item) {
                         type.occurances = [NSNumber numberWithInteger:[countedSet countForObject:type.categoryid]];
+                        found = true;
                         
                         break;
                     }
                 }
+                
+                if (!found) {
+                    TypeNSO *type = [[TypeNSO alloc] init];
+                    type.occurances = [NSNumber numberWithInteger:[countedSet countForObject:item]];
+                    type.categoryid = item;
+                    u_long number = [item unsignedLongValue];
+                    type.imagename = [self.TypeItems objectAtIndex: number];
+                    if (isselected && isunselected) {
+                        type.selected = false;
+                    } else {
+                        type.selected = true;
+                    }
+                    [self.PoiTypes addObject:type];
+                }
+                
+                
             }
+            
+            /* we remove any items that are not occuring in this selection */
+            NSInteger count = [self.PoiTypes count];
+            for (NSInteger index = (count - 1); index >= 0; index--) {
+                TypeNSO *type = self.PoiTypes[index];
+                if (type.occurances == [NSNumber numberWithInteger:0]) {
+                    [self.PoiTypes removeObjectAtIndex:index];
+                }
+            }
+            
+            /* finally sort the list in the common order used */
+            NSSortDescriptor *sortDescriptor;
+            sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"categoryid"
+                                                         ascending:YES];
+            [self.PoiTypes sortUsingDescriptors:@[sortDescriptor]];
+            
 
         } else {
         
@@ -322,6 +369,12 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
                 type.selected = true;
                 [self.PoiTypes addObject:type];
             }
+            
+            /* sort the list in the common order used */
+            NSSortDescriptor *sortDescriptor;
+            sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"categoryid"
+                                                         ascending:YES];
+            [self.PoiTypes sortUsingDescriptors:@[sortDescriptor]];
             
         }
     
@@ -347,6 +400,10 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
                                                        [RLMSortDescriptor sortDescriptorWithKeyPath:@"name" ascending:YES],
                                                        ]];
     
+    
+    
+    
+    
     [self.LabelCounter setText:[NSString stringWithFormat:@"%lu Items", (unsigned long)self.poifilteredcollection.count]];
     
     [self.TableViewSearchPoiItems reloadData];
@@ -354,6 +411,8 @@ CGFloat lastPoiSearchFooterFilterHeightConstant;
     [self.CollectionViewTypes reloadData];
     
 }
+
+
 
 
 /*
