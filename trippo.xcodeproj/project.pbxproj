@@ -51,6 +51,9 @@
 		3A58B4C3211F547100699008 /* TypeNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A58B4C2211F547100699008 /* TypeNSO.m */; };
 		3A6349432129C61500BE53FC /* ActivityImageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A6349422129C61500BE53FC /* ActivityImageCell.m */; };
 		3A634970212F12AA00BE53FC /* SettingsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A63496F212F12AA00BE53FC /* SettingsVC.m */; };
+		3A6571DA22E243EB0071E166 /* JENSubtreeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A6571D222E243E50071E166 /* JENSubtreeView.m */; };
+		3A6571DB22E243EB0071E166 /* JENDefaultNodeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A6571D522E243E70071E166 /* JENDefaultNodeView.m */; };
+		3A6571DC22E243EB0071E166 /* JENTreeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A6571D822E243EA0071E166 /* JENTreeView.m */; };
 		3A72E1CF21B28EC2007C40FC /* PhotoswithGeoTagListingVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A72E1CE21B28EC2007C40FC /* PhotoswithGeoTagListingVC.m */; };
 		3A7397B0225A183800781004 /* ExpenseDataEntryVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A7397AF225A183800781004 /* ExpenseDataEntryVC.m */; };
 		3A79F213222D912500C68D77 /* MultiplierConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A79F212222D912500C68D77 /* MultiplierConstraint.m */; };
@@ -193,6 +196,14 @@
 		3A6349422129C61500BE53FC /* ActivityImageCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ActivityImageCell.m; sourceTree = "<group>"; };
 		3A63496E212F12AA00BE53FC /* SettingsVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingsVC.h; sourceTree = "<group>"; };
 		3A63496F212F12AA00BE53FC /* SettingsVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingsVC.m; sourceTree = "<group>"; };
+		3A6571D222E243E50071E166 /* JENSubtreeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JENSubtreeView.m; sourceTree = "<group>"; };
+		3A6571D322E243E60071E166 /* JENTreeViewModelNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JENTreeViewModelNode.h; sourceTree = "<group>"; };
+		3A6571D422E243E70071E166 /* JENDecorationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JENDecorationView.h; sourceTree = "<group>"; };
+		3A6571D522E243E70071E166 /* JENDefaultNodeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JENDefaultNodeView.m; sourceTree = "<group>"; };
+		3A6571D622E243E80071E166 /* JENDefaultNodeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JENDefaultNodeView.h; sourceTree = "<group>"; };
+		3A6571D722E243E90071E166 /* JENTreeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JENTreeView.h; sourceTree = "<group>"; };
+		3A6571D822E243EA0071E166 /* JENTreeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JENTreeView.m; sourceTree = "<group>"; };
+		3A6571D922E243EB0071E166 /* JENSubtreeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JENSubtreeView.h; sourceTree = "<group>"; };
 		3A72E1CD21B28EC2007C40FC /* PhotoswithGeoTagListingVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PhotoswithGeoTagListingVC.h; sourceTree = "<group>"; };
 		3A72E1CE21B28EC2007C40FC /* PhotoswithGeoTagListingVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PhotoswithGeoTagListingVC.m; sourceTree = "<group>"; };
 		3A7397AE225A183800781004 /* ExpenseDataEntryVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpenseDataEntryVC.h; sourceTree = "<group>"; };
@@ -365,6 +376,7 @@
 				3A224CB02095916000075457 /* TableViewCells */,
 				3A374EFD209372E700E5A652 /* ViewControllers */,
 				3A374F072093738F00E5A652 /* GenericObjects */,
+				3A6571D122E243CB0071E166 /* Jen */,
 				3A374EE420936A9300E5A652 /* AppDelegate.h */,
 				3A374EE520936A9300E5A652 /* AppDelegate.m */,
 				3A374EEA20936A9300E5A652 /* Main.storyboard */,
@@ -498,6 +510,21 @@
 				E856F7EF5DAFD9B99FE6779E /* libPods-trippo.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		3A6571D122E243CB0071E166 /* Jen */ = {
+			isa = PBXGroup;
+			children = (
+				3A6571D422E243E70071E166 /* JENDecorationView.h */,
+				3A6571D622E243E80071E166 /* JENDefaultNodeView.h */,
+				3A6571D522E243E70071E166 /* JENDefaultNodeView.m */,
+				3A6571D922E243EB0071E166 /* JENSubtreeView.h */,
+				3A6571D222E243E50071E166 /* JENSubtreeView.m */,
+				3A6571D722E243E90071E166 /* JENTreeView.h */,
+				3A6571D822E243EA0071E166 /* JENTreeView.m */,
+				3A6571D322E243E60071E166 /* JENTreeViewModelNode.h */,
+			);
+			path = Jen;
 			sourceTree = "<group>";
 		};
 		3A9F73A420A1FFC900D61666 /* JSON data */ = {
@@ -716,6 +743,7 @@
 				3A23B0012221FED2003ACF7B /* DiaryDatesNSO.m in Sources */,
 				3AA4DA6B2126807400F7CAC9 /* GraphView.m in Sources */,
 				3A634970212F12AA00BE53FC /* SettingsVC.m in Sources */,
+				3A6571DB22E243EB0071E166 /* JENDefaultNodeView.m in Sources */,
 				3A291BD8213D949F00FDFDFB /* ExpenseRLM.m in Sources */,
 				3A224CBD2095F1FD00075457 /* ActivityListVC.m in Sources */,
 				3A23AFFE221DF3F0003ACF7B /* ActivityDiaryCell.m in Sources */,
@@ -724,6 +752,7 @@
 				3AF785DC21319BB600DD5A5B /* ActivityRLM.m in Sources */,
 				3A224CC62097792800075457 /* PoiSearchVC.m in Sources */,
 				3A374F032093735300E5A652 /* ProjectListVC.m in Sources */,
+				3A6571DA22E243EB0071E166 /* JENSubtreeView.m in Sources */,
 				3AEE019220A0CBB100AE260E /* CountryNSO.m in Sources */,
 				3A58B4C3211F547100699008 /* TypeNSO.m in Sources */,
 				3AAB60BF20FCF8C300A22047 /* NearbyListingVC.m in Sources */,
@@ -733,6 +762,7 @@
 				3AFE356D209E462500C46180 /* ScheduleVC.m in Sources */,
 				3A72E1CF21B28EC2007C40FC /* PhotoswithGeoTagListingVC.m in Sources */,
 				3AF785E221319D2200DD5A5B /* ImageCollectionRLM.m in Sources */,
+				3A6571DC22E243EB0071E166 /* JENTreeView.m in Sources */,
 				3A9CE745221C879700A4CB98 /* SettingsRLM.m in Sources */,
 				3A224CCF209A178700075457 /* ToolBoxNSO.m in Sources */,
 				3A6349432129C61500BE53FC /* ActivityImageCell.m in Sources */,
