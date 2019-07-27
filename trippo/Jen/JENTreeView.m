@@ -140,8 +140,16 @@
 	}
     
     if(nodeView == nil) {
-        nodeView                                = [[JENDefaultNodeView alloc] init];
-        ((JENDefaultNodeView*)nodeView).name    = modelNode.name;
+        nodeView                                = [[JENDefaultNodeView alloc] initWithParm:25];
+        
+        ((JENDefaultNodeView*)nodeView).nodeName    = modelNode.nodeName;
+        ((JENDefaultNodeView*)nodeView).insertNode    = modelNode.insertNode;        
+        ((JENDefaultNodeView*)nodeView).activityImage    = modelNode.activityImage;
+        ((JENDefaultNodeView*)nodeView).activity = modelNode.activity;
+        ((JENDefaultNodeView*)nodeView).startDt = modelNode.startDt;
+        ((JENDefaultNodeView*)nodeView).nodeSize = modelNode.nodeSize;
+        ((JENDefaultNodeView*)nodeView).transportType = modelNode.transportType;
+        ((JENDefaultNodeView*)nodeView).travelBack = modelNode.travelBack;
     }
 	
 	UIView<JENDecorationView> *decorationView = nil;
@@ -167,6 +175,13 @@
         
         NSArray *childModelNodes = [[modelNode children] allObjects];
         
+        NSSortDescriptor *dateDescriptor = [NSSortDescriptor
+                                            sortDescriptorWithKey:@"startDt"
+                                            ascending:NO];
+        NSArray *sortDescriptors = [NSArray arrayWithObject:dateDescriptor];
+        childModelNodes = [childModelNodes
+                                     sortedArrayUsingDescriptors:sortDescriptors];
+       
         for(id<JENTreeViewModelNode> childModelNode in childModelNodes) {
             JENSubtreeView *childSubtreeView = [self buildGraphForModelNode:childModelNode];
             
@@ -184,8 +199,10 @@
     CGSize treeViewSize = [[self rootSubtreeView] layoutGraph];
     
     self.contentSize = CGSizeMake(treeViewSize.width + self.parentChildSpacing,
-                                  treeViewSize.height);
+                                  treeViewSize.height + 100);
 }
+
+
 
 #pragma mark Mapping methods
 

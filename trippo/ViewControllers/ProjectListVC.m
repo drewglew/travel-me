@@ -241,7 +241,7 @@ CGFloat TripScale = 4.14f;
         ActivityListVC *controller = [storyboard instantiateViewControllerWithIdentifier:@"ActivityListViewController"];
         controller.delegate = self;
         controller.realm = self.realm;
-        
+        controller.TripImage = cell.ImageViewProject.image;
         controller.Trip = [self.tripcollection objectAtIndex:indexPath.row];
         if ([self checkInternet]) {
             NSArray *keypaths  = [[NSArray alloc] initWithObjects:@"poikey", nil];

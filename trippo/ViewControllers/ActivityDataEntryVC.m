@@ -1032,13 +1032,13 @@ int DocumentListingViewPresentedHeight = 250;
 
 /*
  created date:      19/03/2019
- last modified:     19/03/2019
+ last modified:     22/07/2019
  remarks:
  */
 -(void)dismissModalStack {
     UIViewController *vc = self.presentingViewController;
     NSString *strClass = NSStringFromClass([vc class]);
-    while (![strClass isEqualToString:@"ActivityListVC"]) {
+    while (![strClass isEqualToString:@"ActivityListVC"] && ![strClass isEqualToString:@"TravelPlanVC"]) {
         vc = vc.presentingViewController;
         strClass = NSStringFromClass([vc class]);
     }

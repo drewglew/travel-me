@@ -14,7 +14,7 @@
 #import "ActivityDataEntryVC.h"
 #import "ActivityDiaryCell.h"
 #import "PoiImageNSO.h"
-#import "ScheduleVC.h"
+#import "TravelPlanVC.h"
 #import "PaymentListingVC.h"
 #import "ActivityRLM.h"
 #import "TripRLM.h"
@@ -30,7 +30,7 @@
 @protocol ActivityListDelegate <NSObject>
 @end
 
-@interface ActivityListVC : UIViewController <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UITableViewDelegate,    UITextFieldDelegate, ActivityDataEntryDelegate, ScheduleListDelegate, PaymentListingDelegate, PoiSearchDelegate, WeatherDelegate>
+@interface ActivityListVC : UIViewController <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UITableViewDelegate,    UITextFieldDelegate, ActivityDataEntryDelegate, TravelPlanDelegate, PaymentListingDelegate, PoiSearchDelegate, WeatherDelegate>
 
 @property (assign) bool editmode;
 
@@ -46,6 +46,7 @@
 @property (strong, nonatomic) NSMutableDictionary *ActivityImageDictionary;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *SegmentState;
 @property (weak, nonatomic) IBOutlet UIView *ViewAction;
+
 @property (weak, nonatomic) IBOutlet UIButton *ButtonBack;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonRouting;
 @property (weak, nonatomic) IBOutlet UIButton *ButtonPayment;
@@ -61,8 +62,6 @@
 @property (weak, nonatomic) IBOutlet UIButton *ButtonTweet;
 @property (assign) bool tweetview;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *HeaderViewHeightConstraint;
-
-
-
+@property (nonatomic) UIImage *TripImage;
 
 @end

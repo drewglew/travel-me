@@ -14,6 +14,7 @@
 		3A0BDE37217E4EDD006A746E /* OptionButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A0BDE36217E4EDD006A746E /* OptionButton.m */; };
 		3A12B8DA21010680006B621D /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A12B8D921010680006B621D /* SystemConfiguration.framework */; };
 		3A12B8DD21010BF4006B621D /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A12B8DC21010BF4006B621D /* Reachability.m */; };
+		3A13556222E36CF700449604 /* NodeNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A13556122E36CF700449604 /* NodeNSO.m */; };
 		3A1446E2217B9AD800A9C2C8 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A6295A92171CA76006B083C /* libc++.tbd */; };
 		3A20ABA3223D489000661666 /* Twitter.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3A20ABA2223D489000661666 /* Twitter.plist */; };
 		3A224CA62094338D00075457 /* PoiImageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A224CA52094338D00075457 /* PoiImageCell.m */; };
@@ -54,6 +55,9 @@
 		3A6571DA22E243EB0071E166 /* JENSubtreeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A6571D222E243E50071E166 /* JENSubtreeView.m */; };
 		3A6571DB22E243EB0071E166 /* JENDefaultNodeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A6571D522E243E70071E166 /* JENDefaultNodeView.m */; };
 		3A6571DC22E243EB0071E166 /* JENTreeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A6571D822E243EA0071E166 /* JENTreeView.m */; };
+		3A6571DF22E247D20071E166 /* TravelPlanVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A6571DE22E247D20071E166 /* TravelPlanVC.m */; };
+		3A6571E722E24C3A0071E166 /* JENCustomDecorationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A6571E322E24C3A0071E166 /* JENCustomDecorationView.m */; };
+		3A6571E822E24C3A0071E166 /* JENNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A6571E522E24C3A0071E166 /* JENNode.m */; };
 		3A72E1CF21B28EC2007C40FC /* PhotoswithGeoTagListingVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A72E1CE21B28EC2007C40FC /* PhotoswithGeoTagListingVC.m */; };
 		3A7397B0225A183800781004 /* ExpenseDataEntryVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A7397AF225A183800781004 /* ExpenseDataEntryVC.m */; };
 		3A79F213222D912500C68D77 /* MultiplierConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A79F212222D912500C68D77 /* MultiplierConstraint.m */; };
@@ -77,6 +81,9 @@
 		3AAB60C220FCFCE800A22047 /* NearbyPoiCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AAB60C120FCFCE800A22047 /* NearbyPoiCell.m */; };
 		3AAB60C520FCFEA600A22047 /* NearbyPoiNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AAB60C420FCFEA600A22047 /* NearbyPoiNSO.m */; };
 		3AAF154820A8AD9800F8DE0C /* InfoVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AAF154720A8AD9800F8DE0C /* InfoVC.m */; };
+		3AB52F5E22E4D117000E9ED8 /* TravelPlanDetailVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB52F5D22E4D117000E9ED8 /* TravelPlanDetailVC.m */; };
+		3AB52F6122E966F6000E9ED8 /* JourneyItemNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB52F6022E966F6000E9ED8 /* JourneyItemNSO.m */; };
+		3AB52F6422E96BBC000E9ED8 /* ItineraryListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB52F6322E96BBC000E9ED8 /* ItineraryListCell.m */; };
 		3AB915EC20CD972F001A08A9 /* ImagePickerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB915EB20CD972F001A08A9 /* ImagePickerVC.m */; };
 		3AB915EF20CD9BE4001A08A9 /* ImageCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB915EE20CD9BE4001A08A9 /* ImageCollectionCell.m */; };
 		3AB915F220CDB3E5001A08A9 /* ImageNSO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB915F120CDB3E5001A08A9 /* ImageNSO.m */; };
@@ -126,6 +133,8 @@
 		3A12B8D921010680006B621D /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		3A12B8DB21010BF4006B621D /* Reachability.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		3A12B8DC21010BF4006B621D /* Reachability.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		3A13556022E36CF700449604 /* NodeNSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NodeNSO.h; sourceTree = "<group>"; };
+		3A13556122E36CF700449604 /* NodeNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NodeNSO.m; sourceTree = "<group>"; };
 		3A20ABA2223D489000661666 /* Twitter.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Twitter.plist; sourceTree = "<group>"; };
 		3A224CA42094338D00075457 /* PoiImageCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PoiImageCell.h; sourceTree = "<group>"; };
 		3A224CA52094338D00075457 /* PoiImageCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PoiImageCell.m; sourceTree = "<group>"; };
@@ -204,6 +213,12 @@
 		3A6571D722E243E90071E166 /* JENTreeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JENTreeView.h; sourceTree = "<group>"; };
 		3A6571D822E243EA0071E166 /* JENTreeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JENTreeView.m; sourceTree = "<group>"; };
 		3A6571D922E243EB0071E166 /* JENSubtreeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JENSubtreeView.h; sourceTree = "<group>"; };
+		3A6571DD22E247D20071E166 /* TravelPlanVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TravelPlanVC.h; sourceTree = "<group>"; };
+		3A6571DE22E247D20071E166 /* TravelPlanVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TravelPlanVC.m; sourceTree = "<group>"; };
+		3A6571E222E24C3A0071E166 /* JENCustomDecorationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JENCustomDecorationView.h; sourceTree = "<group>"; };
+		3A6571E322E24C3A0071E166 /* JENCustomDecorationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JENCustomDecorationView.m; sourceTree = "<group>"; };
+		3A6571E422E24C3A0071E166 /* JENNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JENNode.h; sourceTree = "<group>"; };
+		3A6571E522E24C3A0071E166 /* JENNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JENNode.m; sourceTree = "<group>"; };
 		3A72E1CD21B28EC2007C40FC /* PhotoswithGeoTagListingVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PhotoswithGeoTagListingVC.h; sourceTree = "<group>"; };
 		3A72E1CE21B28EC2007C40FC /* PhotoswithGeoTagListingVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PhotoswithGeoTagListingVC.m; sourceTree = "<group>"; };
 		3A7397AE225A183800781004 /* ExpenseDataEntryVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpenseDataEntryVC.h; sourceTree = "<group>"; };
@@ -251,6 +266,12 @@
 		3AAB60C420FCFEA600A22047 /* NearbyPoiNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NearbyPoiNSO.m; sourceTree = "<group>"; };
 		3AAF154620A8AD9800F8DE0C /* InfoVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InfoVC.h; sourceTree = "<group>"; };
 		3AAF154720A8AD9800F8DE0C /* InfoVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InfoVC.m; sourceTree = "<group>"; };
+		3AB52F5C22E4D117000E9ED8 /* TravelPlanDetailVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TravelPlanDetailVC.h; sourceTree = "<group>"; };
+		3AB52F5D22E4D117000E9ED8 /* TravelPlanDetailVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TravelPlanDetailVC.m; sourceTree = "<group>"; };
+		3AB52F5F22E966F6000E9ED8 /* JourneyItemNSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JourneyItemNSO.h; sourceTree = "<group>"; };
+		3AB52F6022E966F6000E9ED8 /* JourneyItemNSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JourneyItemNSO.m; sourceTree = "<group>"; };
+		3AB52F6222E96BBC000E9ED8 /* ItineraryListCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ItineraryListCell.h; sourceTree = "<group>"; };
+		3AB52F6322E96BBC000E9ED8 /* ItineraryListCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ItineraryListCell.m; sourceTree = "<group>"; };
 		3AB915EA20CD972F001A08A9 /* ImagePickerVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImagePickerVC.h; sourceTree = "<group>"; };
 		3AB915EB20CD972F001A08A9 /* ImagePickerVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImagePickerVC.m; sourceTree = "<group>"; };
 		3AB915ED20CD9BE4001A08A9 /* ImageCollectionCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageCollectionCell.h; sourceTree = "<group>"; };
@@ -325,6 +346,8 @@
 				3A046D4D2223461300EA26A9 /* AttachmentCell.m */,
 				3A85AD7B22BFE36E007965D8 /* WeatherCell.h */,
 				3A85AD7C22BFE36E007965D8 /* WeatherCell.m */,
+				3AB52F6222E96BBC000E9ED8 /* ItineraryListCell.h */,
+				3AB52F6322E96BBC000E9ED8 /* ItineraryListCell.m */,
 			);
 			path = TableViewCells;
 			sourceTree = "<group>";
@@ -408,8 +431,6 @@
 				3A224CBC2095F1FD00075457 /* ActivityListVC.m */,
 				3A224CC72097950600075457 /* ActivityDataEntryVC.h */,
 				3A224CC82097950600075457 /* ActivityDataEntryVC.m */,
-				3AFE356B209E462500C46180 /* ScheduleVC.h */,
-				3AFE356C209E462500C46180 /* ScheduleVC.m */,
 				3AEE0189209F3BC600AE260E /* DirectionsVC.h */,
 				3AEE018A209F3BC600AE260E /* DirectionsVC.m */,
 				3A9F73A720A2444A00D61666 /* PaymentListingVC.h */,
@@ -436,6 +457,12 @@
 				3A523F612242CAD60073305D /* PoiPreviewVC.m */,
 				3A85AD7822BFBC15007965D8 /* WeatherVCViewController.h */,
 				3A85AD7922BFBC15007965D8 /* WeatherVCViewController.m */,
+				3AFE356B209E462500C46180 /* ScheduleVC.h */,
+				3AFE356C209E462500C46180 /* ScheduleVC.m */,
+				3A6571DD22E247D20071E166 /* TravelPlanVC.h */,
+				3A6571DE22E247D20071E166 /* TravelPlanVC.m */,
+				3AB52F5C22E4D117000E9ED8 /* TravelPlanDetailVC.h */,
+				3AB52F5D22E4D117000E9ED8 /* TravelPlanDetailVC.m */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -491,6 +518,10 @@
 				3A79F212222D912500C68D77 /* MultiplierConstraint.m */,
 				3A97DCA42250A66100B64D7C /* CustomCollectionView.h */,
 				3A97DCA52250A66100B64D7C /* CustomCollectionView.m */,
+				3A13556022E36CF700449604 /* NodeNSO.h */,
+				3A13556122E36CF700449604 /* NodeNSO.m */,
+				3AB52F5F22E966F6000E9ED8 /* JourneyItemNSO.h */,
+				3AB52F6022E966F6000E9ED8 /* JourneyItemNSO.m */,
 			);
 			path = GenericObjects;
 			sourceTree = "<group>";
@@ -515,6 +546,10 @@
 		3A6571D122E243CB0071E166 /* Jen */ = {
 			isa = PBXGroup;
 			children = (
+				3A6571E222E24C3A0071E166 /* JENCustomDecorationView.h */,
+				3A6571E322E24C3A0071E166 /* JENCustomDecorationView.m */,
+				3A6571E422E24C3A0071E166 /* JENNode.h */,
+				3A6571E522E24C3A0071E166 /* JENNode.m */,
 				3A6571D422E243E70071E166 /* JENDecorationView.h */,
 				3A6571D622E243E80071E166 /* JENDefaultNodeView.h */,
 				3A6571D522E243E70071E166 /* JENDefaultNodeView.m */,
@@ -740,6 +775,7 @@
 				3A224CC320976B1100075457 /* ActivityNSO.m in Sources */,
 				3A224CC02096E2C700075457 /* ActivityListCell.m in Sources */,
 				3A046D4E2223461300EA26A9 /* AttachmentCell.m in Sources */,
+				3A6571E822E24C3A0071E166 /* JENNode.m in Sources */,
 				3A23B0012221FED2003ACF7B /* DiaryDatesNSO.m in Sources */,
 				3AA4DA6B2126807400F7CAC9 /* GraphView.m in Sources */,
 				3A634970212F12AA00BE53FC /* SettingsVC.m in Sources */,
@@ -747,6 +783,7 @@
 				3A291BD8213D949F00FDFDFB /* ExpenseRLM.m in Sources */,
 				3A224CBD2095F1FD00075457 /* ActivityListVC.m in Sources */,
 				3A23AFFE221DF3F0003ACF7B /* ActivityDiaryCell.m in Sources */,
+				3AB52F6122E966F6000E9ED8 /* JourneyItemNSO.m in Sources */,
 				3A85AD7D22BFE36E007965D8 /* WeatherCell.m in Sources */,
 				3A374EFC209372CC00E5A652 /* MenuVC.m in Sources */,
 				3AF785DC21319BB600DD5A5B /* ActivityRLM.m in Sources */,
@@ -754,6 +791,7 @@
 				3A374F032093735300E5A652 /* ProjectListVC.m in Sources */,
 				3A6571DA22E243EB0071E166 /* JENSubtreeView.m in Sources */,
 				3AEE019220A0CBB100AE260E /* CountryNSO.m in Sources */,
+				3A6571E722E24C3A0071E166 /* JENCustomDecorationView.m in Sources */,
 				3A58B4C3211F547100699008 /* TypeNSO.m in Sources */,
 				3AAB60BF20FCF8C300A22047 /* NearbyListingVC.m in Sources */,
 				3A374F152093877F00E5A652 /* PoiNSO.m in Sources */,
@@ -774,6 +812,7 @@
 				3AAB60C520FCFEA600A22047 /* NearbyPoiNSO.m in Sources */,
 				3A3075DE21220446007D53C9 /* HCSStarRatingView.m in Sources */,
 				3AF785DF21319C8C00DD5A5B /* PoiRLM.m in Sources */,
+				3A13556222E36CF700449604 /* NodeNSO.m in Sources */,
 				3A85AD7A22BFBC15007965D8 /* WeatherVCViewController.m in Sources */,
 				3A224CC92097950600075457 /* ActivityDataEntryVC.m in Sources */,
 				3A374F1E2093939400E5A652 /* LocatorVC.m in Sources */,
@@ -781,6 +820,7 @@
 				3AF785D6213129E400DD5A5B /* TripRLM.m in Sources */,
 				3AB915F220CDB3E5001A08A9 /* ImageNSO.m in Sources */,
 				3A273B95214CD95E00E3793E /* PaymentRLM.m in Sources */,
+				3A6571DF22E247D20071E166 /* TravelPlanVC.m in Sources */,
 				3A0BDE34217E299D006A746E /* TextFieldDatePicker.m in Sources */,
 				3A97DCA92250FBE400B64D7C /* TTTAttributedLabel.m in Sources */,
 				3AB915F520D1917B001A08A9 /* WikiVC.m in Sources */,
@@ -795,7 +835,9 @@
 				3A224CAF2094946800075457 /* PoiImageNSO.m in Sources */,
 				3A79F213222D912500C68D77 /* MultiplierConstraint.m in Sources */,
 				3A12B8DD21010BF4006B621D /* Reachability.m in Sources */,
+				3AB52F5E22E4D117000E9ED8 /* TravelPlanDetailVC.m in Sources */,
 				3A9F73AF20A3747300D61666 /* PaymentNSO.m in Sources */,
+				3AB52F6422E96BBC000E9ED8 /* ItineraryListCell.m in Sources */,
 				3AFE3573209E504F00C46180 /* ScheduleNSO.m in Sources */,
 				3A224CB72095E5D900075457 /* ProjectListCell.m in Sources */,
 				3A9F73A920A2444A00D61666 /* PaymentListingVC.m in Sources */,

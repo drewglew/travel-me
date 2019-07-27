@@ -15,6 +15,7 @@
 
 @interface ActivityRLM : RLMObject
 @property NSString *key;
+@property NSString *parentkey;
 @property NSNumber<RLMInt> *state;
 @property NSString *compondkey;  // 12345-67890~0
 @property NSString *name;
@@ -30,12 +31,15 @@
 @property NSNumber<RLMInt> *geonotifycheckout;
 @property NSNumber<RLMInt> *IncludeInTweet;
 @property NSNumber<RLMInt> *IncludeWeather;
+@property NSNumber<RLMInt> *travelbackflag;
+@property NSNumber<RLMInt> *traveltransportid;
 @property NSDate *startdt;
 @property NSDate *enddt;
 @property NSDate *geonotifycheckindt;
 @property NSDate *geonotifycheckoutdt;
 @property NSString *identitystartdate;
 @property NSString *identityenddate;
+
 
 @property RLMArray<ImageCollectionRLM *><ImageCollectionRLM> *images;
 @property RLMArray<AttachmentRLM *><AttachmentRLM> *attachments;

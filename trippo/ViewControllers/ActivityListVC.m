@@ -1200,7 +1200,7 @@ remarks:           table view with sections.
         controller.Activity.enddt = dd.enddt;
         controller.TripItem = self.Trip;
         controller.realm = self.realm;
-    
+    /*
     } else if([segue.identifier isEqualToString:@"ShowSchedule"]) {
         ScheduleVC *controller = (ScheduleVC *)segue.destinationViewController;
         controller.delegate = self;
@@ -1208,7 +1208,17 @@ remarks:           table view with sections.
         controller.Trip = self.Trip;
         controller.realm = self.realm;
         controller.ActivityState = [NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex];
-    
+    */
+    } else if([segue.identifier isEqualToString:@"ShowTravelPlan"]) {
+        TravelPlanVC *controller = (TravelPlanVC *)segue.destinationViewController;
+        controller.delegate = self;
+        controller.activitycollection = self.activitycollection;
+        controller.ActivityImageDictionary = self.ActivityImageDictionary;
+        controller.Trip = self.Trip;
+        controller.TripImage = self.TripImage;
+        controller.ActivityState = [NSNumber numberWithInteger:self.SegmentState.selectedSegmentIndex];
+        controller.realm = self.realm;
+        
     } else if([segue.identifier isEqualToString:@"ShowDeleteActivity"]) {
         [self DeleteActivity :sender];
         

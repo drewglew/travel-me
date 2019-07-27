@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "itinerary-50x50.png",
+      "filename" : "treeplanner-50x50.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "itinerary-100x100.png",
+      "filename" : "treeplanner-100x100.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "itinerary-150x150.png",
+      "filename" : "treeplanner-150x150.png",
       "scale" : "3x"
     }
   ],

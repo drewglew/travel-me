@@ -8,6 +8,9 @@
 #import <UIKit/UIKit.h>
 #import "JENTreeViewModelNode.h"
 #import "JENDecorationView.h"
+#import "JENNode.h"
+
+#import "ActivityRLM.h"
 
 @class JENTreeView;
 
@@ -35,7 +38,6 @@
 @property (nonatomic, assign) BOOL alignChildren;
 @property (nonatomic, assign) CGFloat parentChildSpacing;
 @property (nonatomic, assign) CGFloat siblingSpacing;
-
 // debugging options
 @property (nonatomic, assign) BOOL showSubviews;
 @property (nonatomic, assign) BOOL showSubviewFrames;
