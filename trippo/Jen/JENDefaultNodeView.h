@@ -6,9 +6,29 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ActivityRLM.h"
+#import "JENSubtreeView.h"
+#import "TravelPlanDetailVC.h"
+#import "TravelPlanVC.h"
+#import "PoiSearchVC.h"
 
-@interface JENDefaultNodeView : UIView
-
-@property (nonatomic, strong) NSString *name;
+@interface JENDefaultNodeView : UIView <TravelPlanDetailDelegate, PoiSearchDelegate>
+@property (nonatomic, strong) NSString *nodeName;
+@property (nonatomic, getter=isImmediate) BOOL insertNode;
+@property (nonatomic, strong) ActivityRLM *activity;
+@property (nonatomic, strong) UIImage *activityImage;
+@property (nonatomic, strong) UIView *activityView;
+@property (nonatomic, strong) UIView *activityOptionView;
+@property (nonatomic, strong) NSDate *startDt;
+@property (nonatomic, strong) UILabel *nameLabel;
+@property (nonatomic, strong) UIImageView *activityImageView;
+@property (nonatomic, strong) UIButton* openOptionsButton;
+//@property (nonatomic, strong) UIButton* transportButton;
+@property (nonatomic, strong) UIImageView* transportImageView;
+@property (nonatomic, strong) UIImageView* transportTravelBackIndicator;
+@property (nonatomic, assign) double nodeSize;
+@property (nonatomic, strong) NSNumber *transportType;
+@property (nonatomic, strong) NSNumber *travelBack;
+-(id)initWithParm:(double)NodeSize;
 
 @end
